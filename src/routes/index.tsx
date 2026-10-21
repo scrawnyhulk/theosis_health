@@ -82,7 +82,7 @@ function Home() {
           <div>
             <h2 className="font-display text-2xl font-semibold uppercase">About the founder</h2>
             <p className="mt-2 max-w-2xl text-muted">
-              Theosis Health was founded by Nick Holwey, PA-C, a licensed physician associate, to make metabolic health easier to see and understand. Theosis Health is an education company. It doesn’t provide medical care, and using this site doesn’t make you Nick’s patient. His clinical work is done separately through Theosis Medical LLC.
+              Theosis Health was founded by Nick Holwey, PA-C, a licensed physician associate, to make metabolic health easier to see and understand. Theosis Health is an education company. His clinical work is done separately through Theosis Medical LLC.
             </p>
           </div>
         </div>

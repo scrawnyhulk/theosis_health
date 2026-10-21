@@ -2,7 +2,7 @@ import { y as Link } from "../_libs/@tanstack/react-router+[...].mjs";
 import { i as require_jsx_runtime } from "../_libs/@radix-ui/react-label+[...].mjs";
 import { _ as ArrowRight, d as Eye, l as Footprints, u as FlaskConical } from "../_libs/lucide-react.mjs";
 import { r as SiteShell, t as Button } from "./site-shell-DrGfqXSO.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/routes-DVF-K4d3.js
+//#region node_modules/.nitro/vite/services/ssr/assets/routes-C1Djrz5V.js
 var import_jsx_runtime = require_jsx_runtime();
 var why = [
 	{
@@ -167,7 +167,7 @@ function Home() {
 					children: "About the founder"
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 					className: "mt-2 max-w-2xl text-muted",
-					children: "Theosis Health was founded by Nick Holwey, PA-C, a licensed physician associate, to make metabolic health easier to see and understand. Theosis Health is an education company. It doesn’t provide medical care, and using this site doesn’t make you Nick’s patient. His clinical work is done separately through Theosis Medical LLC."
+					children: "Theosis Health was founded by Nick Holwey, PA-C, a licensed physician associate, to make metabolic health easier to see and understand. Theosis Health is an education company. His clinical work is done separately through Theosis Medical LLC."
 				})] })]
 			})
 		})
