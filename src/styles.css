@@ -1,0 +1,316 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Barlow", "Segoe UI", system-ui, sans-serif;
+  --font-display: "Barlow Condensed", "Segoe UI", system-ui, sans-serif;
+
+  --color-bg: rgb(8 13 20 / 0.76);
+  --color-surface: rgb(16 24 32 / 0.86);
+  --color-fg: #e7edf5;
+  --color-muted: #8e9aab;
+  --color-accent: #2a7ae0;
+  --color-accent-fg: #f4f8ff;
+  /* Theosis Health identity accent (teal-green, same cool family as accent blue) */
+  --color-health: #22b8a0;
+  --color-health-fg: #04140f;
+  --shadow-soft: 0 10px 30px -12px rgb(0 0 0 / 0.55);
+  --color-ink: rgb(5 8 13 / 0.78);
+  --color-ink-fg: #e7edf5;
+  --color-ink-muted: #9aa6b8;
+  --color-steel: #cfd6e0;
+  --color-danger: #e07070;
+  --color-ok: #3d9a6a;
+  --color-ok-fg: #e8fff4;
+  --color-warn: #d4a056;
+  --color-border: color-mix(in oklab, var(--color-fg) 12%, transparent);
+  --color-border-strong: color-mix(in oklab, var(--color-fg) 22%, transparent);
+
+  --color-sesame-paper: #efebe3;
+  --color-sesame-card: #fffdf8;
+  --color-sesame-ink: #161616;
+  --color-sesame-muted: #5f5c55;
+  --color-sesame-lime: #c8e05a;
+  --color-sesame-lime-ink: #1a2208;
+
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+
+  --shadow-border: 0 0 0 1px color-mix(in oklab, var(--color-fg) 10%, transparent);
+  --shadow-ink-ring: 0 0 0 1px color-mix(in oklab, var(--color-ink-fg) 28%, transparent);
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: #05080d;
+    color-scheme: dark;
+    scroll-behavior: smooth;
+  }
+
+  html,
+  body,
+  #app {
+    min-height: 100%;
+  }
+
+  body {
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    background-color: #05080d;
+    background-image:
+      radial-gradient(90% 70% at 50% 32%, #10223480, #0000 64%),
+      url(/images/navy-grain.jpg);
+    background-repeat: no-repeat, repeat;
+    background-size: auto, 420px;
+    background-attachment: scroll;
+    line-height: 1.55;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  img {
+    outline: 1px solid color-mix(in oklab, var(--color-fg) 10%, transparent);
+    outline-offset: -1px;
+  }
+
+  img.no-outline {
+    outline: none;
+  }
+
+  .hh-metal {
+    background-image: linear-gradient(
+      180deg,
+      #f3f6fa 0%,
+      #c5ced8 38%,
+      #9aa6b4 52%,
+      #d7dde6 72%,
+      #7b8694 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 1px 0 rgb(255 255 255 / 0.35)) drop-shadow(0 2px 0 rgb(0 0 0 / 0.55));
+  }
+
+  .hh-metal-blue {
+    background-image: linear-gradient(180deg, #79b4f6 0%, #2a7ae0 42%, #163e7a 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 1px 0 rgb(180 210 255 / 0.4)) drop-shadow(0 2px 0 rgb(0 0 0 / 0.55));
+  }
+
+  .group:hover .hh-metal,
+  .group:hover .hh-metal-blue,
+  .group:focus-visible .hh-metal,
+  .group:focus-visible .hh-metal-blue {
+    background-image: none;
+    color: var(--color-accent-fg);
+    -webkit-text-fill-color: var(--color-accent-fg);
+    filter: none;
+  }
+}
+
+.nerd-out-slider {
+  appearance: none;
+  height: 6px;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--color-fg) 16%, transparent);
+  outline: none;
+}
+
+.nerd-out-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid rgb(6 16 32 / 0.85);
+  background:
+    radial-gradient(circle at 32% 26%, #9bbfe8 0 10%, #3e6fa8 38%, #1c3f6c 68%, #0a1c36 100%);
+  box-shadow:
+    inset 0 1px 1px rgb(255 255 255 / 0.38),
+    inset 0 -3px 4px rgb(0 0 0 / 0.45),
+    0 2px 4px rgb(0 0 0 / 0.5);
+  cursor: pointer;
+}
+
+.nerd-out-slider:focus-visible::-webkit-slider-thumb {
+  box-shadow:
+    0 0 0 3px rgb(42 122 224 / 0.35),
+    inset 0 1px 1px rgb(255 255 255 / 0.38),
+    inset 0 -3px 4px rgb(0 0 0 / 0.45),
+    0 2px 4px rgb(0 0 0 / 0.5);
+}
+
+.nerd-out-slider::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid rgb(6 16 32 / 0.85);
+  background:
+    radial-gradient(circle at 32% 26%, #9bbfe8 0 10%, #3e6fa8 38%, #1c3f6c 68%, #0a1c36 100%);
+  box-shadow:
+    inset 0 1px 1px rgb(255 255 255 / 0.38),
+    inset 0 -3px 4px rgb(0 0 0 / 0.45),
+    0 2px 4px rgb(0 0 0 / 0.5);
+  cursor: pointer;
+}
+
+.hero-phone {
+  display: block;
+}
+
+.hero-desktop {
+  display: none;
+}
+
+@media (min-width: 1024px) and (orientation: landscape) {
+  .hero-phone {
+    display: none;
+  }
+  .hero-desktop {
+    display: block;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .stagger-in,
+  .stagger-in > *,
+  .tldr-swoop-in,
+  .tldr-swoop-out,
+  .tldr-scrim-in,
+  .tldr-scrim-out {
+    opacity: 1 !important;
+    filter: none !important;
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
+@keyframes rise-in {
+  0% {
+    opacity: 0;
+    filter: blur(4px);
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+}
+
+.stagger-in > * {
+  animation: rise-in 0.5s var(--ease-out) both;
+}
+
+.stagger-in > :first-child {
+  animation-delay: 40ms;
+}
+
+.stagger-in > :nth-child(2) {
+  animation-delay: 0.12s;
+}
+
+.stagger-in > :nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.stagger-in > :nth-child(4) {
+  animation-delay: 0.28s;
+}
+
+.stagger-in > :nth-child(5) {
+  animation-delay: 0.36s;
+}
+
+@keyframes tldr-swoop-in {
+  from {
+    transform: translateX(100vw);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes tldr-swoop-out {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100vw);
+  }
+}
+
+@keyframes tldr-scrim-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes tldr-scrim-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.tldr-swoop-in {
+  animation: tldr-swoop-in 720ms var(--ease-out) both;
+}
+
+.tldr-swoop-out {
+  animation: tldr-swoop-out 320ms ease-in both;
+}
+
+.tldr-scrim-in {
+  animation: tldr-scrim-in 400ms ease-out both;
+}
+
+.tldr-scrim-out {
+  animation: tldr-scrim-out 280ms ease-in both;
+}
+
+/* Theosis Health sleek touches */
+.health-mesh {
+  background:
+    radial-gradient(60% 80% at 15% 20%, color-mix(in oklab, var(--color-health) 28%, transparent), transparent 70%),
+    radial-gradient(50% 70% at 85% 30%, color-mix(in oklab, var(--color-accent) 30%, transparent), transparent 70%),
+    linear-gradient(180deg, #070c13, #05080d);
+}
+.health-card {
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-soft);
+  transition: transform 200ms var(--ease-out), box-shadow 200ms var(--ease-out), border-color 200ms;
+}
+.health-card:hover { transform: translateY(-4px); border-color: var(--color-health); }

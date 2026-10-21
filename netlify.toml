@@ -1,0 +1,78 @@
+# Theosis Health (theosishealth.com) - Netlify config.
+# Build locally (`npm run build:static`) and commit .vercel/output/static, same as theosismedical.com.
+# Running the Nitro build on Netlify would write an empty index.html.
+[build]
+  command = "true"
+  publish = ".vercel/output/static"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Env vars to set in Netlify (names only):
+#   GEMINI_API_KEY   ai.js, preview.js (photo projection), labs.js fallback
+#   FDC_API_KEY      food/food.js (USDA FoodData Central)
+#   LABS_API_KEY     labs.js (optional; falls back to GEMINI_API_KEY)
+#   LABS_MODEL       labs.js (optional)
+#   ALLOWED_ORIGIN   https://theosishealth.com  (CORS/origin guard)
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+[[headers]]
+  for = "/simulator/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(self), microphone=(), geolocation=()"
+
+[[headers]]
+  for = "/simulator/fig3d/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
+[[redirects]]
+  from = "http://www.theosishealth.com/*"
+  to = "https://theosishealth.com/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/simulator"
+  to = "/simulator/"
+  status = 301
+
+[[redirects]]
+  from = "/simulator/pft-inside"
+  to = "/simulator/pft-inside/"
+  status = 301
+
+[[redirects]]
+  from = "/personal-fat-threshold"
+  to = "/simulator/pft-inside/"
+  status = 301
+
+[[redirects]]
+  from = "/personal-fat-threshold.html"
+  to = "/simulator/pft-inside/"
+  status = 301
+
+[[redirects]]
+  from = "/fat-burn-calculator"
+  to = "/fat-burn-calculator/"
+  status = 301
+
+# About / Contact / Minutes live on the clinical site
+[[redirects]]
+  from = "/minutes/*"
+  to = "https://theosismedical.com/minutes/:splat"
+  status = 301
+
+[[redirects]]
+  from = "/assets/*"
+  to = "/404.html"
+  status = 404
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
