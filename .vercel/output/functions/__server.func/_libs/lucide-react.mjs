@@ -108,6 +108,16 @@ var ArrowRight = createLucideIcon("arrow-right", [["path", {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
+var ChevronDown = createLucideIcon("chevron-down", [["path", {
+	d: "m6 9 6 6 6-6",
+	key: "qrunsl"
+}]]);
+/**
+* @license lucide-react v0.510.0 - ISC
+*
+* This source code is licensed under the ISC license.
+* See the LICENSE file in the root directory of this source tree.
+*/
 var ChevronLeft = createLucideIcon("chevron-left", [["path", {
 	d: "m15 18-6-6 6-6",
 	key: "1wnfg3"
@@ -260,6 +270,21 @@ var Play = createLucideIcon("play", [["polygon", {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
+var Search = createLucideIcon("search", [["path", {
+	d: "m21 21-4.34-4.34",
+	key: "14j7rj"
+}], ["circle", {
+	cx: "11",
+	cy: "11",
+	r: "8",
+	key: "4ej97u"
+}]]);
+/**
+* @license lucide-react v0.510.0 - ISC
+*
+* This source code is licensed under the ISC license.
+* See the LICENSE file in the root directory of this source tree.
+*/
 var Share = createLucideIcon("share", [
 	["path", {
 		d: "M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8",
@@ -374,4 +399,4 @@ var ZoomIn = createLucideIcon("zoom-in", [
 	}]
 ]);
 //#endregion
-export { Share as a, Footprints as c, ExternalLink as d, Download as f, ArrowLeft as g, ArrowRight as h, TriangleAlert as i, FlaskConical as l, ChevronLeft as m, ZoomOut as n, Play as o, ChevronRight as p, X as r, Menu as s, ZoomIn as t, Eye as u };
+export { ArrowRight as _, Share as a, Menu as c, Eye as d, ExternalLink as f, ChevronDown as g, ChevronLeft as h, TriangleAlert as i, Footprints as l, ChevronRight as m, ZoomOut as n, Search as o, Download as p, X as r, Play as s, ZoomIn as t, FlaskConical as u, ArrowLeft as v };

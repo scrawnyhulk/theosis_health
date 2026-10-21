@@ -2,7 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, Eye, FlaskConical, Footprints } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SiteShell } from "@/components/site/site-shell";
-import { ABOUT_CLINICIAN } from "@/lib/links";
 
 export const Route = createFileRoute("/")({ component: Home });
 
@@ -33,12 +32,12 @@ function Home() {
               Theosis <span className="text-health">Health</span>
             </h1>
             <p className="mt-5 max-w-xl text-lg leading-relaxed text-ink-fg/90 sm:text-xl">
-              Plain-language metabolic health education, created by a PA-C. We hope these tools make it a little easier to picture how habits may shape health over time.
+              Plain-language metabolic health education, created by a licensed physician assistant. For education only, not medical advice. We hope these tools make it a little easier to picture how habits may shape health over time.
             </p>
             <p className="mt-3 text-sm text-ink-muted">Education only, not medical advice. Talk with your healthcare provider.</p>
             <div className="mt-7 flex flex-wrap gap-3">
               <Button asChild variant="onInk" size="lg"><a href="#tools">What you’ll find <ArrowRight /></a></Button>
-              <Button asChild variant="onInkOutline" size="lg"><a href={ABOUT_CLINICIAN}>About the clinician</a></Button>
+              <Button asChild variant="onInkOutline" size="lg"><a href="#founder">About the founder</a></Button>
             </div>
           </div>
         </div>
@@ -77,15 +76,14 @@ function Home() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-5 pb-20 sm:px-8">
+      <section id="founder" className="mx-auto max-w-6xl px-5 pb-20 sm:px-8">
         <div className={`${card} flex flex-col items-start gap-5 sm:flex-row sm:items-center`}>
-          <img src="/images/nick.jpg" alt="Nick Holwey, PA-C" className="size-24 rounded-full object-cover" />
+          <img src="/images/nick.jpg" alt="Nick Holwey, founder of Theosis Health" className="size-24 rounded-full object-cover" />
           <div>
-            <h2 className="font-display text-2xl font-semibold uppercase">About the clinician</h2>
+            <h2 className="font-display text-2xl font-semibold uppercase">About the founder</h2>
             <p className="mt-2 max-w-2xl text-muted">
-              Theosis Health was created by Nick Holwey, PA-C, an emergency medicine physician associate with a degree in food science and human nutrition. His clinical work is through Theosis Medical.
+              Theosis Health was founded by Nick Holwey, PA-C, a licensed physician assistant, to make metabolic health easier to see and understand. Theosis Health is an education company. It doesn’t provide medical care, and using this site doesn’t make you Nick’s patient. His clinical work is done separately through Theosis Medical LLC.
             </p>
-            <a href={ABOUT_CLINICIAN} className="mt-3 inline-flex items-center gap-1 font-medium text-health">Read more on theosismedical.com <ArrowRight className="size-4" /></a>
           </div>
         </div>
       </section>

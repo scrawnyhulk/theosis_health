@@ -16,7 +16,7 @@
  *   GEMINI_TEXT_MODEL         default gemini-3.8-flash      (chat, plan)
  *   GEMINI_VISION_MODEL       default gemini-3.8-flash      (nutrition labels)
  *   GEMINI_IMAGE_MODEL        default gemini-nano-banana-2.1 (stage images)
- *   ALLOWED_ORIGIN            e.g. https://theosismedical.com (CORS + origin check)
+ *   ALLOWED_ORIGIN            e.g. https://theosishealth.com (CORS + origin check)
  *   AI_REQUIRE_PRO=1          reject calls without a valid Pro token (needs UNLOCK_SECRET)
  *   UNLOCK_SECRET             HMAC secret that signs Pro tokens (see MONETIZATION.md)
  *   AI_LIMIT_CHAT / AI_LIMIT_LABEL / AI_LIMIT_PLAN / AI_LIMIT_STAGE_IMAGES / AI_LIMIT_STAGE_RUNS   per user per day (defaults below)
@@ -135,8 +135,8 @@ function chatSystem() {
     "- If your general knowledge differs from a stated Theosis position, mention the difference openly instead of quietly choosing one.",
     "- Flag uncertainty honestly. If you do not know, say so. Do not make up studies, citations, quotes, prices or services.",
     "- When a page or hack on the site fits, point to it and name it. Only use URLs from the knowledge pack. Suggest the matching hack when it fits (e.g. protein per pound, don't drink calories).",
-    "- Naming the fast-food list: call it the Fast Food Hacks on theosismedical.com (or just a fast food hack). Never call them \"Holwey hacks\" or \"Holwey's hacks\".",
-    "- No diagnosis or prescribing. For anything medical (medicines, diabetes, kidneys, pregnancy, eating disorders, chest pain...) say to check with their clinician; mention they can book a consult through theosismedical.com if they want help.",
+    "- Naming the fast-food list: call it the Fast Food Hacks on theosishealth.com (or just a fast food hack). Never call them \"Holwey hacks\" or \"Holwey's hacks\".",
+    "- No diagnosis or prescribing. For anything medical (medicines, diabetes, kidneys, pregnancy, eating disorders, chest pain...) say to talk with their healthcare provider. Theosis Health is an education company and does not provide medical care, consults or a provider relationship.",
     'Reply ONLY as JSON: {"reply": string, "links": [{"title": string, "url": string}], "beyond_site": boolean, "uncertain": boolean}. "links" holds at most 3 URLs copied exactly from the knowledge pack.',
     "\nKNOWLEDGE PACK (public pages of theosismedical.com, fetched " + (PACK.fetched || "n/a") + "):", pagesBlock(34000)].join("\n");
 }
@@ -261,7 +261,7 @@ function stageOutcome(d) {
   else { const b = IMG_BLOCK[key] || ["other", "Google's image service didn't return a picture (" + key + "). Try again or use a different photo."]; kind = b[0]; message = b[1]; }
   return { reason: key, kind, message, hard, retry: !hard, text, finish, block, ratings };
 }
-const stageLog = (model, tag, o) => console.warn("gemini stage: no image", JSON.stringify({ model, attempt: tag, reason: o.reason, finish: o.finish || undefined, block: o.block || undefined, blocked_categories: o.ratings && o.ratings.length ? o.ratings : undefined, model_text: o.text || undefined }));   // no photo, no key
+const stageLog = (model, tag, o) => console.warn("gemini stage: no image", JSON.stringify({ model, attempt: tag, reason: o.reason, finish: o.finish || undefined, block: o.block || undefined, blocked_categories: o.ratings && o.ratings.length ? o.ratings : undefined }));   // no photo, no key, no model text
 const stageReq = (img, prompt) => ({ contents: [{ role: "user", parts: [{ inline_data: { mime_type: img.mime, data: img.data } }, { text: prompt }] }], generationConfig: { responseModalities: ["TEXT", "IMAGE"] } });
 const STAGE_BUDGET_MS = 23000;   // a Netlify function must answer in about 26 s, so a retry only starts if there is time left
 
@@ -339,6 +339,8 @@ exports.handler = async (event) => {
   if (String(event.body || "").length > MAX.body) return err(413, "too_big", "That request is too large.", corsOrigin);
   let body; try { body = JSON.parse(event.body || "{}"); } catch (e) { return err(400, "bad_json", "Invalid request.", corsOrigin); }
   const action = body.action; if (!FEATURES.includes(action)) return err(400, "bad_action", "Unknown request.", corsOrigin);
+  // Theosis Health: AI body-photo illustration off until written BIPA consent ships (PHOTO_AI_ENABLED=true re-enables).
+  if (action === "stage" && env().PHOTO_AI_ENABLED !== "true") return err(403, "coming_soon", "Photo features are coming soon.", corsOrigin);
   // Pro (server-side check when UNLOCK_SECRET is set; AI_REQUIRE_PRO=1 makes it mandatory)
   const pro = proStatus(h["x-theosis-pro"] || h["X-Theosis-Pro"]);
   if (env().AI_REQUIRE_PRO === "1" && !(pro.checked && pro.ok)) return err(402, "pro_required", "This is a Pro feature.", corsOrigin);

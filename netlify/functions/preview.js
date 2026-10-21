@@ -29,6 +29,8 @@ const buildPrompt = (p) => SP.build(p);
 
 const BETA = require("./guard.js");   // v7.6.47 beta guard
 exports.handler = async (event) => {
+  // Theosis Health: AI photo projection disabled until written BIPA consent ships. Set PHOTO_AI_ENABLED=true to re-enable.
+  if (process.env.PHOTO_AI_ENABLED !== "true") return { statusCode: 403, headers: { "content-type": "application/json" }, body: JSON.stringify({ error: "Photo features are coming soon." }) };
   const allowed = process.env.ALLOWED_ORIGIN || "";
   const origin = event.headers && (event.headers.origin || event.headers.Origin);
   const corsOrigin = allowed && origin === allowed ? allowed : null;
@@ -60,7 +62,7 @@ exports.handler = async (event) => {
     const out = await AIM.runStage(p, { mime: m[1], data: m[2] }, false);
     if (out.status !== 200) {
       slot.release();
-      console.warn("preview: no image", JSON.stringify({ reason: out.reason, kind: out.kind, model_text: out.text || undefined }));
+      console.warn("preview: no image", JSON.stringify({ reason: out.reason, kind: out.kind })); // never log model text or personal data
       const dbg = AIM.isPreview(event) && out.reason ? " [preview debug: Gemini reason " + out.reason + (out.text ? ' · model said: "' + String(out.text).slice(0, 160) + '"' : "") + "]" : "";
       return json(out.status, { error: out.message + dbg, code: out.code, reason: out.reason, kind: out.kind }, corsOrigin);
     }
@@ -69,7 +71,7 @@ exports.handler = async (event) => {
     return json(200, { image: `data:${mime};base64,${d.data}`, model: AIM.MODELS().image, label: "AI illustration, not a prediction" }, corsOrigin);
   } catch (e) {
     slot.release();
-    console.error("preview failed:", e && e.code, e && e.status, e && e.detail ? String(e.detail).slice(0, 200) : (e && e.message));
+    console.error("preview failed:", e && e.code, e && e.status); // status/code only
     const x = AIM.explainError("preview", e && (e.code || e.status) ? e : Object.assign(new Error((e && e.message) || "unknown"), { code: "failed" }), event);
     return json(x.status, { error: x.message, code: x.code, upstreamStatus: (e && e.status) || undefined }, corsOrigin);
   }

@@ -35,6 +35,8 @@ function convert(k, v, unit) {
 }
 const BETA = require("./guard.js");   // v7.6.47 beta guard
 exports.handler = async (event) => {
+  // Theosis Health: lab upload off for the public until written consent ships. Set LABS_ENABLED=true to re-enable.
+  if (process.env.LABS_ENABLED !== "true") return { statusCode: 403, headers: { "content-type": "application/json" }, body: JSON.stringify({ error: "Lab upload is coming soon." }) };
   const allowed = process.env.ALLOWED_ORIGIN || "", origin = event.headers && (event.headers.origin || event.headers.Origin);
   const cors = allowed && origin === allowed ? allowed : null;
   if (event.httpMethod === "OPTIONS") return { statusCode: 204, headers: cors ? { "Access-Control-Allow-Origin": cors, "Access-Control-Allow-Methods": "POST", "Access-Control-Allow-Headers": "Content-Type" } : {} };

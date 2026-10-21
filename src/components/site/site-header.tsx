@@ -3,8 +3,9 @@ import { Link } from "@tanstack/react-router";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LogoLockup } from "@/components/site/logo-lockup";
+import { QuickFind } from "@/components/site/quick-find";
 import { HolweyHacksMark } from "@/components/site/holwey-hacks-mark";
-import { ABOUT_CLINICIAN, CONTACT, healthNav } from "@/lib/links";
+import { healthNav } from "@/lib/links";
 import { cn } from "@/lib/utils";
 
 const item = "shrink-0 text-sm font-medium tracking-wide text-muted uppercase transition-colors duration-150 hover:text-fg";
@@ -16,7 +17,8 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-bg/80 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6">
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-3 sm:gap-5">
+          <QuickFind />
           <Link to="/" className="flex min-h-11 shrink-0 items-center" onClick={close}>
             <LogoLockup />
           </Link>
@@ -27,12 +29,11 @@ export function SiteHeader() {
             <Link to="/hacks" className="group shrink-0" aria-label="Health Hacks">
               <HolweyHacksMark />
             </Link>
-            <a href={ABOUT_CLINICIAN} className={item}>About the clinician</a>
           </nav>
         </div>
         <div className="flex items-center gap-2">
           <Button asChild variant="invert" size="sm" className="hidden md:inline-flex">
-            <a href={CONTACT}>Contact</a>
+            <Link to="/contact">Contact</Link>
           </Button>
           <Button variant="ghost" size="icon" className="xl:hidden" aria-expanded={open} aria-controls="mobile-nav"
             aria-label={open ? "Close menu" : "Open menu"} onClick={() => setOpen((v) => !v)}>
@@ -48,8 +49,7 @@ export function SiteHeader() {
           <Link to="/hacks" className="group flex min-h-12 items-center border-b border-border py-2" onClick={close} aria-label="Health Hacks">
             <HolweyHacksMark />
           </Link>
-          <a href={ABOUT_CLINICIAN} className={mItem}>About the clinician</a>
-          <a href={CONTACT} className="flex min-h-12 items-center text-base font-medium text-accent">Contact</a>
+          <Link to="/contact" className="flex min-h-12 items-center text-base font-medium text-accent" onClick={close}>Contact</Link>
         </nav>
       </div>
     </header>

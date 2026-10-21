@@ -562,12 +562,7 @@ function HackExtras({ slug }: { slug: HackSlug }) {
             <p className="mt-3 text-sm text-muted">
               Also on{" "}
               {"section" in video.usedOn && video.usedOn.section === "minutes" ? (
-                <a
-                  href={`https://theosismedical.com/minutes/${video.usedOn.slug}`}
-                  className="font-medium text-accent hover:text-fg"
-                >
-                  {video.usedOn.label}
-                </a>
+                <span className="font-medium text-fg">{video.usedOn.label}</span>
               ) : video.usedOn.slug === "nerd-out" && "hash" in video.usedOn && video.usedOn.hash ? (
                 <Link
                   to="/hacks/nerd-out/$topic"

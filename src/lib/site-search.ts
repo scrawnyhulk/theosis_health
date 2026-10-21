@@ -1,6 +1,4 @@
-import { aboutParagraphs, nav, whyParagraphs } from "@/lib/content";
 import { hacks, nerdGroups, nerdTopics, type HackSlug } from "@/lib/hacks";
-import { minutes, type MinuteSlug } from "@/lib/minutes";
 
 export type SearchHit = {
   id: string;
@@ -8,9 +6,6 @@ export type SearchHit = {
   title: string;
   blurb: string;
 } & (
-  | { hrefKind: "hash"; hash: string }
-  | { hrefKind: "minutes" }
-  | { hrefKind: "minute"; slug: MinuteSlug }
   | { hrefKind: "hacks" }
   | { hrefKind: "hack"; slug: HackSlug }
   | { hrefKind: "nerd-hub" }
@@ -44,39 +39,6 @@ function topicText(topic: (typeof nerdTopics)[number]): string {
 }
 
 const index: Indexed[] = [
-  ...nav.map((item) => ({
-    id: `page-${item.hash}`,
-    section: "Page",
-    title: item.label,
-    blurb: item.hash === "about" ? aboutParagraphs[0] : item.hash === "why" ? whyParagraphs[0] : item.label,
-    hrefKind: "hash" as const,
-    hash: item.hash,
-    haystack: pack(
-      item.label,
-      item.hash === "about" ? aboutParagraphs : item.hash === "why" ? whyParagraphs : item.label,
-    ),
-  })),
-  {
-    id: "minutes-hub",
-    section: "Medical Minutes",
-    title: "Medical Minutes",
-    blurb: "The ER talk, written down.",
-    hrefKind: "minutes",
-    haystack: pack(
-      "medical minutes",
-      "ear fever cough cold uri bronchitis back sprain ct pneumonia sepsis antibiotic resistance amoxicillin leftover",
-      "interactive physiology create a diabetic personal fat threshold",
-    ),
-  },
-  ...minutes.map((m) => ({
-    id: `minute-${m.slug}`,
-    section: "Medical Minutes",
-    title: m.title,
-    blurb: m.lede,
-    hrefKind: "minute" as const,
-    slug: m.slug,
-    haystack: pack(m.title, m.lede, m.paragraphs),
-  })),
   {
     id: "hacks-hub",
     section: "Health Hacks",

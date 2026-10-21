@@ -6,8 +6,6 @@ import { Link } from "@tanstack/react-router";
 import { ChevronDown, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { hacks, nerdGroups, nerdTopics } from "@/lib/hacks";
-import { minutes } from "@/lib/minutes";
-import { nav } from "@/lib/content";
 import { searchSite, type SearchHit } from "@/lib/site-search";
 import { cn } from "@/lib/utils";
 
@@ -102,37 +100,9 @@ export function QuickFind() {
             )
           ) : (
             <>
-              {nav.map((item) => (
-                <a
-                  key={item.hash}
-                  href={`https://theosismedical.com/#${item.hash}`}
-                  onClick={close}
-                  className="flex min-h-11 items-center rounded-sm px-3 text-sm font-medium tracking-wide text-ink-fg uppercase hover:bg-fg/10"
-                >
-                  {item.label}
-                </a>
-              ))}
+              
 
-              <SectionBlock
-                open={section === "minutes"}
-                label="Medical Minutes"
-                onToggle={() => setSection((v) => (v === "minutes" ? null : "minutes"))}
-              >
-                <a href="https://theosismedical.com/minutes" onClick={close} className="flex min-h-11 items-center px-3 text-sm text-accent">
-                  All Medical Minutes (theosismedical.com)
-                </a>
-                {minutes.map((m) => (
-                  <a
-                    key={m.slug}
-                    href={`https://theosismedical.com/minutes/${m.slug}`}
-                    onClick={close}
-                    className="flex min-h-11 items-center gap-3 px-3 text-sm leading-snug text-fg hover:bg-fg/10"
-                  >
-                    <span className="font-display text-lg font-semibold text-accent">{m.n}</span>
-                    {m.title}
-                  </a>
-                ))}
-              </SectionBlock>
+              
 
               <SectionBlock
                 open={section === "hacks"}
@@ -246,27 +216,6 @@ function HitLink({ hit, onPick }: { hit: SearchHit; onPick: () => void }) {
       <span className="text-sm leading-snug text-fg">{hit.title}</span>
     </>
   );
-  if (hit.hrefKind === "hash") {
-    return (
-      <a href={`https://theosismedical.com/#${hit.hash}`} onClick={onPick} className={className}>
-        {inner}
-      </a>
-    );
-  }
-  if (hit.hrefKind === "minutes") {
-    return (
-      <a href="https://theosismedical.com/minutes" onClick={onPick} className={className}>
-        {inner}
-      </a>
-    );
-  }
-  if (hit.hrefKind === "minute") {
-    return (
-      <a href={`https://theosismedical.com/minutes/${hit.slug}`} onClick={onPick} className={className}>
-        {inner}
-      </a>
-    );
-  }
   if (hit.hrefKind === "hacks") {
     return (
       <Link to="/hacks" onClick={onPick} className={className}>

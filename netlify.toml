@@ -14,6 +14,8 @@
 #   LABS_API_KEY     labs.js (optional; falls back to GEMINI_API_KEY)
 #   LABS_MODEL       labs.js (optional)
 #   ALLOWED_ORIGIN   https://theosishealth.com  (CORS/origin guard)
+#   PHOTO_AI_ENABLED leave unset (photo AI off until BIPA consent ships); "true" re-enables
+#   LABS_ENABLED     leave unset (lab upload off until consent ships); "true" re-enables
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
