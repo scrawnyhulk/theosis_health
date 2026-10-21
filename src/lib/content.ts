@@ -1,7 +1,7 @@
 export const site = {
   name: "Theosis Health",
   title: "Theosis Health — health education tools",
-  tagline: "Founder, Theosis Health · Physician assistant (PA-C)",
+  tagline: "Founder, Theosis Health · Physician associate (PA-C)",
   description:
     "Theosis Health: free, education-only health tools, including the Theosis Metabolic Simulator, the Personal Fat Threshold model and Holwey's Handy Health Hacks. Not medical advice.",
   url: "https://theosishealth.com",
