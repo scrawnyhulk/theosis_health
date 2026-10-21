@@ -35,7 +35,7 @@ function Home() {
             <p className="text-xs font-medium tracking-widest text-health uppercase">Draft copy · Nick to edit</p>
             <h1 className="sr-only">Theosis Health</h1>
             <p className="mt-5 max-w-xl text-lg leading-relaxed text-ink-fg/90 sm:text-xl">
-              Plain-language metabolic health education, created by a licensed physician associate. For education only, not medical advice. Scroll forward through time to see how everyday decisions about food, movement and habits might affect health in the months and years ahead.
+              Plain-language metabolic health education, created by a licensed physician assistant. For education only, not medical advice. Scroll forward through time to see how everyday decisions about food, movement and habits might affect health in the months and years ahead.
             </p>
             <p className="mt-3 text-sm text-ink-muted">Education only, not medical advice. Talk with your healthcare provider.</p>
             <div className="mt-7 flex flex-wrap gap-3">
@@ -85,7 +85,7 @@ function Home() {
           <div>
             <h2 className="font-display text-2xl font-semibold uppercase">About the founder</h2>
             <p className="mt-2 max-w-2xl text-muted">
-              Theosis Health was founded by Nick Holwey, PA-C, a licensed physician associate, to make metabolic health easier to see and understand. Theosis Health is an education company. His clinical work is done separately through Theosis Medical LLC.
+              Theosis Health was founded by Nick Holwey, PA-C, a licensed physician assistant, to make metabolic health easier to see and understand. Theosis Health is an education company. His clinical work is done separately through Theosis Medical LLC.
             </p>
           </div>
         </div>

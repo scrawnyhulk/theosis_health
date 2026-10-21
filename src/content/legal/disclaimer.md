@@ -10,9 +10,9 @@ Everything on theosishealth.com, including Health Hacks, the health simulator, t
 "PFT" here means **Personal Fat Threshold**, an educational concept. It is **not** a pulmonary function test or any diagnostic test.
 
 ## About the founder's credential
-Theosis Health was founded by Nick Holwey, a licensed physician associate (PA-C). **On this site he provides general education only, not medical care.** Using this site, emailing us, or reading his content does **not** create a provider–patient relationship. He does not review your individual data or results here.
+Theosis Health was founded by Nick Holwey, a licensed physician assistant (PA-C). **On this site he provides general education only, not medical care.** Using this site, emailing us, or reading his content does **not** create a provider–patient relationship. He does not review your individual data or results here.
 
-The PA-C credential is shown **for background only**. PA-C means certified by the National Commission on Certification of Physician Associates (NCCPA). Physician associates are licensed by individual states and practice medicine in collaboration with physicians as state law requires. A PA's license is to practice in the states where he's licensed, and none of that practice happens on this site. Nick's clinical work is done separately through **Theosis Medical LLC**, a different company (theosismedical.com).
+The PA-C credential is shown **for background only**. PA-C means certified by the National Commission on Certification of Physician Assistants (NCCPA). Physician assistants are licensed by individual states and practice medicine in collaboration with physicians as state law requires. A PA's license is to practice in the states where he's licensed, and none of that practice happens on this site. Nick's clinical work is done separately through **Theosis Medical LLC**, a different company (theosismedical.com).
 
 ## Estimates, not predictions
 Simulator results, weight-loss projections, timelines, PFT estimates, and calorie and fat-burn numbers are **estimates from general models and population research**, based on what you enter. Your body may respond differently. They aren't guarantees or forecasts of your results.

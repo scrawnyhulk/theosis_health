@@ -22,7 +22,7 @@ export function SiteFooter() {
           <Link to="/terms" className={l}>Terms</Link>
           <Link to="/privacy" className={l}>Privacy</Link>
           <Link to="/disclaimer" className={l}>Disclaimer</Link>
-          <p className="text-xs">Founded by Nick Holwey, PA-C, a licensed physician associate. Education only, no medical care. <Link to="/disclaimer" className="underline">Medical Disclaimer</Link></p>
+          <p className="text-xs">Founded by Nick Holwey, PA-C, a licensed physician assistant. Education only, no medical care. <Link to="/disclaimer" className="underline">Medical Disclaimer</Link></p>
         </div>
       </div>
       <p className="mx-auto max-w-6xl px-5 pb-8 text-xs text-ink-muted sm:px-8">
