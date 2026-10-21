@@ -3,7 +3,7 @@ export const site = {
   title: "Theosis Health — health education tools",
   tagline: "Founder, Theosis Health · Physician associate (PA-C)",
   description:
-    "Theosis Health: free, education-only health tools, including the Theosis Metabolic Simulator, the Personal Fat Threshold model and Holwey's Handy Health Hacks. Not medical advice.",
+    "Theosis Health: free, education-only health tools that let you scroll forward through time to see how daily decisions about food, movement and habits might affect health. Includes the Theosis Metabolic Simulator, the Personal Fat Threshold model and Holwey's Handy Health Hacks. Not medical advice.",
   url: "https://theosishealth.com",
   phoneDisplay: "",
   phoneHref: "",

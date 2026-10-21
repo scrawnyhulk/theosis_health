@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Eye, FlaskConical, Footprints } from "lucide-react";
+import { ArrowRight, Clock, FlaskConical, Footprints } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SiteShell } from "@/components/site/site-shell";
 
@@ -7,13 +7,13 @@ export const Route = createFileRoute("/")({ component: Home });
 
 // DRAFT COPY: Nick to edit. Hedged wording only, no outcome promises.
 const why = [
-  { icon: Eye, title: "See what may be happening inside", body: "Illustrations, like a CT scan view, of how fat stored around organs might change over time. Illustration, not your scan." },
-  { icon: Footprints, title: "Understand where habits may lead", body: "Explore how everyday eating and movement could add up, with every estimate hedged and explained." },
+  { icon: Clock, title: "Scroll forward through time", body: "Move ahead week by week and month by month to see how daily choices about food, movement and habits might add up over time." },
+  { icon: Footprints, title: "Compare everyday decisions", body: "Try a different plan or keep current habits and see how the estimated paths may differ, with every estimate hedged and explained. An optional inside view adds an illustration." },
   { icon: FlaskConical, title: "Evidence-based, cited content", body: "Explanations drawn from published research, with numbered citations you can check." },
 ];
 
 const tools = [
-  { href: "/simulator/", title: "Metabolic Simulator", body: "Try a plan, or your current habits, and see a hedged estimate of where they might lead." },
+  { href: "/simulator/", title: "Metabolic Simulator", body: "Scroll forward through time to see how daily decisions about food, movement and habits might shape health. Estimates are hedged and for education only." },
   { href: "/simulator/pft-inside/", title: "Personal Fat Threshold model", body: "A 3D illustration of the idea that people may differ in how much fat they can store safely." },
   { href: "/hacks", title: "Holwey’s Handy Health Hacks", body: "Practical nutrition and exercise tips, plus nerd-out deep dives for the curious." },
 ];
@@ -24,15 +24,18 @@ function Home() {
   return (
     <SiteShell>
       <section className="health-mesh text-ink-fg">
-        <div className="mx-auto flex max-w-6xl flex-col items-center gap-10 px-5 py-16 sm:px-8 md:flex-row md:py-28">
-          <img src="/images/shield.jpg" alt="Theosis shield emblem" className="no-outline w-44 rounded-[28px] shadow-2xl md:w-72" />
+        <div className="hero-phone">
+          <img src="/images/health-logo-phone.png" alt="Theosis Health emblem: a silver shield bearing the Star of Life, a cross, and the serpent of healing, above the words Theosis Health." className="no-outline mx-auto block h-auto w-full max-w-full object-contain object-top" />
+        </div>
+        <div className="hero-desktop">
+          <img src="/images/health-logo.jpg" alt="Theosis Health emblem: a silver shield bearing the Star of Life, a cross, and the serpent of healing, above the words Theosis Health." className="no-outline block max-h-[80svh] w-full object-cover object-center" />
+        </div>
+        <div className="mx-auto max-w-6xl px-5 py-12 sm:px-8 md:py-16">
           <div className="stagger-in">
             <p className="text-xs font-medium tracking-widest text-health uppercase">Draft copy · Nick to edit</p>
-            <h1 className="mt-3 font-display text-5xl leading-none font-bold tracking-wide uppercase sm:text-7xl lg:text-8xl">
-              Theosis <span className="text-health">Health</span>
-            </h1>
+            <h1 className="sr-only">Theosis Health</h1>
             <p className="mt-5 max-w-xl text-lg leading-relaxed text-ink-fg/90 sm:text-xl">
-              Plain-language metabolic health education, created by a licensed physician associate. For education only, not medical advice. We hope these tools make it a little easier to picture how habits may shape health over time.
+              Plain-language metabolic health education, created by a licensed physician associate. For education only, not medical advice. Scroll forward through time to see how everyday decisions about food, movement and habits might affect health in the months and years ahead.
             </p>
             <p className="mt-3 text-sm text-ink-muted">Education only, not medical advice. Talk with your healthcare provider.</p>
             <div className="mt-7 flex flex-wrap gap-3">
