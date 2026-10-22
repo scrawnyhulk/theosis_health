@@ -1,6 +1,6 @@
 import { b as Link } from "../_libs/@tanstack/react-router+[...].mjs";
 import { i as require_jsx_runtime } from "../_libs/@radix-ui/react-label+[...].mjs";
-//#region ../../workspace/theosishealth/node_modules/.nitro/vite/services/ssr/assets/nerd-paragraph-CQuEwJxw.js
+//#region ../theosishealth/node_modules/.nitro/vite/services/ssr/assets/nerd-paragraph-CQuEwJxw.js
 var import_jsx_runtime = require_jsx_runtime();
 var tokens = {
 	hormozi: {

@@ -4,8 +4,8 @@
   --font-sans: "Barlow", "Segoe UI", system-ui, sans-serif;
   --font-display: "Barlow Condensed", "Segoe UI", system-ui, sans-serif;
 
-  --color-bg: rgb(8 13 20 / 0.76);
-  --color-surface: rgb(16 24 32 / 0.86);
+  --color-bg: rgb(20 23 28 / 0.82);
+  --color-surface: rgb(28 32 39 / 0.88);
   --color-fg: #e7edf5;
   --color-muted: #8e9aab;
   --color-accent: #2a7ae0;
@@ -14,7 +14,7 @@
   --color-health: #4587c6;
   --color-health-fg: #050b16;
   --shadow-soft: 0 10px 30px -12px rgb(0 0 0 / 0.55);
-  --color-ink: rgb(5 8 13 / 0.78);
+  --color-ink: rgb(16 19 23 / 0.78);
   --color-ink-fg: #e7edf5;
   --color-ink-muted: #9aa6b8;
   --color-steel: #cfd6e0;
@@ -53,7 +53,7 @@
   html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background-color: #05080d;
+    background-color: #14171c;
     color-scheme: dark;
     scroll-behavior: smooth;
   }
@@ -67,13 +67,12 @@
   body {
     color: var(--color-fg);
     font-family: var(--font-sans);
-    background-color: #05080d;
-    background-image:
-      radial-gradient(90% 70% at 50% 32%, #10223480, #0000 64%),
-      url(/images/navy-grain.jpg);
-    background-repeat: no-repeat, repeat;
-    background-size: auto, 420px;
-    background-attachment: scroll;
+    /* Palette B: charcoal + soft blue glow, no grain */
+    background-color: #14171c;
+    background-image: radial-gradient(55% 50% at 74% 38%, rgb(42 122 224 / 0.16), transparent 70%);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-attachment: fixed;
     line-height: 1.55;
   }
 
@@ -288,9 +287,8 @@
 /* Theosis Health sleek touches */
 .health-mesh {
   background:
-    radial-gradient(60% 80% at 15% 20%, color-mix(in oklab, var(--color-health) 28%, transparent), transparent 70%),
-    radial-gradient(50% 70% at 85% 30%, color-mix(in oklab, var(--color-accent) 30%, transparent), transparent 70%),
-    linear-gradient(180deg, #070c13, #05080d);
+    radial-gradient(55% 60% at 74% 30%, rgb(42 122 224 / 0.18), transparent 70%),
+    linear-gradient(180deg, #171b21, #14171c);
 }
 .health-card {
   border-radius: var(--radius-xl);
@@ -371,7 +369,7 @@ sup a{color:#4587c6;text-decoration:none}
 @media(min-width:768px){.mk-feat{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:1.75rem;align-items:center}}
 .mk-art{display:block;border-radius:.85rem;overflow:hidden;position:relative;box-shadow:0 0 26px rgba(42,122,224,.28),0 0 0 1px rgba(207,214,224,.15)}
 .mk-art svg{display:block;width:100%;height:auto}
-.mk-art:after{content:"";position:absolute;inset:0;box-shadow:inset 0 0 28px 10px #080d14;pointer-events:none}
+.mk-art:after{content:"";position:absolute;inset:0;box-shadow:inset 0 0 28px 10px #14171c;pointer-events:none}
 @media(max-width:767px){.mk-art{margin-bottom:1.25rem}}
 @media(max-width:640px){.mk-feat{padding-top:2.6rem}.mk-ribbon{font-size:.72rem}}
 
@@ -432,3 +430,7 @@ sup a{color:#4587c6;text-decoration:none}
 @media (max-width:640px){.sd-chips{flex-wrap:nowrap;overflow-x:auto;padding-bottom:.25rem;scrollbar-width:thin;-webkit-overflow-scrolling:touch}.sd-chip{flex:0 0 auto;min-height:2.75rem}.sd-pick{gap:.6rem}.sd-pills{gap:.5rem}.sd-row{gap:.35rem}.sd-cell b{font-size:1.15rem}}
 
 .mk-hero-rule{margin:2rem 0 2.25rem;border:0;border-top:1px solid rgba(207,214,224,.15)}
+
+/* Palette B contrast: blue text lifted to >= 4.5:1 on charcoal surfaces */
+:root { --color-health: #4f92d2; }
+.text-accent { color: #5b9cec; }
