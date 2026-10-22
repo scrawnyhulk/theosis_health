@@ -392,3 +392,10 @@ sup a{color:#4587c6;text-decoration:none}
 .mk-welcome sup a{color:#9cc4f0;text-decoration:none;margin-left:.1rem}
 .mk-fn{margin:.8rem 0 0;padding-left:1.1rem;font-size:.72rem;color:var(--color-ink-muted,#9aa7b6);list-style:decimal}
 .mk-fn li{margin:.15rem 0}
+.mk-intro{max-width:48rem;margin:0 auto 1.75rem;text-align:center}
+.mk-intro p{font-size:1.1rem;line-height:1.6;color:var(--color-muted);margin:0}
+.mk-intro p a{color:#fff;text-decoration:underline;text-underline-offset:3px;text-decoration-color:#3d9a6a}
+.mk-introbtn{margin-top:1rem}
+.mk-win{border-color:#3d9a6a88;background:#3d9a6a10}
+.mk-loss{color:#5cc48e}
+.mk-adapt{display:inline-block;margin-top:.5rem;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:#5cc48e;border:1px solid #3d9a6a77;padding:.1rem .45rem}

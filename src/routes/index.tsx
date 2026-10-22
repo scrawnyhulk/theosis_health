@@ -2,13 +2,13 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { ArrowRight, Clock, FlaskConical, Footprints } from "lucide-react";
 import { SiteShell } from "@/components/site/site-shell";
-import { EXAMPLE, extraLbByDay } from "@/lib/swap-model";
+import { EXAMPLE, lostLbByDay } from "@/lib/swap-model";
 
-const SODA_LB = extraLbByDay(140);
-const PROT_LB = extraLbByDay(150);
+const SODA_LB = lostLbByDay(140);
+const PROT_LB = lostLbByDay(150);
 const BAR_MAX = Math.max(SODA_LB[365], PROT_LB[365]) * 1.05;
 const barH = (lb: number) => `${Math.max(4, (lb / BAR_MAX) * 100)}%`;
-const EXAMPLE_NOTE = `Example: a ${EXAMPLE.age}-year-old, 5'9", ${EXAMPLE.weightLb}-lb, lightly active adult; individual numbers will differ. Try the simulator to see your own.`;
+const EXAMPLE_NOTE = `Example person, not a prediction: a ${EXAMPLE.age}-year-old, 5'9", ${EXAMPLE.weightLb}-lb man with about ${EXAMPLE.bodyFatPct}% body fat who is lightly active; individual numbers will differ. Try the simulator to see your own.`;
 
 export const Route = createFileRoute("/")({ component: Home });
 
@@ -123,20 +123,23 @@ function TimeSlider({ id, value, onChange, describedBy }: { id: string; value: n
   );
 }
 
+const LOSS = "#3d9a6a";
+const ADAPT_NOTE = <div className="mk-adapt">Includes metabolic adaptation</div>;
+
 function SodaCard() {
   const [i, setI] = useState(0);
-  const c = i * 140, lb = useTween(SODA_LB[i]);
+  const c = useTween(i * 140), lb = useTween(SODA_LB[i]);
   return (
     <>
-      <h2 className="mk-h2">One small swap: soda or Starbucks vs diet or zero-calorie drinks</h2>
-      <p className="mk-sub">Slide forward in time to see roughly how one sweet drink a day (a 12&nbsp;oz soda is about 140 calories) could add up, compared with a diet or zero-calorie drink instead.</p>
+      <h2 className="mk-h2">One small swap: soda or Starbucks → diet or zero-calorie drink</h2>
+      <p className="mk-sub">Say someone drinks one full-sugar soda or sweet Starbucks drink a day (about 140 calories for a 12&nbsp;oz soda). Slide forward in time to see about how much they could lose by swapping it for a diet or zero-calorie drink.</p>
       <div className="mk-card">
         <TimeSlider id="mkr" value={i} onChange={setI} describedBy="mknote" />
         <div className="mk-paths" aria-live="polite">
-          <div className="mk-path"><h3>🥤 Soda or sweet coffee drink</h3><div className="mk-barbox"><div className="mk-bar" style={{ background: "#d4a056", height: barH(lb) }} /></div><div className="mk-num">+{fmtLb(lb)} lb</div><div className="mk-small">{c.toLocaleString()} extra calories so far</div></div>
-          <div className="mk-path"><h3>🥤 Diet or zero-calorie drink</h3><div className="mk-barbox"><div className="mk-bar" style={{ background: "#4587c6", height: "4px" }} /></div><div className="mk-num">+0 lb</div><div className="mk-small">0 extra calories</div></div>
+          <div className="mk-path"><h3>🥤 Keep the daily soda</h3><div className="mk-barbox"><div className="mk-bar" style={{ background: "#d4a056", height: "4px" }} /></div><div className="mk-num">0 lb</div><div className="mk-small">no change in weight</div></div>
+          <div className="mk-path mk-win"><h3>🥤 Swap to diet or zero-cal</h3><div className="mk-barbox"><div className="mk-bar" style={{ background: LOSS, height: barH(lb) }} /></div><div className="mk-num mk-loss">−{fmtLb(lb)} lb</div><div className="mk-small">could lose about {fmtLb(lb)} lb · {Math.round(c).toLocaleString()} calories cut so far</div>{ADAPT_NOTE}</div>
         </div>
-        <p id="mknote" className="mk-small" style={{ marginTop: "1rem" }}>Rough educational estimate only: about 140 calories a day (a 12&nbsp;oz soda) vs 0 for diet or zero-calorie drinks. Many sweet coffee drinks run 200–400+ calories, so the real gap could be bigger. The pounds come from the simulator's energy-balance model, which lets burn rise a little as weight goes up, so the curve slows over time. Real-life results are usually smaller and vary from person to person. Not medical advice.</p>
+        <p id="mknote" className="mk-small" style={{ marginTop: "1rem" }}>Rough educational estimate only: about 140 calories a day (a 12&nbsp;oz soda) swapped for 0. Many sweet coffee drinks run 200–400+ calories, so the real gap could be bigger. The pounds come from the simulator's energy-balance model, which includes metabolic adaptation: burn drops a little as weight comes off, so the loss slows over time instead of adding up in a straight line. Real-life results vary from person to person. Not medical advice.</p>
         <p className="mk-small" style={{ fontSize: ".78rem", opacity: 0.85 }}>{EXAMPLE_NOTE}</p>
       </div>
       <div className="mk-btns"><Link className="mk-btn p" to="/hacks/$slug" params={{ slug: "dont-drink-calories" } as never}>Read the Health Hack →</Link></div>
@@ -147,18 +150,18 @@ function SodaCard() {
 
 function ProteinCard() {
   const [i, setI] = useState(0);
-  const c = i * 150, lb = useTween(PROT_LB[i]);
+  const c = useTween(i * 150), lb = useTween(PROT_LB[i]);
   return (
     <>
-      <h2 className="mk-h2">One small swap: higher-protein day vs lower-protein day</h2>
-      <p className="mk-sub">Protein tends to help people feel full longer, so many end up eating a bit less without trying. Slide forward to see how that could add up.</p>
+      <h2 className="mk-h2">One small swap: lower-protein → higher-protein day</h2>
+      <p className="mk-sub">Protein tends to help people feel full longer, so many end up eating a bit less without trying. Say someone switches to higher-protein meals and eats about 150 fewer calories a day on their own. Slide forward to see about how much they could lose.</p>
       <div className="mk-card">
         <TimeSlider id="mkp" value={i} onChange={setI} describedBy="mkpnote" />
         <div className="mk-paths" aria-live="polite">
-          <div className="mk-path"><h3>🍳 Higher-protein day</h3><div className="mk-small" style={{ marginTop: ".6rem" }}>Fullness</div><div className="mk-meter" role="img" aria-label="Fullness: higher"><i style={{ width: "80%", background: "#3d9a6a" }} /></div><div className="mk-small">Tends to feel full longer</div><div className="mk-barbox"><div className="mk-bar" style={{ background: "#4587c6", height: "4px" }} /></div><div className="mk-num">0 extra</div><div className="mk-small">baseline for comparison</div></div>
-          <div className="mk-path"><h3>🥯 Lower-protein day</h3><div className="mk-small" style={{ marginTop: ".6rem" }}>Fullness</div><div className="mk-meter" role="img" aria-label="Fullness: lower"><i style={{ width: "40%", background: "#d4a056" }} /></div><div className="mk-small">Tends to get hungry sooner</div><div className="mk-barbox"><div className="mk-bar" style={{ background: "#d4a056", height: barH(lb) }} /></div><div className="mk-num">+{c.toLocaleString()} cal</div><div className="mk-small">more calories eaten so far (about +{fmtLb(lb)} lb)</div></div>
+          <div className="mk-path"><h3>🥯 Stay lower-protein</h3><div className="mk-small" style={{ marginTop: ".6rem" }}>Fullness</div><div className="mk-meter" role="img" aria-label="Fullness: lower"><i style={{ width: "40%", background: "#d4a056" }} /></div><div className="mk-small">Tends to get hungry sooner</div><div className="mk-barbox"><div className="mk-bar" style={{ background: "#d4a056", height: "4px" }} /></div><div className="mk-num">0 lb</div><div className="mk-small">no change in weight</div></div>
+          <div className="mk-path mk-win"><h3>🍳 Switch to higher-protein</h3><div className="mk-small" style={{ marginTop: ".6rem" }}>Fullness</div><div className="mk-meter" role="img" aria-label="Fullness: higher"><i style={{ width: "80%", background: LOSS }} /></div><div className="mk-small">Tends to feel full longer</div><div className="mk-barbox"><div className="mk-bar" style={{ background: LOSS, height: barH(lb) }} /></div><div className="mk-num mk-loss">−{fmtLb(lb)} lb</div><div className="mk-small">could lose about {fmtLb(lb)} lb · about {Math.round(c).toLocaleString()} fewer calories eaten so far</div>{ADAPT_NOTE}</div>
         </div>
-        <p id="mkpnote" className="mk-small" style={{ marginTop: "1rem" }}>Rough illustration only, not a prediction. In one study, people who raised protein from about 15% to 30% of their calories ate about 441 fewer calories a day on their own.<sup><a href="#fn1" aria-label="Footnote 3">3</a></sup> To be careful, this uses a much smaller 150 calories a day, run through the simulator's energy-balance model. Results vary from person to person and are often smaller. Not medical advice.</p>
+        <p id="mkpnote" className="mk-small" style={{ marginTop: "1rem" }}>Rough illustration only, not a prediction. In one study, people who raised protein from about 15% to 30% of their calories ate about 441 fewer calories a day on their own.<sup><a href="#fn1" aria-label="Footnote 3">3</a></sup> To be careful, this uses a much smaller 150 calories a day, run through the simulator's energy-balance model with metabolic adaptation, so the loss slows over time. Results vary from person to person. Not medical advice.</p>
         <p className="mk-small" style={{ fontSize: ".78rem", opacity: 0.85 }}>{EXAMPLE_NOTE}</p>
         <p id="fn1" className="mk-small" style={{ fontSize: ".75rem", opacity: 0.8 }}>3. Weigelt DS, et al. A high-protein diet induces sustained reductions in appetite, ad libitum caloric intake, and body weight. <i>Am J Clin Nutr.</i> 2005;82(1):41–48.</p>
       </div>
@@ -177,6 +180,10 @@ function SwapCarousel() {
   const go = (n: number) => setCur(Math.max(0, Math.min(N - 1, n)));
   return (
     <section className="mk-wrap" id="swap" aria-roledescription="carousel" aria-label="Everyday swaps">
+      <div className="mk-intro">
+        <p>Below are a few examples of simple changes that can make a big impact. These are just a few examples — try the <a href="/simulator/">Theosis Metabolic Simulator</a> to see what changes unique to your own life could mean.</p>
+        <a className="mk-btn s mk-introbtn" href="/simulator/">Try the simulator →</a>
+      </div>
       <div className="mk-car">
         <button type="button" className="mk-arrow l" aria-label="Previous swap" disabled={cur === 0} onClick={() => go(cur - 1)}>‹</button>
         <div className="mk-vp"

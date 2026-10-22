@@ -33,3 +33,27 @@ export function extraLbByDay(surplus: number, days = 365): number[] {
   }
   return out;
 }
+
+// Deficit side (same simulator constants): adaptive thermogenesis lowers burn by AT_BETA = 0.14 of the
+// current deficit vs today's maintenance (14-day response, capped at 25% of burn), so the loss slows over time.
+const AT_BETA = 0.14;
+
+/** Pounds lost vs staying at maintenance, for each day 0..365, when eating `cut` kcal/day less. Includes metabolic adaptation. */
+export function lostLbByDay(cut: number, days = 365): number[] {
+  const w0 = EXAMPLE.weightLb / LB;
+  let F = (w0 * EXAMPLE.bodyFatPct) / 100, L = w0 - F, adapt = 0;
+  const ei0 = tdee(w0), intake = ei0 - cut;
+  const out = [0];
+  for (let d = 0; d < days; d++) {
+    const t = tdee(F + L);
+    const target = Math.min(AT_CAP * t, AT_BETA * Math.max(0, t - intake));
+    adapt += (target - adapt) / AT_TAU;
+    const burn = t - adapt - TEF_BETA * (ei0 - intake);
+    const E = intake - burn;
+    const pm = 10.4 / (10.4 + F);
+    const dF = E / (RHO_F + (RHO_L * pm) / (1 - pm));
+    F += dF; L += (dF * pm) / (1 - pm);
+    out.push((w0 - F - L) * LB);
+  }
+  return out;
+}
