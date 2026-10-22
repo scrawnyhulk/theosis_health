@@ -1,4 +1,4 @@
-//#region node_modules/.nitro/vite/services/ssr/assets/empty-plugin-adapters-D9UWiqvJ.js
+//#region ../theosishealth/node_modules/.nitro/vite/services/ssr/assets/empty-plugin-adapters-CAZFZgdk.js
 var pluginSerializationAdapters = [];
 var hasPluginAdapters = false;
 //#endregion
