@@ -4,9 +4,9 @@ import { n as require_react } from "../_libs/@radix-ui/react-compose-refs+[...].
 import { b as Link } from "../_libs/@tanstack/react-router+[...].mjs";
 import { i as require_jsx_runtime } from "../_libs/@radix-ui/react-label+[...].mjs";
 import { _ as ArrowRight, l as Footprints, p as Clock, u as FlaskConical } from "../_libs/lucide-react.mjs";
-import { a as SODA_PERSON, c as maintenance, i as EXAMPLE, o as extraLbByDay, s as lostLbByDay } from "./router-BL1aE6q3.mjs";
+import { a as SODA_PERSON, c as maintenance, i as EXAMPLE, o as extraLbByDay, s as lostLbByDay } from "./router-Dh4NiCjR.mjs";
 import { a as SiteShell, i as NavPlaque, r as NavIcon } from "./site-shell-BJfe-Oo7.mjs";
-//#region ../theosishealth/node_modules/.nitro/vite/services/ssr/assets/routes-BT-bkOIZ.js
+//#region ../theosishealth/node_modules/.nitro/vite/services/ssr/assets/routes-UnGr2zNW.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 /** Swap this slug to feature a different existing Health Hack. Text is pulled from src/lib/hacks.ts, not written here. */
@@ -74,7 +74,7 @@ function HomeFeatures() {
 				loading: "lazy",
 				width: 1200,
 				height: 675,
-				className: "block aspect-video h-auto w-full object-cover"
+				className: "block h-auto w-full"
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "flex flex-1 flex-col gap-2 p-5",
 				children: [
