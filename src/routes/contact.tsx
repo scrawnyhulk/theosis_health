@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
 // Submissions go to Netlify Forms (form "theosishealth-contact", defined in public/__forms.html).
-// Turn on an email notification to nick@theosishealth.com in Netlify > Forms > Form notifications.
+// Turn on an email notification to support@theosishealth.com in Netlify > Forms > Form notifications.
 const FORM_NAME = "theosishealth-contact";
 
 export const Route = createFileRoute("/contact")({
@@ -48,6 +48,7 @@ function Page() {
             <p className="text-xs font-medium tracking-widest text-health uppercase">Contact</p>
             <h1 className="mt-3 font-display text-4xl font-semibold uppercase sm:text-5xl">Get in touch</h1>
             <p className="mt-5 max-w-md text-lg leading-relaxed text-ink-muted">For general questions about the tools and Health Hacks. Please don’t send personal medical details.</p>
+            <p className="mt-4 text-ink-muted">Or email <a href="mailto:support@theosishealth.com" className="font-medium text-health">support@theosishealth.com</a>.</p>
             <p className="mt-6 text-sm text-ink-muted">Theosis Health is an education company and doesn’t provide medical care. For medical questions, talk with your healthcare provider.</p>
           </div>
           {state === "sent" ? (

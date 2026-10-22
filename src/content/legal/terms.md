@@ -2,7 +2,7 @@
 
 **Effective date:** [VERIFY: launch date] · **Last updated:** [date]
 
-These Terms are an agreement between you and **Theosis Health LLC**, an Illinois limited liability company ("Theosis Health," "we," "us"), 4026 Bristol Dr., Danville, IL 61834, nick@theosishealth.com. They cover theosishealth.com, the Health Hacks, the health simulator, the Personal Fat Threshold (PFT) model, the fat-burn calculator, and any related app or subscription (the "Service"). By using the Service you agree to these Terms. If you don't agree, please don't use it.
+These Terms are an agreement between you and **Theosis Health LLC**, an Illinois limited liability company ("Theosis Health," "we," "us"), 4026 Bristol Dr., Danville, IL 61834, support@theosishealth.com. They cover theosishealth.com, the Health Hacks, the health simulator, the Personal Fat Threshold (PFT) model, the fat-burn calculator, and any related app or subscription (the "Service"). By using the Service you agree to these Terms. If you don't agree, please don't use it.
 
 > **Please read Section 11 (Arbitration).** It requires most disputes to be resolved by individual arbitration, waives class actions, and explains how to opt out within 30 days.
 
@@ -34,7 +34,7 @@ The site, text, graphics, models, calculators, code, and the Theosis Health name
 - **Your consent.** We'll ask you to agree to the auto-renewal terms with a separate, unchecked checkbox. Payments are processed by our payment processor (Stripe); we don't store your full card number.
 - **Confirmation.** We'll email you a confirmation with the auto-renewal terms, cancellation steps, and how to reach us.
 - **Free trials.** If a trial converts to paid, we'll tell you before you start it. [VERIFY: if a trial is longer than 31 days or a plan renews yearly, send a reminder 3–21 days before the charge, which Illinois (815 ILCS 601) and California (Bus. & Prof. Code §17602) require.]
-- **Easy cancellation.** You can cancel **online, anytime**, through your account's billing page (Stripe Customer Portal) in the same way you signed up, or by emailing nick@theosishealth.com. Cancellation stops future charges; you keep access through the end of the period you paid for.
+- **Easy cancellation.** You can cancel **online, anytime**, through your account's billing page (Stripe Customer Portal) in the same way you signed up, or by emailing support@theosishealth.com. Cancellation stops future charges; you keep access through the end of the period you paid for.
 - **Price changes.** We'll give you notice before a price change takes effect and you can cancel before it does.
 - **Refunds.** Except where required by law, payments are non-refundable for partial periods. [VERIFY: choose refund policy.]
 - These terms are meant to follow the federal Restore Online Shoppers' Confidence Act (ROSCA) and Illinois and California automatic renewal laws.
@@ -49,11 +49,11 @@ To the fullest extent the law allows: (a) we are not liable for indirect, incide
 If you misuse the Service or break these Terms and that leads to a claim against us, you agree to cover our reasonable losses and costs (including attorney's fees) from that claim, to the extent the law allows.
 
 ## 11. Disputes: arbitration and class-action waiver
-- **Talk to us first.** Email nick@theosishealth.com with your concern. We'll try in good faith to resolve it within 60 days.
+- **Talk to us first.** Email support@theosishealth.com with your concern. We'll try in good faith to resolve it within 60 days.
 - **Arbitration.** If we can't resolve it, you and we agree that any dispute about the Service or these Terms will be decided by **binding individual arbitration**, not in court, under the Federal Arbitration Act. Arbitration will be run by the American Arbitration Association (AAA) under its Consumer Arbitration Rules. [VERIFY: confirm AAA consumer fee schedule; we'll pay fees the rules assign to the business.] Hearings may be by video or phone or in your home county.
 - **Small claims carve-out.** Either of us may instead bring an individual claim in small claims court if it qualifies.
 - **Class-action waiver.** Claims may be brought **only individually**, not as a plaintiff or class member in any class, collective, or representative action. If this waiver is found unenforceable for a claim, that claim goes to court, not arbitration.
-- **Opt out.** You can opt out of this arbitration section by emailing nick@theosishealth.com within **30 days** of first accepting these Terms, with your name and a statement that you opt out. Opting out won't affect anything else.
+- **Opt out.** You can opt out of this arbitration section by emailing support@theosishealth.com within **30 days** of first accepting these Terms, with your name and a statement that you opt out. Opting out won't affect anything else.
 - **Exceptions.** Either party may seek court relief for intellectual-property misuse. [VERIFY: whether statutory claims like BIPA should be carved out; some courts scrutinize arbitration of BIPA claims. Attorney-hour item.]
 
 ## 12. Governing law and venue
@@ -66,4 +66,4 @@ We may update these Terms. We'll change the "Last updated" date and, for materia
 If part of these Terms is unenforceable, the rest stays in effect. Not enforcing a term isn't a waiver. You can't transfer these Terms; we may transfer them with our business. These Terms, the Privacy Policy, and the Medical Disclaimer are the whole agreement.
 
 ## 15. Contact
-Theosis Health LLC · 4026 Bristol Dr., Danville, IL 61834 · nick@theosishealth.com
+Theosis Health LLC · 4026 Bristol Dr., Danville, IL 61834 · support@theosishealth.com

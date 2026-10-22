@@ -33,4 +33,4 @@ Theosis Health currently has **no ads, affiliate links, or sponsorships**. [VERI
 ## No warranty
 Content is provided "as is" and may contain errors. See our [Terms of Use](/terms).
 
-Questions: nick@theosishealth.com
+Questions: support@theosishealth.com

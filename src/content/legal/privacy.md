@@ -2,7 +2,7 @@
 
 **Effective date:** [VERIFY: launch date] · **Last updated:** [date]
 
-Theosis Health LLC ("we," "us"), 4026 Bristol Dr., Danville, IL 61834, runs theosishealth.com and its tools (the "Service"). This policy explains what we collect, why, who processes it, how long we keep it, and your choices. Contact: **nick@theosishealth.com**.
+Theosis Health LLC ("we," "us"), 4026 Bristol Dr., Danville, IL 61834, runs theosishealth.com and its tools (the "Service"). This policy explains what we collect, why, who processes it, how long we keep it, and your choices. Contact: **support@theosishealth.com**.
 
 **The short version**
 - **Photo upload and AI photo projections are currently turned off** for the public. They'll be turned on only after the biometric consent step (Section 3) is live. Until then, we collect no photos or biometric information.
@@ -53,7 +53,7 @@ This section is our **Consumer Health Data Privacy Policy**. [VERIFY: link it se
 - **Purposes:** to provide the educational features you request, and security.
 - **Sharing:** only with processors that perform services for us: Google (AI features), Netlify (hosting), and Stripe (payments, no health data). We don't sell consumer health data.
 - **Consent:** We collect consumer health data only with your consent for the specific feature (in-app consent) or as needed to provide the service you asked for. We'll ask for **separate consent before sharing** it for any other purpose. We'd need a separate signed authorization to ever sell it, and we don't sell it.
-- **Your rights:** confirm whether we have your data, access it, delete it, withdraw consent, and get a list of the third parties and processors who received it. Because most data is stored only on your device, you can view and delete it in the app yourself. Email nick@theosishealth.com for anything we or our processors hold. We'll respond within 45 days. If we deny a request, you can appeal by replying "Appeal," and if you're still unhappy, you can contact your state Attorney General.
+- **Your rights:** confirm whether we have your data, access it, delete it, withdraw consent, and get a list of the third parties and processors who received it. Because most data is stored only on your device, you can view and delete it in the app yourself. Email support@theosishealth.com for anything we or our processors hold. We'll respond within 45 days. If we deny a request, you can appeal by replying "Appeal," and if you're still unhappy, you can contact your state Attorney General.
 - **No geofencing** around health-care locations.
 
 ## 6. FTC Health Breach Notification Rule
@@ -65,7 +65,7 @@ If there is a breach of unsecured identifiable health information, including an 
 - We honor **Global Privacy Control**. Since we don't sell or share data for advertising, there's nothing more to opt out of.
 
 ## 8. Your privacy rights (California and other states)
-Depending on where you live, you may have the right to know, access, correct, delete, and take a copy of your personal information, to opt out of sale, sharing, targeted advertising, or profiling (we do none of these), to limit use of sensitive information (we already use it only to provide the Service), and not to be discriminated against for using these rights. Email nick@theosishealth.com. We'll verify your request in a reasonable way and respond within the time the law requires (usually 45 days). An authorized agent can make a request for you with proof of authorization. [Note: CCPA thresholds likely don't apply yet. We honor these rights voluntarily.]
+Depending on where you live, you may have the right to know, access, correct, delete, and take a copy of your personal information, to opt out of sale, sharing, targeted advertising, or profiling (we do none of these), to limit use of sensitive information (we already use it only to provide the Service), and not to be discriminated against for using these rights. Email support@theosishealth.com. We'll verify your request in a reasonable way and respond within the time the law requires (usually 45 days). An authorized agent can make a request for you with proof of authorization. [Note: CCPA thresholds likely don't apply yet. We honor these rights voluntarily.]
 
 ## 9. Children
 The Service is for adults **18+**. We don't knowingly collect information from children under 13 (COPPA) or minors. If you believe a child provided information, email us and we'll delete it.
@@ -77,10 +77,10 @@ We keep data only as long as described in Section 1 and the biometric schedule i
 We use HTTPS encryption, keep data on your device where possible, store no photos on our servers, hash IP addresses, apply rate limits, and limit who can access systems. No system is perfectly secure. Protect your device, because saved data lives there.
 
 ## 12. Theosis Medical is separate
-Theosis Medical LLC (theosismedical.com) is a separate clinical company with its own privacy practices. Don't send patient or clinical information to theosishealth.com or nick@theosishealth.com.
+Theosis Medical LLC (theosismedical.com) is a separate clinical company with its own privacy practices. Don't send patient or clinical information to theosishealth.com or support@theosishealth.com.
 
 ## 13. Changes
 We'll post updates here with a new date. For material changes, especially to how we use health or biometric data, we'll give notice and ask for consent where required.
 
 ## 14. Contact
-Theosis Health LLC · 4026 Bristol Dr., Danville, IL 61834 · nick@theosishealth.com
+Theosis Health LLC · 4026 Bristol Dr., Danville, IL 61834 · support@theosishealth.com

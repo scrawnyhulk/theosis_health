@@ -7,8 +7,8 @@ export const site = {
   url: "https://theosishealth.com",
   phoneDisplay: "",
   phoneHref: "",
-  email: "nick@theosishealth.com", // DRAFT placeholder
-  emailHref: "mailto:nick@theosishealth.com",
+  email: "support@theosishealth.com",
+  emailHref: "mailto:support@theosishealth.com",
   entityLine: "Theosis Health LLC · Illinois · health education and apps",
   founderLine: "Nick Holwey, PA-C · Founder · Education only on this site",
   year: 2026,
