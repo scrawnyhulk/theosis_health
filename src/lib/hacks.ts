@@ -86,7 +86,7 @@ export const hackCovers: Partial<Record<HackSlug, { src: string; alt: string; ob
 
 export const hacksIntro = {
   kicker: "Lifestyle medicine — the 20%",
-  title: "Holwey’s Handy Health Hacks",
+  title: "Health Hacks",
   paragraphs: [
     "Through the years I have unfortunately figured out I am indeed human, and all the nutrition knowledge in the world doesn’t stop McDonald’s fries and a Big Mac with extra special sauce from becoming a must-have after a 12-hour shift. I’ve been lean, I’ve been dad bod, I’ve been somewhere in between saying “I’ll start back up tomorrow” while downing a cream-filled Krispy Kreme delight. Life is hard and I’m in it with you all. Still, it’s because of this that I know how important it is to find a way to make healthfulness sustainable in a hectic life.",
     "I have trial-and-errored a lot of this over the years. I steal what works and discard what does not. I have fallen off the wagon many a time myself — busy shifts, hotels, kids, the whole Tuesday.",

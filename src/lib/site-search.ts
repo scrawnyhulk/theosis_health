@@ -42,10 +42,10 @@ const index: Indexed[] = [
   {
     id: "hacks-hub",
     section: "Health Hacks",
-    title: "Holwey Health Hacks",
+    title: "Health Hacks",
     blurb: "The 20% that actually moves the needle.",
     hrefKind: "hacks" as const,
-    haystack: pack("holwey health hacks", "protein calories food exercise"),
+    haystack: pack("health hacks", "protein calories food exercise"),
   },
   ...hacks.flatMap((h) =>
     h.slug === "nerd-out"

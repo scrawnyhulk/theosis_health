@@ -9,7 +9,7 @@ const plaqueBg = {
   backgroundSize: "420px",
 } as const;
 
-export function HolweyHacksMark({ className }: { className?: string }) {
+export function HealthHacksMark({ className }: { className?: string }) {
   return (
     <span
       className={cn(

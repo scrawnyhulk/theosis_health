@@ -18,7 +18,7 @@ export const Route = createFileRoute("/hacks/nerd-out/$topic")({
         {
           title: topic
             ? `${topic.title} — Nutritional Nerd Out`
-            : "Nutritional Nerd Out — Holwey’s Handy Health Hacks",
+            : "Nutritional Nerd Out — Health Hacks",
         },
         {
           name: "description",

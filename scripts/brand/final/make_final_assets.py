@@ -50,8 +50,28 @@ def keyed(box):
     rgba=np.dstack([c,a*255]).astype("uint8"); return Image.fromarray(rgba,"RGBA")
 EMB=tuple(int(v*s) for v in (215,95,1050,880))   # cross + laurel
 WORD=tuple(int(v*s) for v in (130,905,1125,1125)) # THEOSIS / HEALTH
-emb=keyed(EMB); word=keyed(WORD)
-emb=emb.crop(emb.getbbox()); word=word.crop(word.getbbox())
+def clean_emblem():
+    """Emblem matte: keep bright chrome/blue artwork, drop the textured stone and glitter speckle, keep thin helix rungs near the cross."""
+    from scipy import ndimage as nd
+    c=np.asarray(src.crop(EMB)).astype(np.float32)
+    r,g,b=c[...,0],c[...,1],c[...,2]; lum=c.max(-1); sat=b-np.maximum(r,g)
+    m=(lum>125)|((sat>55)&(b>110))
+    lab,n=nd.label(m); idx=range(1,n+1)
+    sz=nd.sum(m,lab,idx); ml=nd.mean(lum,lab,idx)
+    big=np.isin(lab,1+np.where(sz>=400)[0]); near=nd.binary_dilation(big,iterations=40)
+    nearc=nd.maximum(near,lab,idx)
+    keep=[i+1 for i in range(n) if sz[i]>=400 or (sz[i]>=30 and ml[i]>165 and nearc[i])]
+    m=np.isin(lab,keep)
+    m=nd.binary_closing(m,iterations=2)
+    holes=nd.binary_fill_holes(m)&~m; hl,hn=nd.label(holes); hs=nd.sum(holes,hl,range(1,hn+1))
+    m|=np.isin(hl,1+np.where(hs<120)[0])
+    ring=nd.binary_dilation(m,iterations=2)&~m
+    soft=np.clip((np.maximum(lum,sat*2)-80)/60,0,1)
+    a=np.where(m,1.0,np.where(ring,soft*0.7,0.0)); a=nd.gaussian_filter(a,0.6)*nd.binary_dilation(m,iterations=3)
+    im=Image.fromarray(np.dstack([c,a*255]).clip(0,255).astype("uint8"),"RGBA"); im=im.crop(im.getbbox())
+    return im
+emb=clean_emblem(); word=keyed(WORD)
+word=word.crop(word.getbbox())
 emb.save(HERE+"emblem-cutout.png"); word.save(HERE+"wordmark-cutout.png")
 
 # 2) header lockup (3x for crisp 48-56px display): emblem + wordmark

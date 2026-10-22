@@ -14,7 +14,7 @@ export function SiteFooter() {
           
           <a href="/simulator/" className={l}>Metabolic Simulator</a>
           <a href="/simulator/pft-inside/" className={l}>Personal Fat Threshold model</a>
-          <Link to="/hacks" className={l}>Holwey’s Handy Health Hacks</Link>
+          <Link to="/hacks" className={l}>Health Hacks</Link>
           <a href="/fat-burn-calculator/" className={l}>Fat-burn calculator</a>
         </div>
         <div className="flex flex-col gap-2 text-sm text-ink-muted md:items-end">

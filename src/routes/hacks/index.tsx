@@ -8,11 +8,11 @@ export const Route = createFileRoute("/hacks/")({
   component: HacksHub,
   head: () => ({
     meta: [
-      { title: "Holwey’s Handy Health Hacks — Theosis Medical" },
+      { title: "Health Hacks — Theosis Health" },
       {
         name: "description",
         content:
-          "Holwey’s Handy Health Hacks: the 20% that does 80% of the work. Protein, calories, drinks, fast food, and the mechanisms behind them.",
+          "Health Hacks: the 20% that does 80% of the work. Protein, calories, drinks, fast food, and the mechanisms behind them.",
       },
     ],
   }),

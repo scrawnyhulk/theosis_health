@@ -106,7 +106,7 @@ export function QuickFind() {
 
               <SectionBlock
                 open={section === "hacks"}
-                label="Holwey Health Hacks"
+                label="Health Hacks"
                 onToggle={() => setSection((v) => (v === "hacks" ? null : "hacks"))}
               >
                 <Link to="/hacks" onClick={close} className="flex min-h-11 items-center px-3 text-sm text-accent">

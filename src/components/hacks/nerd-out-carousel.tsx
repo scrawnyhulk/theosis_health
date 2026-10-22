@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { HacksPlaque } from "@/components/site/holwey-hacks-mark";
+import { HacksPlaque } from "@/components/site/health-hacks-mark";
 import { nerdCovers, nerdGroups, nerdTopics } from "@/lib/hacks";
 
 const slides = nerdGroups.flatMap((group) =>

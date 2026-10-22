@@ -34,8 +34,8 @@ export const Route = createFileRoute("/hacks/$slug")({
       meta: [
         {
           title: hack
-            ? `${hack.title} — Holwey’s Handy Health Hacks`
-            : "Holwey’s Handy Health Hacks — Theosis Medical",
+            ? `${hack.title} — Health Hacks`
+            : "Health Hacks — Theosis Health",
         },
         {
           name: "description",
@@ -62,7 +62,7 @@ function HackPage() {
           <Button asChild className="mt-8">
             <Link to="/hacks">
               <ArrowLeft />
-              All Holwey’s Handy Health Hacks
+              All Health Hacks
             </Link>
           </Button>
         </div>
@@ -78,7 +78,7 @@ function HackPage() {
           className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-muted hover:text-fg"
         >
           <ArrowLeft className="size-4" />
-          All Holwey’s Handy Health Hacks
+          All Health Hacks
         </Link>
         {hack.slug === "tldr" ? (
           <div className="relative mt-8">
@@ -514,7 +514,7 @@ function HackExtras({ slug }: { slug: HackSlug }) {
         </figure>
         <div>
           <h2 className="font-display text-3xl font-semibold tracking-wide sm:text-4xl">
-            Holwey stolen Hormozi High Protein Hacks
+            Stolen Hormozi High Protein Hacks
           </h2>
           <p className="mt-4 max-w-3xl text-lg leading-relaxed text-muted">
             Yup...I once again stole from business bro. He has hacked his health heavily...you can too! See below...

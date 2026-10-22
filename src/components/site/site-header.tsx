@@ -4,7 +4,7 @@ import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LogoLockup } from "@/components/site/logo-lockup";
 import { QuickFind } from "@/components/site/quick-find";
-import { HolweyHacksMark } from "@/components/site/holwey-hacks-mark";
+import { HealthHacksMark } from "@/components/site/health-hacks-mark";
 import { healthNav } from "@/lib/links";
 import { cn } from "@/lib/utils";
 
@@ -33,7 +33,7 @@ export function SiteHeader() {
               <a key={n.href} href={n.href} className={item}>{n.label}</a>
             ))}
             <Link to="/hacks" className="group shrink-0" aria-label="Health Hacks">
-              <HolweyHacksMark />
+              <HealthHacksMark />
             </Link>
           </nav>
         </div>
@@ -53,7 +53,7 @@ export function SiteHeader() {
             <a key={n.href} href={n.href} className={mItem}>{n.label}</a>
           ))}
           <Link to="/hacks" className="group flex min-h-12 items-center border-b border-border py-2" onClick={close} aria-label="Health Hacks">
-            <HolweyHacksMark />
+            <HealthHacksMark />
           </Link>
           <Link to="/contact" className="flex min-h-12 items-center text-base font-medium text-accent" onClick={close}>Contact</Link>
         </nav>
