@@ -39,6 +39,7 @@ function Home() {
             <p className="mt-2 max-w-xl text-lg leading-relaxed text-ink-fg/90 sm:text-xl">
               Small changes, real results. Health Hacks that fit a hectic life, no chicken and broccoli required.
             </p>
+            <hr className="mk-hero-rule" aria-hidden="true" />
             <HomeFeatures />
             <div className="mk-welcome">
               <h2 className="font-display text-2xl font-semibold uppercase sm:text-3xl">Welcome to Theosis Health</h2>
