@@ -168,7 +168,7 @@ function SodaCard() {
   const yt = [Y_MAX, Y_MAX / 2, 0, -Y_MAX / 2, -Y_MAX];
   return (
     <>
-      <h2 className="mk-h2">One small swap: soda or zero-calorie drink</h2>
+      <h2 className="mk-h2">See how your favorite drink alone affects your day, week, month, and year</h2>
       <p className="mk-sub">Example: someone who needs about 2,000 calories a day. If nothing else about their diet changes, adding a daily 140-calorie soda or cutting one could add up like this.</p>
       <div className="mk-card sd-card">
         <div className="sd-tags"><span className="sd-tag">Example person, not a prediction</span><span className="mk-adapt" style={{ marginTop: 0 }}>Includes metabolic adaptation</span></div>
@@ -178,7 +178,9 @@ function SodaCard() {
         </div>
         <div className="sd-num" aria-live="polite">
           <div className="mk-num" style={{ color: keep ? "#f0936b" : "#5cc48e", fontSize: "3rem" }}>{shown} lb</div>
-          <div className="sd-cal">{keep ? `Extra calories: +${cal.toLocaleString()}` : `Calories cut: −${cal.toLocaleString()}`}</div>
+          <div className="sd-cal">{keep ? "Extra calories" : "Calories cut"}</div>
+          <div className="sd-row">{([["Day", 1], ["Week", 7], ["Month", 30], ["Year", 365]] as const).map(([n, dd]) => <div key={n} className="sd-cell"><b style={{ color: keep ? "#f0936b" : "#5cc48e" }}>{keep ? "+" : "−"}{(dd * 140).toLocaleString()}</b><span>{n}</span></div>)}</div>
+          <div className="mk-small" style={{ marginTop: ".3rem" }}>{keep ? "+" : "−"}{cal.toLocaleString()} so far · a month here is 30 days</div>
           <div className="mk-small">estimated weight change after {timeLabel(i).toLowerCase()}, about</div>
         </div>
         <svg className="sd-graph" viewBox={`0 0 ${G.w} ${G.h}`} role="img" aria-label={`Line graph: estimated weight change about ${shown} pounds after ${timeLabel(i)}`}>

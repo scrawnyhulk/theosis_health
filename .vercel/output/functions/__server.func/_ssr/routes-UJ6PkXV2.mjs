@@ -4,7 +4,7 @@ import { b as Link } from "../_libs/@tanstack/react-router+[...].mjs";
 import { i as require_jsx_runtime } from "../_libs/@radix-ui/react-label+[...].mjs";
 import { _ as ArrowRight, l as Footprints, p as Clock, u as FlaskConical } from "../_libs/lucide-react.mjs";
 import { r as SiteShell } from "./site-shell-Coxd6dm8.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/routes-BcziqSr0.js
+//#region node_modules/.nitro/vite/services/ssr/assets/routes-UJ6PkXV2.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var LB = 2.2046226218;
@@ -388,7 +388,7 @@ function SodaCard() {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
 			className: "mk-h2",
-			children: "One small swap: soda or zero-calorie drink"
+			children: "See how your favorite drink alone affects your day, week, month, and year"
 		}),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 			className: "mk-sub",
@@ -440,7 +440,31 @@ function SodaCard() {
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 							className: "sd-cal",
-							children: keep ? `Extra calories: +${cal.toLocaleString()}` : `Calories cut: −${cal.toLocaleString()}`
+							children: keep ? "Extra calories" : "Calories cut"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "sd-row",
+							children: [
+								["Day", 1],
+								["Week", 7],
+								["Month", 30],
+								["Year", 365]
+							].map(([n, dd]) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "sd-cell",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("b", {
+									style: { color: keep ? "#f0936b" : "#5cc48e" },
+									children: [keep ? "+" : "−", (dd * 140).toLocaleString()]
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: n })]
+							}, n))
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "mk-small",
+							style: { marginTop: ".3rem" },
+							children: [
+								keep ? "+" : "−",
+								cal.toLocaleString(),
+								" so far · a month here is 30 days"
+							]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "mk-small",

@@ -413,3 +413,7 @@ sup a{color:#4587c6;text-decoration:none}
 .sd-base{fill:#c7d2de;font-size:14px}
 .sd-pt{font-size:18px;font-weight:700;font-family:'Barlow Condensed',sans-serif}
 @media (max-width:640px){.sd-pill{font-size:.95rem;padding:.4rem .6rem}.sd-ax{font-size:14px}.sd-base{font-size:14px}.sd-pt{font-size:20px}.sd-card{padding:1rem}}
+.sd-row{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;max-width:30rem;margin:.5rem auto 0}
+.sd-cell{border:1px solid var(--color-border);padding:.45rem .25rem;display:flex;flex-direction:column;align-items:center}
+.sd-cell b{font-family:'Barlow Condensed';font-size:1.35rem;line-height:1.1}
+.sd-cell span{font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--color-muted)}
