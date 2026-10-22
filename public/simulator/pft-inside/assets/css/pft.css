@@ -873,7 +873,3 @@ body.story-on .slider-guide{opacity:.45}
 .embedded #pft-app > *{order:2}
 .embedded #pft-app > .workbench-header{order:0}
 .embedded #pft-app > #arteries{order:9}
-/* Theosis Health header lockup: same file and size as the main site header (h-12, sm:h-14) */
-img.th-lockup{display:block;height:35px;width:auto;max-width:none;object-fit:contain;object-position:left}
-@media(min-width:40rem){img.th-lockup{height:46px}}
-a.hh-tag{text-decoration:none}
