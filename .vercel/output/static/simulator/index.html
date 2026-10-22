@@ -1489,14 +1489,14 @@ li.fx-fav{box-shadow:inset 3px 0 0 #f5c542;background:linear-gradient(90deg,rgba
 </style>
 <style id="th-photo-off">/* Theosis Health: photo upload + AI photo projection OFF until written BIPA consent ships */
 #photo-card>:not(.card-eyebrow):not(.section-head):not(.th-soon),#ai-card>:not(.card-eyebrow):not(.section-head):not(.th-soon){display:none!important}
-.th-soon{margin:.5rem 0 0;padding:.6rem .8rem;border-radius:10px;background:rgba(34,184,160,.12);color:#9fe3d6;font-size:.95rem}</style>
+.th-soon{margin:.5rem 0 0;padding:.6rem .8rem;border-radius:10px;background:rgba(69,135,198,.14);color:#b9d4ee;font-size:.95rem}</style>
 <script id="th-photo-off-js">document.addEventListener("DOMContentLoaded",function(){["file-photo","file-camera","file-ci","file-ci-cam","btn-upload","btn-camera"].forEach(function(i){var e=document.getElementById(i);if(e){e.disabled=true;}});});</script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
 <header class="site-header">
   <div class="in">
-    <a href="/" aria-label="Theosis Health home"><span class="th-lockup" style="display:inline-flex;align-items:center;gap:.5rem;height:48px"><img src="/images/header-shield.png" alt="" style="height:100%;width:auto"><span style="display:flex;flex-direction:column;line-height:1;font-family:'Barlow Condensed',sans-serif"><span style="font-size:1.7rem;font-weight:700;letter-spacing:.08em;background:linear-gradient(#fff,#cbd5e1,#64748b);-webkit-background-clip:text;background-clip:text;color:transparent">THEOSIS</span><span style="display:flex;align-items:center;gap:.35rem;margin-top:2px"><span style="height:1px;flex:1;background:#22b8a0"></span><span style="font-size:.68rem;font-weight:600;letter-spacing:.45em;color:#22b8a0">HEALTH</span><span style="height:1px;flex:1;background:#22b8a0"></span></span></span></span></a>
+    <a href="/" aria-label="Theosis Health home"><span class="th-lockup" style="display:inline-flex;align-items:center;gap:.5rem;height:48px"><img src="/images/theosis-health-mark.png" alt="" style="height:100%;width:auto"><span style="display:flex;flex-direction:column;line-height:1;font-family:'Barlow Condensed',sans-serif"><span style="font-size:1.7rem;font-weight:700;letter-spacing:.08em;background:linear-gradient(#fff,#cbd5e1,#64748b);-webkit-background-clip:text;background-clip:text;color:transparent">THEOSIS</span><span style="display:flex;align-items:center;gap:.35rem;margin-top:2px"><span style="height:1px;flex:1;background:#4587c6"></span><span style="font-size:.68rem;font-weight:600;letter-spacing:.45em;color:#4587c6">HEALTH</span><span style="height:1px;flex:1;background:#4587c6"></span></span></span></span></a>
     <span class="prod-mark" aria-label="Theosis Metabolic Simulator"><span class="pm-full" aria-hidden="true"><span class="pm-t">Theosis</span> Metabolic Simulator</span><span class="pm-short" aria-hidden="true">Metabolic Simulator</span></span>
   </div>
 </header>
@@ -8234,7 +8234,7 @@ function buildPrint() {
   if (!R || R.blocked) return;
   const s = R.main.rows[0], e = endRow(), st = startPerson();
   const rows = R.main.rows.length > 40 ? R.main.rows.filter((r, i) => i % Math.ceil(R.main.rows.length / 40) === 0 || r.end) : R.main.rows;
-  $("#print-sheet").innerHTML = `<div class="ph"><img src="/images/header-shield.png" alt="Theosis Health" style="height:3rem"><span style="font-family:var(--font-display);letter-spacing:.16em;text-transform:uppercase;font-size:11pt">Theosis Metabolic Simulator · Health Hacks</span></div>
+  $("#print-sheet").innerHTML = `<div class="ph"><img src="/images/theosis-health-mark.png" alt="Theosis Health" style="height:3rem"><span style="font-family:var(--font-display);letter-spacing:.16em;text-transform:uppercase;font-size:11pt">Theosis Metabolic Simulator · Health Hacks</span></div>
   <h1>Your body composition plan</h1><p>${esc(goalLabel())} · prepared ${fDate(0, true)} · ${S.food.psmf ? "PSMF projection (clinician-guided)" : S.food.actualOn ? "projection of current habits" : "recommended plan"}</p>
   <div class="grid" style="margin-top:10px"><div><h2>Recap</h2><table>${recapPairs().map(([k, v]) => `<tr><td style="text-align:left;width:28%"><b>${esc(k)}</b></td><td style="text-align:left">${esc(v)}</td></tr>`).join("")}</table></div>
   <div><h2>Projection</h2><div class="figs">${FIG.svg(st)}${FIG.svg(personAt(e), { ghost: st })}</div>

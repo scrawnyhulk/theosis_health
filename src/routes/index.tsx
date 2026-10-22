@@ -25,10 +25,10 @@ function Home() {
     <SiteShell>
       <section className="health-mesh text-ink-fg">
         <div className="hero-phone">
-          <img src="/images/health-logo-phone.png" alt="Theosis Health emblem: a silver shield bearing the Star of Life, a cross, and the serpent of healing, above the words Theosis Health." className="no-outline mx-auto block h-auto w-full max-w-full object-contain object-top" />
+          <picture><source srcSet="/images/theosis-health-hero-phone.webp" type="image/webp" /><img src="/images/theosis-health-hero-phone.jpg" width={1080} height={1080} alt="Theosis Health logo: a chrome three-bar Orthodox cross wrapped by a blue DNA double helix inside a laurel wreath, above the words Theosis Health." className="no-outline mx-auto block h-auto w-full max-w-full object-contain object-top" /></picture>
         </div>
         <div className="hero-desktop">
-          <img src="/images/health-logo.jpg" alt="Theosis Health emblem: a silver shield bearing the Star of Life, a cross, and the serpent of healing, above the words Theosis Health." className="no-outline block max-h-[80svh] w-full object-cover object-center" />
+          <picture><source srcSet="/images/theosis-health-hero.webp" type="image/webp" /><img src="/images/theosis-health-hero.jpg" width={1920} height={1080} alt="Theosis Health logo: a chrome three-bar Orthodox cross wrapped by a blue DNA double helix inside a laurel wreath, above the words Theosis Health." className="no-outline block max-h-[80svh] w-full object-cover object-center" /></picture>
         </div>
         <div className="mx-auto max-w-6xl px-5 py-12 sm:px-8 md:py-16">
           <div className="stagger-in">

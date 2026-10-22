@@ -10,9 +10,9 @@
   --color-muted: #8e9aab;
   --color-accent: #2a7ae0;
   --color-accent-fg: #f4f8ff;
-  /* Theosis Health identity accent (teal-green, same cool family as accent blue) */
-  --color-health: #22b8a0;
-  --color-health-fg: #04140f;
+  /* Theosis Health identity accent: Medical blue from the logo (#4587c6; AA on the dark ink background) */
+  --color-health: #4587c6;
+  --color-health-fg: #050b16;
   --shadow-soft: 0 10px 30px -12px rgb(0 0 0 / 0.55);
   --color-ink: rgb(5 8 13 / 0.78);
   --color-ink-fg: #e7edf5;

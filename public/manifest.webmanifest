@@ -1,7 +1,7 @@
 {
   "name": "Theosis Health",
   "short_name": "Theosis Health",
-  "description": "Nick Holwey, PA-C — emergency medicine, lifestyle counseling, and practical health education.",
+  "description": "Theosis Health: plain-language metabolic health education by Nick Holwey, PA-C. For education only, not medical advice.",
   "id": "/",
   "start_url": "/",
   "scope": "/",
@@ -11,7 +11,7 @@
   "background_color": "#05080d",
   "theme_color": "#080d14",
   "lang": "en-US",
-  "categories": ["health", "medical", "education"],
+  "categories": ["health", "education"],
   "icons": [
     {
       "src": "/icon-192.png",
@@ -30,6 +30,12 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    },
+    {
+      "src": "/favicon-32.png",
+      "sizes": "32x32",
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "/apple-touch-icon.png",

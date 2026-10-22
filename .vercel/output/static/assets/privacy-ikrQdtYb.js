@@ -1,0 +1,63 @@
+import{o as e}from"./useSelector-BnRwIYQX.js";import{t}from"./site-shell-BZ0e0Nks.js";var n=`<h1 id="privacy-policy-theosis-health">Privacy Policy — Theosis Health</h1>
+<p><strong>Effective date:</strong> [VERIFY: launch date] · <strong>Last updated:</strong> [date]</p>
+<p>Theosis Health LLC ("we," "us"), 4026 Bristol Dr., Danville, IL 61834, runs theosishealth.com and its tools (the "Service"). This policy explains what we collect, why, who processes it, how long we keep it, and your choices. Contact: <strong>nick@theosishealth.com</strong>.</p>
+<p><strong>The short version</strong></p>
+<ul>
+<li><strong>Photo upload and AI photo projections are currently turned off</strong> for the public. They'll be turned on only after the biometric consent step (Section 3) is live. Until then, we collect no photos or biometric information.</li>
+<li>Most of what you enter in the simulator and calculators <strong>stays in your browser on your device</strong>. We don't have a user database for it. [VERIFY if accounts/Supabase are added.]</li>
+<li>When you choose an AI feature, your photo or lab report is sent to <strong>Google (Gemini API)</strong> to make the result, and is <strong>not saved by us</strong>.</li>
+<li><strong>We don't sell your data</strong>, share it for advertising, or use ad pixels or session replay.</li>
+<li>We aren't a HIPAA covered entity, and this Service isn't "HIPAA compliant." Laws like the FTC Health Breach Notification Rule and state health-data laws still apply, and we follow them.</li>
+</ul>
+<h2 id="1-what-we-collect-and-how">1. What we collect and how</h2>
+<table><thead><tr><th>Data</th><th>Where it goes</th><th>Kept for</th></tr></thead><tbody><tr><td>Info you type in tools (age, sex, height, weight, waist, activity, diet, diabetes status you select, A1c/glucose, goals)</td><td>Stored <strong>in your browser</strong> (local storage)</td><td>Until you clear it or use "Delete my data" in the app</td></tr><tr><td>Check-in photos and AI images you save</td><td>Stored <strong>in your browser</strong> (IndexedDB)</td><td>Until you delete them or clear site data</td></tr><tr><td>Body-shape estimates from photos (biometric info, see Section 3)</td><td>Computed <strong>on your device</strong></td><td>Not kept by us. Deleted with your photos</td></tr><tr><td>Photo sent for an AI illustration</td><td>Sent through our server to <strong>Google Gemini API</strong>; the AI image is returned to you</td><td><strong>Not stored, logged, or kept by us.</strong> See Section 4 for Google</td></tr><tr><td>Lab report photo/PDF you upload for AI reading</td><td>Sent through our server to <strong>Google Gemini API</strong>; values return for you to confirm</td><td>Not stored by us</td></tr><tr><td>AI chat questions (if used)</td><td>Google Gemini API</td><td>Not stored by us</td></tr><tr><td>Food searches</td><td>Sent to public food databases (USDA FoodData Central, Open Food Facts)</td><td>Not stored by us</td></tr><tr><td>Technical data (IP address, browser, request logs)</td><td>Our host (Netlify). IP addresses are converted to a one-way hash for daily usage limits</td><td>Usage counters reset daily. Host logs follow Netlify's retention [VERIFY]</td></tr><tr><td>Emails you send us</td><td>Our email provider (Microsoft 365 via GoDaddy)</td><td>As long as needed to respond, then up to 3 years [VERIFY]</td></tr><tr><td>Payment info (only if subscriptions launch)</td><td><strong>Stripe</strong> collects card details; we see only name, email, plan, and last 4 digits</td><td>As tax/accounting law requires (usually 7 years)</td></tr></tbody></table>
+<p>We don't collect precise location and we don't use geofencing.</p>
+<h2 id="2-how-we-use-it">2. How we use it</h2>
+<p>Only to: run the features you ask for, keep the Service secure and prevent abuse (rate limits), respond to you, process payments if you subscribe, and meet legal obligations. <strong>We don't use your health or biometric data for advertising, profiling, or AI training</strong>, and we don't sell it.</p>
+<h2 id="biometric">3. Biometric information (Illinois BIPA and similar laws)</h2>
+<p>Some photo features estimate body-shape landmarks from your photo, and images of your face may be processed to create AI illustrations. Illinois law (the Biometric Information Privacy Act, 740 ILCS 14) and similar laws in Texas, Washington, and elsewhere treat this as biometric information. Here is our <strong>written policy</strong>:</p>
+<ul>
+<li><strong>Notice and consent first.</strong> We will not capture, collect, or process biometric information until you have read this notice and given <strong>written consent</strong> by checking the biometric consent box in the app. Photo features stay off without it.</li>
+<li><strong>Purpose.</strong> Only to draw your figure and create the AI illustrations you request. We don't use it to identify you, for facial recognition, or to verify identity.</li>
+<li><strong>Length of use.</strong> For as long as you're using that feature in a session or keep your saved photos.</li>
+<li><strong>Retention and destruction schedule.</strong> We don't store biometric information or photos on our servers. Photos sent for AI processing pass through our server only in memory and are discarded once the request finishes. Photos and estimates saved in your browser stay on your device until you delete them. In all cases, biometric information will be <strong>permanently destroyed when its purpose is fulfilled or within 3 years of your last interaction with the Service, whichever is first</strong>, as BIPA requires. [VERIFY: Google's retention matches Section 4.]</li>
+<li><strong>Disclosure.</strong> We share it only with our processor, Google (Gemini API), to perform the feature, under contract terms that limit its use [VERIFY], or where the law requires.</li>
+<li><strong>No sale or profit.</strong> We will <strong>never sell, lease, trade, or otherwise profit</strong> from your biometric information.</li>
+<li><strong>Security.</strong> We protect it with at least the same care we use for other sensitive information, including encrypted (HTTPS) transmission.</li>
+<li><strong>Withdrawing consent.</strong> You can withdraw consent anytime in the app's privacy settings and delete your saved photos. Upload only your own photos, and never photos of anyone under 18.</li>
+</ul>
+<h2 id="4-google-gemini-ai-processor">4. Google Gemini (AI processor)</h2>
+<p>AI features use the <strong>Google Gemini API</strong> as our service provider. We use the <strong>paid</strong> API tier, under which Google states it doesn't use prompts or outputs to improve its products. Google may keep data for a limited time (about 55 days [VERIFY current terms]) to detect abuse and comply with law. Google's own privacy terms apply to that processing. AI images are labeled as illustrations.</p>
+<h2 id="5-consumer-health-data-washington-my-health-my-data-act-nevada-sb-370-connecticut-and-similar-laws">5. Consumer health data (Washington My Health My Data Act, Nevada SB 370, Connecticut, and similar laws)</h2>
+<p>This section is our <strong>Consumer Health Data Privacy Policy</strong>. [VERIFY: link it separately from the homepage footer.]</p>
+<ul>
+<li><strong>Categories collected:</strong> body measurements, weight, diet and activity, diabetes status you select, lab values like A1c and glucose, photos and body-shape estimates, and health goals.</li>
+<li><strong>Sources:</strong> you, directly. Also AI reading of lab reports you upload, which you confirm.</li>
+<li><strong>Purposes:</strong> to provide the educational features you request, and security.</li>
+<li><strong>Sharing:</strong> only with processors that perform services for us: Google (AI features), Netlify (hosting), and Stripe (payments, no health data). We don't sell consumer health data.</li>
+<li><strong>Consent:</strong> We collect consumer health data only with your consent for the specific feature (in-app consent) or as needed to provide the service you asked for. We'll ask for <strong>separate consent before sharing</strong> it for any other purpose. We'd need a separate signed authorization to ever sell it, and we don't sell it.</li>
+<li><strong>Your rights:</strong> confirm whether we have your data, access it, delete it, withdraw consent, and get a list of the third parties and processors who received it. Because most data is stored only on your device, you can view and delete it in the app yourself. Email nick@theosishealth.com for anything we or our processors hold. We'll respond within 45 days. If we deny a request, you can appeal by replying "Appeal," and if you're still unhappy, you can contact your state Attorney General.</li>
+<li><strong>No geofencing</strong> around health-care locations.</li>
+</ul>
+<h2 id="6-ftc-health-breach-notification-rule">6. FTC Health Breach Notification Rule</h2>
+<p>If there is a breach of unsecured identifiable health information, including an unauthorized disclosure, we will notify affected users, the FTC, and where required the media, <strong>without unreasonable delay and within 60 days</strong> of discovery, as the FTC Health Breach Notification Rule (16 CFR Part 318) requires.</p>
+<h2 id="7-cookies-local-storage-and-analytics">7. Cookies, local storage, and analytics</h2>
+<ul>
+<li>We use <strong>essential storage only</strong>: browser local storage and IndexedDB to remember your inputs, saved photos, consent choices, and settings. A service worker lets the app work offline. If accounts are offered, we use a strictly necessary sign-in cookie.</li>
+<li><strong>No advertising cookies, tracking pixels, or session replay</strong>, and no third-party analytics. [VERIFY before launch, including Netlify Analytics.] If we ever add privacy-friendly analytics, we'll update this policy first and keep them off health tool pages.</li>
+<li>We honor <strong>Global Privacy Control</strong>. Since we don't sell or share data for advertising, there's nothing more to opt out of.</li>
+</ul>
+<h2 id="8-your-privacy-rights-california-and-other-states">8. Your privacy rights (California and other states)</h2>
+<p>Depending on where you live, you may have the right to know, access, correct, delete, and take a copy of your personal information, to opt out of sale, sharing, targeted advertising, or profiling (we do none of these), to limit use of sensitive information (we already use it only to provide the Service), and not to be discriminated against for using these rights. Email nick@theosishealth.com. We'll verify your request in a reasonable way and respond within the time the law requires (usually 45 days). An authorized agent can make a request for you with proof of authorization. [Note: CCPA thresholds likely don't apply yet. We honor these rights voluntarily.]</p>
+<h2 id="9-children">9. Children</h2>
+<p>The Service is for adults <strong>18+</strong>. We don't knowingly collect information from children under 13 (COPPA) or minors. If you believe a child provided information, email us and we'll delete it.</p>
+<h2 id="10-retention">10. Retention</h2>
+<p>We keep data only as long as described in Section 1 and the biometric schedule in Section 3, or longer only where the law requires it (for example, payment records).</p>
+<h2 id="11-security">11. Security</h2>
+<p>We use HTTPS encryption, keep data on your device where possible, store no photos on our servers, hash IP addresses, apply rate limits, and limit who can access systems. No system is perfectly secure. Protect your device, because saved data lives there.</p>
+<h2 id="12-theosis-medical-is-separate">12. Theosis Medical is separate</h2>
+<p>Theosis Medical LLC (theosismedical.com) is a separate clinical company with its own privacy practices. Don't send patient or clinical information to theosishealth.com or nick@theosishealth.com.</p>
+<h2 id="13-changes">13. Changes</h2>
+<p>We'll post updates here with a new date. For material changes, especially to how we use health or biometric data, we'll give notice and ask for consent where required.</p>
+<h2 id="14-contact">14. Contact</h2>
+<p>Theosis Health LLC · 4026 Bristol Dr., Danville, IL 61834 · nick@theosishealth.com</p>`,r=e();function i(){return(0,r.jsx)(t,{children:(0,r.jsxs)(`section`,{className:`mx-auto max-w-3xl px-5 py-16 sm:px-8`,children:[(0,r.jsx)(`p`,{className:`rounded-lg border border-health px-4 py-2 font-semibold text-health`,children:`DRAFT — pending Nick’s review. Not yet in effect.`}),(0,r.jsx)(`article`,{className:`legal mt-6`,dangerouslySetInnerHTML:{__html:n}})]})})}export{i as component};
