@@ -65,7 +65,7 @@ function Home() {
           {tools.map((t) => {
             const inner = (
               <>
-                <h3 className="font-display text-2xl font-semibold uppercase">{t.title}</h3>
+                <h3 className="font-display text-2xl font-semibold uppercase">{t.title}{t.href === "/simulator/" && <span className="ml-2 inline-block rounded-full border px-2 py-0.5 align-middle font-sans text-xs font-semibold normal-case tracking-wide" style={{ color: "#4587c6", borderColor: "rgba(69,135,198,.55)", background: "rgba(69,135,198,.1)" }}>Beta</span>}</h3>
                 <p className="mt-2 text-muted">{t.body}</p>
                 <span className="mt-4 inline-flex items-center gap-1 font-medium text-health">Open <ArrowRight className="size-4" /></span>
               </>
