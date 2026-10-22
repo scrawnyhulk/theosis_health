@@ -13,9 +13,9 @@ export function SiteFooter() {
           <Link to="/"><LogoLockup /></Link>
           
           <a href="/simulator/" className={l}>Metabolic Simulator</a>
-          <a href="/simulator/pft-inside/" className={l}>Personal Fat Threshold model</a>
+          <a href="/simulator/pft-inside/" className={l}>Personal Fat Threshold Model</a>
           <Link to="/hacks" className={l}>Health Hacks</Link>
-          <a href="/fat-burn-calculator/" className={l}>Fat-burn calculator</a>
+          <a href="/fat-burn-calculator/" className={l}>Maximal Fat Loss Calculator</a>
         </div>
         <div className="flex flex-col gap-2 text-sm text-ink-muted md:items-end">
           <Link to="/contact" className={l}>Contact</Link>
