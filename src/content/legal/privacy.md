@@ -8,7 +8,7 @@ Theosis Health LLC ("we," "us"), 4026 Bristol Dr., Danville, IL 61834, runs theo
 - What you enter in the simulator and calculators **stays in your browser on your device**. We have no user accounts and no database of your inputs.
 - **Photo upload and lab-report upload are turned off.** We collect no photos, lab reports, or biometric information.
 - We receive only what you choose to send us (contact form or email) and basic technical data our web host needs to run the site.
-- **We don't sell your data**, share it for advertising, or use ads, ad pixels, session replay, or analytics.
+- **We don't sell your data**, share it for advertising, or use ads, ad pixels, session replay, or third-party trackers. We see only aggregate, cookieless traffic counts from our host, Netlify.
 - We aren't a HIPAA covered entity, and the Service isn't "HIPAA compliant." Laws like the FTC Health Breach Notification Rule and state health-data laws still apply, and we follow them.
 
 ## 1. What we collect and how
@@ -19,6 +19,7 @@ Theosis Health LLC ("we," "us"), 4026 Bristol Dr., Danville, IL 61834, runs theo
 | Contact-form messages (name, email, message) | Our web host's form service (**Netlify Forms**), then our email | Up to 2 years after your last message, then deleted |
 | Emails you send us | Our email provider (Microsoft 365 through GoDaddy) | Up to 3 years after your last message, then deleted |
 | Technical data (IP address, browser, request logs) | Our web host (**Netlify**). IP addresses are converted to a one-way hash for daily usage limits. | Usage counters reset daily. Host logs are kept briefly under Netlify's own retention for security and operations. |
+| Aggregate traffic stats (page views, visitor counts, top pages, referrers) | **Netlify Analytics**, computed by our host from its server logs. No cookies or tracking scripts. | Shown to us only as totals, under Netlify's retention |
 
 We use this information only to run and secure the Service and to reply to you. Please don't send us medical records or clinical details; we can't give individual medical advice.
 
@@ -36,7 +37,8 @@ If there is a breach of unsecured identifiable health information we hold, we wi
 
 ## 6. Cookies, local storage, and analytics
 - We use **essential storage only**: browser local storage to remember your inputs, consent choices, and settings. A service worker lets the app work offline.
-- **No advertising cookies, tracking pixels, session replay, or analytics.** If we ever add privacy-friendly analytics, we'll update this policy first and keep them off health tool pages.
+- **Traffic stats:** our host, Netlify, gives us **aggregate, cookieless** site statistics (like page views and visitor counts) built from its server logs. We use them only to understand overall site usage. They don't identify you, we don't build individual profiles, and they're never sold or used for ads. Nothing you type in the tools is included, because that stays in your browser.
+- **No advertising cookies, tracking pixels, session replay, or third-party trackers.**
 - We honor **Global Privacy Control**. Since we don't sell or share data for advertising, there's nothing more to opt out of.
 
 ## 7. Your privacy rights

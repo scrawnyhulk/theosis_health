@@ -5,7 +5,7 @@ import { _ as lazyRouteComponent, d as Scripts, f as HeadContent, g as Outlet, h
 import { i as require_jsx_runtime } from "../_libs/@radix-ui/react-label+[...].mjs";
 import { i as TriangleAlert } from "../_libs/lucide-react.mjs";
 import { a as union, i as string, n as number, r as object, t as literal } from "../_libs/zod.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/router-BRIti9ct.js
+//#region node_modules/.nitro/vite/services/ssr/assets/router-CRMqPIT5.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var __defProp = Object.defineProperty;
@@ -450,7 +450,7 @@ var Route$7 = createFileRoute("/install")({
 		content: "Add Theosis Medical to your phone’s home screen so it opens like an app — no App Store needed."
 	}] })
 });
-var $$splitComponentImporter$6 = () => import("./privacy-Cp5zX-lS.mjs");
+var $$splitComponentImporter$6 = () => import("./privacy-DN5P4JM4.mjs");
 var Route$6 = createFileRoute("/privacy")({
 	head: () => ({ meta: [{ title: "Privacy Policy — Theosis Health" }] }),
 	component: lazyRouteComponent($$splitComponentImporter$6, "component")
@@ -468,7 +468,7 @@ var Route$4 = createFileRoute("/hacks/")({
 		content: "Health Hacks: the 20% that does 80% of the work. Protein, calories, drinks, fast food, and the mechanisms behind them."
 	}] })
 });
-var $$splitComponentImporter$3 = () => import("../_slug-8MNfEIPZ.mjs");
+var $$splitComponentImporter$3 = () => import("../_slug-DrucaRXr.mjs");
 var Route$3 = createFileRoute("/hacks/$slug")({
 	component: lazyRouteComponent($$splitComponentImporter$3, "component"),
 	head: ({ params }) => {
@@ -489,7 +489,7 @@ var Route$1 = createFileRoute("/hacks/nerd-out/")({
 		content: "Mechanisms. How stuff actually works. Optional reading. Compulsory if you are me."
 	}] })
 });
-var $$splitComponentImporter = () => import("./nerd-out._topic-DVIHAeP7.mjs");
+var $$splitComponentImporter = () => import("./nerd-out._topic-DPf6vyac.mjs");
 var Route = createFileRoute("/hacks/nerd-out/$topic")({
 	component: lazyRouteComponent($$splitComponentImporter, "component"),
 	head: ({ params }) => {
