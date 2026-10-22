@@ -4,7 +4,7 @@ import{c as e}from"./useSelector-B0K6Mfa1.js";import{t}from"./site-shell-RkXIuk9
 <p><strong>The short version</strong></p>
 <ul>
 <li>What you enter in the simulator and calculators <strong>stays in your browser on your device</strong>. We have no user accounts and no database of your inputs.</li>
-<li><strong>Photo upload and lab-report upload are turned off.</strong> We collect no photos, lab reports, or biometric information.</li>
+<li><strong>Food photos only.</strong> If you use the optional food-photo log, the photo you take of a meal or label is sent to Google's Gemini AI to identify the foods. We don't store it. Face, body, and lab-report uploads are turned off, and we collect no biometric information.</li>
 <li>We receive only what you choose to send us (contact form or email) and basic technical data our web host needs to run the site.</li>
 <li><strong>We don't sell your data</strong>, share it for advertising, or use ads, ad pixels, session replay, or third-party trackers. We see only aggregate, cookieless traffic counts from our host, Netlify.</li>
 <li>We aren't a HIPAA covered entity, and the Service isn't "HIPAA compliant." Laws like the FTC Health Breach Notification Rule and state health-data laws still apply, and we follow them.</li>
@@ -14,8 +14,9 @@ import{c as e}from"./useSelector-B0K6Mfa1.js";import{t}from"./site-shell-RkXIuk9
 <p>We use this information only to run and secure the Service and to reply to you. Please don't send us medical records or clinical details; we can't give individual medical advice.</p>
 <h2 id="2-who-we-share-it-with">2. Who we share it with</h2>
 <p>Only our service providers that run the Service for us: <strong>Netlify</strong> (hosting and contact forms) and <strong>Microsoft/GoDaddy</strong> (email). We may also disclose information if the law requires it or to protect our rights. We don't sell or rent personal information.</p>
-<h2 id="3-photo-lab-upload-and-ai-features-currently-off">3. Photo, lab-upload, and AI features (currently off)</h2>
-<p>Photo upload, AI photo illustrations, and lab-report upload are <strong>not available</strong>. We collect no photos, face geometry, or other biometric information. If we turn these features on later, we will first update this policy, publish a biometric data retention and destruction schedule as Illinois' Biometric Information Privacy Act (BIPA) requires, name any AI processor we use, and get your <strong>written consent</strong> before anything is collected.</p>
+<h2 id="3-food-photos-and-features-that-are-off">3. Food photos, and features that are off</h2>
+<p><strong>Food photos (optional).</strong> If you use food-photo logging, the image is sent from your browser to Google Gemini, using Google's paid API, to identify foods and estimate nutrition. The results come back to your device for you to review. We don't store the photo or the results on our servers. Google processes the image as our service provider under its paid API terms, which don't allow it to train its models on your data. Google may keep it briefly for abuse monitoring as those terms describe. Please photograph food and labels only, not people. We don't analyze faces or bodies, and food photos aren't used to identify anyone.</p>
+<p><strong>Features that are off.</strong> Face or body photos, AI photo illustrations, and lab-report upload are <strong>not available</strong>. We collect no face geometry or other biometric information. If we turn these features on later, we will first update this policy, publish a biometric data retention and destruction schedule as Illinois' Biometric Information Privacy Act (BIPA) requires, and get your <strong>written consent</strong> before anything is collected.</p>
 <h2 id="4-consumer-health-data">4. Consumer health data</h2>
 <p>Some information, like weight or A1c, can be "consumer health data" under laws such as Washington's My Health My Data Act. That information stays on your device. See our separate <a href="/consumer-health-privacy">Consumer Health Data Privacy Policy</a>.</p>
 <h2 id="5-ftc-health-breach-notification-rule">5. FTC Health Breach Notification Rule</h2>

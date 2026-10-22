@@ -6,7 +6,7 @@ Theosis Health LLC ("we," "us"), 4026 Bristol Dr., Danville, IL 61834, runs theo
 
 **The short version**
 - What you enter in the simulator and calculators **stays in your browser on your device**. We have no user accounts and no database of your inputs.
-- **Photo upload and lab-report upload are turned off.** We collect no photos, lab reports, or biometric information.
+- **Food photos only.** If you use the optional food-photo log, the photo you take of a meal or label is sent to Google's Gemini AI to identify the foods. We don't store it. Face, body, and lab-report uploads are turned off, and we collect no biometric information.
 - We receive only what you choose to send us (contact form or email) and basic technical data our web host needs to run the site.
 - **We don't sell your data**, share it for advertising, or use ads, ad pixels, session replay, or third-party trackers. We see only aggregate, cookieless traffic counts from our host, Netlify.
 - We aren't a HIPAA covered entity, and the Service isn't "HIPAA compliant." Laws like the FTC Health Breach Notification Rule and state health-data laws still apply, and we follow them.
@@ -26,8 +26,10 @@ We use this information only to run and secure the Service and to reply to you. 
 ## 2. Who we share it with
 Only our service providers that run the Service for us: **Netlify** (hosting and contact forms) and **Microsoft/GoDaddy** (email). We may also disclose information if the law requires it or to protect our rights. We don't sell or rent personal information.
 
-## 3. Photo, lab-upload, and AI features (currently off)
-Photo upload, AI photo illustrations, and lab-report upload are **not available**. We collect no photos, face geometry, or other biometric information. If we turn these features on later, we will first update this policy, publish a biometric data retention and destruction schedule as Illinois' Biometric Information Privacy Act (BIPA) requires, name any AI processor we use, and get your **written consent** before anything is collected.
+## 3. Food photos, and features that are off
+**Food photos (optional).** If you use food-photo logging, the image is sent from your browser to Google Gemini, using Google's paid API, to identify foods and estimate nutrition. The results come back to your device for you to review. We don't store the photo or the results on our servers. Google processes the image as our service provider under its paid API terms, which don't allow it to train its models on your data. Google may keep it briefly for abuse monitoring as those terms describe. Please photograph food and labels only, not people. We don't analyze faces or bodies, and food photos aren't used to identify anyone.
+
+**Features that are off.** Face or body photos, AI photo illustrations, and lab-report upload are **not available**. We collect no face geometry or other biometric information. If we turn these features on later, we will first update this policy, publish a biometric data retention and destruction schedule as Illinois' Biometric Information Privacy Act (BIPA) requires, and get your **written consent** before anything is collected.
 
 ## 4. Consumer health data
 Some information, like weight or A1c, can be "consumer health data" under laws such as Washington's My Health My Data Act. That information stays on your device. See our separate [Consumer Health Data Privacy Policy](/consumer-health-privacy).
