@@ -9,7 +9,7 @@ import { a as SiteShell, t as Button } from "./site-shell-DeZc4Hhv.mjs";
 import { t as Input } from "./input-CWH86qLL.mjs";
 import { t as NerdParagraph } from "./nerd-paragraph-CQuEwJxw.mjs";
 import { i as VideoCard, n as Label, r as NerdStepper, t as EnlargeableImage } from "./video-card-1qrPNXXi.mjs";
-//#region ../theosishealth/node_modules/.nitro/vite/services/ssr/assets/nerd-out._topic-B_fH1-K0.js
+//#region node_modules/.nitro/vite/services/ssr/assets/nerd-out._topic-B_fH1-K0.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var CAL_PER_LB = 31;

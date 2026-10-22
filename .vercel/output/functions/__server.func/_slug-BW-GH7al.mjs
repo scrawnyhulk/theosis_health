@@ -9,7 +9,7 @@ import { a as SiteShell, o as cn, t as Button } from "./_ssr/site-shell-DeZc4Hhv
 import { t as Input } from "./_ssr/input-CWH86qLL.mjs";
 import { t as NerdParagraph } from "./_ssr/nerd-paragraph-CQuEwJxw.mjs";
 import { i as VideoCard, n as Label, r as NerdStepper, t as EnlargeableImage } from "./_ssr/video-card-1qrPNXXi.mjs";
-//#region ../theosishealth/node_modules/.nitro/vite/services/ssr/assets/_slug-BW-GH7al.js
+//#region node_modules/.nitro/vite/services/ssr/assets/_slug-BW-GH7al.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 function sourceLabel(source) {

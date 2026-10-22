@@ -1,4 +1,4 @@
-//#region ../theosishealth/node_modules/.nitro/vite/services/ssr/assets/_tanstack-start-manifest_v-CMWQ52m1.js
+//#region node_modules/.nitro/vite/services/ssr/assets/_tanstack-start-manifest_v-CMWQ52m1.js
 var tsrStartManifest = () => ({ routes: {
 	__root__: {
 		filePath: "/workspace/th-nav/src/routes/__root.tsx",

@@ -5,7 +5,7 @@ import { _ as lazyRouteComponent, d as Scripts, f as HeadContent, g as Outlet, h
 import { i as require_jsx_runtime } from "../_libs/@radix-ui/react-label+[...].mjs";
 import { i as TriangleAlert } from "../_libs/lucide-react.mjs";
 import { a as union, i as string, n as number, r as object, t as literal } from "../_libs/zod.mjs";
-//#region ../theosishealth/node_modules/.nitro/vite/services/ssr/assets/router-DF4fuBtU.js
+//#region node_modules/.nitro/vite/services/ssr/assets/router-DF4fuBtU.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var __defProp = Object.defineProperty;
