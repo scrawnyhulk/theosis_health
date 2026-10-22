@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LogoLockup } from "@/components/site/logo-lockup";
@@ -14,14 +14,20 @@ const mItem = "flex min-h-12 items-center border-b border-border text-base font-
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
+  // Home page shows the big hero logo instead, so the header drops its logo there (different feel from theosismedical.com).
+  const isHome = useRouterState({ select: (s) => s.location.pathname }) === "/";
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-bg/80 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6">
         <div className="flex items-center gap-3 sm:gap-5">
           <QuickFind />
-          <Link to="/" className="flex min-h-11 shrink-0 items-center" onClick={close}>
-            <LogoLockup />
-          </Link>
+          {isHome ? (
+            <Link to="/" className="sr-only focus:not-sr-only focus:flex focus:min-h-11 focus:items-center" onClick={close}>Theosis Health home</Link>
+          ) : (
+            <Link to="/" className="flex min-h-11 shrink-0 items-center" onClick={close}>
+              <LogoLockup />
+            </Link>
+          )}
           <nav className="hidden items-center gap-4 whitespace-nowrap xl:flex" aria-label="Primary">
             {healthNav.map((n) => (
               <a key={n.href} href={n.href} className={item}>{n.label}</a>

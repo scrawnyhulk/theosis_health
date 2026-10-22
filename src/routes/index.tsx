@@ -24,11 +24,13 @@ function Home() {
   return (
     <SiteShell>
       <section className="health-mesh text-ink-fg">
-        <div className="hero-phone">
-          <picture><source srcSet="/images/theosis-health-hero-phone.webp" type="image/webp" /><img src="/images/theosis-health-hero-phone.jpg" width={1080} height={1080} alt="Theosis Health logo: a chrome three-bar Orthodox cross wrapped by a blue DNA double helix inside a laurel wreath, above the words Theosis Health." className="no-outline mx-auto block h-auto w-full max-w-full object-contain object-top" /></picture>
-        </div>
-        <div className="hero-desktop">
-          <picture><source srcSet="/images/theosis-health-hero.webp" type="image/webp" /><img src="/images/theosis-health-hero.jpg" width={1920} height={1080} alt="Theosis Health logo: a chrome three-bar Orthodox cross wrapped by a blue DNA double helix inside a laurel wreath, above the words Theosis Health." className="no-outline block max-h-[80svh] w-full object-cover object-center" /></picture>
+        <div className="hero-logo mx-auto flex max-w-7xl items-center justify-center px-4 pt-6 sm:px-8 md:pt-10">
+          <picture>
+            <source media="(min-width: 640px)" srcSet="/images/theosis-health-hero-h.webp" type="image/webp" />
+            <source media="(min-width: 640px)" srcSet="/images/theosis-health-hero-h.png" />
+            <source srcSet="/images/theosis-health-hero-v.webp" type="image/webp" />
+            <img src="/images/theosis-health-hero-v.png" alt="Theosis Health logo: a chrome three-bar Orthodox cross wrapped by a blue DNA double helix inside a chrome and blue laurel wreath, beside the words Theosis Health." fetchPriority="high" className="no-outline block h-auto w-auto object-contain" />
+          </picture>
         </div>
         <div className="mx-auto max-w-6xl px-5 py-12 sm:px-8 md:py-16">
           <div className="stagger-in">

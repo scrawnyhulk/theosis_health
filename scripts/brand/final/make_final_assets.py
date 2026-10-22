@@ -78,3 +78,19 @@ sq.resize((48,48),Image.LANCZOS).save(PUB+"favicon.ico",sizes=[(16,16),(32,32),(
 # 4) og image 1200x630
 og=widen(int(H*1200/630)).resize((1200,630),Image.LANCZOS); og.save(PUB+"og.jpg",quality=88,optimize=True,progressive=True)
 print("ok")
+
+# 5) horizontal hero lockup (emblem left, wordmark right) + stacked phone version, transparent, with a soft glow halo
+def soft_glow(im, pad):
+    big=Image.new("RGBA",(im.width+2*pad,im.height+2*pad),(0,0,0,0)); big.alpha_composite(im,(pad,pad)); return big
+def hero_h():
+    EH=900; e=emb.resize((round(emb.width*EH/emb.height),EH),Image.LANCZOS)
+    WH=round(EH*0.36); wd=word.resize((round(word.width*WH/word.height),WH),Image.LANCZOS)
+    gap=70; pad=40; im=Image.new("RGBA",(e.width+gap+wd.width+2*pad,EH+2*pad),(0,0,0,0))
+    im.alpha_composite(e,(pad,pad)); im.alpha_composite(wd,(pad+e.width+gap,pad+(EH-WH)//2)); return im
+def hero_v():
+    EH=900; e=emb.resize((round(emb.width*EH/emb.height),EH),Image.LANCZOS)
+    WW=round(e.width*1.08); wd=word.resize((WW,round(word.height*WW/word.width)),Image.LANCZOS)
+    gap=40; pad=30; Wd=max(e.width,wd.width)+2*pad; im=Image.new("RGBA",(Wd,EH+gap+wd.height+2*pad),(0,0,0,0))
+    im.alpha_composite(e,((Wd-e.width)//2,pad)); im.alpha_composite(wd,((Wd-wd.width)//2,pad+EH+gap)); return im
+for nm,im in (("theosis-health-hero-h",hero_h()),("theosis-health-hero-v",hero_v())):
+    im.save(PUB+f"images/{nm}.webp",quality=90,alpha_quality=100); im.save(PUB+f"images/{nm}.png",optimize=True); print(nm,im.size)

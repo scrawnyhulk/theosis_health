@@ -177,22 +177,6 @@
   cursor: pointer;
 }
 
-.hero-phone {
-  display: block;
-}
-
-.hero-desktop {
-  display: none;
-}
-
-@media (min-width: 1024px) and (orientation: landscape) {
-  .hero-phone {
-    display: none;
-  }
-  .hero-desktop {
-    display: block;
-  }
-}
 
 @media (prefers-reduced-motion: reduce) {
   html {
@@ -324,3 +308,12 @@
 .legal blockquote { border-left: 3px solid var(--color-health); padding: .5rem 1rem; background: var(--color-surface); border-radius: 8px; }
 .legal table { width: 100%; border-collapse: collapse; font-size: .9rem; display: block; overflow-x: auto; }
 .legal th, .legal td { border: 1px solid var(--color-border-strong); padding: .4rem .6rem; text-align: left; vertical-align: top; }
+
+/* Home hero logo: always fully visible in the first screen (header is 4rem). */
+.hero-logo img {
+  max-width: min(100%, 1500px);
+  max-height: calc(100svh - 4rem - 4.5rem);
+}
+@media (min-width: 640px) {
+  .hero-logo img { max-width: min(92vw, 1500px); max-height: calc(100svh - 4rem - 5rem); }
+}
