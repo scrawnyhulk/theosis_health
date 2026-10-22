@@ -4,9 +4,9 @@ import { n as require_react } from "../_libs/@radix-ui/react-compose-refs+[...].
 import { b as Link } from "../_libs/@tanstack/react-router+[...].mjs";
 import { i as require_jsx_runtime } from "../_libs/@radix-ui/react-label+[...].mjs";
 import { _ as ArrowRight, l as Footprints, p as Clock, u as FlaskConical } from "../_libs/lucide-react.mjs";
-import { a as SODA_PERSON, c as maintenance, i as EXAMPLE, o as extraLbByDay, s as lostLbByDay } from "./router-ZLWgxNCF.mjs";
+import { a as SODA_PERSON, c as maintenance, i as EXAMPLE, o as extraLbByDay, s as lostLbByDay } from "./router-BL1aE6q3.mjs";
 import { a as SiteShell, i as NavPlaque, r as NavIcon } from "./site-shell-BJfe-Oo7.mjs";
-//#region ../theosishealth/node_modules/.nitro/vite/services/ssr/assets/routes-BFWIPan8.js
+//#region ../theosishealth/node_modules/.nitro/vite/services/ssr/assets/routes-BT-bkOIZ.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 /** Swap this slug to feature a different existing Health Hack. Text is pulled from src/lib/hacks.ts, not written here. */
@@ -67,18 +67,19 @@ function HomeFeatures() {
 		className: "my-6 grid max-w-5xl gap-4 md:grid-cols-2",
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", {
 			"aria-labelledby": "simfeat-title",
-			className: "flex h-full flex-col overflow-hidden rounded-xl border border-[#79b4f6]/60 text-white shadow-[0_0_0_1px_rgb(91_156_236_/_0.35),0_0_28px_rgb(42_122_224_/_0.45)] ring-2 ring-[#5b9cec]/50 transition-shadow duration-200 hover:shadow-[0_0_0_1px_rgb(121_180_246_/_0.5),0_0_40px_rgb(42_122_224_/_0.65)] sm:flex-row",
+			className: "flex h-full flex-col overflow-hidden rounded-xl border border-[#79b4f6]/60 bg-surface/80 shadow-[0_0_0_1px_rgb(91_156_236_/_0.35),0_0_28px_rgb(42_122_224_/_0.45)] ring-2 ring-[#5b9cec]/50 transition-shadow duration-200 hover:shadow-[0_0_0_1px_rgb(121_180_246_/_0.5),0_0_40px_rgb(42_122_224_/_0.65)]",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
 				src: "/images/simulator-card-cover.jpg",
 				alt: "Phone showing the Metabolic Simulator's see-through figure",
 				loading: "lazy",
-				className: "h-40 w-full object-cover sm:h-auto sm:w-44"
+				width: 1200,
+				height: 675,
+				className: "block aspect-video h-auto w-full object-cover"
 			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "flex flex-1 flex-col gap-3 p-5",
-				style: { backgroundImage: "linear-gradient(160deg, #3a8af0 0%, #2a7ae0 45%, #1a55a6 100%)" },
+				className: "flex flex-1 flex-col gap-2 p-5",
 				children: [
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-						className: "flex items-center gap-2 text-xs font-semibold tracking-[0.16em] uppercase text-white/85",
+						className: "flex items-center gap-2 text-xs font-semibold tracking-[0.16em] text-health uppercase",
 						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(NavIcon, {
 							name: "pulse",
 							className: "size-5"
@@ -86,20 +87,20 @@ function HomeFeatures() {
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
 						id: "simfeat-title",
-						className: "font-display text-2xl font-semibold uppercase",
+						className: "font-display text-xl font-semibold uppercase",
 						children: "Metabolic Simulator"
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-						className: "text-white/95",
+						className: "text-ink-fg/85",
 						children: "See where you may stand relative to your personal fat threshold, and how daily habits could change it over time."
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-						className: "text-xs text-white/80",
+						className: "text-xs text-ink-muted",
 						children: "Estimates are hedged and for education only, not medical advice."
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("a", {
 						href: "/simulator/",
-						className: "mt-auto inline-flex min-h-11 items-center gap-2 self-start rounded-md bg-white px-4 font-semibold text-[#1a55a6] transition-colors hover:bg-[#e6f0ff]",
+						className: "mt-auto inline-flex min-h-11 items-center gap-2 self-start rounded-md bg-[#2a7ae0] px-4 font-semibold text-white transition-colors hover:bg-[#3a8af0]",
 						children: ["Try the simulator ", /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
 							"aria-hidden": true,
 							children: "→"
