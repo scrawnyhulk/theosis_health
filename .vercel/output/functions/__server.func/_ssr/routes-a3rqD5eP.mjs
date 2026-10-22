@@ -3,9 +3,9 @@ import { n as require_react } from "../_libs/@radix-ui/react-compose-refs+[...].
 import { b as Link } from "../_libs/@tanstack/react-router+[...].mjs";
 import { i as require_jsx_runtime } from "../_libs/@radix-ui/react-label+[...].mjs";
 import { _ as ArrowRight, l as Footprints, p as Clock, u as FlaskConical } from "../_libs/lucide-react.mjs";
-import { a as SODA_PERSON, c as maintenance, i as EXAMPLE, o as extraLbByDay, s as lostLbByDay } from "./router-DFk5B5BE.mjs";
+import { a as SODA_PERSON, c as maintenance, i as EXAMPLE, o as extraLbByDay, s as lostLbByDay } from "./router-wMTJ2ufk.mjs";
 import { r as SiteShell } from "./site-shell-Coxd6dm8.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/routes-CUWvAu8Q.js
+//#region node_modules/.nitro/vite/services/ssr/assets/routes-a3rqD5eP.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 Math.round(maintenance(SODA_PERSON) / 10) * 10;
@@ -80,7 +80,7 @@ function Home() {
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 									className: "mt-2 max-w-2xl text-ink-fg/85",
-									children: "Our bodies are a lot like machines. We’re made of parts, and we run on fuel. Most adults burn roughly 60–110 calories an hour, so a few sips of a sweet drink or a few extra bites can be more than we need in that moment. We store the extra, and small things add up fast."
+									children: "Our bodies are a lot like machines. We’re made of parts (protein) and run on fuel (carbohydrates and fats). Most adults burn roughly 60–110 calories an hour, so a few sips of a sweet drink or a few extra bites can be more than we need in that moment. We store the extra, and small things add up fast."
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
 									className: "mt-3 max-w-2xl text-ink-fg/85",
@@ -114,7 +114,7 @@ function Home() {
 											className: "font-medium text-health underline underline-offset-2 hover:no-underline",
 											children: "Theosis Metabolic Simulator"
 										}),
-										" help you find small, targeted changes that fit the life you already have, without giving up every food you enjoy."
+										" were created to help you find small, targeted changes that fit the life you already have, without giving up every food you enjoy."
 									]
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("ul", {
