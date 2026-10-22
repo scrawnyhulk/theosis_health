@@ -1,4 +1,4 @@
-//#region ../theosishealth/node_modules/.nitro/vite/services/ssr/assets/hacks-Dnwxk09X.js
+//#region node_modules/.nitro/vite/services/ssr/assets/hacks-Dnwxk09X.js
 var site = {
 	name: "Theosis Health",
 	title: "Theosis Health — health education tools",
