@@ -434,3 +434,38 @@ sup a{color:#4587c6;text-decoration:none}
 /* Palette B contrast: blue text lifted to >= 4.5:1 on charcoal surfaces */
 :root { --color-health: #4f92d2; }
 .text-accent { color: #5b9cec; }
+
+/* Blue flares on charcoal (preview) */
+.health-mesh {
+  background:
+    radial-gradient(40% 45% at 50% 22%, rgb(42 122 224 / 0.22), transparent 70%),
+    radial-gradient(55% 60% at 80% 30%, rgb(42 122 224 / 0.16), transparent 70%),
+    radial-gradient(45% 50% at 12% 70%, rgb(91 156 236 / 0.08), transparent 70%),
+    linear-gradient(180deg, #171b21, #14171c);
+}
+.flare-bloom { position: relative; isolation: isolate; }
+.flare-bloom::before {
+  content: ""; position: absolute; z-index: -1; pointer-events: none;
+  inset: 0 auto auto 0; width: min(70rem, 100%); height: 100%;
+  background: radial-gradient(45% 60% at 22% 40%, rgb(42 122 224 / 0.18), transparent 70%);
+}
+.flare-divider { border-bottom: 0; }
+.flare-divider::after, .mk-hero-rule {
+  border: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgb(91 156 236 / 0.7) 30%, rgb(121 180 246 / 0.9) 50%, rgb(91 156 236 / 0.7) 70%, transparent);
+}
+.flare-divider::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; }
+.flare-card, .health-card, .mk-card, .mk-feat, main .rounded-xl.shadow-border {
+  position: relative;
+  border: 1px solid rgb(91 156 236 / 0.4) !important;
+  box-shadow: 0 0 0 1px rgb(91 156 236 / 0.12), 0 0 14px rgb(42 122 224 / 0.16), 0 10px 30px -14px rgb(0 0 0 / 0.6) !important;
+  transition: box-shadow 200ms, border-color 200ms;
+}
+.flare-card::before, .health-card::before, .mk-card::before, main .rounded-xl.shadow-border::before {
+  content: ""; position: absolute; z-index: 2; top: 0; left: 8%; right: 8%; height: 1px; pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgb(121 180 246 / 0.85), transparent);
+}
+.flare-card:hover, .health-card:hover, .mk-card:hover {
+  border-color: rgb(121 180 246 / 0.6) !important;
+  box-shadow: 0 0 0 1px rgb(121 180 246 / 0.2), 0 0 20px rgb(42 122 224 / 0.26), 0 10px 30px -14px rgb(0 0 0 / 0.6) !important;
+}

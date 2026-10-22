@@ -31,7 +31,7 @@ function HackCoverCard({
     <Link
       to="/hacks/$slug"
       params={{ slug: hack.slug }}
-      className={`group block overflow-hidden rounded-xl bg-ink shadow-border ${featured ? "mt-8" : ""}`}
+      className={`flare-card group block overflow-hidden rounded-xl bg-ink shadow-border ${featured ? "mt-8" : ""}`}
     >
       <span className="relative block aspect-[3/2] overflow-hidden rounded-xl">
         <img
@@ -81,7 +81,7 @@ function HacksHub() {
   return (
     <SiteShell>
       <TldrGate />
-      <section className="border-b border-border">
+      <section className="flare-bloom flare-divider">
         <div className="mx-auto max-w-6xl px-5 py-16 sm:px-8 lg:py-24">
           <p className="text-xs font-medium tracking-widest text-muted uppercase">
             {hacksIntro.kicker}
@@ -126,7 +126,7 @@ function HacksHub() {
           <Link
             to="/hacks/$slug"
             params={{ slug: featured.slug }}
-            className="group mt-8 flex flex-col rounded-xl bg-surface p-6 shadow-border transition-colors duration-150 hover:bg-fg/5 sm:p-10 md:flex-row md:items-end md:justify-between md:gap-10"
+            className="flare-card group mt-8 flex flex-col rounded-xl bg-surface p-6 shadow-border transition-colors duration-150 hover:bg-fg/5 sm:p-10 md:flex-row md:items-end md:justify-between md:gap-10"
           >
             <div className="max-w-2xl">
               <p className="text-xs font-medium tracking-widest text-accent uppercase">Start here</p>
@@ -158,7 +158,7 @@ function HacksHub() {
                 key={hack.slug}
                 to="/hacks/$slug"
                 params={{ slug: hack.slug }}
-                className="group flex flex-col rounded-xl bg-surface p-6 shadow-border transition-colors duration-150 hover:bg-fg/5 sm:p-8"
+                className="flare-card group flex flex-col rounded-xl bg-surface p-6 shadow-border transition-colors duration-150 hover:bg-fg/5 sm:p-8"
               >
                 <p className="font-display text-3xl font-semibold text-accent">{hack.n}</p>
                 <h2 className="mt-4 font-display text-3xl font-semibold tracking-wide uppercase">

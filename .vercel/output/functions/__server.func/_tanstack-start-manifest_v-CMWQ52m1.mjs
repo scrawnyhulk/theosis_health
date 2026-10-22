@@ -1,4 +1,4 @@
-//#region ../theosishealth/node_modules/.nitro/vite/services/ssr/assets/_tanstack-start-manifest_v-BRx7DvE8.js
+//#region ../theosishealth/node_modules/.nitro/vite/services/ssr/assets/_tanstack-start-manifest_v-CMWQ52m1.js
 var tsrStartManifest = () => ({ routes: {
 	__root__: {
 		filePath: "/workspace/th-nav/src/routes/__root.tsx",
@@ -15,7 +15,7 @@ var tsrStartManifest = () => ({ routes: {
 			"/hacks/"
 		],
 		preloads: [
-			"/assets/index-Dd3r2Nbk.js",
+			"/assets/index-Bam_m3Ha.js",
 			"/assets/useSelector-B0K6Mfa1.js",
 			"/assets/hacks-DNc3MQoh.js",
 			"/assets/preload-helper-B9MoI6v7.js",
@@ -24,14 +24,14 @@ var tsrStartManifest = () => ({ routes: {
 		scripts: [{ attrs: {
 			type: "module",
 			async: !0,
-			src: "/assets/index-Dd3r2Nbk.js"
+			src: "/assets/index-Bam_m3Ha.js"
 		} }]
 	},
 	"/": {
 		filePath: "/workspace/th-nav/src/routes/index.tsx",
 		children: void 0,
 		preloads: [
-			"/assets/routes-CYREBCkQ.js",
+			"/assets/routes-OGeVQ4xJ.js",
 			"/assets/site-shell-BTcpRrTt.js",
 			"/assets/arrow-right-BdIbGYay.js"
 		]
@@ -75,7 +75,7 @@ var tsrStartManifest = () => ({ routes: {
 		filePath: "/workspace/th-nav/src/routes/hacks/$slug.tsx",
 		children: void 0,
 		preloads: [
-			"/assets/_slug-BJk65UO5.js",
+			"/assets/_slug-D2WJqpTi.js",
 			"/assets/site-shell-BTcpRrTt.js",
 			"/assets/nerd-paragraph-BqPwsOZN.js",
 			"/assets/arrow-right-BdIbGYay.js",
@@ -86,13 +86,13 @@ var tsrStartManifest = () => ({ routes: {
 	"/hacks/nerd-out": {
 		filePath: "/workspace/th-nav/src/routes/hacks/nerd-out.tsx",
 		children: ["/hacks/nerd-out/$topic", "/hacks/nerd-out/"],
-		preloads: ["/assets/nerd-out-BXjoHje9.js"]
+		preloads: ["/assets/nerd-out-hm_oy56L.js"]
 	},
 	"/hacks/": {
 		filePath: "/workspace/th-nav/src/routes/hacks/index.tsx",
 		children: void 0,
 		preloads: [
-			"/assets/hacks-CWK_o1fn.js",
+			"/assets/hacks-B-zzDz9G.js",
 			"/assets/site-shell-BTcpRrTt.js",
 			"/assets/arrow-right-BdIbGYay.js"
 		]
@@ -101,7 +101,7 @@ var tsrStartManifest = () => ({ routes: {
 		filePath: "/workspace/th-nav/src/routes/hacks/nerd-out.$topic.tsx",
 		children: void 0,
 		preloads: [
-			"/assets/nerd-out._topic-CxQAc800.js",
+			"/assets/nerd-out._topic-BsoP_EzP.js",
 			"/assets/site-shell-BTcpRrTt.js",
 			"/assets/nerd-paragraph-BqPwsOZN.js",
 			"/assets/arrow-right-BdIbGYay.js",

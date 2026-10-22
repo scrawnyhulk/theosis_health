@@ -5,7 +5,7 @@ import { b as Link } from "../_libs/@tanstack/react-router+[...].mjs";
 import { i as require_jsx_runtime } from "../_libs/@radix-ui/react-label+[...].mjs";
 import { _ as ArrowRight, r as X } from "../_libs/lucide-react.mjs";
 import { a as SiteShell, o as cn, t as Button } from "./site-shell-DeZc4Hhv.mjs";
-//#region ../theosishealth/node_modules/.nitro/vite/services/ssr/assets/hacks--IH3RePv.js
+//#region ../theosishealth/node_modules/.nitro/vite/services/ssr/assets/hacks-2KtIzZMC.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var KEY = "theosis-hacks-tldr-gate-v2";
@@ -112,7 +112,7 @@ function HackCoverCard({ hack, featured }) {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Link, {
 		to: "/hacks/$slug",
 		params: { slug: hack.slug },
-		className: `group block overflow-hidden rounded-xl bg-ink shadow-border ${featured ? "mt-8" : ""}`,
+		className: `flare-card group block overflow-hidden rounded-xl bg-ink shadow-border ${featured ? "mt-8" : ""}`,
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
 			className: "relative block aspect-[3/2] overflow-hidden rounded-xl",
 			children: [
@@ -160,7 +160,7 @@ function HacksHub() {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SiteShell, { children: [
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TldrGate, {}),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)("section", {
-			className: "border-b border-border",
+			className: "flare-bloom flare-divider",
 			children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "mx-auto max-w-6xl px-5 py-16 sm:px-8 lg:py-24",
 				children: [
@@ -220,7 +220,7 @@ function HacksHub() {
 				}) : featured ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
 					to: "/hacks/$slug",
 					params: { slug: featured.slug },
-					className: "group mt-8 flex flex-col rounded-xl bg-surface p-6 shadow-border transition-colors duration-150 hover:bg-fg/5 sm:p-10 md:flex-row md:items-end md:justify-between md:gap-10",
+					className: "flare-card group mt-8 flex flex-col rounded-xl bg-surface p-6 shadow-border transition-colors duration-150 hover:bg-fg/5 sm:p-10 md:flex-row md:items-end md:justify-between md:gap-10",
 					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "max-w-2xl",
 						children: [
@@ -257,7 +257,7 @@ function HacksHub() {
 						return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Link, {
 							to: "/hacks/$slug",
 							params: { slug: hack.slug },
-							className: "group flex flex-col rounded-xl bg-surface p-6 shadow-border transition-colors duration-150 hover:bg-fg/5 sm:p-8",
+							className: "flare-card group flex flex-col rounded-xl bg-surface p-6 shadow-border transition-colors duration-150 hover:bg-fg/5 sm:p-8",
 							children: [
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 									className: "font-display text-3xl font-semibold text-accent",

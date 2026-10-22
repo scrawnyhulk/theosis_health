@@ -11,7 +11,7 @@ export function HackOfTheWeek() {
   if (!h) return null;
   const cover = hackCovers[h.slug];
   return (
-    <aside aria-labelledby="hotw-title" className="flex h-full flex-col overflow-hidden rounded-xl border border-border bg-surface/80 sm:flex-row">
+    <aside aria-labelledby="hotw-title" className="flare-card flex h-full flex-col overflow-hidden rounded-xl border border-border bg-surface/80 sm:flex-row">
       {cover ? <img src={cover.src} alt={cover.alt} loading="lazy" className="h-40 w-full object-cover sm:h-auto sm:w-44" /> : null}
       <div className="flex flex-col gap-2 p-5">
         <span className="text-xs font-semibold tracking-[0.16em] text-health uppercase">Hack of the week</span>
