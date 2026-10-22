@@ -1,6 +1,6 @@
 # Medical Disclaimer — Theosis Health
 
-**Last updated:** [date]
+**Effective date:** October 22, 2026 · **Last updated:** October 22, 2026
 
 > **Emergency? Call 911** (or your local emergency number) or go to the nearest emergency department. Don't use this site or wait for an email reply.
 
@@ -15,9 +15,7 @@ Theosis Health was founded by Nick Holwey, a licensed physician assistant (PA-C)
 The PA-C credential is shown **for background only**. PA-C means certified by the National Commission on Certification of Physician Assistants (NCCPA). Physician assistants are licensed by individual states and practice medicine in collaboration with physicians as state law requires. A PA's license is to practice in the states where he's licensed, and none of that practice happens on this site. Nick's clinical work is done separately through **Theosis Medical LLC**, a different company (theosismedical.com).
 
 ## Estimates, not predictions
-Simulator results, weight-loss projections, timelines, PFT estimates, and calorie and fat-burn numbers are **estimates from general models and population research**, based on what you enter. Your body may respond differently. They aren't guarantees or forecasts of your results.
-
-**AI images are illustrations, not predictions.** Images made from your photo by an AI model are artistic illustrations of a projected scenario. They aren't medical images and don't show what you will look like.
+The simulator is a free **beta version**. Simulator results, weight-loss projections, timelines, PFT estimates, and calorie and fat-burn numbers are **estimates from general models and population research**, based on what you enter. Your body may respond differently. They aren't guarantees or forecasts of your results.
 
 **A1c.** If you enter an A1c, we display it next to published reference ranges (for example, the American Diabetes Association's ranges) for education. **This is not a diagnosis.** Only a clinician can diagnose prediabetes or diabetes, usually with confirmatory testing. The diabetes status used in the simulator is the one you choose.
 
@@ -28,7 +26,7 @@ The Service is a general wellness and education tool. It has **not been evaluate
 We cite research and outside sources to help you learn. Studies have limits, and science changes. Links to other sites aren't endorsements, and we aren't responsible for their content.
 
 ## Ads, affiliates, and sponsorships
-Theosis Health currently has **no ads, affiliate links, or sponsorships**. [VERIFY before launch.] If that changes, we'll clearly label paid or affiliate links and disclose any material connection, as the FTC requires.
+Theosis Health has **no ads, affiliate links, or sponsorships**, and we aren't paid to mention any product. If that ever changes, we'll clearly label paid or affiliate links and disclose any material connection, as the FTC requires.
 
 ## No warranty
 Content is provided "as is" and may contain errors. See our [Terms of Use](/terms).

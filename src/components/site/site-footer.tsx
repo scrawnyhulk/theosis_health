@@ -21,6 +21,7 @@ export function SiteFooter() {
           <Link to="/contact" className={l}>Contact</Link>
           <Link to="/terms" className={l}>Terms</Link>
           <Link to="/privacy" className={l}>Privacy</Link>
+          <a href="/consumer-health-privacy" className={l}>Consumer Health Privacy</a>
           <Link to="/disclaimer" className={l}>Disclaimer</Link>
           <p className="text-xs">Founded by Nick Holwey, PA-C, a licensed physician assistant. Education only, no medical care. <Link to="/disclaimer" className="underline">Medical Disclaimer</Link></p>
         </div>

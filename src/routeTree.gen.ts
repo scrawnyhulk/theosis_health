@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ConsumerHealthPrivacyRouteImport } from './routes/consumer-health-privacy'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DisclaimerRouteImport } from './routes/disclaimer'
 import { Route as InstallRouteImport } from './routes/install'
@@ -24,6 +25,11 @@ import { Route as HacksNerdOutTopicRouteImport } from './routes/hacks/nerd-out.$
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConsumerHealthPrivacyRoute = ConsumerHealthPrivacyRouteImport.update({
+  id: '/consumer-health-privacy',
+  path: '/consumer-health-privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -79,6 +85,7 @@ const HacksNerdOutTopicRoute = HacksNerdOutTopicRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/consumer-health-privacy': typeof ConsumerHealthPrivacyRoute
   '/contact': typeof ContactRoute
   '/disclaimer': typeof DisclaimerRoute
   '/install': typeof InstallRoute
@@ -92,6 +99,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/consumer-health-privacy': typeof ConsumerHealthPrivacyRoute
   '/contact': typeof ContactRoute
   '/disclaimer': typeof DisclaimerRoute
   '/install': typeof InstallRoute
@@ -105,6 +113,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/consumer-health-privacy': typeof ConsumerHealthPrivacyRoute
   '/contact': typeof ContactRoute
   '/disclaimer': typeof DisclaimerRoute
   '/install': typeof InstallRoute
@@ -120,6 +129,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/consumer-health-privacy'
     | '/contact'
     | '/disclaimer'
     | '/install'
@@ -133,6 +143,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/consumer-health-privacy'
     | '/contact'
     | '/disclaimer'
     | '/install'
@@ -145,6 +156,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/consumer-health-privacy'
     | '/contact'
     | '/disclaimer'
     | '/install'
@@ -159,6 +171,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ConsumerHealthPrivacyRoute: typeof ConsumerHealthPrivacyRoute
   ContactRoute: typeof ContactRoute
   DisclaimerRoute: typeof DisclaimerRoute
   InstallRoute: typeof InstallRoute
@@ -176,6 +189,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/consumer-health-privacy': {
+      id: '/consumer-health-privacy'
+      path: '/consumer-health-privacy'
+      fullPath: '/consumer-health-privacy'
+      preLoaderRoute: typeof ConsumerHealthPrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -267,6 +287,7 @@ const HacksNerdOutRouteWithChildren = HacksNerdOutRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ConsumerHealthPrivacyRoute: ConsumerHealthPrivacyRoute,
   ContactRoute: ContactRoute,
   DisclaimerRoute: DisclaimerRoute,
   InstallRoute: InstallRoute,

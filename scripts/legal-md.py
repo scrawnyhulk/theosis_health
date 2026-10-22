@@ -46,6 +46,6 @@ def conv(md):
         para.append(s.strip())
     flush(); return '\n'.join(out)
 src, dst = sys.argv[1], sys.argv[2]
-for n in ('terms', 'privacy', 'disclaimer'):
+for n in ('terms', 'privacy', 'disclaimer', 'chdp'):
     md = pathlib.Path(src, n + '.md').read_text()
     pathlib.Path(dst, n + '.html').write_text(conv(md))

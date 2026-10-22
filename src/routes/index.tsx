@@ -34,7 +34,6 @@ function Home() {
         </div>
         <div className="mx-auto max-w-6xl px-5 py-12 sm:px-8 md:py-16">
           <div className="stagger-in">
-            <p className="text-xs font-medium tracking-widest text-health uppercase">Draft copy · Nick to edit</p>
             <h1 className="sr-only">Theosis Health</h1>
             <p className="mt-5 max-w-xl text-lg leading-relaxed text-ink-fg/90 sm:text-xl">
               Simple tools and realistic Health Hacks to help you navigate and improve your health in a hectic life.
