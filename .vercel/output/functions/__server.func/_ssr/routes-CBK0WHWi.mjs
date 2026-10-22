@@ -4,9 +4,52 @@ import { b as Link } from "../_libs/@tanstack/react-router+[...].mjs";
 import { i as require_jsx_runtime } from "../_libs/@radix-ui/react-label+[...].mjs";
 import { _ as ArrowRight, l as Footprints, p as Clock, u as FlaskConical } from "../_libs/lucide-react.mjs";
 import { r as SiteShell } from "./site-shell-Coxd6dm8.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/routes-DBQrPyXO.js
+//#region node_modules/.nitro/vite/services/ssr/assets/routes-CBK0WHWi.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
+var LB = 2.2046226218;
+var RHO_F = 4250 * LB;
+var RHO_L = 1800;
+var TEF_BETA = .1;
+var AT_BETA_UP = .2;
+var AT_UP_MAXEXCESS = 1e3;
+var AT_TAU = 14;
+var AT_CAP = .25;
+/** Example person used on the home page swap cards. */
+var EXAMPLE = {
+	sex: "m",
+	age: 40,
+	heightCm: 175.3,
+	weightLb: 180,
+	bodyFatPct: 25,
+	lightActivityKcal: 250
+};
+var bmr = (kg) => 10 * kg + 6.25 * EXAMPLE.heightCm - 5 * EXAMPLE.age + (EXAMPLE.sex === "m" ? 5 : -161);
+var tdee = (kg) => bmr(kg) * 1.2 + EXAMPLE.lightActivityKcal;
+/** Extra pounds vs staying at maintenance, for each day 0..365, when eating `surplus` kcal/day more. */
+function extraLbByDay(surplus, days = 365) {
+	const w0 = EXAMPLE.weightLb / LB;
+	let F = w0 * EXAMPLE.bodyFatPct / 100, L = w0 - F, adapt = 0;
+	const ei0 = tdee(w0), intake = ei0 + surplus;
+	const out = [0];
+	for (let d = 0; d < days; d++) {
+		const t = tdee(F + L);
+		const target = -Math.min(AT_CAP * t, AT_BETA_UP * Math.min(intake - ei0, AT_UP_MAXEXCESS));
+		adapt += (target - adapt) / AT_TAU;
+		const E = intake - (t - adapt - TEF_BETA * (ei0 - intake));
+		const pm = 10.4 / (10.4 + F);
+		const dF = E / (RHO_F + RHO_L * pm / (1 - pm));
+		F += dF;
+		L += dF * pm / (1 - pm);
+		out.push((F + L - w0) * LB);
+	}
+	return out;
+}
+var SODA_LB = extraLbByDay(140);
+var PROT_LB = extraLbByDay(150);
+var BAR_MAX = Math.max(SODA_LB[365], PROT_LB[365]) * 1.05;
+var barH = (lb) => `${Math.max(4, lb / BAR_MAX * 100)}%`;
+var EXAMPLE_NOTE = `Example: a ${EXAMPLE.age}-year-old, 5'9", ${EXAMPLE.weightLb}-lb, lightly active adult; individual numbers will differ. Try the simulator to see your own.`;
 var tools = [
 	{
 		href: "/simulator/",
@@ -64,6 +107,66 @@ function Home() {
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 							className: "mt-5 max-w-xl text-lg leading-relaxed text-ink-fg/90 sm:text-xl",
 							children: "Simple tools and realistic Health Hacks to help re-inspire a healthy lifestyle while navigating a hectic life."
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "mk-welcome",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
+									className: "font-display text-2xl font-semibold uppercase sm:text-3xl",
+									children: "Welcome to Theosis Health"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "mt-2 max-w-2xl text-ink-fg/85",
+									children: "Growing up as a scrawny kid who wanted to put on muscle, I heard 800 different recommendations but never found a good, accurate source. There are plenty of health influencers and diet programs, each with their own method, but I have yet to find one that truly shows how daily choices influence metabolic health. That’s what Theosis Health aims to do, because the numbers say we’re clearly missing the mark:"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("ul", {
+									className: "mk-chips",
+									"aria-label": "Quick facts",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("b", { children: "40.1 million" }),
+											" people in the US have diabetes (2023)",
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("sup", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+												href: "#wf1",
+												"aria-label": "Footnote 1",
+												children: "1"
+											}) })
+										] }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("b", { children: "115.2 million" }),
+											" US adults have prediabetes",
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("sup", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+												href: "#wf1",
+												"aria-label": "Footnote 1",
+												children: "1"
+											}) })
+										] }),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("b", { children: "About 1 in 3" }),
+											" US adults (34.7%) have metabolic syndrome (2011–2016)",
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("sup", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+												href: "#wf2",
+												"aria-label": "Footnote 2",
+												children: "2"
+											}) })
+										] })
+									]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("ol", {
+									className: "mk-fn",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", {
+										id: "wf1",
+										children: "CDC. National Diabetes Statistics Report (updated Sept 16, 2026)."
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", {
+										id: "wf2",
+										children: [
+											"Hirode G, Wong RJ. Trends in the prevalence of metabolic syndrome in the United States, 2011–2016. ",
+											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("i", { children: "JAMA." }),
+											" 2020;323(24):2526–2528."
+										]
+									})]
+								})
+							]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 							className: "mt-3 text-sm text-ink-muted",
@@ -179,7 +282,7 @@ function TimeSlider({ id, value, onChange, describedBy }) {
 }
 function SodaCard() {
 	const [i, setI] = (0, import_react.useState)(0);
-	const c = useTween(i * 140), lb = c / 3500;
+	const c = i * 140, lb = useTween(SODA_LB[i]);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
 			className: "mk-h2",
@@ -211,7 +314,7 @@ function SodaCard() {
 									className: "mk-bar",
 									style: {
 										background: "#d4a056",
-										height: `${Math.max(4, lb / (51100 / 3500) * 100)}%`
+										height: barH(lb)
 									}
 								})
 							}),
@@ -225,7 +328,7 @@ function SodaCard() {
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "mk-small",
-								children: [Math.round(c).toLocaleString(), " extra calories so far"]
+								children: [c.toLocaleString(), " extra calories so far"]
 							})
 						]
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -257,7 +360,15 @@ function SodaCard() {
 					id: "mknote",
 					className: "mk-small",
 					style: { marginTop: "1rem" },
-					children: "Rough educational estimate only: about 140 calories a day (a 12\xA0oz soda) vs 0 for diet or zero-calorie drinks. Many sweet coffee drinks run 200–400+ calories, so the real gap could be bigger, and roughly 3,500 calories ≈ 1 lb of fat. Real-life results are usually smaller and vary from person to person. Not medical advice."
+					children: "Rough educational estimate only: about 140 calories a day (a 12\xA0oz soda) vs 0 for diet or zero-calorie drinks. Many sweet coffee drinks run 200–400+ calories, so the real gap could be bigger. The pounds come from the simulator's energy-balance model, which lets burn rise a little as weight goes up, so the curve slows over time. Real-life results are usually smaller and vary from person to person. Not medical advice."
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+					className: "mk-small",
+					style: {
+						fontSize: ".78rem",
+						opacity: .85
+					},
+					children: EXAMPLE_NOTE
 				})
 			]
 		}),
@@ -279,7 +390,7 @@ function SodaCard() {
 }
 function ProteinCard() {
 	const [i, setI] = (0, import_react.useState)(0);
-	const c = useTween(i * 150), lb = c / 3500;
+	const c = i * 150, lb = useTween(PROT_LB[i]);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
 			className: "mk-h2",
@@ -370,7 +481,7 @@ function ProteinCard() {
 									className: "mk-bar",
 									style: {
 										background: "#d4a056",
-										height: `${Math.max(4, lb / 16.5 * 100)}%`
+										height: barH(lb)
 									}
 								})
 							}),
@@ -378,7 +489,7 @@ function ProteinCard() {
 								className: "mk-num",
 								children: [
 									"+",
-									Math.round(c).toLocaleString(),
+									c.toLocaleString(),
 									" cal"
 								]
 							}),
@@ -401,11 +512,19 @@ function ProteinCard() {
 						"Rough illustration only, not a prediction. In one study, people who raised protein from about 15% to 30% of their calories ate about 441 fewer calories a day on their own.",
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("sup", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
 							href: "#fn1",
-							"aria-label": "Footnote 1",
-							children: "1"
+							"aria-label": "Footnote 3",
+							children: "3"
 						}) }),
-						" To be careful, this uses a much smaller 150 calories a day, and roughly 3,500 calories ≈ 1 lb of fat. Results vary from person to person and are often smaller. Not medical advice."
+						" To be careful, this uses a much smaller 150 calories a day, run through the simulator's energy-balance model. Results vary from person to person and are often smaller. Not medical advice."
 					]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+					className: "mk-small",
+					style: {
+						fontSize: ".78rem",
+						opacity: .85
+					},
+					children: EXAMPLE_NOTE
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
 					id: "fn1",
@@ -415,7 +534,7 @@ function ProteinCard() {
 						opacity: .8
 					},
 					children: [
-						"1. Weigelt DS, et al. A high-protein diet induces sustained reductions in appetite, ad libitum caloric intake, and body weight. ",
+						"3. Weigelt DS, et al. A high-protein diet induces sustained reductions in appetite, ad libitum caloric intake, and body weight. ",
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("i", { children: "Am J Clin Nutr." }),
 						" 2005;82(1):41–48."
 					]

@@ -2,6 +2,13 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { ArrowRight, Clock, FlaskConical, Footprints } from "lucide-react";
 import { SiteShell } from "@/components/site/site-shell";
+import { EXAMPLE, extraLbByDay } from "@/lib/swap-model";
+
+const SODA_LB = extraLbByDay(140);
+const PROT_LB = extraLbByDay(150);
+const BAR_MAX = Math.max(SODA_LB[365], PROT_LB[365]) * 1.05;
+const barH = (lb: number) => `${Math.max(4, (lb / BAR_MAX) * 100)}%`;
+const EXAMPLE_NOTE = `Example: a ${EXAMPLE.age}-year-old, 5'9", ${EXAMPLE.weightLb}-lb, lightly active adult; individual numbers will differ. Try the simulator to see your own.`;
 
 export const Route = createFileRoute("/")({ component: Home });
 
@@ -31,6 +38,19 @@ function Home() {
             <p className="mt-5 max-w-xl text-lg leading-relaxed text-ink-fg/90 sm:text-xl">
               Simple tools and realistic Health Hacks to help re-inspire a healthy lifestyle while navigating a hectic life.
             </p>
+            <div className="mk-welcome">
+              <h2 className="font-display text-2xl font-semibold uppercase sm:text-3xl">Welcome to Theosis Health</h2>
+              <p className="mt-2 max-w-2xl text-ink-fg/85">Growing up as a scrawny kid who wanted to put on muscle, I heard 800 different recommendations but never found a good, accurate source. There are plenty of health influencers and diet programs, each with their own method, but I have yet to find one that truly shows how daily choices influence metabolic health. That’s what Theosis Health aims to do, because the numbers say we’re clearly missing the mark:</p>
+              <ul className="mk-chips" aria-label="Quick facts">
+                <li><b>40.1 million</b> people in the US have diabetes (2023)<sup><a href="#wf1" aria-label="Footnote 1">1</a></sup></li>
+                <li><b>115.2 million</b> US adults have prediabetes<sup><a href="#wf1" aria-label="Footnote 1">1</a></sup></li>
+                <li><b>About 1 in 3</b> US adults (34.7%) have metabolic syndrome (2011–2016)<sup><a href="#wf2" aria-label="Footnote 2">2</a></sup></li>
+              </ul>
+              <ol className="mk-fn">
+                <li id="wf1">CDC. National Diabetes Statistics Report (updated Sept 16, 2026).</li>
+                <li id="wf2">Hirode G, Wong RJ. Trends in the prevalence of metabolic syndrome in the United States, 2011–2016. <i>JAMA.</i> 2020;323(24):2526–2528.</li>
+              </ol>
+            </div>
             <p className="mt-3 text-sm text-ink-muted">Education only, not medical advice. Talk with your healthcare provider.</p>
           </div>
         </div>
@@ -103,7 +123,7 @@ function TimeSlider({ id, value, onChange, describedBy }: { id: string; value: n
 
 function SodaCard() {
   const [i, setI] = useState(0);
-  const c = useTween(i * 140), lb = c / 3500;
+  const c = i * 140, lb = useTween(SODA_LB[i]);
   return (
     <>
       <h2 className="mk-h2">One small swap: soda or Starbucks vs diet or zero-calorie drinks</h2>
@@ -111,10 +131,11 @@ function SodaCard() {
       <div className="mk-card">
         <TimeSlider id="mkr" value={i} onChange={setI} describedBy="mknote" />
         <div className="mk-paths" aria-live="polite">
-          <div className="mk-path"><h3>🥤 Soda or sweet coffee drink</h3><div className="mk-barbox"><div className="mk-bar" style={{ background: "#d4a056", height: `${Math.max(4, (lb / (365 * 140 / 3500)) * 100)}%` }} /></div><div className="mk-num">+{fmtLb(lb)} lb</div><div className="mk-small">{Math.round(c).toLocaleString()} extra calories so far</div></div>
+          <div className="mk-path"><h3>🥤 Soda or sweet coffee drink</h3><div className="mk-barbox"><div className="mk-bar" style={{ background: "#d4a056", height: barH(lb) }} /></div><div className="mk-num">+{fmtLb(lb)} lb</div><div className="mk-small">{c.toLocaleString()} extra calories so far</div></div>
           <div className="mk-path"><h3>🥤 Diet or zero-calorie drink</h3><div className="mk-barbox"><div className="mk-bar" style={{ background: "#4587c6", height: "4px" }} /></div><div className="mk-num">+0 lb</div><div className="mk-small">0 extra calories</div></div>
         </div>
-        <p id="mknote" className="mk-small" style={{ marginTop: "1rem" }}>Rough educational estimate only: about 140 calories a day (a 12&nbsp;oz soda) vs 0 for diet or zero-calorie drinks. Many sweet coffee drinks run 200–400+ calories, so the real gap could be bigger, and roughly 3,500 calories ≈ 1 lb of fat. Real-life results are usually smaller and vary from person to person. Not medical advice.</p>
+        <p id="mknote" className="mk-small" style={{ marginTop: "1rem" }}>Rough educational estimate only: about 140 calories a day (a 12&nbsp;oz soda) vs 0 for diet or zero-calorie drinks. Many sweet coffee drinks run 200–400+ calories, so the real gap could be bigger. The pounds come from the simulator's energy-balance model, which lets burn rise a little as weight goes up, so the curve slows over time. Real-life results are usually smaller and vary from person to person. Not medical advice.</p>
+        <p className="mk-small" style={{ fontSize: ".78rem", opacity: 0.85 }}>{EXAMPLE_NOTE}</p>
       </div>
       <div className="mk-btns"><Link className="mk-btn p" to="/hacks/$slug" params={{ slug: "dont-drink-calories" } as never}>Read the Health Hack →</Link></div>
       <a className="mk-simlink" href="/simulator/">See your own numbers in the simulator (Beta) →</a>
@@ -124,7 +145,7 @@ function SodaCard() {
 
 function ProteinCard() {
   const [i, setI] = useState(0);
-  const c = useTween(i * 150), lb = c / 3500;
+  const c = i * 150, lb = useTween(PROT_LB[i]);
   return (
     <>
       <h2 className="mk-h2">One small swap: higher-protein day vs lower-protein day</h2>
@@ -133,10 +154,11 @@ function ProteinCard() {
         <TimeSlider id="mkp" value={i} onChange={setI} describedBy="mkpnote" />
         <div className="mk-paths" aria-live="polite">
           <div className="mk-path"><h3>🍳 Higher-protein day</h3><div className="mk-small" style={{ marginTop: ".6rem" }}>Fullness</div><div className="mk-meter" role="img" aria-label="Fullness: higher"><i style={{ width: "80%", background: "#3d9a6a" }} /></div><div className="mk-small">Tends to feel full longer</div><div className="mk-barbox"><div className="mk-bar" style={{ background: "#4587c6", height: "4px" }} /></div><div className="mk-num">0 extra</div><div className="mk-small">baseline for comparison</div></div>
-          <div className="mk-path"><h3>🥯 Lower-protein day</h3><div className="mk-small" style={{ marginTop: ".6rem" }}>Fullness</div><div className="mk-meter" role="img" aria-label="Fullness: lower"><i style={{ width: "40%", background: "#d4a056" }} /></div><div className="mk-small">Tends to get hungry sooner</div><div className="mk-barbox"><div className="mk-bar" style={{ background: "#d4a056", height: `${Math.max(4, (lb / 16.5) * 100)}%` }} /></div><div className="mk-num">+{Math.round(c).toLocaleString()} cal</div><div className="mk-small">more calories eaten so far (about +{fmtLb(lb)} lb)</div></div>
+          <div className="mk-path"><h3>🥯 Lower-protein day</h3><div className="mk-small" style={{ marginTop: ".6rem" }}>Fullness</div><div className="mk-meter" role="img" aria-label="Fullness: lower"><i style={{ width: "40%", background: "#d4a056" }} /></div><div className="mk-small">Tends to get hungry sooner</div><div className="mk-barbox"><div className="mk-bar" style={{ background: "#d4a056", height: barH(lb) }} /></div><div className="mk-num">+{c.toLocaleString()} cal</div><div className="mk-small">more calories eaten so far (about +{fmtLb(lb)} lb)</div></div>
         </div>
-        <p id="mkpnote" className="mk-small" style={{ marginTop: "1rem" }}>Rough illustration only, not a prediction. In one study, people who raised protein from about 15% to 30% of their calories ate about 441 fewer calories a day on their own.<sup><a href="#fn1" aria-label="Footnote 1">1</a></sup> To be careful, this uses a much smaller 150 calories a day, and roughly 3,500 calories ≈ 1 lb of fat. Results vary from person to person and are often smaller. Not medical advice.</p>
-        <p id="fn1" className="mk-small" style={{ fontSize: ".75rem", opacity: 0.8 }}>1. Weigelt DS, et al. A high-protein diet induces sustained reductions in appetite, ad libitum caloric intake, and body weight. <i>Am J Clin Nutr.</i> 2005;82(1):41–48.</p>
+        <p id="mkpnote" className="mk-small" style={{ marginTop: "1rem" }}>Rough illustration only, not a prediction. In one study, people who raised protein from about 15% to 30% of their calories ate about 441 fewer calories a day on their own.<sup><a href="#fn1" aria-label="Footnote 3">3</a></sup> To be careful, this uses a much smaller 150 calories a day, run through the simulator's energy-balance model. Results vary from person to person and are often smaller. Not medical advice.</p>
+        <p className="mk-small" style={{ fontSize: ".78rem", opacity: 0.85 }}>{EXAMPLE_NOTE}</p>
+        <p id="fn1" className="mk-small" style={{ fontSize: ".75rem", opacity: 0.8 }}>3. Weigelt DS, et al. A high-protein diet induces sustained reductions in appetite, ad libitum caloric intake, and body weight. <i>Am J Clin Nutr.</i> 2005;82(1):41–48.</p>
       </div>
       <div className="mk-btns"><Link className="mk-btn p" to="/hacks/$slug" params={{ slug: "protein-label" } as never}>Read the Health Hack: The Protein × 10 Trick →</Link></div>
       <a className="mk-simlink" href="/simulator/">See your own numbers in the simulator (Beta) →</a>
