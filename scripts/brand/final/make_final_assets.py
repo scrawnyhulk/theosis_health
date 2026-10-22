@@ -23,11 +23,23 @@ def widen(target_w):
     out*=v[None,:,None]
     return Image.fromarray(np.clip(out,0,255).astype("uint8"))
 
-# 1) hero: desktop 16:9 and phone square
-desk=widen(int(H*16/9)); desk=desk.resize((1920,1080),Image.LANCZOS)
-desk.save(PUB+"images/theosis-health-hero.webp",quality=86); desk.save(PUB+"images/theosis-health-hero.jpg",quality=86,optimize=True,progressive=True)
-ph=src.resize((1080,1080),Image.LANCZOS)
-ph.save(PUB+"images/theosis-health-hero-phone.webp",quality=86); ph.save(PUB+"images/theosis-health-hero-phone.jpg",quality=86,optimize=True,progressive=True)
+# 1) hero: the square logo with its stone edges feathered to transparent, so the page's own navy shows through (no visible box).
+def feathered():
+    """Alpha = soft round halo around the emblem (no square corners) + a keyed glow that keeps the wordmark and leaf tips solid."""
+    n=W; yy,xx=np.mgrid[0:n,0:n].astype(np.float32)/n
+    r=np.sqrt(((xx-0.5)/0.50)**2+((yy-0.42)/0.47)**2)                   # ellipse centred on the cross + laurel
+    halo=np.clip((1.0-r)/0.35,0,1); halo=halo*halo*(3-2*halo)
+    lum=A.max(-1); key=np.clip((lum-70)/60,0,1)                        # chrome / blue artwork brighter than the stone
+    glow=np.clip(gaussian_filter(key,6*s)*1.6,0,1)                     # small soft glow around the artwork
+    a=np.maximum(halo,np.maximum(key,glow))
+    edge=np.minimum(np.minimum(xx,1-xx),np.minimum(yy,1-yy)); a*=np.clip(edge/0.03,0,1)  # never touch the outer edge
+    return Image.fromarray(np.dstack([A,a*255]).clip(0,255).astype("uint8"),"RGBA")
+FE=feathered(); BG=(5,8,13)
+def flat(im): b=Image.new("RGB",im.size,BG); b.paste(im,(0,0),im); return b
+ph=FE.resize((1080,1080),Image.LANCZOS)
+ph.save(PUB+"images/theosis-health-hero-phone.webp",quality=88,alpha_quality=100); flat(ph).save(PUB+"images/theosis-health-hero-phone.jpg",quality=86,optimize=True,progressive=True)
+desk=Image.new("RGBA",(1920,1080),(0,0,0,0)); desk.alpha_composite(FE.resize((1080,1080),Image.LANCZOS),(420,0))
+desk.save(PUB+"images/theosis-health-hero.webp",quality=88,alpha_quality=100); flat(desk).save(PUB+"images/theosis-health-hero.jpg",quality=86,optimize=True,progressive=True)
 
 # keyed cut-out (alpha from brightness above the navy stone)
 def keyed(box):

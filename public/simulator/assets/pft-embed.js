@@ -69,7 +69,7 @@ window.PFTEmbed=function(host,opt){
   const mk=x=>x=='up'?'▲ ':x=='down'?'▼ ':'● ';
   list.innerHTML=['liver','pan','vis','skin'].map(k=>`<li data-k="${k}" style="border-left:3px solid ${COL[k]}"><b>${mk(words[k])}${TXT[k].t}</b><br><span>${TXT[k][words[k]]}${cite(k,words[k])}</span></li>`).join('');
   {const f=st.later&&st.end<st.start;intro.innerHTML=f?FIRST+cites(['lim2011','chaston2008']):(opt.where||'');intro.hidden=!intro.textContent;}
-  meta.innerHTML=`Model: <b>${m.profileLabel}</b> · fuel ${Math.round(m.x)}/100 · stage ${m.stage} of 6 · example A1c ${m.a1c.toFixed(1)}% (illustrative, not fitted to you)`;
+  meta.innerHTML=`Model: <b>${m.profileLabel}</b> · fuel ${Math.round(m.x)}/100 · stage ${m.stage} of 6`;
   host.dataset.state=st.later?'later':'now';frame();if(opt.onUpdate)opt.onUpdate(api);}
  lab.addEventListener('click',e=>{const t=e.target.closest('.pfe-t');if(!t)return;list.querySelectorAll('li').forEach(li=>li.classList.toggle('hl',li.dataset.k===t.dataset.k));const li=list.querySelector('li.hl');if(li)li.scrollIntoView({block:'nearest',behavior:'smooth'})});
  api.setWhere=t=>{opt.where=t;apply()};
