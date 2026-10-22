@@ -150,7 +150,7 @@
       vdecl:"uniform float uLiver;\n",vpre:"transformed+=objectNormal*(.0015+uLiver*.006);\n",
       color:`float n1=pftNoise(vPos*34.),n2=pftNoise(vPos*96.+3.7),n3=pftNoise(vPos*260.+9.1);
         float lw=.55*pftNoise(vPos*9.+1.3)+.3*pftNoise(vPos*21.+5.)+.15*pftNoise(vPos*47.);float lr=1.-abs(2.*pftNoise(vPos*120.+2.2)-1.);
-        vec3 healthy=mix(vec3(.25,.045,.032),vec3(.37,.085,.055),lw)*(1.-.07*smoothstep(.75,1.,lr));
+        vec3 healthy=mix(vec3(.25,.045,.032),vec3(.37,.085,.055),lw)*(1.-.03*smoothstep(.8,1.,lr));
         vec3 fatty=mix(vec3(.56,.27,.10),vec3(.68,.42,.17),n2*.7+n3*.3);
         float patchy=smoothstep(.15,.85,n1*.6+lw*.3+n3*.1+(uLiver-.6)*1.1);
         float amt=clamp(uLiver*(.3+.7*patchy),0.,1.);
@@ -158,10 +158,10 @@
         if(uLiver>.02){vec2 dc=pftCell(vPos*300.);float drop=(1.-smoothstep(.12,.36,dc.x))*smoothstep(.35,.65,n3*.5+patchy*.5);
         diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.80,.58,.34),drop*uLiver*.13);}
         float gq=smoothstep(.5,.68,n3);float gl=uGlyL*(1.-.35*uLiver);
-        diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.15,.62,.55),gl*.10*(1.-.8*uLiver));diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.30,.85,.75),gl*.22*gq);`,
+        diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.15,.62,.55),gl*.10*(1.-.8*uLiver));diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.30,.85,.75),gl*.12*smoothstep(.45,.75,n2*.6+n3*.4));`,
       normal:"normal=pftBump(normal,lw*.25+(uLiver>.02?(1.-smoothstep(.1,.34,pftCell(vPos*300.).x))*.5*uLiver:0.),.0006);"});
     M.pancreas=patch(organ(0xd29a62,.42),"pancreas",{uniforms:pancU,fdecl:"uniform float uPanc;\n",
-      color:"vec2 pc=pftCell(vPos*120.);float lob=smoothstep(.0,.5,pc.y-pc.x);float lo=.55*lob+.25*pftNoise(vPos*40.);float dep=smoothstep(.0,.06,pftNoise(vPos*55.)-(.68-uPanc*.3))*min(1.,uPanc*3.);diffuseColor.rgb=mix(mix(vec3(.70,.42,.27),vec3(.88,.62,.40),lo),vec3(.99,.86,.42),dep);",
+      color:"vec2 pc=pftCell(vPos*120.);float lob=smoothstep(.0,.5,pc.y-pc.x);float lo=.55*lob+.25*pftNoise(vPos*40.);float dep=smoothstep(.0,.06,pftNoise(vPos*55.)-(.68-uPanc*.3))*min(1.,uPanc*3.);vec3 pk=mix(vec3(.78,.50,.40),vec3(.93,.71,.55),lo);pk*=mix(.80,1.,smoothstep(.0,.12,pc.y-pc.x));diffuseColor.rgb=mix(pk,vec3(.99,.86,.42),dep);",
       normal:"vec2 pc2=pftCell(vPos*120.);normal=pftBump(normal,smoothstep(.0,.5,pc2.y-pc2.x)*(1.-.3*pc2.x)+dep*2.,.00035);"});
     // V26: visceral (omental) fat as lobulated yellow fat with pinkish septa and fine vessels, draped over the
     // bowel (thinner between lobules, so loops show through) instead of one smooth yellow mass.
@@ -185,7 +185,7 @@
         diffuseColor.rgb=mix(diffuseColor.rgb,mix(vec3(.72,.40,.30),fat,lob),m*.9);`,
       normal:"normal=pftBump(normal,dm*min(1.,uVisc*1.5),.002);"});
     M.heart=organ(0x8f1a14,.3,{emissive:new T.Color(0x5a0804),emissiveIntensity:.6});
-    M.gall=organ(0x4d6a38,.25);M.stomach=organ(0xc4787a,.36);M.intestine=bowel(0xb48c88,.38,"intestine");M.colon=bowel(0x9e746c,.4,"colon");
+    M.gall=organ(0x4d6a38,.25);M.stomach=organ(0xc4787a,.36);M.intestine=bowel(0xb48c88,.38,"intestine");M.colon=bowel(0xae8070,.4,"colon");
     M.vessel=patch(organ(0x8a0f0c,.3,{emissive:new T.Color(0x3a0402),emissiveIntensity:.5}),"vessel",{uniforms:shared,discard:"if(uCut>.5&&pftAbd(vPos,.03)>.5)discard;"});
     M.spleen=organ(0x7a2240,.35);M.kidney=organ(0x8e3a2a,.35);M.duodenum=bowel(0xd09a7e,.38,"intestine");M.bladder=organ(0xc9a08a,.4);
     // anatomy pass: lungs (pale pink, see-through so the heart reads), diaphragm (muscle with a paler central tendon), IVC (deoxygenated blue)
@@ -212,7 +212,7 @@
       const ck0=mat.customProgramCacheKey,ck=ck0?()=>String(ck0.call(mat)).slice(0,60):()=>"";mat.customProgramCacheKey=()=>ck()+"|v69"+key;mat.needsUpdate=true;return mat}
     // wet serosal sheen on viscera (clearcoat), ivory bone, glossier fat
     [M.liver,M.pancreas,M.stomach,M.spleen,M.kidney,M.heart,M.gall,M.intestine,M.colon,M.duodenum,M.bladder,M.vein].forEach(m=>{if(m&&"clearcoat" in m){m.clearcoat=Math.max(m.clearcoat||0,.32);m.clearcoatRoughness=.28}});
-    M.liver.clearcoat=.45;M.liver.clearcoatRoughness=.2;M.liver.roughness=.45;paint(M.liver,"liver",{grain:.7,gloss:.7,rg:.08,bump:.35});paint(M.pancreas,"panc",{grain:.6,gloss:.7,bump:.3});M.stomach.color.set(0xd4867e);paint(M.stomach,"stom",{grain:.5,stom:1,gloss:1.1,bump:.001,rg:.04});paint(M.spleen,"spl");paint(M.kidney,"kid");
+    M.liver.clearcoat=.45;M.liver.clearcoatRoughness=.3;M.liver.roughness=.45;paint(M.liver,"liver",{grain:.7,gloss:.7,rg:.08,bump:.2});paint(M.pancreas,"panc",{grain:.6,gloss:.7,bump:.3});M.stomach.color.set(0xd4867e);paint(M.stomach,"stom",{grain:.5,stom:1,gloss:1.1,bump:.001,rg:.04});paint(M.spleen,"spl");paint(M.kidney,"kid");
     paint(M.heart,"heart",{vessels:.35,vscale:"45.",vcol:"vec3(.85,.72,.45)"});paint(M.gall,"gall",{gloss:1.3});paint(M.intestine,"int",{vessels:.3,vscale:"110."});paint(M.colon,"col",{vessels:.45,vscale:"80."});
     if(M.duodenum!==M.intestine)paint(M.duodenum,"duo",{vessels:.3});paint(M.bladder,"bl");paint(M.lung,"lung",{grain:2.,gloss:.6});paint(M.vein,"vein",{gloss:1.2});
     M.bone.color.set(0xe9dcc2);M.bone.roughness=.55;paint(M.bone,"bone",{grain:1.3,gloss:.25});
@@ -251,7 +251,7 @@
     function applyMode(){
       const show={external:["skin","nail"],composition:["vessel","fat","nail","muscle","bone","heart","liver","gall","stomach","pancreas","intestine","colon","omentum","mesentery","spleen","kidney","bladder","lung","diaphragm","vein"],
         internal:["vessel","skin","nail","muscle","bone","heart","liver","gall","stomach","pancreas","intestine","colon","omentum","mesentery","spleen","kidney","bladder","lung","diaphragm","vein"]}[mode];
-      meshes.forEach(m=>{m.visible=show.indexOf(m.userData.role)>=0&&((m.userData.role!=="vessel"&&m.userData.role!=="vein")||vesselsOn)&&(m.userData.role!=="muscle"||musclesOn)});
+      meshes.forEach(m=>{m.visible=show.indexOf(m.userData.role)>=0&&((m.userData.role!=="vessel"&&m.userData.role!=="vein")||vesselsOn)&&(m.userData.role!=="muscle"||musclesOn)&&(m.userData.role!=="heart"||(m.userData.hra&&mode==="composition"&&!musclesOn))}); /* v74: heart is fully covered by the chest wall otherwise (0 px in every view), so skip drawing it */
       if(mBtn)mBtn.hidden=mode==="external";
       if(vBtn)vBtn.hidden=mode==="external";
       shared.uCut.value=mode==="external"?0:1;shared.uHalf.value=mode==="composition"?1:0;
@@ -574,7 +574,10 @@
       const W=new T.Vector3(),C=new T.Vector3();root.updateMatrixWorld(true);
       const box=ms=>{const b=new T.Box3();ms.forEach(m=>{m.updateMatrixWorld(true);b.union(new T.Box3().setFromBufferAttribute(m.geometry.attributes.position).applyMatrix4(m.matrixWorld))});return b};
       const swap=(m,key,mode)=>{const o=H.organs[key];if(!o||!m||!m.geometry)return;const ma=m.geometry.morphAttributes;if(ma&&Object.keys(ma).length)return;
-        const b=box([m]),qp=new Uint16Array(dec(o.p)),ix=o.n<65536?new Uint16Array(dec(o.i)):new Uint32Array(dec(o.i)),ao=new Uint8Array(dec(o.ao));
+        const b=box([m]);let qp,ix,ao;
+         if(o.v){const D=T.MeshoptDecoder,v=new Uint16Array(o.n*4),i32=new Uint32Array(o.t*3);D.decodeVertexBuffer(new Uint8Array(v.buffer),o.n,8,new Uint8Array(dec(o.v)));D.decodeIndexBuffer(new Uint8Array(i32.buffer),o.t*3,4,new Uint8Array(dec(o.ix))); /* v74: meshopt-compressed (xyz + cavity shade packed in 4 x uint16) */
+           qp=new Uint16Array(o.n*3);ao=new Uint8Array(o.n);for(let q=0;q<o.n;q++){qp[q*3]=v[q*4];qp[q*3+1]=v[q*4+1];qp[q*3+2]=v[q*4+2];ao[q]=v[q*4+3]}ix=o.n<65536?new Uint16Array(i32):i32}
+         else{qp=new Uint16Array(dec(o.p));ix=o.n<65536?new Uint16Array(dec(o.i)):new Uint32Array(dec(o.i));ao=new Uint8Array(dec(o.ao))}
         const sz=[0,1,2].map(a=>o.max[a]-o.min[a]),tz=[0,1,2].map(a=>b.max.getComponent(a)-b.min.getComponent(a));let sc=[0,1,2].map(a=>tz[a]/sz[a]),off=[0,1,2].map(a=>b.min.getComponent(a));
         if(mode==="uni"){const u=Math.sqrt(sc[0]*sc[2]);sc=[u,u,u];off=[b.min.x+(tz[0]-sz[0]*u)/2,b.max.y-sz[1]*u,b.min.z+(tz[2]-sz[2]*u)/2]}
         if(mode==="soft"){const g=Math.cbrt(sc[0]*sc[1]*sc[2]);sc=sc.map(v=>Math.sqrt(v*g));off=[0,1,2].map(a=>b.min.getComponent(a)+(tz[a]-sz[a]*sc[a])/2)}
@@ -649,7 +652,7 @@
           const a1=V(1,0,0).sub(d.clone().multiplyScalar(d.x)).normalize(),a2=d.clone().cross(a1);for(let j=0;j<NRE;j++){const a=j/NRE*Math.PI*2;const q=c.clone().add(a1.clone().multiplyScalar(Math.cos(a)*r)).add(a2.clone().multiplyScalar(Math.sin(a)*r*.8));L(q);ep.push(q.x,q.y,q.z)}}
         for(let i=0;i<NE;i++)for(let j=0;j<NRE;j++){const a=i*NRE+j,b2=i*NRE+(j+1)%NRE;ei.push(a,b2,a+NRE,b2,b2+NRE,a+NRE)}
         const eg=new T.BufferGeometry();eg.setAttribute("position",new T.Float32BufferAttribute(ep,3));eg.setAttribute("aOcc",new T.Float32BufferAttribute(new Float32Array(ep.length/3),1));eg.setIndex(ei);eg.computeVertexNormals();
-        M.esoph=M.esoph||paint(organ(0xc0716a,.4,{side:T.DoubleSide,clearcoat:.3,clearcoatRoughness:.3}),"eso",{grain:.8});const em=new T.Mesh(eg,M.esoph);em.name="Esophagus (stub)";em.userData.role="stomach";em.renderOrder=sm.renderOrder;sm.add(em);meshes.push(em)}
+        M.esoph=M.esoph||paint(organ(0xd4867e,.36,{side:T.DoubleSide,clearcoat:.32,clearcoatRoughness:.28}),"eso",{grain:.5,gloss:1.1,bump:.001,rg:.04}); /* v74: matches the stomach wall (no colour seam at the cardia) */const em=new T.Mesh(eg,M.esoph);em.name="Esophagus (stub)";em.userData.role="stomach";em.renderOrder=sm.renderOrder;sm.add(em);meshes.push(em)}
       return 1}
     // ---------- load ----------
     const loader=new T.GLTFLoader();loader.setMeshoptDecoder(T.MeshoptDecoder);
@@ -681,7 +684,7 @@
     }
     const fail=err=>{opts.onError&&opts.onError(err)};
     const parse=buf=>{try{loader.parse(buf,"",g=>{loadSource="embedded";onGLTF(g)},fail)}catch(e){fail(e)}};
-    const hraP=new Promise(res=>{if(window.PFT_HRA||!url)return res();const el=document.createElement("script");el.src=(models.hraOrgans||url.replace(/[^\/]*$/,"hra-organs.js"))+"?v=7668";el.async=true;el.onload=el.onerror=()=>res();document.head.appendChild(el)});
+    const hraP=new Promise(res=>{if(window.PFT_HRA||!url)return res();const el=document.createElement("script");el.src=(models.hraOrgans||url.replace(/[^\/]*$/,"hra-organs.js"))+"?v=7674";el.async=true;el.onload=el.onerror=()=>res();document.head.appendChild(el)});
     if(location.protocol==="file:"||!url)Promise.all([loadEmbedded(),hraP]).then(([b])=>parse(b),fail);
     else loader.load(url,g=>{loadSource="glb";hraP.then(()=>onGLTF(g))},undefined,err=>{Promise.all([loadEmbedded(),hraP]).then(([b])=>parse(b),()=>fail(err))});
 
