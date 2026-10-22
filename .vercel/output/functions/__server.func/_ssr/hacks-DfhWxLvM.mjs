@@ -3,7 +3,7 @@ import { c as hackCovers, l as hacks, t as creditKicker, u as hacksIntro } from 
 import { n as require_react } from "../_libs/@radix-ui/react-compose-refs+[...].mjs";
 import { b as Link } from "../_libs/@tanstack/react-router+[...].mjs";
 import { i as require_jsx_runtime } from "../_libs/@radix-ui/react-label+[...].mjs";
-import { _ as ArrowRight, r as X } from "../_libs/lucide-react.mjs";
+import { m as ArrowRight, r as X } from "../_libs/lucide-react.mjs";
 import { i as cn, r as SiteShell, t as Button } from "./site-shell-Coxd6dm8.mjs";
 //#region node_modules/.nitro/vite/services/ssr/assets/hacks-DfhWxLvM.js
 var import_react = /* @__PURE__ */ __toESM(require_react());

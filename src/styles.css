@@ -317,3 +317,65 @@
 @media (min-width: 640px) {
   .hero-logo img { max-width: min(92vw, 1500px); max-height: calc(100svh - 4rem - 5rem); }
 }
+
+/* ---- Home v2 (swap carousel, steps, toolbox) ---- */
+.mk-wrap{max-width:72rem;margin:0 auto;padding:3.5rem 1.25rem}
+.mk-h2{font-family:'Barlow Condensed',sans-serif;font-weight:600;text-transform:uppercase;font-size:2.1rem;line-height:1.1;margin:0}
+.mk-sub{color:var(--color-muted);margin-top:.5rem;max-width:40rem}
+.mk-card{border:1px solid var(--color-border);background:var(--color-surface);padding:1.5rem;margin-top:1.5rem}
+.mk-ticks{display:flex;justify-content:space-between;font-family:'Barlow Condensed';text-transform:uppercase;font-size:.95rem;color:var(--color-muted);margin-top:.4rem}
+.mk-ticks span.on{color:#fff;font-weight:700}
+input.mk-range{width:100%;accent-color:#2a7ae0;height:2rem}
+.mk-paths{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.5rem}
+.mk-path{border:1px solid var(--color-border);padding:1rem;text-align:center}
+.mk-path h3{font-family:'Barlow Condensed';text-transform:uppercase;font-size:1.3rem;margin:0}
+.mk-barbox{height:180px;display:flex;align-items:flex-end;justify-content:center;margin:1rem 0;border-bottom:2px solid var(--color-border-strong)}
+.mk-bar{width:56%;min-height:4px;transition:height .45s ease}
+.mk-num{font-family:'Barlow Condensed';font-size:2.4rem;font-weight:700;line-height:1}
+.mk-small{font-size:.85rem;color:var(--color-muted)}
+.mk-btns{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:1.5rem}
+.mk-btn{display:inline-flex;align-items:center;min-height:2.75rem;padding:0 1.2rem;font-weight:600;font-size:.95rem;text-decoration:none}
+.mk-btn.p{background:#2a7ae0;color:#fff}.mk-btn.s{border:1px solid var(--color-border-strong);color:#fff}
+.mk-pill{font-size:.7rem;border:1px solid #d4a056;color:#d4a056;padding:.05rem .4rem;margin-left:.4rem;text-transform:uppercase;letter-spacing:.08em}
+.mk-tl{position:relative;margin-top:2rem;padding-left:2.2rem}
+.mk-tl:before{content:"";position:absolute;left:.6rem;top:0;bottom:0;width:2px;background:linear-gradient(#2a7ae0,#4587c655)}
+.mk-ms{position:relative;margin-bottom:1.5rem}
+.mk-anim .mk-ms{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+.mk-anim .mk-ms.in{opacity:1;transform:none}
+.mk-ms:before{content:"";position:absolute;left:-2.05rem;top:1.3rem;width:14px;height:14px;border-radius:50%;background:#2a7ae0;box-shadow:0 0 0 4px #2a7ae033}
+.mk-when{font-family:'Barlow Condensed';text-transform:uppercase;color:#4587c6;font-weight:700;letter-spacing:.08em}
+.mk-ms a{color:inherit;text-decoration:none;display:block;border:1px solid var(--color-border);background:var(--color-surface);padding:1rem 1.2rem}
+.mk-ms a:hover{border-color:#2a7ae0}
+.mk-ms h3{font-family:'Barlow Condensed';text-transform:uppercase;font-size:1.35rem;margin:.15rem 0}
+@media(max-width:640px){.mk-barbox{height:130px}.mk-num{font-size:1.9rem}.mk-h2{font-size:1.7rem}}
+.mk-tabs{display:inline-flex;border:1px solid var(--color-border-strong);margin-bottom:1.25rem}
+.mk-tab{background:none;border:0;color:var(--color-muted);font-family:'Barlow Condensed';text-transform:uppercase;font-size:1.1rem;font-weight:600;padding:.55rem 1.2rem;cursor:pointer}
+.mk-tab.on{background:#2a7ae0;color:#fff}
+.mk-meter{height:14px;background:#ffffff14;margin:.6rem 0 .3rem;overflow:hidden}.mk-meter i{display:block;height:100%}
+sup a{color:#4587c6;text-decoration:none}
+.mk-car{position:relative;display:flex;align-items:center;gap:.75rem}
+.mk-vp{overflow:hidden;flex:1;touch-action:pan-y}
+.mk-track{display:flex;align-items:flex-start;transition:transform .5s ease}
+.mk-slide{flex:0 0 100%;min-width:0;padding:0 2px}
+.mk-arrow{flex:0 0 auto;width:60px;height:60px;border-radius:50%;border:2px solid #fff;background:#2a7ae0;color:#fff;font-size:2rem;line-height:1;cursor:pointer;box-shadow:0 4px 14px #0008}
+.mk-arrow:disabled{opacity:.3;cursor:default}
+.mk-dots{display:flex;justify-content:center;gap:.7rem;margin-top:1.2rem}
+.mk-dot{width:14px;height:14px;border-radius:50%;border:2px solid #fff;background:none;cursor:pointer;padding:0}.mk-dot.on{background:#fff}
+.mk-count{text-align:center;color:var(--color-muted);font-size:.85rem;margin-top:.4rem}
+.mk-simlink{display:inline-block;margin-top:.8rem;font-size:.9rem;color:#9cc4f0}
+@media(max-width:640px){.mk-car{flex-wrap:wrap;justify-content:center;gap:2.5rem}.mk-vp{order:-1;flex:0 0 100%}.mk-arrow{margin-top:1rem}}
+@media(min-width:768px){#tools .grid{grid-template-columns:1fr 1fr!important}#tools .mk-feat{grid-column:1/-1}}
+.mk-feat{position:relative;overflow:hidden;border-radius:1rem;padding:1.75rem 1.75rem 1.5rem;background:linear-gradient(var(--color-surface),var(--color-surface)) padding-box,linear-gradient(120deg,#d9b56a,#cfd6e0 45%,#2a7ae0) border-box;border:1.5px solid transparent;box-shadow:0 0 28px rgba(217,181,106,.16)}
+.mk-ribbon{position:absolute;top:0;right:0;background:linear-gradient(90deg,#b8913f,#e6c97e);color:#1a1408;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;padding:.35rem .9rem;border-bottom-left-radius:.75rem;box-shadow:0 2px 8px #0007}
+.mk-feat .mk-pro{margin-top:1rem;color:#e6c97e;font-size:.95rem}
+@media(min-width:768px){.mk-feat{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:1.75rem;align-items:center}}
+.mk-art{display:block;border-radius:.85rem;overflow:hidden;position:relative;box-shadow:0 0 26px rgba(42,122,224,.28),0 0 0 1px rgba(207,214,224,.15)}
+.mk-art svg{display:block;width:100%;height:auto}
+.mk-art:after{content:"";position:absolute;inset:0;box-shadow:inset 0 0 28px 10px #080d14;pointer-events:none}
+@media(max-width:767px){.mk-art{margin-bottom:1.25rem}}
+@media(max-width:640px){.mk-feat{padding-top:2.6rem}.mk-ribbon{font-size:.72rem}}
+
+.mk-hp{border-radius:999px;border:1px solid rgba(69,135,198,.55);background:rgba(69,135,198,.1);color:#4587c6;font-size:.75rem;font-weight:600;padding:.125rem .5rem;margin-left:.5rem;vertical-align:middle;font-family:var(--font-sans,sans-serif);text-transform:none;letter-spacing:.025em;display:inline-block}
+.mk-eyebrow{font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.14em;font-weight:700;color:#4587c6;font-size:.95rem;margin:0 0 .3rem}
+.mk-arrow:focus-visible,.mk-dot:focus-visible,.mk-btn:focus-visible,.mk-ms a:focus-visible{outline:3px solid #9cc4f0;outline-offset:3px}
+@media (prefers-reduced-motion: reduce){.mk-anim .mk-ms{opacity:1;transform:none;transition:none}.mk-track,.mk-bar{transition:none}}

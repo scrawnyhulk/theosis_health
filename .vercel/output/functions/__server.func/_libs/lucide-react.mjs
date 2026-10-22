@@ -138,21 +138,6 @@ var ChevronRight = createLucideIcon("chevron-right", [["path", {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-var Clock = createLucideIcon("clock", [["circle", {
-	cx: "12",
-	cy: "12",
-	r: "10",
-	key: "1mglay"
-}], ["polyline", {
-	points: "12 6 12 12 16 14",
-	key: "68esgv"
-}]]);
-/**
-* @license lucide-react v0.510.0 - ISC
-*
-* This source code is licensed under the ISC license.
-* See the LICENSE file in the root directory of this source tree.
-*/
 var Download = createLucideIcon("download", [
 	["path", {
 		d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4",
@@ -188,50 +173,6 @@ var ExternalLink = createLucideIcon("external-link", [
 	["path", {
 		d: "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6",
 		key: "a6xqqp"
-	}]
-]);
-/**
-* @license lucide-react v0.510.0 - ISC
-*
-* This source code is licensed under the ISC license.
-* See the LICENSE file in the root directory of this source tree.
-*/
-var FlaskConical = createLucideIcon("flask-conical", [
-	["path", {
-		d: "M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2",
-		key: "18mbvz"
-	}],
-	["path", {
-		d: "M6.453 15h11.094",
-		key: "3shlmq"
-	}],
-	["path", {
-		d: "M8.5 2h7",
-		key: "csnxdl"
-	}]
-]);
-/**
-* @license lucide-react v0.510.0 - ISC
-*
-* This source code is licensed under the ISC license.
-* See the LICENSE file in the root directory of this source tree.
-*/
-var Footprints = createLucideIcon("footprints", [
-	["path", {
-		d: "M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 10 3.8 10 5.5c0 3.11-2 5.66-2 8.68V16a2 2 0 1 1-4 0Z",
-		key: "1dudjm"
-	}],
-	["path", {
-		d: "M20 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C14.63 6 14 7.8 14 9.5c0 3.11 2 5.66 2 8.68V20a2 2 0 1 0 4 0Z",
-		key: "l2t8xc"
-	}],
-	["path", {
-		d: "M16 17h4",
-		key: "1dejxt"
-	}],
-	["path", {
-		d: "M4 13h4",
-		key: "1bwh8b"
 	}]
 ]);
 /**
@@ -399,4 +340,4 @@ var ZoomIn = createLucideIcon("zoom-in", [
 	}]
 ]);
 //#endregion
-export { ArrowRight as _, Share as a, Menu as c, ExternalLink as d, Download as f, ChevronDown as g, ChevronLeft as h, TriangleAlert as i, Footprints as l, ChevronRight as m, ZoomOut as n, Search as o, Clock as p, X as r, Play as s, ZoomIn as t, FlaskConical as u, ArrowLeft as v };
+export { Share as a, Menu as c, ChevronRight as d, ChevronLeft as f, ArrowLeft as h, TriangleAlert as i, ExternalLink as l, ArrowRight as m, ZoomOut as n, Search as o, ChevronDown as p, X as r, Play as s, ZoomIn as t, Download as u };

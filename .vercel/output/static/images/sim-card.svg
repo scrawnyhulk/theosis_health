@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" role="img" aria-label="Illustration: a figure beside two projection lines over time">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0d1b2e"/><stop offset="1" stop-color="#060b13"/></linearGradient>
+<linearGradient id="fig" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e7edf5"/><stop offset="1" stop-color="#7f8a99"/></linearGradient>
+<linearGradient id="gold" x1="0" x2="1"><stop offset="0" stop-color="#b8913f"/><stop offset="1" stop-color="#f0d68e"/></linearGradient>
+<linearGradient id="blue" x1="0" x2="1"><stop offset="0" stop-color="#2a7ae0"/><stop offset="1" stop-color="#8cc2ff"/></linearGradient>
+<radialGradient id="glow" cx=".3" cy=".45" r=".5"><stop offset="0" stop-color="#2a7ae0" stop-opacity=".35"/><stop offset="1" stop-color="#2a7ae0" stop-opacity="0"/></radialGradient>
+<filter id="sh"><feGaussianBlur stdDeviation="3"/></filter>
+</defs>
+<rect width="480" height="300" fill="url(#bg)"/><rect width="480" height="300" fill="url(#glow)"/>
+<g stroke="#cfd6e0" stroke-opacity=".09">
+<path d="M190 60H455M190 110H455M190 160H455M190 210H455"/><path d="M190 40V240M256 40V240M322 40V240M388 40V240M455 40V240"/></g>
+<g transform="translate(95 150)">
+<ellipse cx="0" cy="105" rx="45" ry="7" fill="#000" opacity=".5" filter="url(#sh)"/>
+<circle cx="0" cy="-88" r="17" fill="url(#fig)"/>
+<path d="M-22-64Q0-72 22-64L34-8Q36 2 28 2L22-30 20 18 24 100H8L2 34H-2L-8 100H-24L-20 18-22-30-28 2Q-36 2-34-8Z" fill="url(#fig)"/>
+<path d="M-22-64Q0-72 22-64L20 18H-20Z" fill="#2a7ae0" opacity=".18"/>
+</g>
+<path d="M190 175C250 172 300 160 350 140S430 100 455 88" fill="none" stroke="url(#gold)" stroke-width="4" stroke-linecap="round"/>
+<path d="M190 175C250 178 300 190 350 198S430 210 455 214" fill="none" stroke="url(#blue)" stroke-width="4" stroke-linecap="round"/>
+<circle cx="190" cy="175" r="6" fill="#e7edf5"/><circle cx="455" cy="88" r="6" fill="#f0d68e"/><circle cx="455" cy="214" r="6" fill="#8cc2ff"/>
+<g font-family="Barlow Condensed,Arial Narrow,sans-serif" font-weight="600" font-size="13" fill="#9aa6b8" letter-spacing="1">
+<text x="190" y="262">TODAY</text><text x="455" y="262" text-anchor="end">1 YEAR</text>
+<text x="448" y="74" text-anchor="end" fill="#f0d68e">CURRENT HABITS</text><text x="448" y="236" text-anchor="end" fill="#8cc2ff">SMALL CHANGES</text></g>
+</svg>
