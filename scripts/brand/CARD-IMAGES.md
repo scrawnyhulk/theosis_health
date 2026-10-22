@@ -1,5 +1,7 @@
 # Home page card images (file drop)
 
+> **Not used currently.** The home page was reverted to the earlier card layout (no image slots). Keep these sizes/paths for if image cards come back.
+
 Save a file at the exact path and it replaces the navy placeholder automatically; no code change.
 Format: WebP (quality ~85). Keep important content away from the edges; images are shown with `background-size: cover`.
 

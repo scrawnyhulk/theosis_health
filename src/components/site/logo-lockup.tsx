@@ -8,7 +8,7 @@ export function LogoLockup({ className }: { className?: string }) {
       width={900}
       height={168}
       alt="Theosis Health"
-      className={cn("no-outline block h-[38px] w-auto object-contain object-left sm:h-[50px]", className)}
+      className={cn("no-outline block h-[35px] w-auto object-contain object-left sm:h-[46px]", className)}
     />
   );
 }

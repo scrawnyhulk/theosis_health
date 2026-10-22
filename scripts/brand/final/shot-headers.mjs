@@ -10,6 +10,6 @@ for (const [name, w, mobile] of [["phone",390,true],["desktop",1280,false]]) {
   }
   execSync(`python3 -c "from PIL import Image;ims=[Image.open(f) for f in '${files.join(" ")}'.split()];o=Image.new('RGB',(ims[0].width,sum(i.height+6 for i in ims)),(255,255,255));y=0
 for i in ims: o.paste(i,(0,y)); y+=i.height+6
-o.save('shots/headers-v3-${name}.png')"`);
+o.save('shots/headers-v4-${name}.png')"`);
 }
 await b.close();
