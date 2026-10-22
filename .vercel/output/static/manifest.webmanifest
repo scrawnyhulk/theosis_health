@@ -1,7 +1,7 @@
 {
   "name": "Theosis Health",
   "short_name": "Theosis Health",
-  "description": "Theosis Health: plain-language metabolic health education by Nick Holwey, PA-C. For education only, not medical advice.",
+  "description": "Theosis Health: simple tools and plain-language Health Hacks. For education only, not medical advice.",
   "id": "/",
   "start_url": "/",
   "scope": "/",
