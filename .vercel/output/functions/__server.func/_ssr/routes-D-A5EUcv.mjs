@@ -2,9 +2,9 @@ import { i as __toESM } from "../_runtime.mjs";
 import { n as require_react } from "../_libs/@radix-ui/react-compose-refs+[...].mjs";
 import { b as Link } from "../_libs/@tanstack/react-router+[...].mjs";
 import { i as require_jsx_runtime } from "../_libs/@radix-ui/react-label+[...].mjs";
-import { m as ArrowRight } from "../_libs/lucide-react.mjs";
+import { _ as ArrowRight, l as Footprints, p as Clock, u as FlaskConical } from "../_libs/lucide-react.mjs";
 import { r as SiteShell } from "./site-shell-Coxd6dm8.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/routes-BuqwgArQ.js
+//#region node_modules/.nitro/vite/services/ssr/assets/routes-D-A5EUcv.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var tools = [
@@ -75,6 +75,7 @@ function Home() {
 		}),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SwapCarousel, {}),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Steps, {}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Why, {}),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Toolbox, {}),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)("section", {
 			id: "founder",
@@ -685,6 +686,59 @@ function Toolbox() {
 						children: inner
 					}, t.href);
 				})]
+			})
+		]
+	});
+}
+var why = [
+	{
+		icon: Clock,
+		title: "Scroll forward through time",
+		body: "Move ahead week by week and month by month to see how daily choices about food, movement, and habits might affect your body over time."
+	},
+	{
+		icon: Footprints,
+		title: "Compare everyday decisions",
+		body: "Try a different plan or keep current habits and see how the estimated paths may differ, with every estimate hedged and explained. An optional inside view adds an illustration."
+	},
+	{
+		icon: FlaskConical,
+		title: "Evidence-based, cited content",
+		body: "Explanations drawn from published research, with numbered citations you can check."
+	}
+];
+function Why() {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", {
+		id: "why",
+		className: "mx-auto max-w-6xl px-5 pb-16 sm:px-8",
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+				className: "mk-eyebrow",
+				children: "Why"
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
+				className: "font-display text-3xl font-semibold uppercase sm:text-4xl",
+				children: "Why Theosis Health"
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "mt-8 grid gap-5 md:grid-cols-3",
+				children: why.map(({ icon: Icon, title, body }) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: card,
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Icon, {
+							className: "size-7 text-health",
+							"aria-hidden": "true"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
+							className: "mt-3 font-display text-xl font-semibold uppercase",
+							children: title
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "mt-2 text-muted",
+							children: body
+						})
+					]
+				}, title))
 			})
 		]
 	});

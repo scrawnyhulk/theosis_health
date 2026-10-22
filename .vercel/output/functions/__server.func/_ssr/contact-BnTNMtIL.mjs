@@ -1,7 +1,7 @@
 import { i as __toESM } from "../_runtime.mjs";
 import { n as require_react } from "../_libs/@radix-ui/react-compose-refs+[...].mjs";
 import { i as require_jsx_runtime } from "../_libs/@radix-ui/react-label+[...].mjs";
-import { m as ArrowRight } from "../_libs/lucide-react.mjs";
+import { _ as ArrowRight } from "../_libs/lucide-react.mjs";
 import { i as cn, r as SiteShell } from "./site-shell-Coxd6dm8.mjs";
 import { t as Input } from "./input-CC1nsL0g.mjs";
 //#region node_modules/.nitro/vite/services/ssr/assets/contact-BnTNMtIL.js

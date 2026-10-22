@@ -5,7 +5,7 @@ import { _ as lazyRouteComponent, d as Scripts, f as HeadContent, g as Outlet, h
 import { i as require_jsx_runtime } from "../_libs/@radix-ui/react-label+[...].mjs";
 import { i as TriangleAlert } from "../_libs/lucide-react.mjs";
 import { a as union, i as string, n as number, r as object, t as literal } from "../_libs/zod.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/router-ByJgzHSW.js
+//#region node_modules/.nitro/vite/services/ssr/assets/router-CMVfOO2z.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var __defProp = Object.defineProperty;
@@ -291,7 +291,7 @@ function PwaRegister() {
 	}, []);
 	return null;
 }
-var styles_default = "/assets/styles-C5wjdrCE.css";
+var styles_default = "/assets/styles-BMitNqSA.css";
 var APP_NAME = site.name;
 var Route$12 = createRootRoute({
 	head: () => ({
@@ -422,7 +422,7 @@ var Route$12 = createRootRoute({
 		})]
 	})
 });
-var $$splitComponentImporter$11 = () => import("./routes-BuqwgArQ.mjs");
+var $$splitComponentImporter$11 = () => import("./routes-D-A5EUcv.mjs");
 var Route$11 = createFileRoute("/")({ component: lazyRouteComponent($$splitComponentImporter$11, "component") });
 var $$splitComponentImporter$10 = () => import("./consumer-health-privacy-DsK-06NE.mjs");
 var Route$10 = createFileRoute("/consumer-health-privacy")({
@@ -468,7 +468,7 @@ var Route$4 = createFileRoute("/hacks/")({
 		content: "Health Hacks: the 20% that does 80% of the work. Protein, calories, drinks, fast food, and the mechanisms behind them."
 	}] })
 });
-var $$splitComponentImporter$3 = () => import("../_slug-DsTvM_ov.mjs");
+var $$splitComponentImporter$3 = () => import("../_slug-Bh1TtT3G.mjs");
 var Route$3 = createFileRoute("/hacks/$slug")({
 	component: lazyRouteComponent($$splitComponentImporter$3, "component"),
 	head: ({ params }) => {
@@ -489,7 +489,7 @@ var Route$1 = createFileRoute("/hacks/nerd-out/")({
 		content: "Mechanisms. How stuff actually works. Optional reading. Compulsory if you are me."
 	}] })
 });
-var $$splitComponentImporter = () => import("./nerd-out._topic-VW5NWURe.mjs");
+var $$splitComponentImporter = () => import("./nerd-out._topic-Cjx2cOLF.mjs");
 var Route = createFileRoute("/hacks/nerd-out/$topic")({
 	component: lazyRouteComponent($$splitComponentImporter, "component"),
 	head: ({ params }) => {

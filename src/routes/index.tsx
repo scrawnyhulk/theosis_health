@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Clock, FlaskConical, Footprints } from "lucide-react";
 import { SiteShell } from "@/components/site/site-shell";
 
 export const Route = createFileRoute("/")({ component: Home });
@@ -38,6 +38,7 @@ function Home() {
 
       <SwapCarousel />
       <Steps />
+      <Why />
       <Toolbox />
 
       <section id="founder" className="mx-auto max-w-6xl px-5 pb-20 sm:px-8">
@@ -200,6 +201,30 @@ function Toolbox() {
           const inner = (<><h3 className="font-display text-2xl font-semibold uppercase">{t.title}</h3><p className="mt-2 text-muted">{t.body}</p><span className="mt-4 inline-flex items-center gap-1 font-medium text-health">Open <ArrowRight className="size-4" /></span></>);
           return t.href === "/hacks" ? <Link key={t.href} to="/hacks" className={card}>{inner}</Link> : <a key={t.href} href={t.href} className={card}>{inner}</a>;
         })}
+      </div>
+    </section>
+  );
+}
+
+const why = [
+  { icon: Clock, title: "Scroll forward through time", body: "Move ahead week by week and month by month to see how daily choices about food, movement, and habits might affect your body over time." },
+  { icon: Footprints, title: "Compare everyday decisions", body: "Try a different plan or keep current habits and see how the estimated paths may differ, with every estimate hedged and explained. An optional inside view adds an illustration." },
+  { icon: FlaskConical, title: "Evidence-based, cited content", body: "Explanations drawn from published research, with numbered citations you can check." },
+];
+
+function Why() {
+  return (
+    <section id="why" className="mx-auto max-w-6xl px-5 pb-16 sm:px-8">
+      <p className="mk-eyebrow">Why</p>
+      <h2 className="font-display text-3xl font-semibold uppercase sm:text-4xl">Why Theosis Health</h2>
+      <div className="mt-8 grid gap-5 md:grid-cols-3">
+        {why.map(({ icon: Icon, title, body }) => (
+          <div key={title} className={card}>
+            <Icon className="size-7 text-health" aria-hidden="true" />
+            <h3 className="mt-3 font-display text-xl font-semibold uppercase">{title}</h3>
+            <p className="mt-2 text-muted">{body}</p>
+          </div>
+        ))}
       </div>
     </section>
   );

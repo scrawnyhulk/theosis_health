@@ -3,7 +3,7 @@ import { h as nerdTopics, l as hacks, m as nerdGroups, x as site } from "./hacks
 import { n as require_react } from "../_libs/@radix-ui/react-compose-refs+[...].mjs";
 import { b as Link, p as useRouterState } from "../_libs/@tanstack/react-router+[...].mjs";
 import { i as require_jsx_runtime, n as require_react_dom, r as Slot } from "../_libs/@radix-ui/react-label+[...].mjs";
-import { c as Menu, o as Search, p as ChevronDown, r as X } from "../_libs/lucide-react.mjs";
+import { c as Menu, g as ChevronDown, o as Search, r as X } from "../_libs/lucide-react.mjs";
 import { n as clsx, t as cva } from "../_libs/class-variance-authority+clsx.mjs";
 import { t as twMerge } from "../_libs/tailwind-merge.mjs";
 //#region node_modules/.nitro/vite/services/ssr/assets/site-shell-Coxd6dm8.js
