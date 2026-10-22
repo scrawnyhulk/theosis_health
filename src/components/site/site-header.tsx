@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { ChevronDown, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LogoLockup } from "@/components/site/logo-lockup";
 import { QuickFind } from "@/components/site/quick-find";
 import { NavPlaque } from "@/components/site/health-hacks-mark";
-import { healthNav, simulatorNav } from "@/lib/links";
+import { healthNav } from "@/lib/links";
 import { NavIcon } from "@/components/site/nav-icon";
 import { cn } from "@/lib/utils";
 
@@ -31,10 +31,11 @@ export function SiteHeader() {
             <Link to="/hacks" className="group shrink-0" aria-label="Health Hacks">
               <NavPlaque label="Health Hacks" />
             </Link>
-            <a href={simulatorNav.href} className="group shrink-0" aria-label={`${simulatorNav.label} (beta)`}>
-              <NavPlaque featured badge={simulatorNav.badge} label={simulatorNav.label} icon={<NavIcon name={simulatorNav.icon} />} />
-            </a>
-            <FreeTools />
+            {healthNav.map((n) => (
+              <a key={n.href} href={n.href} className="group shrink-0" aria-label={n.badge ? `${n.label} (${n.badge})` : n.label}>
+                <NavPlaque label={n.label} badge={n.badge} icon={<NavIcon name={n.icon} />} />
+              </a>
+            ))}
           </nav>
         </div>
         <div className="flex items-center gap-2">
@@ -52,15 +53,11 @@ export function SiteHeader() {
           <Link to="/hacks" className="group flex min-h-12 items-center border-b border-border py-2" onClick={close} aria-label="Health Hacks">
             <NavPlaque size="menu" label="Health Hacks" />
           </Link>
-          <a href={simulatorNav.href} className="group flex min-h-12 items-center border-b border-border py-2" aria-label={`${simulatorNav.label} (beta)`}>
-            <NavPlaque size="menu" featured badge={simulatorNav.badge} label={simulatorNav.label} icon={<NavIcon name={simulatorNav.icon} className="size-5" />} />
-          </a>
-          <div role="group" aria-labelledby="m-free-tools" className="border-b border-border py-2">
-            <p id="m-free-tools" className="pt-1 pb-1 text-xs font-semibold tracking-[0.16em] text-health uppercase">Free Tools</p>
-            {healthNav.map((n) => (
-              <a key={n.href} href={n.href} className="group flex min-h-12 items-center py-1.5 pl-2" aria-label={n.label}><NavPlaque size="menu" label={n.label} icon={<NavIcon name={n.icon} className="size-5" />} /></a>
-            ))}
-          </div>
+          {healthNav.map((n) => (
+            <a key={n.href} href={n.href} className="group flex min-h-12 items-center border-b border-border py-2" aria-label={n.badge ? `${n.label} (${n.badge})` : n.label}>
+              <NavPlaque size="menu" label={n.label} badge={n.badge} icon={<NavIcon name={n.icon} className="size-5" />} />
+            </a>
+          ))}
           <Link to="/contact" className="flex min-h-12 items-center text-base font-medium text-accent" onClick={close}>Contact</Link>
         </nav>
       </div>
@@ -68,34 +65,3 @@ export function SiteHeader() {
   );
 }
 
-function FreeTools() {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-  const btn = useRef<HTMLButtonElement>(null);
-  useEffect(() => {
-    if (!open) return;
-    const onDown = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") { setOpen(false); btn.current?.focus(); } };
-    document.addEventListener("mousedown", onDown);
-    document.addEventListener("keydown", onKey);
-    return () => { document.removeEventListener("mousedown", onDown); document.removeEventListener("keydown", onKey); };
-  }, [open]);
-  return (
-    <div ref={ref} className="relative shrink-0" onBlur={(e) => { if (!ref.current?.contains(e.relatedTarget as Node)) setOpen(false); }}>
-      <button ref={btn} type="button" className="group" aria-expanded={open} aria-controls="free-tools-menu" onClick={() => setOpen((v) => !v)}>
-        <NavPlaque label="Free Tools" icon={<ChevronDown className={cn("size-4 transition-transform", open && "rotate-180")} aria-hidden />} />
-      </button>
-      <div id="free-tools-menu" hidden={!open} className="absolute right-0 top-full z-50 mt-2 min-w-max rounded-lg border border-border bg-bg/95 p-2 shadow-xl backdrop-blur-md">
-        <ul className="flex flex-col gap-1">
-          {healthNav.map((n) => (
-            <li key={n.href}>
-              <a href={n.href} className="group flex rounded-md p-1.5 focus-visible:outline-2 focus-visible:outline-accent" aria-label={n.label}>
-                <NavPlaque label={n.label} icon={<NavIcon name={n.icon} />} />
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
-  );
-}

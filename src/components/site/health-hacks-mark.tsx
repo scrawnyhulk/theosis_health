@@ -91,7 +91,7 @@ export function NavPlaque({ label, icon, size = "nav", featured, badge, classNam
           <><span className="hh-metal-blue">{label.slice(0, 1)}</span><span className="hh-metal">{label.slice(1)}</span></>
         )}
       </span>
-      {badge ? <span className="relative ml-0.5 rounded-full bg-white px-1.5 py-px text-[10px] font-bold tracking-wide text-[#1f63bd] uppercase">{badge}</span> : null}
+      {badge ? <span className="relative ml-0.5 rounded-full bg-[#2a7ae0] px-1.5 py-px text-[9px] font-bold tracking-wide text-white uppercase group-hover:bg-white group-hover:text-[#1f63bd]">{badge}</span> : null}
     </span>
   );
 }

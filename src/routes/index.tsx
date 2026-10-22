@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { ArrowRight, Clock, FlaskConical, Footprints } from "lucide-react";
 import { SiteShell } from "@/components/site/site-shell";
-import { HackOfTheWeek } from "@/components/site/hack-of-week";
+import { HomeFeatures } from "@/components/site/hack-of-week";
 import { EXAMPLE, SODA_PERSON, extraLbByDay, lostLbByDay, maintenance } from "@/lib/swap-model";
 
 const SODA_MAINT = Math.round(maintenance(SODA_PERSON) / 10) * 10;
@@ -39,7 +39,7 @@ function Home() {
             <p className="mt-2 max-w-xl text-lg leading-relaxed text-ink-fg/90 sm:text-xl">
               Small changes, real results. Health Hacks that fit a hectic life, no chicken and broccoli required.
             </p>
-            <HackOfTheWeek />
+            <HomeFeatures />
             <div className="mk-welcome">
               <h2 className="font-display text-2xl font-semibold uppercase sm:text-3xl">Welcome to Theosis Health</h2>
               <p className="mt-2 max-w-2xl text-ink-fg/85">Our bodies are a lot like machines. We’re made of parts (protein) and run on fuel (carbohydrates and fats). Most adults burn roughly 60–110 calories an hour, so a few sips of a sweet drink or a few extra bites can be more than we need in that moment. We store the extra, and small things add up fast.</p>
