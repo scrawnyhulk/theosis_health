@@ -1527,7 +1527,7 @@ footer.th-foot{display:block;max-width:none;margin:0;padding:0;font-size:1rem}
     <div class="title-art"><img class="title-gfx" src="assets/title-nick-1600.webp" srcset="assets/title-nick-800.webp 800w, assets/title-nick-1600.webp 1600w" sizes="(max-width:36rem) 92vw, 36rem" width="1600" height="300" alt="Theosis Metabolic Simulator" decoding="async" fetchpriority="high"></div>
     <h1 id="entry-h" class="sr-only">Theosis Metabolic Simulator</h1>
     <div class="beta-ver"><span class="beta-pill">Beta version</span><p class="beta-note">The Theosis Metabolic Simulator is free while in beta and still being improved. A full version is planned, and beta users will hear about it first.</p></div>
-    <p class="lead">See where your body is headed, in <strong>fat and muscle</strong>, not just pounds. Five short steps. Every answer comes with a sensible default, so you can click straight through and fine-tune later.</p>
+    <p class="lead">See where today's habits may be heading, in <strong>fat and muscle</strong>, not just pounds. Five short steps. Every answer comes with a sensible default, so you can click straight through and fine-tune later.</p>
     <div class="entry-mode"><span id="entry-mode-l">Detail level:</span><div class="mode-sw" role="radiogroup" aria-labelledby="entry-mode-l">
       <button type="button" role="radio" data-uimode="simple" aria-checked="true">Simple</button><button type="button" role="radio" data-uimode="advanced" aria-checked="false">Advanced</button></div>
       <span class="hint">Simple keeps it short. Advanced adds training details, measured numbers and manual macros. You can switch any time.</span></div>
@@ -1770,7 +1770,7 @@ footer.th-foot{display:block;max-width:none;margin:0;padding:0;font-size:1rem}
 
         <!-- STEP 2: GOAL -->
         <section class="step" data-step="2" aria-labelledby="h-goal" hidden>
-          <header class="step-head"><p class="eyebrow">Step 2 of 5</p><h1 id="h-goal" tabindex="-1">Goal</h1><p class="lead" id="goal-lead">What you want your body to do. You'll get instant feedback on whether it's realistic.</p></header>
+          <header class="step-head"><p class="eyebrow">Step 2 of 5</p><h1 id="h-goal" tabindex="-1">Goal</h1><p class="lead" id="goal-lead">What you'd like to change. You'll get instant feedback on whether it's realistic.</p></header>
           <div class="card hab-read" id="hab-read" aria-live="polite" hidden></div>
           <div class="card">
             <p class="eyebrow card-eyebrow">Choose one</p>
@@ -1949,7 +1949,7 @@ footer.th-foot{display:block;max-width:none;margin:0;padding:0;font-size:1rem}
 
         <!-- STEP 4: FOOD -->
         <section class="step" data-step="4" aria-labelledby="h-food" hidden>
-          <header class="step-head"><p class="eyebrow">Step 4 of 5</p><h1 id="h-food" tabindex="-1">Food</h1><p class="lead" id="food-lead">One daily target, built for your goal. It adjusts as your body changes.</p></header>
+          <header class="step-head"><p class="eyebrow">Step 4 of 5</p><h1 id="h-food" tabindex="-1">Food</h1><p class="lead" id="food-lead">One daily target, built for your goal. It adjusts as the numbers change.</p></header>
           <div id="fit-banner-4" class="fit-wrap" hidden></div>
           <div class="card" id="rec-wrap">
             <section class="target-card" id="rec-card" aria-live="polite"></section>
@@ -6265,7 +6265,7 @@ function buildGoalOpts() {
 const lean0 = () => S.profile.weightKg * (1 - bfInfo().bf / 100);
 function renderGoal() {
   const g = S.goal, b = bfInfo(), p = S.profile;
-  $("#goal-lead").textContent = S.mode === "habits" ? "Pick a goal to compare against. Your projection follows what you actually eat (Step 4)." : "What you want your body to do. You'll get instant feedback on whether it's realistic.";
+  $("#goal-lead").textContent = S.mode === "habits" ? "Pick a goal to compare against. Your projection follows what you actually eat (Step 4)." : "What you'd like to change. You'll get instant feedback on whether it's realistic.";
   for (const inp of $$('input[name="goal.type"]')) {
     const v = inp.value, dis = (v === "maxloss" && b.source === "bmi") || (E.holdsGoal(p.health) && v !== "maintain") || (p.health.edHistory && v === "maxloss");
     inp.disabled = dis; inp.checked = g.type === v;
@@ -6638,7 +6638,7 @@ function renderMeals() {
 }
 function renderFood() {
   if (typeof renderSpecial === "function") renderSpecial();
-  $("#food-lead").textContent = S.mode === "habits" ? "Just tell us what you eat on a normal day. Pick one way below." : "One daily target, built for your goal. It adjusts as your body changes.";
+  $("#food-lead").textContent = S.mode === "habits" ? "Just tell us what you eat on a normal day. Pick one way below." : "One daily target, built for your goal. It adjusts as the numbers change.";
   $("#actual-fields").hidden = !S.food.actualOn;
   const card = $("#rec-card"), used = $("#used-card"), med = $("#med-card");
   if (!R || R.blocked) { card.innerHTML = `<p class="blocked">Finish your goal on Step 2 to get a target.</p>`; if (used) used.innerHTML = ""; med.hidden = true; $("#psmf-prompt").innerHTML = ""; renderMeals(); return; }
