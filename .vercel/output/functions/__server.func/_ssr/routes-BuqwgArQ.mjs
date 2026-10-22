@@ -4,7 +4,7 @@ import { b as Link } from "../_libs/@tanstack/react-router+[...].mjs";
 import { i as require_jsx_runtime } from "../_libs/@radix-ui/react-label+[...].mjs";
 import { m as ArrowRight } from "../_libs/lucide-react.mjs";
 import { r as SiteShell } from "./site-shell-Coxd6dm8.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/routes-BPWo0iIy.js
+//#region node_modules/.nitro/vite/services/ssr/assets/routes-BuqwgArQ.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var tools = [
@@ -63,7 +63,7 @@ function Home() {
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 							className: "mt-5 max-w-xl text-lg leading-relaxed text-ink-fg/90 sm:text-xl",
-							children: "Simple tools and realistic Health Hacks to help you navigate and improve your health in a hectic life."
+							children: "Simple tools and realistic Health Hacks to help re-inspire a healthy lifestyle while navigating a hectic life."
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 							className: "mt-3 text-sm text-ink-muted",

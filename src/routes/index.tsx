@@ -29,7 +29,7 @@ function Home() {
           <div className="stagger-in">
             <h1 className="sr-only">Theosis Health</h1>
             <p className="mt-5 max-w-xl text-lg leading-relaxed text-ink-fg/90 sm:text-xl">
-              Simple tools and realistic Health Hacks to help you navigate and improve your health in a hectic life.
+              Simple tools and realistic Health Hacks to help re-inspire a healthy lifestyle while navigating a hectic life.
             </p>
             <p className="mt-3 text-sm text-ink-muted">Education only, not medical advice. Talk with your healthcare provider.</p>
           </div>
