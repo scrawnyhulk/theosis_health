@@ -9,7 +9,7 @@
    anchor faces away from the camera. Drag on the figure rotates it (the model's own controls).
    Needs the model's #pftdebug hook (exposes scene/meshes/THREE) and http(s) same-origin. */
 (function(){
-const SRC='pft-inside/index.html?view=3d#pftdebug';
+const SRC='pft-inside/figure.html?view=3d&v=7672#pftdebug';/* v7.6.71: figure-only document; same shared engine+anatomy files as the PFT page */
 const SHORT={liver:'Liver',pan:'Pancreas',vis:'Belly fat',skin:'Under skin'};
 const COL={liver:'#e07070',pan:'#c792ea',vis:'#e8a84a',skin:'#e8c27a'};
 // Plain-language label text. Now ('up') = what is likely happening and how it affects that organ; Later ('down') = what
@@ -36,7 +36,7 @@ window.PFTEmbed=function(host,opt){
  let st={load:opt.load??80,capacity:opt.capacity??1,later:false,start:opt.load??80,end:opt.end??25,s:0},ready=false,cam=null,A=null,words={},t0=performance.now();const api={words};
  const W=()=>fr.contentWindow,D=()=>fr.contentDocument;
  fr.addEventListener('load',()=>{let d,w;try{d=D();w=W();if(!d||!w.document)throw 0}catch(e){api.failed=true;if(opt.onFail)opt.onFail('blocked');return}
-  const s=d.createElement('style');s.textContent='html,body{background:#05080d!important;overflow:hidden!important}body *{visibility:hidden!important}#ct-current{position:fixed!important;left:0!important;top:0!important;width:1100px!important;height:auto!important;max-width:none!important}#pft3d-canvas{visibility:visible!important;position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;z-index:2147483647;max-width:none!important;max-height:none!important}';d.head.appendChild(s);
+  const s=d.createElement('style');s.textContent='html,body{background:transparent!important;overflow:hidden!important}body *{visibility:hidden!important}#ct-current{position:fixed!important;left:0!important;top:0!important;width:1100px!important;height:auto!important;max-width:none!important}#pft3d-canvas{visibility:visible!important;position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;z-index:2147483647;max-width:none!important;max-height:none!important}';d.head.appendChild(s);
   w.addEventListener('message',e=>{if(e.data&&e.data.type==='pft-set'){if(e.data.skin)skinIn(e.data.skin);if(e.data.load!=null)w.PFTAtlas.setState(e.data.load,e.data.capacity)}});
   let tries=0;const wait=()=>{if(!w.__pft3d){if(++tries>300){api.failed=true;if(opt.onFail)opt.onFail('timeout');return}return setTimeout(wait,100)}try{boot()}catch(e){api.failed=true;if(opt.onFail)opt.onFail('boot')}};wait();});
  function skinIn(hex){try{const w=W();if(!w||!w.__pft3d||!hex)return false;w.__pft3d.meshes.forEach(m=>{if(m.userData.role==='skin'&&m.material&&m.material.color)m.material.color.set(hex)});st.skin=hex;host.dataset.skin=hex;if(ready)apply();return true}catch(e){return false}}
