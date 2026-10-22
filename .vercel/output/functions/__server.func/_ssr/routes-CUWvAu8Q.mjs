@@ -3,9 +3,9 @@ import { n as require_react } from "../_libs/@radix-ui/react-compose-refs+[...].
 import { b as Link } from "../_libs/@tanstack/react-router+[...].mjs";
 import { i as require_jsx_runtime } from "../_libs/@radix-ui/react-label+[...].mjs";
 import { _ as ArrowRight, l as Footprints, p as Clock, u as FlaskConical } from "../_libs/lucide-react.mjs";
-import { a as SODA_PERSON, c as maintenance, i as EXAMPLE, o as extraLbByDay, s as lostLbByDay } from "./router-CZrk_Vt7.mjs";
+import { a as SODA_PERSON, c as maintenance, i as EXAMPLE, o as extraLbByDay, s as lostLbByDay } from "./router-DFk5B5BE.mjs";
 import { r as SiteShell } from "./site-shell-Coxd6dm8.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/routes-6wwv9v6W.js
+//#region node_modules/.nitro/vite/services/ssr/assets/routes-CUWvAu8Q.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 Math.round(maintenance(SODA_PERSON) / 10) * 10;
@@ -80,15 +80,42 @@ function Home() {
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 									className: "mt-2 max-w-2xl text-ink-fg/85",
-									children: "Our bodies are a lot like machines. We’re made of parts, and we run on fuel, mostly from the carbohydrates and fats we eat. Most adults burn roughly 60–110 calories an hour, depending on size and activity. That means a few sips of a sweet drink or a few extra bites can be more fuel than we need in that moment. When that happens, we store the extra for later. When we run low, we draw from those stores."
+									children: "Our bodies are a lot like machines. We’re made of parts, and we run on fuel. Most adults burn roughly 60–110 calories an hour, so a few sips of a sweet drink or a few extra bites can be more than we need in that moment. We store the extra, and small things add up fast."
 								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
 									className: "mt-3 max-w-2xl text-ink-fg/85",
-									children: "Whether we gain fat over time comes down to how the calories we take in average out against what we burn. The catch is that most of us don’t realize how quickly calories add up. Small things quietly raise our daily fuel until we’re storing more than we burn. As you’ll see below, a single daily drink can add pound after pound over months and years, and that’s just one of the many things we consume regularly."
+									children: [
+										"We each have a different-sized fuel tank for storing fat safely, set largely by our genes. Once ours is full, extra fat spills into the liver, the pancreas and around the organs, and the liver stops listening to insulin. That tipping point is our personal fat threshold, and it’s easy to cross it and become insulin resistant, or even diabetic, without realizing it. ",
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+											href: "/simulator/pft-inside/",
+											className: "font-medium text-health underline underline-offset-2 hover:no-underline",
+											children: "See what happens inside as fat builds up →"
+										}),
+										" Today 40.1 million people in the US have diabetes, 115.2 million adults have prediabetes,",
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("sup", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+											href: "#wf1",
+											"aria-label": "Footnote 1",
+											children: "1"
+										}) }),
+										" and about 1 in 3 adults have metabolic syndrome.",
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("sup", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+											href: "#wf2",
+											"aria-label": "Footnote 2",
+											children: "2"
+										}) })
+									]
 								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
 									className: "mt-3 max-w-2xl text-ink-fg/85",
-									children: "Today’s food landscape makes it easy for all of us to eat a little more than we need, and with so much conflicting advice out there, it’s hard to know which levers are worth pulling. Theosis Health and the Theosis Metabolic Simulator are built to help you find small, targeted changes that fit the life you already have, so you can reach your goals without giving up every food you enjoy."
+									children: [
+										"Theosis Health and the ",
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+											href: "/simulator/",
+											className: "font-medium text-health underline underline-offset-2 hover:no-underline",
+											children: "Theosis Metabolic Simulator"
+										}),
+										" help you find small, targeted changes that fit the life you already have, without giving up every food you enjoy."
+									]
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("ul", {
 									className: "mk-chips",

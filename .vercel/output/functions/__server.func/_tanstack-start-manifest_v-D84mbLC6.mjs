@@ -1,4 +1,4 @@
-//#region node_modules/.nitro/vite/services/ssr/assets/_tanstack-start-manifest_v-DHU08JZ3.js
+//#region node_modules/.nitro/vite/services/ssr/assets/_tanstack-start-manifest_v-D84mbLC6.js
 var tsrStartManifest = () => ({ routes: {
 	__root__: {
 		filePath: "/workspace/theosishealth/src/routes/__root.tsx",
@@ -15,7 +15,7 @@ var tsrStartManifest = () => ({ routes: {
 			"/hacks/"
 		],
 		preloads: [
-			"/assets/index-BPAjrElu.js",
+			"/assets/index-JrM58mW1.js",
 			"/assets/useSelector-B0K6Mfa1.js",
 			"/assets/hacks-DNc3MQoh.js",
 			"/assets/preload-helper-B9MoI6v7.js",
@@ -24,14 +24,14 @@ var tsrStartManifest = () => ({ routes: {
 		scripts: [{ attrs: {
 			type: "module",
 			async: !0,
-			src: "/assets/index-BPAjrElu.js"
+			src: "/assets/index-JrM58mW1.js"
 		} }]
 	},
 	"/": {
 		filePath: "/workspace/theosishealth/src/routes/index.tsx",
 		children: void 0,
 		preloads: [
-			"/assets/routes-B7E13AB9.js",
+			"/assets/routes-D-e6rXU7.js",
 			"/assets/site-shell-RkXIuk9-.js",
 			"/assets/arrow-right-BdIbGYay.js"
 		]
@@ -75,7 +75,7 @@ var tsrStartManifest = () => ({ routes: {
 		filePath: "/workspace/theosishealth/src/routes/hacks/$slug.tsx",
 		children: void 0,
 		preloads: [
-			"/assets/_slug-Ccndf9tw.js",
+			"/assets/_slug-D6NdAo45.js",
 			"/assets/site-shell-RkXIuk9-.js",
 			"/assets/nerd-paragraph-BqPwsOZN.js",
 			"/assets/arrow-right-BdIbGYay.js",
@@ -86,7 +86,7 @@ var tsrStartManifest = () => ({ routes: {
 	"/hacks/nerd-out": {
 		filePath: "/workspace/theosishealth/src/routes/hacks/nerd-out.tsx",
 		children: ["/hacks/nerd-out/$topic", "/hacks/nerd-out/"],
-		preloads: ["/assets/nerd-out-Dg7KfZeX.js"]
+		preloads: ["/assets/nerd-out-CoYIp4UY.js"]
 	},
 	"/hacks/": {
 		filePath: "/workspace/theosishealth/src/routes/hacks/index.tsx",
@@ -101,7 +101,7 @@ var tsrStartManifest = () => ({ routes: {
 		filePath: "/workspace/theosishealth/src/routes/hacks/nerd-out.$topic.tsx",
 		children: void 0,
 		preloads: [
-			"/assets/nerd-out._topic-DmlgKYEE.js",
+			"/assets/nerd-out._topic-BKyR_Qm1.js",
 			"/assets/site-shell-RkXIuk9-.js",
 			"/assets/nerd-paragraph-BqPwsOZN.js",
 			"/assets/arrow-right-BdIbGYay.js",
