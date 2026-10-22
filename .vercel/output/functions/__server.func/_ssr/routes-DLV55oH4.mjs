@@ -4,16 +4,17 @@ import { b as Link } from "../_libs/@tanstack/react-router+[...].mjs";
 import { i as require_jsx_runtime } from "../_libs/@radix-ui/react-label+[...].mjs";
 import { _ as ArrowRight, l as Footprints, p as Clock, u as FlaskConical } from "../_libs/lucide-react.mjs";
 import { r as SiteShell } from "./site-shell-Coxd6dm8.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/routes-kYI7LZxq.js
+//#region node_modules/.nitro/vite/services/ssr/assets/routes-DLV55oH4.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var LB = 2.2046226218;
 var RHO_F = 4250 * LB;
 var RHO_L = 1800;
 var TEF_BETA = .1;
+var AT_BETA_UP = .2;
+var AT_UP_MAXEXCESS = 1e3;
 var AT_TAU = 14;
 var AT_CAP = .25;
-/** Example person used on the home page swap cards. */
 var EXAMPLE = {
 	sex: "m",
 	age: 40,
@@ -22,13 +23,45 @@ var EXAMPLE = {
 	bodyFatPct: 25,
 	lightActivityKcal: 250
 };
-var bmr = (kg) => 10 * kg + 6.25 * EXAMPLE.heightCm - 5 * EXAMPLE.age + (EXAMPLE.sex === "m" ? 5 : -161);
-var tdee = (kg) => bmr(kg) * 1.2 + EXAMPLE.lightActivityKcal;
+/** Example person for the soda card: maintenance about 2,000 kcal/day. */
+var SODA_PERSON = {
+	sex: "f",
+	age: 40,
+	heightCm: 165.1,
+	weightLb: 170,
+	bodyFatPct: 35,
+	lightActivityKcal: 250
+};
+var bmrP = (P, kg) => 10 * kg + 6.25 * P.heightCm - 5 * P.age + (P.sex === "m" ? 5 : -161);
+var tdeeP = (P, kg) => bmrP(P, kg) * 1.2 + P.lightActivityKcal;
+/** Maintenance calories at starting weight. */
+var maintenance = (P) => tdeeP(P, P.weightLb / LB);
+/** Extra pounds vs staying at maintenance, for each day 0..365, when eating `surplus` kcal/day more. */
+function extraLbByDay(surplus, days = 365, P = EXAMPLE) {
+	const tdee = (kg) => tdeeP(P, kg);
+	const w0 = P.weightLb / LB;
+	let F = w0 * P.bodyFatPct / 100, L = w0 - F, adapt = 0;
+	const ei0 = tdee(w0), intake = ei0 + surplus;
+	const out = [0];
+	for (let d = 0; d < days; d++) {
+		const t = tdee(F + L);
+		const target = -Math.min(AT_CAP * t, AT_BETA_UP * Math.min(intake - ei0, AT_UP_MAXEXCESS));
+		adapt += (target - adapt) / AT_TAU;
+		const E = intake - (t - adapt - TEF_BETA * (ei0 - intake));
+		const pm = 10.4 / (10.4 + F);
+		const dF = E / (RHO_F + RHO_L * pm / (1 - pm));
+		F += dF;
+		L += dF * pm / (1 - pm);
+		out.push((F + L - w0) * LB);
+	}
+	return out;
+}
 var AT_BETA = .14;
 /** Pounds lost vs staying at maintenance, for each day 0..365, when eating `cut` kcal/day less. Includes metabolic adaptation. */
-function lostLbByDay(cut, days = 365) {
-	const w0 = EXAMPLE.weightLb / LB;
-	let F = w0 * EXAMPLE.bodyFatPct / 100, L = w0 - F, adapt = 0;
+function lostLbByDay(cut, days = 365, P = EXAMPLE) {
+	const tdee = (kg) => tdeeP(P, kg);
+	const w0 = P.weightLb / LB;
+	let F = w0 * P.bodyFatPct / 100, L = w0 - F, adapt = 0;
 	const ei0 = tdee(w0), intake = ei0 - cut;
 	const out = [0];
 	for (let d = 0; d < days; d++) {
@@ -44,9 +77,11 @@ function lostLbByDay(cut, days = 365) {
 	}
 	return out;
 }
-var SODA_LB = lostLbByDay(140);
+var SODA_GAIN = extraLbByDay(140, 365, SODA_PERSON);
+var SODA_LOSS = lostLbByDay(140, 365, SODA_PERSON);
+var SODA_MAINT = Math.round(maintenance(SODA_PERSON) / 10) * 10;
 var PROT_LB = lostLbByDay(150);
-var BAR_MAX = Math.max(SODA_LB[365], PROT_LB[365]) * 1.05;
+var BAR_MAX = PROT_LB[365] * 1.05;
 var barH = (lb) => `${Math.max(4, lb / BAR_MAX * 100)}%`;
 var EXAMPLE_NOTE = `Example person, not a prediction: a ${EXAMPLE.age}-year-old, 5'9", ${EXAMPLE.weightLb}-lb man with about ${EXAMPLE.bodyFatPct}% body fat who is lightly active; individual numbers will differ. Try the simulator to see your own.`;
 var tools = [
@@ -292,98 +327,206 @@ var ADAPT_NOTE = /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 	className: "mk-adapt",
 	children: "Includes metabolic adaptation"
 });
+var GAIN = "#e07a4f";
+var G = {
+	w: 640,
+	h: 300,
+	l: 46,
+	r: 18,
+	t: 18,
+	b: 34
+};
+var Y_MAX = Math.ceil(Math.max(SODA_GAIN[365], SODA_LOSS[365]) / 2) * 2 + 2;
+var gx = (d) => G.l + d / 365 * (G.w - G.l - G.r);
+var gy = (lb) => G.t + (Y_MAX - lb) / (2 * Y_MAX) * (G.h - G.t - G.b);
+var sodaAt = (d, k) => {
+	const a = Math.floor(d), f = d - a, b = Math.min(365, a + 1);
+	const g = SODA_GAIN[a] + (SODA_GAIN[b] - SODA_GAIN[a]) * f, l = SODA_LOSS[a] + (SODA_LOSS[b] - SODA_LOSS[a]) * f;
+	return k * g - (1 - k) * l;
+};
+var SODA_SR = `Example: a ${SODA_PERSON.age}-year-old, 5'5", ${SODA_PERSON.weightLb}-lb woman with about ${SODA_PERSON.bodyFatPct}% body fat who is lightly active, so she needs about ${SODA_MAINT.toLocaleString()} calories a day.`;
 function SodaCard() {
-	const [i, setI] = (0, import_react.useState)(0);
-	const c = useTween(i * 140), lb = useTween(SODA_LB[i]);
+	const [i, setI] = (0, import_react.useState)(365);
+	const [keep, setKeep] = (0, import_react.useState)(false);
+	const d = useTween(i), k = useTween(keep ? 1 : 0, 450);
+	const lb = sodaAt(d, k), cal = Math.round(d) * 140;
+	const pts = [];
+	for (let x = 0; x < d; x += 3) pts.push(`${gx(x).toFixed(1)},${gy(sodaAt(x, k)).toFixed(1)}`);
+	pts.push(`${gx(d).toFixed(1)},${gy(lb).toFixed(1)}`);
+	const col = keep ? GAIN : LOSS;
+	const shown = Math.abs(lb) < .05 ? "0" : `${lb > 0 ? "+" : "−"}${fmtLb(Math.abs(lb))}`;
+	const lx = gx(d), ly = gy(lb), anchor = lx > G.w - 110 ? "end" : "start";
+	const yt = [
+		Y_MAX,
+		Y_MAX / 2,
+		0,
+		-Y_MAX / 2,
+		-Y_MAX
+	];
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
 			className: "mk-h2",
-			children: "One small swap: soda or Starbucks → diet or zero-calorie drink"
+			children: "One small swap: soda or zero-calorie drink"
 		}),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 			className: "mk-sub",
-			children: "Say someone drinks one full-sugar soda or sweet Starbucks drink a day (about 140 calories for a 12\xA0oz soda). Slide forward in time to see about how much they could lose by swapping it for a diet or zero-calorie drink."
+			children: "Example: someone who needs about 2,000 calories a day. If nothing else about their diet changes, adding a daily 140-calorie soda or cutting one could add up like this."
 		}),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-			className: "mk-card",
+			className: "mk-card sd-card",
 			children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "sd-tags",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+						className: "sd-tag",
+						children: "Example person, not a prediction"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+						className: "mk-adapt",
+						style: { marginTop: 0 },
+						children: "Includes metabolic adaptation"
+					})]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "sd-pills",
+					role: "group",
+					"aria-label": "Choose a habit",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+						type: "button",
+						className: `sd-pill keep${keep ? " on" : ""}`,
+						"aria-pressed": keep,
+						onClick: () => setKeep(true),
+						children: "🥤 Keep the soda (140 cal)"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+						type: "button",
+						className: `sd-pill sw${!keep ? " on" : ""}`,
+						"aria-pressed": !keep,
+						onClick: () => setKeep(false),
+						children: "💧 Switch to zero-calorie"
+					})]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "sd-num",
+					"aria-live": "polite",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "mk-num",
+							style: {
+								color: keep ? "#f0936b" : "#5cc48e",
+								fontSize: "3rem"
+							},
+							children: [shown, " lb"]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "sd-cal",
+							children: keep ? `Extra calories: +${cal.toLocaleString()}` : `Calories cut: −${cal.toLocaleString()}`
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "mk-small",
+							children: [
+								"estimated weight change after ",
+								timeLabel(i).toLowerCase(),
+								", about"
+							]
+						})
+					]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("svg", {
+					className: "sd-graph",
+					viewBox: `0 0 ${G.w} ${G.h}`,
+					role: "img",
+					"aria-label": `Line graph: estimated weight change about ${shown} pounds after ${timeLabel(i)}`,
+					children: [
+						yt.map((v) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("g", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("line", {
+							x1: G.l,
+							x2: G.w - G.r,
+							y1: gy(v),
+							y2: gy(v),
+							stroke: "#ffffff14"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("text", {
+							x: G.l - 8,
+							y: gy(v) + 4,
+							textAnchor: "end",
+							className: "sd-ax",
+							children: v > 0 ? `+${v}` : v
+						})] }, v)),
+						TICKS.map(([t, lab]) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("text", {
+							x: gx(t),
+							y: G.h - 10,
+							textAnchor: t === 0 ? "start" : t === 365 ? "end" : "middle",
+							className: "sd-ax",
+							children: lab
+						}, t)),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("text", {
+							x: 14,
+							y: G.t + (G.h - G.t - G.b) / 2,
+							className: "sd-ax",
+							transform: `rotate(-90 14 ${G.t + (G.h - G.t - G.b) / 2})`,
+							textAnchor: "middle",
+							children: "lb"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("line", {
+							x1: G.l,
+							x2: G.w - G.r,
+							y1: gy(0),
+							y2: gy(0),
+							stroke: "#9fb0c4",
+							strokeDasharray: "6 6",
+							strokeWidth: 1.5
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("text", {
+							x: G.w - G.r,
+							y: gy(0) + (keep ? 18 : -8),
+							textAnchor: "end",
+							className: "sd-base",
+							children: "2,000-calorie day, nothing else changes"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("polyline", {
+							points: pts.join(" "),
+							fill: "none",
+							stroke: col,
+							strokeWidth: 4,
+							strokeLinecap: "round",
+							strokeLinejoin: "round",
+							style: { transition: "stroke .4s" }
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("circle", {
+							cx: lx,
+							cy: ly,
+							r: 7,
+							fill: col,
+							stroke: "#0b1320",
+							strokeWidth: 3,
+							style: { transition: "fill .4s" }
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("text", {
+							x: anchor === "end" ? lx - 12 : lx + 12,
+							y: ly + (lb >= 0 ? -10 : 22),
+							textAnchor: anchor,
+							className: "sd-pt",
+							fill: col,
+							children: [shown, " lb"]
+						})
+					]
+				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TimeSlider, {
 					id: "mkr",
 					value: i,
 					onChange: setI,
 					describedBy: "mknote"
 				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "mk-paths",
-					"aria-live": "polite",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "mk-path",
-						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", { children: "🥤 Keep the daily soda" }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-								className: "mk-barbox",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-									className: "mk-bar",
-									style: {
-										background: "#d4a056",
-										height: "4px"
-									}
-								})
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-								className: "mk-num",
-								children: "0 lb"
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-								className: "mk-small",
-								children: "no change in weight"
-							})
-						]
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "mk-path mk-win",
-						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", { children: "🥤 Swap to diet or zero-cal" }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-								className: "mk-barbox",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-									className: "mk-bar",
-									style: {
-										background: LOSS,
-										height: barH(lb)
-									}
-								})
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "mk-num mk-loss",
-								children: [lb < .05 ? "0" : `−${fmtLb(lb)}`, " lb"]
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "mk-small",
-								children: [
-									"could lose about ",
-									fmtLb(lb),
-									" lb · ",
-									Math.round(c).toLocaleString(),
-									" calories cut so far"
-								]
-							}),
-							ADAPT_NOTE
-						]
-					})]
-				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 					id: "mknote",
 					className: "mk-small",
 					style: { marginTop: "1rem" },
-					children: "Rough educational estimate only: about 140 calories a day (a 12\xA0oz soda) swapped for 0. Many sweet coffee drinks run 200–400+ calories, so the real gap could be bigger. The pounds come from the simulator's energy-balance model, which includes metabolic adaptation: burn drops a little as weight comes off, so the loss slows over time instead of adding up in a straight line. Real-life results vary from person to person. Not medical advice."
+					children: "Rough educational estimate only: 140 calories a day (a 12\xA0oz soda) added or cut. Many sweet coffee drinks run 200–400+ calories, so the real gap could be bigger. The pounds come from the simulator's energy-balance model, which includes metabolic adaptation, so both lines slow over time instead of adding up in a straight line. Real-life results vary from person to person. Not medical advice."
 				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
 					className: "mk-small",
 					style: {
 						fontSize: ".78rem",
 						opacity: .85
 					},
-					children: EXAMPLE_NOTE
+					children: [SODA_SR, " Individual numbers will differ. Try the simulator to see your own."]
 				})
 			]
 		}),

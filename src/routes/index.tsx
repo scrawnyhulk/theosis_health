@@ -2,11 +2,13 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { ArrowRight, Clock, FlaskConical, Footprints } from "lucide-react";
 import { SiteShell } from "@/components/site/site-shell";
-import { EXAMPLE, lostLbByDay } from "@/lib/swap-model";
+import { EXAMPLE, SODA_PERSON, extraLbByDay, lostLbByDay, maintenance } from "@/lib/swap-model";
 
-const SODA_LB = lostLbByDay(140);
+const SODA_GAIN = extraLbByDay(140, 365, SODA_PERSON);
+const SODA_LOSS = lostLbByDay(140, 365, SODA_PERSON);
+const SODA_MAINT = Math.round(maintenance(SODA_PERSON) / 10) * 10;
 const PROT_LB = lostLbByDay(150);
-const BAR_MAX = Math.max(SODA_LB[365], PROT_LB[365]) * 1.05;
+const BAR_MAX = PROT_LB[365] * 1.05;
 const barH = (lb: number) => `${Math.max(4, (lb / BAR_MAX) * 100)}%`;
 const EXAMPLE_NOTE = `Example person, not a prediction: a ${EXAMPLE.age}-year-old, 5'9", ${EXAMPLE.weightLb}-lb man with about ${EXAMPLE.bodyFatPct}% body fat who is lightly active; individual numbers will differ. Try the simulator to see your own.`;
 
@@ -126,21 +128,58 @@ function TimeSlider({ id, value, onChange, describedBy }: { id: string; value: n
 const LOSS = "#3d9a6a";
 const ADAPT_NOTE = <div className="mk-adapt">Includes metabolic adaptation</div>;
 
+const GAIN = "#e07a4f";
+const G = { w: 640, h: 300, l: 46, r: 18, t: 18, b: 34 };
+const Y_MAX = Math.ceil(Math.max(SODA_GAIN[365], SODA_LOSS[365]) / 2) * 2 + 2;
+const gx = (d: number) => G.l + (d / 365) * (G.w - G.l - G.r);
+const gy = (lb: number) => G.t + ((Y_MAX - lb) / (2 * Y_MAX)) * (G.h - G.t - G.b);
+const sodaAt = (d: number, k: number) => {
+  const a = Math.floor(d), f = d - a, b = Math.min(365, a + 1);
+  const g = SODA_GAIN[a] + (SODA_GAIN[b] - SODA_GAIN[a]) * f, l = SODA_LOSS[a] + (SODA_LOSS[b] - SODA_LOSS[a]) * f;
+  return k * g - (1 - k) * l;
+};
+const SODA_SR = `Example: a ${SODA_PERSON.age}-year-old, 5'5", ${SODA_PERSON.weightLb}-lb woman with about ${SODA_PERSON.bodyFatPct}% body fat who is lightly active, so she needs about ${SODA_MAINT.toLocaleString()} calories a day.`;
+
 function SodaCard() {
-  const [i, setI] = useState(0);
-  const c = useTween(i * 140), lb = useTween(SODA_LB[i]);
+  const [i, setI] = useState(365);
+  const [keep, setKeep] = useState(false);
+  const d = useTween(i), k = useTween(keep ? 1 : 0, 450);
+  const lb = sodaAt(d, k), cal = Math.round(d) * 140;
+  const pts: string[] = [];
+  for (let x = 0; x < d; x += 3) pts.push(`${gx(x).toFixed(1)},${gy(sodaAt(x, k)).toFixed(1)}`);
+  pts.push(`${gx(d).toFixed(1)},${gy(lb).toFixed(1)}`);
+  const col = keep ? GAIN : LOSS;
+  const shown = Math.abs(lb) < 0.05 ? "0" : `${lb > 0 ? "+" : "−"}${fmtLb(Math.abs(lb))}`;
+  const lx = gx(d), ly = gy(lb), anchor = lx > G.w - 110 ? "end" : "start";
+  const yt = [Y_MAX, Y_MAX / 2, 0, -Y_MAX / 2, -Y_MAX];
   return (
     <>
-      <h2 className="mk-h2">One small swap: soda or Starbucks → diet or zero-calorie drink</h2>
-      <p className="mk-sub">Say someone drinks one full-sugar soda or sweet Starbucks drink a day (about 140 calories for a 12&nbsp;oz soda). Slide forward in time to see about how much they could lose by swapping it for a diet or zero-calorie drink.</p>
-      <div className="mk-card">
-        <TimeSlider id="mkr" value={i} onChange={setI} describedBy="mknote" />
-        <div className="mk-paths" aria-live="polite">
-          <div className="mk-path"><h3>🥤 Keep the daily soda</h3><div className="mk-barbox"><div className="mk-bar" style={{ background: "#d4a056", height: "4px" }} /></div><div className="mk-num">0 lb</div><div className="mk-small">no change in weight</div></div>
-          <div className="mk-path mk-win"><h3>🥤 Swap to diet or zero-cal</h3><div className="mk-barbox"><div className="mk-bar" style={{ background: LOSS, height: barH(lb) }} /></div><div className="mk-num mk-loss">{lb < 0.05 ? "0" : `−${fmtLb(lb)}`} lb</div><div className="mk-small">could lose about {fmtLb(lb)} lb · {Math.round(c).toLocaleString()} calories cut so far</div>{ADAPT_NOTE}</div>
+      <h2 className="mk-h2">One small swap: soda or zero-calorie drink</h2>
+      <p className="mk-sub">Example: someone who needs about 2,000 calories a day. If nothing else about their diet changes, adding a daily 140-calorie soda or cutting one could add up like this.</p>
+      <div className="mk-card sd-card">
+        <div className="sd-tags"><span className="sd-tag">Example person, not a prediction</span><span className="mk-adapt" style={{ marginTop: 0 }}>Includes metabolic adaptation</span></div>
+        <div className="sd-pills" role="group" aria-label="Choose a habit">
+          <button type="button" className={`sd-pill keep${keep ? " on" : ""}`} aria-pressed={keep} onClick={() => setKeep(true)}>🥤 Keep the soda (140 cal)</button>
+          <button type="button" className={`sd-pill sw${!keep ? " on" : ""}`} aria-pressed={!keep} onClick={() => setKeep(false)}>💧 Switch to zero-calorie</button>
         </div>
-        <p id="mknote" className="mk-small" style={{ marginTop: "1rem" }}>Rough educational estimate only: about 140 calories a day (a 12&nbsp;oz soda) swapped for 0. Many sweet coffee drinks run 200–400+ calories, so the real gap could be bigger. The pounds come from the simulator's energy-balance model, which includes metabolic adaptation: burn drops a little as weight comes off, so the loss slows over time instead of adding up in a straight line. Real-life results vary from person to person. Not medical advice.</p>
-        <p className="mk-small" style={{ fontSize: ".78rem", opacity: 0.85 }}>{EXAMPLE_NOTE}</p>
+        <div className="sd-num" aria-live="polite">
+          <div className="mk-num" style={{ color: keep ? "#f0936b" : "#5cc48e", fontSize: "3rem" }}>{shown} lb</div>
+          <div className="sd-cal">{keep ? `Extra calories: +${cal.toLocaleString()}` : `Calories cut: −${cal.toLocaleString()}`}</div>
+          <div className="mk-small">estimated weight change after {timeLabel(i).toLowerCase()}, about</div>
+        </div>
+        <svg className="sd-graph" viewBox={`0 0 ${G.w} ${G.h}`} role="img" aria-label={`Line graph: estimated weight change about ${shown} pounds after ${timeLabel(i)}`}>
+          {yt.map((v) => <g key={v}><line x1={G.l} x2={G.w - G.r} y1={gy(v)} y2={gy(v)} stroke="#ffffff14" /><text x={G.l - 8} y={gy(v) + 4} textAnchor="end" className="sd-ax">{v > 0 ? `+${v}` : v}</text></g>)}
+          {TICKS.map(([t, lab]) => <text key={t} x={gx(t)} y={G.h - 10} textAnchor={t === 0 ? "start" : t === 365 ? "end" : "middle"} className="sd-ax">{lab}</text>)}
+          <text x={14} y={G.t + (G.h - G.t - G.b) / 2} className="sd-ax" transform={`rotate(-90 14 ${G.t + (G.h - G.t - G.b) / 2})`} textAnchor="middle">lb</text>
+          <line x1={G.l} x2={G.w - G.r} y1={gy(0)} y2={gy(0)} stroke="#9fb0c4" strokeDasharray="6 6" strokeWidth={1.5} />
+          <text x={G.w - G.r} y={gy(0) + (keep ? 18 : -8)} textAnchor="end" className="sd-base">2,000-calorie day, nothing else changes</text>
+          <polyline points={pts.join(" ")} fill="none" stroke={col} strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" style={{ transition: "stroke .4s" }} />
+          <circle cx={lx} cy={ly} r={7} fill={col} stroke="#0b1320" strokeWidth={3} style={{ transition: "fill .4s" }} />
+          <text x={anchor === "end" ? lx - 12 : lx + 12} y={ly + (lb >= 0 ? -10 : 22)} textAnchor={anchor} className="sd-pt" fill={col}>{shown} lb</text>
+        </svg>
+        <TimeSlider id="mkr" value={i} onChange={setI} describedBy="mknote" />
+        <p id="mknote" className="mk-small" style={{ marginTop: "1rem" }}>Rough educational estimate only: 140 calories a day (a 12&nbsp;oz soda) added or cut. Many sweet coffee drinks run 200–400+ calories, so the real gap could be bigger. The pounds come from the simulator's energy-balance model, which includes metabolic adaptation, so both lines slow over time instead of adding up in a straight line. Real-life results vary from person to person. Not medical advice.</p>
+        <p className="mk-small" style={{ fontSize: ".78rem", opacity: 0.85 }}>{SODA_SR} Individual numbers will differ. Try the simulator to see your own.</p>
       </div>
       <div className="mk-btns"><Link className="mk-btn p" to="/hacks/$slug" params={{ slug: "dont-drink-calories" } as never}>Read the Health Hack →</Link></div>
       <a className="mk-simlink" href="/simulator/">See your own numbers in the simulator (Beta) →</a>

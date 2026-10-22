@@ -9,15 +9,22 @@ const RHO_L = 1800;
 const TEF_BETA = 0.1, AT_BETA_UP = 0.2, AT_UP_MAXEXCESS = 1000, AT_TAU = 14, AT_CAP = 0.25;
 
 /** Example person used on the home page swap cards. */
-export const EXAMPLE = { sex: "m" as const, age: 40, heightCm: 175.3, weightLb: 180, bodyFatPct: 25, lightActivityKcal: 250 };
+export type Person = { sex: "m" | "f"; age: number; heightCm: number; weightLb: number; bodyFatPct: number; lightActivityKcal: number };
+export const EXAMPLE: Person = { sex: "m", age: 40, heightCm: 175.3, weightLb: 180, bodyFatPct: 25, lightActivityKcal: 250 };
 
-const bmr = (kg: number) => 10 * kg + 6.25 * EXAMPLE.heightCm - 5 * EXAMPLE.age + (EXAMPLE.sex === "m" ? 5 : -161);
-const tdee = (kg: number) => bmr(kg) * 1.2 + EXAMPLE.lightActivityKcal;
+/** Example person for the soda card: maintenance about 2,000 kcal/day. */
+export const SODA_PERSON: Person = { sex: "f", age: 40, heightCm: 165.1, weightLb: 170, bodyFatPct: 35, lightActivityKcal: 250 };
+
+const bmrP = (P: Person, kg: number) => 10 * kg + 6.25 * P.heightCm - 5 * P.age + (P.sex === "m" ? 5 : -161);
+const tdeeP = (P: Person, kg: number) => bmrP(P, kg) * 1.2 + P.lightActivityKcal;
+/** Maintenance calories at starting weight. */
+export const maintenance = (P: Person) => tdeeP(P, P.weightLb / LB);
 
 /** Extra pounds vs staying at maintenance, for each day 0..365, when eating `surplus` kcal/day more. */
-export function extraLbByDay(surplus: number, days = 365): number[] {
-  const w0 = EXAMPLE.weightLb / LB;
-  let F = (w0 * EXAMPLE.bodyFatPct) / 100, L = w0 - F, adapt = 0;
+export function extraLbByDay(surplus: number, days = 365, P: Person = EXAMPLE): number[] {
+  const tdee = (kg: number) => tdeeP(P, kg);
+  const w0 = P.weightLb / LB;
+  let F = (w0 * P.bodyFatPct) / 100, L = w0 - F, adapt = 0;
   const ei0 = tdee(w0), intake = ei0 + surplus;
   const out = [0];
   for (let d = 0; d < days; d++) {
@@ -39,9 +46,10 @@ export function extraLbByDay(surplus: number, days = 365): number[] {
 const AT_BETA = 0.14;
 
 /** Pounds lost vs staying at maintenance, for each day 0..365, when eating `cut` kcal/day less. Includes metabolic adaptation. */
-export function lostLbByDay(cut: number, days = 365): number[] {
-  const w0 = EXAMPLE.weightLb / LB;
-  let F = (w0 * EXAMPLE.bodyFatPct) / 100, L = w0 - F, adapt = 0;
+export function lostLbByDay(cut: number, days = 365, P: Person = EXAMPLE): number[] {
+  const tdee = (kg: number) => tdeeP(P, kg);
+  const w0 = P.weightLb / LB;
+  let F = (w0 * P.bodyFatPct) / 100, L = w0 - F, adapt = 0;
   const ei0 = tdee(w0), intake = ei0 - cut;
   const out = [0];
   for (let d = 0; d < days; d++) {
