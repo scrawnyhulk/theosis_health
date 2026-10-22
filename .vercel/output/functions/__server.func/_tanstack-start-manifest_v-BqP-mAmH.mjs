@@ -1,7 +1,7 @@
-//#region node_modules/.nitro/vite/services/ssr/assets/_tanstack-start-manifest_v-BUpHMG9a.js
+//#region ../../workspace/theosishealth/node_modules/.nitro/vite/services/ssr/assets/_tanstack-start-manifest_v-BqP-mAmH.js
 var tsrStartManifest = () => ({ routes: {
 	__root__: {
-		filePath: "/workspace/theosishealth/src/routes/__root.tsx",
+		filePath: "/tmp/wt/src/routes/__root.tsx",
 		children: [
 			"/",
 			"/consumer-health-privacy",
@@ -15,7 +15,7 @@ var tsrStartManifest = () => ({ routes: {
 			"/hacks/"
 		],
 		preloads: [
-			"/assets/index-JIMzUpbO.js",
+			"/assets/index-Bfd5wtGY.js",
 			"/assets/useSelector-B0K6Mfa1.js",
 			"/assets/hacks-DNc3MQoh.js",
 			"/assets/preload-helper-B9MoI6v7.js",
@@ -24,25 +24,25 @@ var tsrStartManifest = () => ({ routes: {
 		scripts: [{ attrs: {
 			type: "module",
 			async: !0,
-			src: "/assets/index-JIMzUpbO.js"
+			src: "/assets/index-Bfd5wtGY.js"
 		} }]
 	},
 	"/": {
-		filePath: "/workspace/theosishealth/src/routes/index.tsx",
+		filePath: "/tmp/wt/src/routes/index.tsx",
 		children: void 0,
 		preloads: [
-			"/assets/routes-C9gBL0XH.js",
+			"/assets/routes-DVXzPd3r.js",
 			"/assets/site-shell-RkXIuk9-.js",
 			"/assets/arrow-right-BdIbGYay.js"
 		]
 	},
 	"/consumer-health-privacy": {
-		filePath: "/workspace/theosishealth/src/routes/consumer-health-privacy.tsx",
+		filePath: "/tmp/wt/src/routes/consumer-health-privacy.tsx",
 		children: void 0,
 		preloads: ["/assets/consumer-health-privacy-06oHdoXI.js", "/assets/site-shell-RkXIuk9-.js"]
 	},
 	"/contact": {
-		filePath: "/workspace/theosishealth/src/routes/contact.tsx",
+		filePath: "/tmp/wt/src/routes/contact.tsx",
 		children: void 0,
 		preloads: [
 			"/assets/contact-D71N8Fz4.js",
@@ -52,30 +52,30 @@ var tsrStartManifest = () => ({ routes: {
 		]
 	},
 	"/disclaimer": {
-		filePath: "/workspace/theosishealth/src/routes/disclaimer.tsx",
+		filePath: "/tmp/wt/src/routes/disclaimer.tsx",
 		children: void 0,
 		preloads: ["/assets/disclaimer-B3d56HPU.js", "/assets/site-shell-RkXIuk9-.js"]
 	},
 	"/install": {
-		filePath: "/workspace/theosishealth/src/routes/install.tsx",
+		filePath: "/tmp/wt/src/routes/install.tsx",
 		children: void 0,
 		preloads: ["/assets/install-BOkIAogQ.js", "/assets/site-shell-RkXIuk9-.js"]
 	},
 	"/privacy": {
-		filePath: "/workspace/theosishealth/src/routes/privacy.tsx",
+		filePath: "/tmp/wt/src/routes/privacy.tsx",
 		children: void 0,
 		preloads: ["/assets/privacy-AEvELOI7.js", "/assets/site-shell-RkXIuk9-.js"]
 	},
 	"/terms": {
-		filePath: "/workspace/theosishealth/src/routes/terms.tsx",
+		filePath: "/tmp/wt/src/routes/terms.tsx",
 		children: void 0,
 		preloads: ["/assets/terms-poMqwJmU.js", "/assets/site-shell-RkXIuk9-.js"]
 	},
 	"/hacks/$slug": {
-		filePath: "/workspace/theosishealth/src/routes/hacks/$slug.tsx",
+		filePath: "/tmp/wt/src/routes/hacks/$slug.tsx",
 		children: void 0,
 		preloads: [
-			"/assets/_slug-DwHhPJDW.js",
+			"/assets/_slug-CKGcT3hw.js",
 			"/assets/site-shell-RkXIuk9-.js",
 			"/assets/nerd-paragraph-BqPwsOZN.js",
 			"/assets/arrow-right-BdIbGYay.js",
@@ -84,12 +84,12 @@ var tsrStartManifest = () => ({ routes: {
 		]
 	},
 	"/hacks/nerd-out": {
-		filePath: "/workspace/theosishealth/src/routes/hacks/nerd-out.tsx",
+		filePath: "/tmp/wt/src/routes/hacks/nerd-out.tsx",
 		children: ["/hacks/nerd-out/$topic", "/hacks/nerd-out/"],
-		preloads: ["/assets/nerd-out-CT2wZEHe.js"]
+		preloads: ["/assets/nerd-out-CGU9vg4C.js"]
 	},
 	"/hacks/": {
-		filePath: "/workspace/theosishealth/src/routes/hacks/index.tsx",
+		filePath: "/tmp/wt/src/routes/hacks/index.tsx",
 		children: void 0,
 		preloads: [
 			"/assets/hacks-DtNjesXK.js",
@@ -98,10 +98,10 @@ var tsrStartManifest = () => ({ routes: {
 		]
 	},
 	"/hacks/nerd-out/$topic": {
-		filePath: "/workspace/theosishealth/src/routes/hacks/nerd-out.$topic.tsx",
+		filePath: "/tmp/wt/src/routes/hacks/nerd-out.$topic.tsx",
 		children: void 0,
 		preloads: [
-			"/assets/nerd-out._topic-dW13yXBb.js",
+			"/assets/nerd-out._topic--dNfooOS.js",
 			"/assets/site-shell-RkXIuk9-.js",
 			"/assets/nerd-paragraph-BqPwsOZN.js",
 			"/assets/arrow-right-BdIbGYay.js",
@@ -110,7 +110,7 @@ var tsrStartManifest = () => ({ routes: {
 		]
 	},
 	"/hacks/nerd-out/": {
-		filePath: "/workspace/theosishealth/src/routes/hacks/nerd-out.index.tsx",
+		filePath: "/tmp/wt/src/routes/hacks/nerd-out.index.tsx",
 		children: void 0,
 		preloads: [
 			"/assets/nerd-out.index-DaV7dR77.js",

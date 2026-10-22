@@ -4,7 +4,7 @@ import { i as require_jsx_runtime, t as Root } from "../_libs/@radix-ui/react-la
 import { d as ExternalLink, f as Download, h as ChevronLeft, m as ChevronRight, n as ZoomOut, s as Play, t as ZoomIn } from "../_libs/lucide-react.mjs";
 import { i as cn } from "./site-shell-Coxd6dm8.mjs";
 import { t as NerdParagraph } from "./nerd-paragraph-CQuEwJxw.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/video-card-BILOAm9L.js
+//#region ../../workspace/theosishealth/node_modules/.nitro/vite/services/ssr/assets/video-card-BILOAm9L.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 function fileNameFromSrc(src) {

@@ -6,7 +6,7 @@ import { i as require_jsx_runtime } from "../_libs/@radix-ui/react-label+[...].m
 import { _ as ArrowRight, h as ChevronLeft, m as ChevronRight, v as ArrowLeft } from "../_libs/lucide-react.mjs";
 import { n as HacksPlaque, r as SiteShell } from "./site-shell-Coxd6dm8.mjs";
 import { t as NerdParagraph } from "./nerd-paragraph-CQuEwJxw.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/nerd-out.index-D4FbvbzK.js
+//#region ../../workspace/theosishealth/node_modules/.nitro/vite/services/ssr/assets/nerd-out.index-D4FbvbzK.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var slides = nerdGroups.flatMap((group) => group.topicIds.map((id) => {

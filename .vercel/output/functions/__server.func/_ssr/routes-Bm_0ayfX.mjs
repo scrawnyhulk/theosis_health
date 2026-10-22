@@ -3,9 +3,9 @@ import { n as require_react } from "../_libs/@radix-ui/react-compose-refs+[...].
 import { b as Link } from "../_libs/@tanstack/react-router+[...].mjs";
 import { i as require_jsx_runtime } from "../_libs/@radix-ui/react-label+[...].mjs";
 import { _ as ArrowRight, l as Footprints, p as Clock, u as FlaskConical } from "../_libs/lucide-react.mjs";
-import { a as SODA_PERSON, c as maintenance, i as EXAMPLE, o as extraLbByDay, s as lostLbByDay } from "./router-wMTJ2ufk.mjs";
+import { a as SODA_PERSON, c as maintenance, i as EXAMPLE, o as extraLbByDay, s as lostLbByDay } from "./router-C29AB_bo.mjs";
 import { r as SiteShell } from "./site-shell-Coxd6dm8.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/routes-a3rqD5eP.js
+//#region ../../workspace/theosishealth/node_modules/.nitro/vite/services/ssr/assets/routes-Bm_0ayfX.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 Math.round(maintenance(SODA_PERSON) / 10) * 10;
@@ -85,7 +85,7 @@ function Home() {
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
 									className: "mt-3 max-w-2xl text-ink-fg/85",
 									children: [
-										"We each have a different-sized fuel tank for storing fat safely, set largely by our genes. Once ours is full, extra fat spills into the liver, the pancreas and around the organs, and the liver stops listening to insulin. That tipping point is our personal fat threshold, and it’s easy to cross it and become insulin resistant, or even diabetic, without realizing it. ",
+										"We each have a different-sized fuel tank for storing fat safely, set largely by our genes. Once ours is full, the extra fuel has nowhere safe to go. It gets harder to clear sugar and fat from the bloodstream, so blood sugar starts to rise. That tipping point is our personal fat threshold, and it’s how so many people slide into insulin resistance, prediabetes and type 2 diabetes without realizing it. ",
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
 											href: "/simulator/pft-inside/",
 											className: "font-medium text-health underline underline-offset-2 hover:no-underline",
