@@ -99,7 +99,8 @@ def lockup_word(w):
     al=np.asarray(w)[...,3].astype(float).sum(1); top=int(w.height*0.5); cut=top+int(np.argmin(al[top:int(w.height*0.8)]))
     t_=w.crop((0,0,w.width,cut)); h_=w.crop((0,cut,w.width,w.height)); h_=h_.crop(h_.getbbox())
     h2=h_.resize((round(h_.width*1.0),round(h_.height*1.3)),Image.LANCZOS) if False else h_.resize((min(w.width,round(h_.width*1.3)),round(h_.height*1.3*min(1,w.width/(h_.width*1.3)))),Image.LANCZOS)
-    o=Image.new("RGBA",(w.width,cut+h2.height+4),(0,0,0,0)); o.alpha_composite(t_,(0,0)); o.alpha_composite(h2,((w.width-h2.width)//2,cut+4)); return o
+    t_=t_.crop((0,0,w.width,t_.getbbox()[3])); gap=round(t_.height*0.16)   # space under THEOSIS (~2x the old lockup gap)
+    o=Image.new("RGBA",(w.width,t_.height+gap+h2.height),(0,0,0,0)); o.alpha_composite(t_,(0,0)); o.alpha_composite(h2,((w.width-h2.width)//2,t_.height+gap)); return o
 lw=lockup_word(word)
 WH=round(LH*0.8); ww=round(lw.width*WH/lw.height); wd=lw.resize((ww,WH),Image.LANCZOS)
 gap=22; lock=Image.new("RGBA",(e.width+gap+wd.width,LH),(0,0,0,0))
