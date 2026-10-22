@@ -3,9 +3,9 @@ import { n as require_react } from "../_libs/@radix-ui/react-compose-refs+[...].
 import { b as Link } from "../_libs/@tanstack/react-router+[...].mjs";
 import { i as require_jsx_runtime } from "../_libs/@radix-ui/react-label+[...].mjs";
 import { _ as ArrowRight, l as Footprints, p as Clock, u as FlaskConical } from "../_libs/lucide-react.mjs";
-import { a as SODA_PERSON, c as maintenance, i as EXAMPLE, o as extraLbByDay, s as lostLbByDay } from "./router-C_nvOOzv.mjs";
+import { a as SODA_PERSON, c as maintenance, i as EXAMPLE, o as extraLbByDay, s as lostLbByDay } from "./router-CZrk_Vt7.mjs";
 import { r as SiteShell } from "./site-shell-Coxd6dm8.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/routes-BUMxArXB.js
+//#region node_modules/.nitro/vite/services/ssr/assets/routes-6wwv9v6W.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 Math.round(maintenance(SODA_PERSON) / 10) * 10;
@@ -69,7 +69,7 @@ function Home() {
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 							className: "mt-2 max-w-xl text-lg leading-relaxed text-ink-fg/90 sm:text-xl",
-							children: "Simple tools and realistic Health Hacks to help re-inspire a healthy lifestyle while navigating a hectic life."
+							children: "Small changes, real results. Health Hacks that fit a hectic life, no chicken and broccoli required."
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "mk-welcome",
@@ -80,15 +80,15 @@ function Home() {
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 									className: "mt-2 max-w-2xl text-ink-fg/85",
-									children: "Growing up as a scrawny yet nerdy kid who wanted to put on muscle, I was told five hundred different recommendations about five hundred different ways to lift and eat, except it just never seemed to work right for me."
+									children: "Our bodies are a lot like machines. We’re made of parts, and we run on fuel, mostly from the carbohydrates and fats we eat. Most adults burn roughly 60–110 calories an hour, depending on size and activity. That means a few sips of a sweet drink or a few extra bites can be more fuel than we need in that moment. When that happens, we store the extra for later. When we run low, we draw from those stores."
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 									className: "mt-3 max-w-2xl text-ink-fg/85",
-									children: "Nowadays there are plenty of health influencers and diet programs, each with their own take on health and fitness. And although there’s a lot of overlap, I haven’t really seen much that addresses the pathology of poor health. In our current food landscape it’s incredibly easy to overconsume calories every day, and that’s what leads to metabolic strain and insulin resistance."
+									children: "Whether we gain fat over time comes down to how the calories we take in average out against what we burn. The catch is that most of us don’t realize how quickly calories add up. Small things quietly raise our daily fuel until we’re storing more than we burn. As you’ll see below, a single daily drink can add pound after pound over months and years, and that’s just one of the many things we consume regularly."
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 									className: "mt-3 max-w-2xl text-ink-fg/85",
-									children: "So it’s become incredibly important to me to find a way to reach everybody and help them understand how food-related diseases occur, so we can work together to get back to better health — one person at a time."
+									children: "Today’s food landscape makes it easy for all of us to eat a little more than we need, and with so much conflicting advice out there, it’s hard to know which levers are worth pulling. Theosis Health and the Theosis Metabolic Simulator are built to help you find small, targeted changes that fit the life you already have, so you can reach your goals without giving up every food you enjoy."
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("ul", {
 									className: "mk-chips",
