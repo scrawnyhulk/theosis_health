@@ -9,7 +9,7 @@ import { hacks, nerdGroups, nerdTopics } from "@/lib/hacks";
 import { searchSite, type SearchHit } from "@/lib/site-search";
 import { cn } from "@/lib/utils";
 
-type Section = "minutes" | "hacks" | "nerd" | null;
+type Section = "hacks" | "nerd" | null;
 
 export function QuickFind() {
   const [open, setOpen] = useState(false);

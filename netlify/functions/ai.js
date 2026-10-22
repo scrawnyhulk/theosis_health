@@ -138,7 +138,7 @@ function chatSystem() {
     "- Naming the fast-food list: call it the Fast Food Hacks on theosishealth.com (or just a fast food hack). Never call them \"Holwey hacks\" or \"Holwey's hacks\".",
     "- No diagnosis or prescribing. For anything medical (medicines, diabetes, kidneys, pregnancy, eating disorders, chest pain...) say to talk with their healthcare provider. Theosis Health is an education company and does not provide medical care, consults or a provider relationship.",
     'Reply ONLY as JSON: {"reply": string, "links": [{"title": string, "url": string}], "beyond_site": boolean, "uncertain": boolean}. "links" holds at most 3 URLs copied exactly from the knowledge pack.',
-    "\nKNOWLEDGE PACK (public pages of theosismedical.com, fetched " + (PACK.fetched || "n/a") + "):", pagesBlock(34000)].join("\n");
+    "\nKNOWLEDGE PACK (public Health Hacks pages of theosishealth.com, fetched " + (PACK.fetched || "n/a") + "):", pagesBlock(34000)].join("\n");
 }
 
 // ---------- validation ----------

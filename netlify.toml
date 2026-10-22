@@ -1,5 +1,5 @@
 # Theosis Health (theosishealth.com) - Netlify config.
-# Build locally (`npm run build:static`) and commit .vercel/output/static, same as theosismedical.com.
+# Build locally (`npm run build:static`) and commit .vercel/output/static.
 # Running the Nitro build on Netlify would write an empty index.html.
 [build]
   command = "true"
@@ -61,12 +61,6 @@
 [[redirects]]
   from = "/fat-burn-calculator"
   to = "/fat-burn-calculator/"
-  status = 301
-
-# About / Contact / Minutes live on the clinical site
-[[redirects]]
-  from = "/minutes/*"
-  to = "https://theosismedical.com/minutes/:splat"
   status = 301
 
 [[redirects]]

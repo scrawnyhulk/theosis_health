@@ -559,11 +559,10 @@ function HackExtras({ slug }: { slug: HackSlug }) {
               summary={video.summary}
               anchor={video.anchor}
             />
+            {"usedOn" in video ? (
             <p className="mt-3 text-sm text-muted">
               Also on{" "}
-              {"section" in video.usedOn && video.usedOn.section === "minutes" ? (
-                <span className="font-medium text-fg">{video.usedOn.label}</span>
-              ) : video.usedOn.slug === "nerd-out" && "hash" in video.usedOn && video.usedOn.hash ? (
+              {video.usedOn.slug === "nerd-out" && "hash" in video.usedOn && video.usedOn.hash ? (
                 <Link
                   to="/hacks/nerd-out/$topic"
                   params={{ topic: video.usedOn.hash }}
@@ -582,6 +581,7 @@ function HackExtras({ slug }: { slug: HackSlug }) {
                 </Link>
               )}
             </p>
+            ) : null}
           </div>
         ))}
       </div>

@@ -1358,7 +1358,6 @@ export const referenceVideos = [
     summary:
       "Three minutes: how the atria quiver instead of squeezing, what that looks like on an ECG, and how a clot from the left atrial appendage can travel to the brain.",
     anchor: "afib-anatomy",
-    usedOn: { slug: "afib" as const, label: "What Is AFib?", section: "minutes" as const },
   },
 ] as const;
 
