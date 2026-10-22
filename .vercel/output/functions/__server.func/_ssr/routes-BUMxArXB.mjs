@@ -3,9 +3,9 @@ import { n as require_react } from "../_libs/@radix-ui/react-compose-refs+[...].
 import { b as Link } from "../_libs/@tanstack/react-router+[...].mjs";
 import { i as require_jsx_runtime } from "../_libs/@radix-ui/react-label+[...].mjs";
 import { _ as ArrowRight, l as Footprints, p as Clock, u as FlaskConical } from "../_libs/lucide-react.mjs";
-import { a as SODA_PERSON, c as maintenance, i as EXAMPLE, o as extraLbByDay, s as lostLbByDay } from "./router-y3fBqEnF.mjs";
+import { a as SODA_PERSON, c as maintenance, i as EXAMPLE, o as extraLbByDay, s as lostLbByDay } from "./router-C_nvOOzv.mjs";
 import { r as SiteShell } from "./site-shell-Coxd6dm8.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/routes-17jYd6Z-.js
+//#region node_modules/.nitro/vite/services/ssr/assets/routes-BUMxArXB.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 Math.round(maintenance(SODA_PERSON) / 10) * 10;
@@ -259,7 +259,7 @@ var ADAPT_NOTE = /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 var GAIN = "#e07a4f";
 var G_PC = {
 	w: 760,
-	h: 250,
+	h: 200,
 	l: 46,
 	r: 18,
 	t: 18,
@@ -267,7 +267,7 @@ var G_PC = {
 };
 var G_PH = {
 	w: 360,
-	h: 250,
+	h: 220,
 	l: 36,
 	r: 10,
 	t: 16,
@@ -546,9 +546,9 @@ function SodaCard() {
 							children: [
 								diff ? sign : "",
 								(Math.round(d) * diff).toLocaleString(),
-								" so far · a month here is 30 days · estimated weight change after ",
+								" cal by ",
 								timeLabel(i).toLowerCase(),
-								", about"
+								" · month = 30 days · weight change is an estimate"
 							]
 						})
 					]

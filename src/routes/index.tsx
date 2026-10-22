@@ -127,8 +127,8 @@ const LOSS = "#3d9a6a";
 const ADAPT_NOTE = <div className="mk-adapt">Includes metabolic adaptation</div>;
 
 const GAIN = "#e07a4f";
-const G_PC = { w: 760, h: 250, l: 46, r: 18, t: 18, b: 32 };
-const G_PH = { w: 360, h: 250, l: 36, r: 10, t: 16, b: 30 };
+const G_PC = { w: 760, h: 200, l: 46, r: 18, t: 18, b: 32 };
+const G_PH = { w: 360, h: 220, l: 36, r: 10, t: 16, b: 30 };
 function useNarrow() {
   const [n, setN] = useState(false);
   useEffect(() => {
@@ -221,7 +221,7 @@ function SodaCard() {
           <div className="mk-num" style={{ color: keep ? "#f0936b" : "#5cc48e", fontSize: "3rem" }}>{shown} lb</div>
           <div className="sd-cal">{keep ? "Extra calories" : "Calories cut"} <span className="mk-small">({S.kcal} − {Z.kcal} = {diff} a day)</span></div>
           <div className="sd-row">{([["Day", 1], ["Week", 7], ["Month", 30], ["Year", 365]] as const).map(([n, dd]) => <div key={n} className="sd-cell"><b style={{ color: keep ? "#f0936b" : "#5cc48e" }}>{diff ? sign : ""}{(dd * diff).toLocaleString()}</b><span>{n}</span></div>)}</div>
-          <div className="mk-small" style={{ marginTop: ".3rem" }}>{diff ? sign : ""}{(Math.round(d) * diff).toLocaleString()} so far · a month here is 30 days · estimated weight change after {timeLabel(i).toLowerCase()}, about</div>
+          <div className="mk-small" style={{ marginTop: ".3rem" }}>{diff ? sign : ""}{(Math.round(d) * diff).toLocaleString()} cal by {timeLabel(i).toLowerCase()} · month = 30 days · weight change is an estimate</div>
         </div>
         <svg className="sd-graph" viewBox={`0 0 ${G.w} ${G.h}`} role="img" aria-label={`Line graph: estimated weight change about ${shown} pounds after ${timeLabel(i)}`}>
           {yt.map((v) => <g key={v}><line x1={G.l} x2={G.w - G.r} y1={gy(v)} y2={gy(v)} stroke="#ffffff14" /><text x={G.l - 8} y={gy(v) + 4} textAnchor="end" className="sd-ax">{v > 0 ? `+${v}` : v}</text></g>)}
