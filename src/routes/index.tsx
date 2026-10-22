@@ -129,10 +129,22 @@ const LOSS = "#3d9a6a";
 const ADAPT_NOTE = <div className="mk-adapt">Includes metabolic adaptation</div>;
 
 const GAIN = "#e07a4f";
-const G = { w: 640, h: 300, l: 46, r: 18, t: 18, b: 34 };
+const G_PC = { w: 760, h: 250, l: 46, r: 18, t: 18, b: 32 };
+const G_PH = { w: 360, h: 250, l: 36, r: 10, t: 16, b: 30 };
+let G = G_PC;
 const Y_MAX = Math.ceil(Math.max(SODA_GAIN[365], SODA_LOSS[365]) / 2) * 2 + 2;
 const gx = (d: number) => G.l + (d / 365) * (G.w - G.l - G.r);
 const gy = (lb: number) => G.t + ((Y_MAX - lb) / (2 * Y_MAX)) * (G.h - G.t - G.b);
+function useNarrow() {
+  const [n, setN] = useState(false);
+  useEffect(() => {
+    const m = window.matchMedia("(max-width: 640px)");
+    const f = () => setN(m.matches);
+    f(); m.addEventListener("change", f);
+    return () => m.removeEventListener("change", f);
+  }, []);
+  return n;
+}
 const sodaAt = (d: number, k: number) => {
   const a = Math.floor(d), f = d - a, b = Math.min(365, a + 1);
   const g = SODA_GAIN[a] + (SODA_GAIN[b] - SODA_GAIN[a]) * f, l = SODA_LOSS[a] + (SODA_LOSS[b] - SODA_LOSS[a]) * f;
@@ -143,6 +155,8 @@ const SODA_SR = `Example: a ${SODA_PERSON.age}-year-old, 5'5", ${SODA_PERSON.wei
 function SodaCard() {
   const [i, setI] = useState(365);
   const [keep, setKeep] = useState(false);
+  const narrow = useNarrow();
+  G = narrow ? G_PH : G_PC;
   const d = useTween(i), k = useTween(keep ? 1 : 0, 450);
   const lb = sodaAt(d, k), cal = Math.round(d) * 140;
   const pts: string[] = [];
@@ -150,7 +164,7 @@ function SodaCard() {
   pts.push(`${gx(d).toFixed(1)},${gy(lb).toFixed(1)}`);
   const col = keep ? GAIN : LOSS;
   const shown = Math.abs(lb) < 0.05 ? "0" : `${lb > 0 ? "+" : "−"}${fmtLb(Math.abs(lb))}`;
-  const lx = gx(d), ly = gy(lb), anchor = lx > G.w - 110 ? "end" : "start";
+  const lx = gx(d), ly = gy(lb), anchor = lx > G.w - 90 ? "end" : "start";
   const yt = [Y_MAX, Y_MAX / 2, 0, -Y_MAX / 2, -Y_MAX];
   return (
     <>
@@ -169,8 +183,8 @@ function SodaCard() {
         </div>
         <svg className="sd-graph" viewBox={`0 0 ${G.w} ${G.h}`} role="img" aria-label={`Line graph: estimated weight change about ${shown} pounds after ${timeLabel(i)}`}>
           {yt.map((v) => <g key={v}><line x1={G.l} x2={G.w - G.r} y1={gy(v)} y2={gy(v)} stroke="#ffffff14" /><text x={G.l - 8} y={gy(v) + 4} textAnchor="end" className="sd-ax">{v > 0 ? `+${v}` : v}</text></g>)}
-          {TICKS.map(([t, lab]) => <text key={t} x={gx(t)} y={G.h - 10} textAnchor={t === 0 ? "start" : t === 365 ? "end" : "middle"} className="sd-ax">{lab}</text>)}
-          <text x={14} y={G.t + (G.h - G.t - G.b) / 2} className="sd-ax" transform={`rotate(-90 14 ${G.t + (G.h - G.t - G.b) / 2})`} textAnchor="middle">lb</text>
+          {TICKS.filter(([t]) => !narrow || t !== 30).map(([t, lab]) => <text key={t} x={gx(t)} y={G.h - 10} textAnchor={t === 0 ? "start" : t === 365 ? "end" : "middle"} className="sd-ax">{lab}</text>)}
+          <text x={12} y={G.t + (G.h - G.t - G.b) / 2} className="sd-ax" transform={`rotate(-90 12 ${G.t + (G.h - G.t - G.b) / 2})`} textAnchor="middle">lb</text>
           <line x1={G.l} x2={G.w - G.r} y1={gy(0)} y2={gy(0)} stroke="#9fb0c4" strokeDasharray="6 6" strokeWidth={1.5} />
           <text x={G.w - G.r} y={gy(0) + (keep ? 18 : -8)} textAnchor="end" className="sd-base">2,000-calorie day, nothing else changes</text>
           <polyline points={pts.join(" ")} fill="none" stroke={col} strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" style={{ transition: "stroke .4s" }} />

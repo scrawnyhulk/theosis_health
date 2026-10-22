@@ -412,4 +412,4 @@ sup a{color:#4587c6;text-decoration:none}
 .sd-ax{fill:var(--color-muted);font-size:13px;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase}
 .sd-base{fill:#c7d2de;font-size:14px}
 .sd-pt{font-size:18px;font-weight:700;font-family:'Barlow Condensed',sans-serif}
-@media (max-width:640px){.sd-pill{font-size:.95rem;padding:.4rem .6rem}.sd-ax{font-size:17px}.sd-base{font-size:18px}.sd-pt{font-size:24px}}
+@media (max-width:640px){.sd-pill{font-size:.95rem;padding:.4rem .6rem}.sd-ax{font-size:14px}.sd-base{font-size:14px}.sd-pt{font-size:20px}.sd-card{padding:1rem}}

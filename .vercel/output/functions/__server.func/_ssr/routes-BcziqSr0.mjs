@@ -4,7 +4,7 @@ import { b as Link } from "../_libs/@tanstack/react-router+[...].mjs";
 import { i as require_jsx_runtime } from "../_libs/@radix-ui/react-label+[...].mjs";
 import { _ as ArrowRight, l as Footprints, p as Clock, u as FlaskConical } from "../_libs/lucide-react.mjs";
 import { r as SiteShell } from "./site-shell-Coxd6dm8.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/routes-DLV55oH4.js
+//#region node_modules/.nitro/vite/services/ssr/assets/routes-BcziqSr0.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var LB = 2.2046226218;
@@ -328,17 +328,37 @@ var ADAPT_NOTE = /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 	children: "Includes metabolic adaptation"
 });
 var GAIN = "#e07a4f";
-var G = {
-	w: 640,
-	h: 300,
+var G_PC = {
+	w: 760,
+	h: 250,
 	l: 46,
 	r: 18,
 	t: 18,
-	b: 34
+	b: 32
 };
+var G_PH = {
+	w: 360,
+	h: 250,
+	l: 36,
+	r: 10,
+	t: 16,
+	b: 30
+};
+var G = G_PC;
 var Y_MAX = Math.ceil(Math.max(SODA_GAIN[365], SODA_LOSS[365]) / 2) * 2 + 2;
 var gx = (d) => G.l + d / 365 * (G.w - G.l - G.r);
 var gy = (lb) => G.t + (Y_MAX - lb) / (2 * Y_MAX) * (G.h - G.t - G.b);
+function useNarrow() {
+	const [n, setN] = (0, import_react.useState)(false);
+	(0, import_react.useEffect)(() => {
+		const m = window.matchMedia("(max-width: 640px)");
+		const f = () => setN(m.matches);
+		f();
+		m.addEventListener("change", f);
+		return () => m.removeEventListener("change", f);
+	}, []);
+	return n;
+}
 var sodaAt = (d, k) => {
 	const a = Math.floor(d), f = d - a, b = Math.min(365, a + 1);
 	const g = SODA_GAIN[a] + (SODA_GAIN[b] - SODA_GAIN[a]) * f, l = SODA_LOSS[a] + (SODA_LOSS[b] - SODA_LOSS[a]) * f;
@@ -348,6 +368,8 @@ var SODA_SR = `Example: a ${SODA_PERSON.age}-year-old, 5'5", ${SODA_PERSON.weigh
 function SodaCard() {
 	const [i, setI] = (0, import_react.useState)(365);
 	const [keep, setKeep] = (0, import_react.useState)(false);
+	const narrow = useNarrow();
+	G = narrow ? G_PH : G_PC;
 	const d = useTween(i), k = useTween(keep ? 1 : 0, 450);
 	const lb = sodaAt(d, k), cal = Math.round(d) * 140;
 	const pts = [];
@@ -355,7 +377,7 @@ function SodaCard() {
 	pts.push(`${gx(d).toFixed(1)},${gy(lb).toFixed(1)}`);
 	const col = keep ? GAIN : LOSS;
 	const shown = Math.abs(lb) < .05 ? "0" : `${lb > 0 ? "+" : "−"}${fmtLb(Math.abs(lb))}`;
-	const lx = gx(d), ly = gy(lb), anchor = lx > G.w - 110 ? "end" : "start";
+	const lx = gx(d), ly = gy(lb), anchor = lx > G.w - 90 ? "end" : "start";
 	const yt = [
 		Y_MAX,
 		Y_MAX / 2,
@@ -449,7 +471,7 @@ function SodaCard() {
 							className: "sd-ax",
 							children: v > 0 ? `+${v}` : v
 						})] }, v)),
-						TICKS.map(([t, lab]) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("text", {
+						TICKS.filter(([t]) => !narrow || t !== 30).map(([t, lab]) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("text", {
 							x: gx(t),
 							y: G.h - 10,
 							textAnchor: t === 0 ? "start" : t === 365 ? "end" : "middle",
@@ -457,10 +479,10 @@ function SodaCard() {
 							children: lab
 						}, t)),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("text", {
-							x: 14,
+							x: 12,
 							y: G.t + (G.h - G.t - G.b) / 2,
 							className: "sd-ax",
-							transform: `rotate(-90 14 ${G.t + (G.h - G.t - G.b) / 2})`,
+							transform: `rotate(-90 12 ${G.t + (G.h - G.t - G.b) / 2})`,
 							textAnchor: "middle",
 							children: "lb"
 						}),
