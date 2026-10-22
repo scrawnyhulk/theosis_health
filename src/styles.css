@@ -379,3 +379,9 @@ sup a{color:#4587c6;text-decoration:none}
 .mk-eyebrow{font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.14em;font-weight:700;color:#4587c6;font-size:.95rem;margin:0 0 .3rem}
 .mk-arrow:focus-visible,.mk-dot:focus-visible,.mk-btn:focus-visible,.mk-ms a:focus-visible{outline:3px solid #9cc4f0;outline-offset:3px}
 @media (prefers-reduced-motion: reduce){.mk-anim .mk-ms{opacity:1;transform:none;transition:none}.mk-track,.mk-bar{transition:none}}
+.mk-ticks-abs{position:relative;display:block;height:1.4rem;margin:.4rem .6rem 0}
+.mk-ticks-abs span{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap}
+.mk-ticks-abs span:first-child{transform:none}.mk-ticks-abs span:last-child{transform:translateX(-100%)}
+.mk-bar{transition:height .18s ease-out}
+@media (prefers-reduced-motion: reduce){.mk-bar{transition:none}}
+@media(max-width:480px){.mk-ticks-abs span:nth-child(2){display:none}}

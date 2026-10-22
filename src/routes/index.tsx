@@ -56,24 +56,54 @@ function Home() {
   );
 }
 
-const D = [0, 30, 91, 182, 365];
-const L = ["Today", "1 month", "3 months", "6 months", "1 year"];
-const T = ["Today", "1 mo", "3 mo", "6 mo", "1 yr"];
-const fmtLb = (lb: number) => (lb < 10 ? lb.toFixed(1) : String(Math.round(lb)));
+const TICKS: [number, string][] = [[0, "Today"], [30, "1 mo"], [91, "3 mo"], [182, "6 mo"], [365, "1 yr"]];
+const fmtLb = (lb: number) => lb.toFixed(1);
+function timeLabel(d: number) {
+  if (d === 0) return "Today";
+  if (d >= 365) return "1 year";
+  if (d < 14) return d === 1 ? "1 day" : `${d} days`;
+  if (d < 60) return `${Math.round(d / 7)} weeks`;
+  const m = Math.round(d / 30.4);
+  return m >= 12 ? "1 year" : `${m} months`;
+}
+
+function useTween(target: number, ms = 220) {
+  const [v, setV] = useState(target);
+  const from = useRef(target);
+  const cur = useRef(target);
+  useEffect(() => {
+    if (typeof window === "undefined" || window.matchMedia("(prefers-reduced-motion: reduce)").matches) { cur.current = target; setV(target); return; }
+    from.current = cur.current;
+    const t0 = performance.now();
+    let raf = 0;
+    const step = (t: number) => {
+      const k = Math.min(1, (t - t0) / ms);
+      const e = 1 - Math.pow(1 - k, 3);
+      cur.current = from.current + (target - from.current) * e;
+      setV(cur.current);
+      if (k < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [target, ms]);
+  return v;
+}
 
 function TimeSlider({ id, value, onChange, describedBy }: { id: string; value: number; onChange: (n: number) => void; describedBy?: string }) {
+  const near = TICKS.reduce((a, t) => (Math.abs(t[0] - value) < Math.abs(a[0] - value) ? t : a))[0];
   return (
     <>
-      <label htmlFor={id} className="mk-small">Move the slider: <b style={{ color: "#fff" }}>{L[value]}</b></label>
-      <input id={id} className="mk-range" type="range" min={0} max={4} step={1} value={value} aria-valuetext={L[value]} aria-describedby={describedBy} onChange={(e) => onChange(+e.target.value)} />
-      <div className="mk-ticks" aria-hidden="true">{T.map((t, j) => <span key={t} className={j === value ? "on" : ""}>{t}</span>)}</div>
+      <label htmlFor={id} className="mk-small">Move the slider: <b style={{ color: "#fff" }}>{timeLabel(value)}</b></label>
+      <input id={id} className="mk-range" type="range" min={0} max={365} step={1} value={value} list={`${id}-ticks`} aria-valuetext={timeLabel(value)} aria-describedby={describedBy} onChange={(e) => onChange(+e.target.value)} />
+      <datalist id={`${id}-ticks`}>{TICKS.map(([d]) => <option key={d} value={d} />)}</datalist>
+      <div className="mk-ticks mk-ticks-abs" aria-hidden="true">{TICKS.map(([d, t]) => <span key={t} className={d === near ? "on" : ""} style={{ left: `${(d / 365) * 100}%` }}>{t}</span>)}</div>
     </>
   );
 }
 
 function SodaCard() {
   const [i, setI] = useState(0);
-  const c = D[i] * 140, lb = c / 3500;
+  const c = useTween(i * 140), lb = c / 3500;
   return (
     <>
       <h2 className="mk-h2">One small swap: soda or Starbucks vs diet or zero-calorie drinks</h2>
@@ -81,7 +111,7 @@ function SodaCard() {
       <div className="mk-card">
         <TimeSlider id="mkr" value={i} onChange={setI} describedBy="mknote" />
         <div className="mk-paths" aria-live="polite">
-          <div className="mk-path"><h3>🥤 Soda or sweet coffee drink</h3><div className="mk-barbox"><div className="mk-bar" style={{ background: "#d4a056", height: `${Math.max(4, (lb / 15) * 100)}%` }} /></div><div className="mk-num">+{fmtLb(lb)} lb</div><div className="mk-small">{c.toLocaleString()} extra calories so far</div></div>
+          <div className="mk-path"><h3>🥤 Soda or sweet coffee drink</h3><div className="mk-barbox"><div className="mk-bar" style={{ background: "#d4a056", height: `${Math.max(4, (lb / (365 * 140 / 3500)) * 100)}%` }} /></div><div className="mk-num">+{fmtLb(lb)} lb</div><div className="mk-small">{Math.round(c).toLocaleString()} extra calories so far</div></div>
           <div className="mk-path"><h3>🥤 Diet or zero-calorie drink</h3><div className="mk-barbox"><div className="mk-bar" style={{ background: "#4587c6", height: "4px" }} /></div><div className="mk-num">+0 lb</div><div className="mk-small">0 extra calories</div></div>
         </div>
         <p id="mknote" className="mk-small" style={{ marginTop: "1rem" }}>Rough educational estimate only: about 140 calories a day (a 12&nbsp;oz soda) vs 0 for diet or zero-calorie drinks. Many sweet coffee drinks run 200–400+ calories, so the real gap could be bigger, and roughly 3,500 calories ≈ 1 lb of fat. Real-life results are usually smaller and vary from person to person. Not medical advice.</p>
@@ -94,7 +124,7 @@ function SodaCard() {
 
 function ProteinCard() {
   const [i, setI] = useState(0);
-  const c = D[i] * 150, lb = c / 3500;
+  const c = useTween(i * 150), lb = c / 3500;
   return (
     <>
       <h2 className="mk-h2">One small swap: higher-protein day vs lower-protein day</h2>
@@ -103,7 +133,7 @@ function ProteinCard() {
         <TimeSlider id="mkp" value={i} onChange={setI} describedBy="mkpnote" />
         <div className="mk-paths" aria-live="polite">
           <div className="mk-path"><h3>🍳 Higher-protein day</h3><div className="mk-small" style={{ marginTop: ".6rem" }}>Fullness</div><div className="mk-meter" role="img" aria-label="Fullness: higher"><i style={{ width: "80%", background: "#3d9a6a" }} /></div><div className="mk-small">Tends to feel full longer</div><div className="mk-barbox"><div className="mk-bar" style={{ background: "#4587c6", height: "4px" }} /></div><div className="mk-num">0 extra</div><div className="mk-small">baseline for comparison</div></div>
-          <div className="mk-path"><h3>🥯 Lower-protein day</h3><div className="mk-small" style={{ marginTop: ".6rem" }}>Fullness</div><div className="mk-meter" role="img" aria-label="Fullness: lower"><i style={{ width: "40%", background: "#d4a056" }} /></div><div className="mk-small">Tends to get hungry sooner</div><div className="mk-barbox"><div className="mk-bar" style={{ background: "#d4a056", height: `${Math.max(4, (lb / 16) * 100)}%` }} /></div><div className="mk-num">+{c.toLocaleString()} cal</div><div className="mk-small">more calories eaten so far (about +{fmtLb(lb)} lb)</div></div>
+          <div className="mk-path"><h3>🥯 Lower-protein day</h3><div className="mk-small" style={{ marginTop: ".6rem" }}>Fullness</div><div className="mk-meter" role="img" aria-label="Fullness: lower"><i style={{ width: "40%", background: "#d4a056" }} /></div><div className="mk-small">Tends to get hungry sooner</div><div className="mk-barbox"><div className="mk-bar" style={{ background: "#d4a056", height: `${Math.max(4, (lb / 16.5) * 100)}%` }} /></div><div className="mk-num">+{Math.round(c).toLocaleString()} cal</div><div className="mk-small">more calories eaten so far (about +{fmtLb(lb)} lb)</div></div>
         </div>
         <p id="mkpnote" className="mk-small" style={{ marginTop: "1rem" }}>Rough illustration only, not a prediction. In one study, people who raised protein from about 15% to 30% of their calories ate about 441 fewer calories a day on their own.<sup><a href="#fn1" aria-label="Footnote 1">1</a></sup> To be careful, this uses a much smaller 150 calories a day, and roughly 3,500 calories ≈ 1 lb of fat. Results vary from person to person and are often smaller. Not medical advice.</p>
         <p id="fn1" className="mk-small" style={{ fontSize: ".75rem", opacity: 0.8 }}>1. Weigelt DS, et al. A high-protein diet induces sustained reductions in appetite, ad libitum caloric intake, and body weight. <i>Am J Clin Nutr.</i> 2005;82(1):41–48.</p>

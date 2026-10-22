@@ -4,7 +4,7 @@ import { b as Link } from "../_libs/@tanstack/react-router+[...].mjs";
 import { i as require_jsx_runtime } from "../_libs/@radix-ui/react-label+[...].mjs";
 import { _ as ArrowRight, l as Footprints, p as Clock, u as FlaskConical } from "../_libs/lucide-react.mjs";
 import { r as SiteShell } from "./site-shell-Coxd6dm8.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/routes-D-A5EUcv.js
+//#region node_modules/.nitro/vite/services/ssr/assets/routes-DBQrPyXO.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var tools = [
@@ -97,36 +97,56 @@ function Home() {
 		})
 	] });
 }
-var D = [
-	0,
-	30,
-	91,
-	182,
-	365
+var TICKS = [
+	[0, "Today"],
+	[30, "1 mo"],
+	[91, "3 mo"],
+	[182, "6 mo"],
+	[365, "1 yr"]
 ];
-var L = [
-	"Today",
-	"1 month",
-	"3 months",
-	"6 months",
-	"1 year"
-];
-var T = [
-	"Today",
-	"1 mo",
-	"3 mo",
-	"6 mo",
-	"1 yr"
-];
-var fmtLb = (lb) => lb < 10 ? lb.toFixed(1) : String(Math.round(lb));
+var fmtLb = (lb) => lb.toFixed(1);
+function timeLabel(d) {
+	if (d === 0) return "Today";
+	if (d >= 365) return "1 year";
+	if (d < 14) return d === 1 ? "1 day" : `${d} days`;
+	if (d < 60) return `${Math.round(d / 7)} weeks`;
+	const m = Math.round(d / 30.4);
+	return m >= 12 ? "1 year" : `${m} months`;
+}
+function useTween(target, ms = 220) {
+	const [v, setV] = (0, import_react.useState)(target);
+	const from = (0, import_react.useRef)(target);
+	const cur = (0, import_react.useRef)(target);
+	(0, import_react.useEffect)(() => {
+		if (typeof window === "undefined" || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+			cur.current = target;
+			setV(target);
+			return;
+		}
+		from.current = cur.current;
+		const t0 = performance.now();
+		let raf = 0;
+		const step = (t) => {
+			const k = Math.min(1, (t - t0) / ms);
+			const e = 1 - Math.pow(1 - k, 3);
+			cur.current = from.current + (target - from.current) * e;
+			setV(cur.current);
+			if (k < 1) raf = requestAnimationFrame(step);
+		};
+		raf = requestAnimationFrame(step);
+		return () => cancelAnimationFrame(raf);
+	}, [target, ms]);
+	return v;
+}
 function TimeSlider({ id, value, onChange, describedBy }) {
+	const near = TICKS.reduce((a, t) => Math.abs(t[0] - value) < Math.abs(a[0] - value) ? t : a)[0];
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
 		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("label", {
 			htmlFor: id,
 			className: "mk-small",
 			children: ["Move the slider: ", /* @__PURE__ */ (0, import_jsx_runtime.jsx)("b", {
 				style: { color: "#fff" },
-				children: L[value]
+				children: timeLabel(value)
 			})]
 		}),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
@@ -134,18 +154,24 @@ function TimeSlider({ id, value, onChange, describedBy }) {
 			className: "mk-range",
 			type: "range",
 			min: 0,
-			max: 4,
+			max: 365,
 			step: 1,
 			value,
-			"aria-valuetext": L[value],
+			list: `${id}-ticks`,
+			"aria-valuetext": timeLabel(value),
 			"aria-describedby": describedBy,
 			onChange: (e) => onChange(+e.target.value)
 		}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)("datalist", {
+			id: `${id}-ticks`,
+			children: TICKS.map(([d]) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", { value: d }, d))
+		}),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-			className: "mk-ticks",
+			className: "mk-ticks mk-ticks-abs",
 			"aria-hidden": "true",
-			children: T.map((t, j) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-				className: j === value ? "on" : "",
+			children: TICKS.map(([d, t]) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+				className: d === near ? "on" : "",
+				style: { left: `${d / 365 * 100}%` },
 				children: t
 			}, t))
 		})
@@ -153,7 +179,7 @@ function TimeSlider({ id, value, onChange, describedBy }) {
 }
 function SodaCard() {
 	const [i, setI] = (0, import_react.useState)(0);
-	const c = D[i] * 140, lb = c / 3500;
+	const c = useTween(i * 140), lb = c / 3500;
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
 			className: "mk-h2",
@@ -185,7 +211,7 @@ function SodaCard() {
 									className: "mk-bar",
 									style: {
 										background: "#d4a056",
-										height: `${Math.max(4, lb / 15 * 100)}%`
+										height: `${Math.max(4, lb / (51100 / 3500) * 100)}%`
 									}
 								})
 							}),
@@ -199,7 +225,7 @@ function SodaCard() {
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "mk-small",
-								children: [c.toLocaleString(), " extra calories so far"]
+								children: [Math.round(c).toLocaleString(), " extra calories so far"]
 							})
 						]
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -253,7 +279,7 @@ function SodaCard() {
 }
 function ProteinCard() {
 	const [i, setI] = (0, import_react.useState)(0);
-	const c = D[i] * 150, lb = c / 3500;
+	const c = useTween(i * 150), lb = c / 3500;
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
 			className: "mk-h2",
@@ -344,7 +370,7 @@ function ProteinCard() {
 									className: "mk-bar",
 									style: {
 										background: "#d4a056",
-										height: `${Math.max(4, lb / 16 * 100)}%`
+										height: `${Math.max(4, lb / 16.5 * 100)}%`
 									}
 								})
 							}),
@@ -352,7 +378,7 @@ function ProteinCard() {
 								className: "mk-num",
 								children: [
 									"+",
-									c.toLocaleString(),
+									Math.round(c).toLocaleString(),
 									" cal"
 								]
 							}),
