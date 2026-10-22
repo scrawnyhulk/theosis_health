@@ -6,7 +6,7 @@ Theosis Health LLC ("we," "us"), 4026 Bristol Dr., Danville, IL 61834, runs theo
 
 **The short version**
 - What you enter in the simulator and calculators **stays in your browser on your device**. We have no user accounts and no database of your inputs.
-- **Food photos only.** If you use the optional food-photo log, the photo you take of a meal or label is sent to Google's Gemini AI to identify the foods. We don't store it. Face, body, and lab-report uploads are turned off, and we collect no biometric information.
+- **Optional AI features.** If you turn on AI features (Tell us what you ate, web label lookup, food and nutrition-label photos, Ask Theosis, and the AI plan note), what you type or the food photo you choose is sent to Google's Gemini AI to answer that request. We don't store it on our servers. Face, body, and lab-report uploads are turned off, and we collect no biometric information.
 - We receive only what you choose to send us (contact form or email) and basic technical data our web host needs to run the site.
 - **We don't sell your data**, share it for advertising, or use ads, ad pixels, session replay, or third-party trackers. We see only aggregate, cookieless traffic counts from our host, Netlify.
 - We aren't a HIPAA covered entity, and the Service isn't "HIPAA compliant." Laws like the FTC Health Breach Notification Rule and state health-data laws still apply, and we follow them.
@@ -18,6 +18,7 @@ Theosis Health LLC ("we," "us"), 4026 Bristol Dr., Danville, IL 61834, runs theo
 | Info you type in tools (age, sex, height, weight, waist, activity, diet, diabetes status you select, A1c/glucose, goals) | Stored **only in your browser** (local storage). Not sent to us. | Until you clear your browser's site data for theosishealth.com |
 | Contact-form messages (name, email, message) | Our web host's form service (**Netlify Forms**), then our email | Up to 2 years after your last message, then deleted |
 | Emails you send us | Our email provider (Microsoft 365 through GoDaddy) | Up to 3 years after your last message, then deleted |
+| AI feature requests: typed text or food photo (only if you turn on AI features) | Sent to **Google Gemini** (paid API) to answer your request | Not stored by us. Google may keep it briefly for abuse monitoring under its terms |
 | Technical data (IP address, browser, request logs) | Our web host (**Netlify**). IP addresses are converted to a one-way hash for daily usage limits. | Usage counters reset daily. Host logs are kept briefly under Netlify's own retention for security and operations. |
 | Aggregate traffic stats (page views, visitor counts, top pages, referrers) | **Netlify Analytics**, computed by our host from its server logs. No cookies or tracking scripts. | Shown to us only as totals, under Netlify's retention |
 
@@ -26,8 +27,8 @@ We use this information only to run and secure the Service and to reply to you. 
 ## 2. Who we share it with
 Only our service providers that run the Service for us: **Netlify** (hosting and contact forms) and **Microsoft/GoDaddy** (email). We may also disclose information if the law requires it or to protect our rights. We don't sell or rent personal information.
 
-## 3. Food photos, and features that are off
-**Food photos (optional).** If you use food-photo logging, the image is sent from your browser to Google Gemini, using Google's paid API, to identify foods and estimate nutrition. The results come back to your device for you to review. We don't store the photo or the results on our servers. Google processes the image as our service provider under its paid API terms, which don't allow it to train its models on your data. Google may keep it briefly for abuse monitoring as those terms describe. Please photograph food and labels only, not people. We don't analyze faces or bodies, and food photos aren't used to identify anyone.
+## 3. AI features, food photos, and features that are off
+**AI features (optional, off until you agree).** AI features work only after you check the AI-features consent box, and you can turn them off anytime in settings. When you use one, the text you type (which may include health details like what you ate, your weight, or your goals) or the food photo you choose is sent from your browser to Google Gemini, using Google's paid API, only to answer that request. Photos are resized and re-encoded on your device first, which removes location and other hidden data (EXIF/GPS). Results come back to your device. We don't store your requests, photos, or results on our servers. Google processes them as our service provider under its paid API terms, which don't allow it to train its models on your data, and may keep them briefly for abuse monitoring as those terms describe. Please don't include other people's information or photos of people. AI answers are general education, not medical advice, and can be wrong.
 
 **Features that are off.** Face or body photos, AI photo illustrations, and lab-report upload are **not available**. We collect no face geometry or other biometric information. If we turn these features on later, we will first update this policy, publish a biometric data retention and destruction schedule as Illinois' Biometric Information Privacy Act (BIPA) requires, and get your **written consent** before anything is collected.
 

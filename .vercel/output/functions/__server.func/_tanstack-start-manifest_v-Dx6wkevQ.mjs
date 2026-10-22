@@ -1,7 +1,7 @@
-//#region ../theosishealth/node_modules/.nitro/vite/services/ssr/assets/_tanstack-start-manifest_v-B6FWicXb.js
+//#region ../../workspace/theosishealth/node_modules/.nitro/vite/services/ssr/assets/_tanstack-start-manifest_v-Dx6wkevQ.js
 var tsrStartManifest = () => ({ routes: {
 	__root__: {
-		filePath: "/workspace/th-nav/src/routes/__root.tsx",
+		filePath: "/tmp/wt/src/routes/__root.tsx",
 		children: [
 			"/",
 			"/consumer-health-privacy",
@@ -15,7 +15,7 @@ var tsrStartManifest = () => ({ routes: {
 			"/hacks/"
 		],
 		preloads: [
-			"/assets/index-wVY9LPx8.js",
+			"/assets/index-DD-htt3B.js",
 			"/assets/useSelector-B0K6Mfa1.js",
 			"/assets/hacks-DNc3MQoh.js",
 			"/assets/preload-helper-B9MoI6v7.js",
@@ -24,25 +24,25 @@ var tsrStartManifest = () => ({ routes: {
 		scripts: [{ attrs: {
 			type: "module",
 			async: !0,
-			src: "/assets/index-wVY9LPx8.js"
+			src: "/assets/index-DD-htt3B.js"
 		} }]
 	},
 	"/": {
-		filePath: "/workspace/th-nav/src/routes/index.tsx",
+		filePath: "/tmp/wt/src/routes/index.tsx",
 		children: void 0,
 		preloads: [
-			"/assets/routes-DWnPz3aa.js",
+			"/assets/routes-DRqM_JBN.js",
 			"/assets/site-shell-C1CTsvbk.js",
 			"/assets/arrow-right-BdIbGYay.js"
 		]
 	},
 	"/consumer-health-privacy": {
-		filePath: "/workspace/th-nav/src/routes/consumer-health-privacy.tsx",
+		filePath: "/tmp/wt/src/routes/consumer-health-privacy.tsx",
 		children: void 0,
-		preloads: ["/assets/consumer-health-privacy-QG7BaT4S.js", "/assets/site-shell-C1CTsvbk.js"]
+		preloads: ["/assets/consumer-health-privacy-Dazc4uC1.js", "/assets/site-shell-C1CTsvbk.js"]
 	},
 	"/contact": {
-		filePath: "/workspace/th-nav/src/routes/contact.tsx",
+		filePath: "/tmp/wt/src/routes/contact.tsx",
 		children: void 0,
 		preloads: [
 			"/assets/contact-CKMLPIIR.js",
@@ -52,30 +52,30 @@ var tsrStartManifest = () => ({ routes: {
 		]
 	},
 	"/disclaimer": {
-		filePath: "/workspace/th-nav/src/routes/disclaimer.tsx",
+		filePath: "/tmp/wt/src/routes/disclaimer.tsx",
 		children: void 0,
 		preloads: ["/assets/disclaimer-ByY9Ey9s.js", "/assets/site-shell-C1CTsvbk.js"]
 	},
 	"/install": {
-		filePath: "/workspace/th-nav/src/routes/install.tsx",
+		filePath: "/tmp/wt/src/routes/install.tsx",
 		children: void 0,
 		preloads: ["/assets/install-BW49opdj.js", "/assets/site-shell-C1CTsvbk.js"]
 	},
 	"/privacy": {
-		filePath: "/workspace/th-nav/src/routes/privacy.tsx",
+		filePath: "/tmp/wt/src/routes/privacy.tsx",
 		children: void 0,
-		preloads: ["/assets/privacy-wa9WeUsi.js", "/assets/site-shell-C1CTsvbk.js"]
+		preloads: ["/assets/privacy-DC1o1ZGc.js", "/assets/site-shell-C1CTsvbk.js"]
 	},
 	"/terms": {
-		filePath: "/workspace/th-nav/src/routes/terms.tsx",
+		filePath: "/tmp/wt/src/routes/terms.tsx",
 		children: void 0,
 		preloads: ["/assets/terms-GkxCC0uI.js", "/assets/site-shell-C1CTsvbk.js"]
 	},
 	"/hacks/$slug": {
-		filePath: "/workspace/th-nav/src/routes/hacks/$slug.tsx",
+		filePath: "/tmp/wt/src/routes/hacks/$slug.tsx",
 		children: void 0,
 		preloads: [
-			"/assets/_slug-CewsIOic.js",
+			"/assets/_slug-C0DNBmM3.js",
 			"/assets/site-shell-C1CTsvbk.js",
 			"/assets/nerd-paragraph-BqPwsOZN.js",
 			"/assets/arrow-right-BdIbGYay.js",
@@ -84,12 +84,12 @@ var tsrStartManifest = () => ({ routes: {
 		]
 	},
 	"/hacks/nerd-out": {
-		filePath: "/workspace/th-nav/src/routes/hacks/nerd-out.tsx",
+		filePath: "/tmp/wt/src/routes/hacks/nerd-out.tsx",
 		children: ["/hacks/nerd-out/$topic", "/hacks/nerd-out/"],
-		preloads: ["/assets/nerd-out-DFeNQqqc.js"]
+		preloads: ["/assets/nerd-out-3l0u4_N8.js"]
 	},
 	"/hacks/": {
-		filePath: "/workspace/th-nav/src/routes/hacks/index.tsx",
+		filePath: "/tmp/wt/src/routes/hacks/index.tsx",
 		children: void 0,
 		preloads: [
 			"/assets/hacks-cJElA8b-.js",
@@ -98,10 +98,10 @@ var tsrStartManifest = () => ({ routes: {
 		]
 	},
 	"/hacks/nerd-out/$topic": {
-		filePath: "/workspace/th-nav/src/routes/hacks/nerd-out.$topic.tsx",
+		filePath: "/tmp/wt/src/routes/hacks/nerd-out.$topic.tsx",
 		children: void 0,
 		preloads: [
-			"/assets/nerd-out._topic-DT_Y7UyU.js",
+			"/assets/nerd-out._topic-rlK-npUP.js",
 			"/assets/site-shell-C1CTsvbk.js",
 			"/assets/nerd-paragraph-BqPwsOZN.js",
 			"/assets/arrow-right-BdIbGYay.js",
@@ -110,7 +110,7 @@ var tsrStartManifest = () => ({ routes: {
 		]
 	},
 	"/hacks/nerd-out/": {
-		filePath: "/workspace/th-nav/src/routes/hacks/nerd-out.index.tsx",
+		filePath: "/tmp/wt/src/routes/hacks/nerd-out.index.tsx",
 		children: void 0,
 		preloads: [
 			"/assets/nerd-out.index-DKAflzBQ.js",

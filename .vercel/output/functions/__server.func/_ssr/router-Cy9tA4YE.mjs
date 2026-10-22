@@ -5,7 +5,7 @@ import { _ as lazyRouteComponent, d as Scripts, f as HeadContent, g as Outlet, h
 import { i as require_jsx_runtime } from "../_libs/@radix-ui/react-label+[...].mjs";
 import { i as TriangleAlert } from "../_libs/lucide-react.mjs";
 import { a as union, i as string, n as number, r as object, t as literal } from "../_libs/zod.mjs";
-//#region ../theosishealth/node_modules/.nitro/vite/services/ssr/assets/router-Dh4NiCjR.js
+//#region ../../workspace/theosishealth/node_modules/.nitro/vite/services/ssr/assets/router-Cy9tA4YE.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var __defProp = Object.defineProperty;
@@ -492,10 +492,10 @@ function lostLbByDay(cut, days = 365, P = EXAMPLE) {
 	}
 	return out;
 }
-var $$splitComponentImporter$11 = () => import("./routes-UnGr2zNW.mjs");
+var $$splitComponentImporter$11 = () => import("./routes-DK5cp1PT.mjs");
 Math.round(maintenance(SODA_PERSON) / 10) * 10;
 var Route$11 = createFileRoute("/")({ component: lazyRouteComponent($$splitComponentImporter$11, "component") });
-var $$splitComponentImporter$10 = () => import("./consumer-health-privacy-Bit6xFR_.mjs");
+var $$splitComponentImporter$10 = () => import("./consumer-health-privacy-6xssRZTR.mjs");
 var Route$10 = createFileRoute("/consumer-health-privacy")({
 	head: () => ({ meta: [{ title: "Consumer Health Data Privacy Policy — Theosis Health" }] }),
 	component: lazyRouteComponent($$splitComponentImporter$10, "component")
@@ -521,7 +521,7 @@ var Route$7 = createFileRoute("/install")({
 		content: "Add Theosis Medical to your phone’s home screen so it opens like an app — no App Store needed."
 	}] })
 });
-var $$splitComponentImporter$6 = () => import("./privacy-DaUutUFc.mjs");
+var $$splitComponentImporter$6 = () => import("./privacy-DWo4DUaR.mjs");
 var Route$6 = createFileRoute("/privacy")({
 	head: () => ({ meta: [{ title: "Privacy Policy — Theosis Health" }] }),
 	component: lazyRouteComponent($$splitComponentImporter$6, "component")
@@ -539,7 +539,7 @@ var Route$4 = createFileRoute("/hacks/")({
 		content: "Health Hacks: the 20% that does 80% of the work. Protein, calories, drinks, fast food, and the mechanisms behind them."
 	}] })
 });
-var $$splitComponentImporter$3 = () => import("../_slug-CXjNEDgi.mjs");
+var $$splitComponentImporter$3 = () => import("../_slug-Uhtz2CLI.mjs");
 var Route$3 = createFileRoute("/hacks/$slug")({
 	component: lazyRouteComponent($$splitComponentImporter$3, "component"),
 	head: ({ params }) => {
@@ -560,7 +560,7 @@ var Route$1 = createFileRoute("/hacks/nerd-out/")({
 		content: "Mechanisms. How stuff actually works. Optional reading. Compulsory if you are me."
 	}] })
 });
-var $$splitComponentImporter = () => import("./nerd-out._topic-R5pqrLX1.mjs");
+var $$splitComponentImporter = () => import("./nerd-out._topic-Bx6HJEv9.mjs");
 var Route = createFileRoute("/hacks/nerd-out/$topic")({
 	component: lazyRouteComponent($$splitComponentImporter, "component"),
 	head: ({ params }) => {
