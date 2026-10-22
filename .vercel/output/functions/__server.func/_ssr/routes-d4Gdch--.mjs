@@ -4,7 +4,7 @@ import { b as Link } from "../_libs/@tanstack/react-router+[...].mjs";
 import { i as require_jsx_runtime } from "../_libs/@radix-ui/react-label+[...].mjs";
 import { _ as ArrowRight, l as Footprints, p as Clock, u as FlaskConical } from "../_libs/lucide-react.mjs";
 import { r as SiteShell } from "./site-shell-Coxd6dm8.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/routes-CBK0WHWi.js
+//#region node_modules/.nitro/vite/services/ssr/assets/routes-d4Gdch--.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var LB = 2.2046226218;
@@ -105,7 +105,7 @@ function Home() {
 							children: "Theosis Health"
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-							className: "mt-5 max-w-xl text-lg leading-relaxed text-ink-fg/90 sm:text-xl",
+							className: "mt-2 max-w-xl text-lg leading-relaxed text-ink-fg/90 sm:text-xl",
 							children: "Simple tools and realistic Health Hacks to help re-inspire a healthy lifestyle while navigating a hectic life."
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -117,7 +117,15 @@ function Home() {
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 									className: "mt-2 max-w-2xl text-ink-fg/85",
-									children: "Growing up as a scrawny kid who wanted to put on muscle, I heard 800 different recommendations but never found a good, accurate source. There are plenty of health influencers and diet programs, each with their own method, but I have yet to find one that truly shows how daily choices influence metabolic health. That’s what Theosis Health aims to do, because the numbers say we’re clearly missing the mark:"
+									children: "Growing up as a scrawny yet nerdy kid who wanted to put on muscle, I was told five hundred different recommendations about five hundred different ways to lift and eat, except it just never seemed to work right for me."
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "mt-3 max-w-2xl text-ink-fg/85",
+									children: "Nowadays there are plenty of health influencers and diet programs, each with their own take on health and fitness. And although there’s a lot of overlap, I haven’t really seen much that addresses the pathology of poor health. In our current food landscape it’s incredibly easy to overconsume calories every day, and that’s what leads to metabolic strain and insulin resistance."
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "mt-3 max-w-2xl text-ink-fg/85",
+									children: "So it’s become incredibly important to me to find a way to reach everybody and help them understand how food-related diseases occur, so we can work together to get back to better health — one person at a time."
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("ul", {
 									className: "mk-chips",

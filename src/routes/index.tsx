@@ -35,12 +35,14 @@ function Home() {
         <div className="mx-auto max-w-6xl px-5 py-12 sm:px-8 md:py-16">
           <div className="stagger-in">
             <h1 className="sr-only">Theosis Health</h1>
-            <p className="mt-5 max-w-xl text-lg leading-relaxed text-ink-fg/90 sm:text-xl">
+            <p className="mt-2 max-w-xl text-lg leading-relaxed text-ink-fg/90 sm:text-xl">
               Simple tools and realistic Health Hacks to help re-inspire a healthy lifestyle while navigating a hectic life.
             </p>
             <div className="mk-welcome">
               <h2 className="font-display text-2xl font-semibold uppercase sm:text-3xl">Welcome to Theosis Health</h2>
-              <p className="mt-2 max-w-2xl text-ink-fg/85">Growing up as a scrawny kid who wanted to put on muscle, I heard 800 different recommendations but never found a good, accurate source. There are plenty of health influencers and diet programs, each with their own method, but I have yet to find one that truly shows how daily choices influence metabolic health. That’s what Theosis Health aims to do, because the numbers say we’re clearly missing the mark:</p>
+              <p className="mt-2 max-w-2xl text-ink-fg/85">Growing up as a scrawny yet nerdy kid who wanted to put on muscle, I was told five hundred different recommendations about five hundred different ways to lift and eat, except it just never seemed to work right for me.</p>
+              <p className="mt-3 max-w-2xl text-ink-fg/85">Nowadays there are plenty of health influencers and diet programs, each with their own take on health and fitness. And although there’s a lot of overlap, I haven’t really seen much that addresses the pathology of poor health. In our current food landscape it’s incredibly easy to overconsume calories every day, and that’s what leads to metabolic strain and insulin resistance.</p>
+              <p className="mt-3 max-w-2xl text-ink-fg/85">So it’s become incredibly important to me to find a way to reach everybody and help them understand how food-related diseases occur, so we can work together to get back to better health — one person at a time.</p>
               <ul className="mk-chips" aria-label="Quick facts">
                 <li><b>40.1 million</b> people in the US have diabetes (2023)<sup><a href="#wf1" aria-label="Footnote 1">1</a></sup></li>
                 <li><b>115.2 million</b> US adults have prediabetes<sup><a href="#wf1" aria-label="Footnote 1">1</a></sup></li>

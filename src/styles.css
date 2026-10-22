@@ -385,7 +385,7 @@ sup a{color:#4587c6;text-decoration:none}
 .mk-bar{transition:height .18s ease-out}
 @media (prefers-reduced-motion: reduce){.mk-bar{transition:none}}
 @media(max-width:480px){.mk-ticks-abs span:nth-child(2){display:none}}
-.mk-welcome{margin-top:1.75rem;padding-top:1.5rem;border-top:1px solid rgba(207,214,224,.15)}
+.mk-welcome{margin-top:2.5rem;padding-top:2.25rem;border-top:1px solid rgba(207,214,224,.15)}
 .mk-chips{display:flex;flex-wrap:wrap;gap:.6rem;margin:1rem 0 0;padding:0;list-style:none}
 .mk-chips li{border:1px solid rgba(69,135,198,.45);background:rgba(69,135,198,.1);border-radius:999px;padding:.35rem .85rem;font-size:.85rem;color:#dbe6f3}
 .mk-chips b{color:#9cc4f0;margin-right:.15rem}
