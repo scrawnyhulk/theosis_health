@@ -4,8 +4,6 @@ import { ArrowRight, Clock, FlaskConical, Footprints } from "lucide-react";
 import { SiteShell } from "@/components/site/site-shell";
 import { EXAMPLE, SODA_PERSON, extraLbByDay, lostLbByDay, maintenance } from "@/lib/swap-model";
 
-const SODA_GAIN = extraLbByDay(140, 365, SODA_PERSON);
-const SODA_LOSS = lostLbByDay(140, 365, SODA_PERSON);
 const SODA_MAINT = Math.round(maintenance(SODA_PERSON) / 10) * 10;
 const PROT_LB = lostLbByDay(150);
 const BAR_MAX = PROT_LB[365] * 1.05;
@@ -131,10 +129,6 @@ const ADAPT_NOTE = <div className="mk-adapt">Includes metabolic adaptation</div>
 const GAIN = "#e07a4f";
 const G_PC = { w: 760, h: 250, l: 46, r: 18, t: 18, b: 32 };
 const G_PH = { w: 360, h: 250, l: 36, r: 10, t: 16, b: 30 };
-let G = G_PC;
-const Y_MAX = Math.ceil(Math.max(SODA_GAIN[365], SODA_LOSS[365]) / 2) * 2 + 2;
-const gx = (d: number) => G.l + (d / 365) * (G.w - G.l - G.r);
-const gy = (lb: number) => G.t + ((Y_MAX - lb) / (2 * Y_MAX)) * (G.h - G.t - G.b);
 function useNarrow() {
   const [n, setN] = useState(false);
   useEffect(() => {
@@ -145,43 +139,89 @@ function useNarrow() {
   }, []);
   return n;
 }
-const sodaAt = (d: number, k: number) => {
-  const a = Math.floor(d), f = d - a, b = Math.min(365, a + 1);
-  const g = SODA_GAIN[a] + (SODA_GAIN[b] - SODA_GAIN[a]) * f, l = SODA_LOSS[a] + (SODA_LOSS[b] - SODA_LOSS[a]) * f;
-  return k * g - (1 - k) * l;
+
+type Drink = { id: string; name: string; short: string; kcal: number; src: string };
+// Calories per serving, checked Oct 22, 2026 against brand labels or USDA FoodData Central.
+const SUGARY: Drink[] = [
+  { id: "can", name: "Can of pop", short: "the can of pop", kcal: 140, src: "Coca-Cola, 12 fl oz can (coca-cola.com)" },
+  { id: "20oz", name: "20 oz pop", short: "the 20 oz pop", kcal: 240, src: "Coca-Cola, 20 fl oz bottle (coca-cola.com)" },
+  { id: "sbux", name: "Starbucks drink", short: "the Starbucks drink", kcal: 380, src: "Grande Caramel Frappuccino, 16 fl oz (starbucks.com)" },
+  { id: "gulp", name: "Big Gulp", short: "the Big Gulp", kcal: 420, src: "Coca-Cola fountain, 30 fl oz, no ice (Coca-Cola fountain nutrition chart)" },
+  { id: "energy", name: "Full-sugar energy drink", short: "the energy drink", kcal: 230, src: "Monster Energy Original, 16 fl oz (monsterenergy.com)" },
+  { id: "sweettea", name: "Sweet tea", short: "the sweet tea", kcal: 190, src: "Gold Peak Sweet Tea, 18.5 fl oz (coca-cola.com)" },
+];
+const ZERO: Drink[] = [
+  { id: "unsweet", name: "Unsweet tea", short: "unsweet tea", kcal: 5, src: "Brewed black tea, 16 fl oz (USDA FDC 173227)" },
+  { id: "water", name: "Water", short: "water", kcal: 0, src: "Water" },
+  { id: "dpzcan", name: "Dr Pepper Zero can", short: "a Dr Pepper Zero can", kcal: 0, src: "Dr Pepper Zero Sugar, 12 fl oz label" },
+  { id: "dpz20", name: "Dr Pepper Zero 20 oz", short: "a Dr Pepper Zero 20 oz", kcal: 0, src: "Dr Pepper Zero Sugar, 20 fl oz label" },
+  { id: "zeroenergy", name: "Zero-cal energy drink", short: "a zero-cal energy drink", kcal: 10, src: "Monster Zero Ultra, 16 fl oz (monsterenergy.com)" },
+  { id: "coffee", name: "Black coffee", short: "black coffee", kcal: 4, src: "Brewed coffee, 12 fl oz (USDA FDC 171890)" },
+];
+const SODA_SR = `Example: a ${SODA_PERSON.age}-year-old, 5'5", ${SODA_PERSON.weightLb}-lb woman with about ${SODA_PERSON.bodyFatPct}% body fat who is lightly active, so she needs about ${(Math.round(maintenance(SODA_PERSON) / 10) * 10).toLocaleString()} calories a day.`;
+const curveCache = new Map<string, number[]>();
+const curve = (diff: number, gain: boolean) => {
+  const key = `${gain ? "g" : "l"}${diff}`;
+  let c = curveCache.get(key);
+  if (!c) { c = gain ? extraLbByDay(diff, 365, SODA_PERSON) : lostLbByDay(diff, 365, SODA_PERSON); curveCache.set(key, c); }
+  return c;
 };
-const SODA_SR = `Example: a ${SODA_PERSON.age}-year-old, 5'5", ${SODA_PERSON.weightLb}-lb woman with about ${SODA_PERSON.bodyFatPct}% body fat who is lightly active, so she needs about ${SODA_MAINT.toLocaleString()} calories a day.`;
+const at = (c: number[], d: number) => { const a = Math.floor(d), b = Math.min(365, a + 1); return c[a] + (c[b] - c[a]) * (d - a); };
+
+function Chips({ label, items, sel, onSel }: { label: string; items: Drink[]; sel: string; onSel: (id: string) => void }) {
+  return (
+    <div className="sd-chipgrp" role="group" aria-label={label}>
+      <div className="sd-chiplab">{label}</div>
+      <div className="sd-chips">{items.map((x) => <button key={x.id} type="button" className={`sd-chip${sel === x.id ? " on" : ""}`} aria-pressed={sel === x.id} onClick={() => onSel(x.id)}>{x.name}<small>{x.kcal} cal</small></button>)}</div>
+    </div>
+  );
+}
 
 function SodaCard() {
   const [i, setI] = useState(365);
   const [keep, setKeep] = useState(false);
+  const [sid, setSid] = useState("can");
+  const [zid, setZid] = useState("water");
   const narrow = useNarrow();
-  G = narrow ? G_PH : G_PC;
+  const G = narrow ? G_PH : G_PC;
+  const S = SUGARY.find((x) => x.id === sid)!, Z = ZERO.find((x) => x.id === zid)!;
+  const diff = Math.max(0, S.kcal - Z.kcal);
   const d = useTween(i), k = useTween(keep ? 1 : 0, 450);
-  const lb = sodaAt(d, k), cal = Math.round(d) * 140;
+  const g = curve(diff, true), l = curve(diff, false);
+  const yNeed = Math.max(g[365], l[365]);
+  const yMax = useTween(Math.max(4, Math.ceil((yNeed * 1.15) / 4) * 4), 450);
+  const tg = useTween(at(g, i), 450), tl = useTween(at(l, i), 450);
+  const val = (x: number) => k * at(g, x) - (1 - k) * at(l, x);
+  const gx = (x: number) => G.l + (x / 365) * (G.w - G.l - G.r);
+  const gy = (lb: number) => G.t + ((yMax - lb) / (2 * yMax)) * (G.h - G.t - G.b);
+  const lb = k * tg - (1 - k) * tl;
   const pts: string[] = [];
-  for (let x = 0; x < d; x += 3) pts.push(`${gx(x).toFixed(1)},${gy(sodaAt(x, k)).toFixed(1)}`);
+  for (let x = 0; x < d; x += 3) pts.push(`${gx(x).toFixed(1)},${gy(val(x) * (lb / (val(d) || 1) || 1)).toFixed(1)}`);
   pts.push(`${gx(d).toFixed(1)},${gy(lb).toFixed(1)}`);
   const col = keep ? GAIN : LOSS;
   const shown = Math.abs(lb) < 0.05 ? "0" : `${lb > 0 ? "+" : "−"}${fmtLb(Math.abs(lb))}`;
   const lx = gx(d), ly = gy(lb), anchor = lx > G.w - 90 ? "end" : "start";
-  const yt = [Y_MAX, Y_MAX / 2, 0, -Y_MAX / 2, -Y_MAX];
+  const yt = [1, 0.5, 0, -0.5, -1].map((f) => Math.round(f * yMax));
+  const sign = keep ? "+" : "−";
   return (
     <>
       <h2 className="mk-h2">See how your favorite drink alone affects your day, week, month, and year</h2>
-      <p className="mk-sub">Example: someone who needs about 2,000 calories a day. If nothing else about their diet changes, adding a daily 140-calorie soda or cutting one could add up like this.</p>
+      <p className="mk-sub">Example: someone who needs about 2,000 calories a day. Pick a drink and a zero-calorie swap. If nothing else about their diet changes, keeping that drink or cutting it could add up like this.</p>
       <div className="mk-card sd-card">
         <div className="sd-tags"><span className="sd-tag">Example person, not a prediction</span><span className="mk-adapt" style={{ marginTop: 0 }}>Includes metabolic adaptation</span></div>
-        <div className="sd-pills" role="group" aria-label="Choose a habit">
-          <button type="button" className={`sd-pill keep${keep ? " on" : ""}`} aria-pressed={keep} onClick={() => setKeep(true)}>🥤 Keep the soda (140 cal)</button>
-          <button type="button" className={`sd-pill sw${!keep ? " on" : ""}`} aria-pressed={!keep} onClick={() => setKeep(false)}>💧 Switch to zero-calorie</button>
+        <div className="sd-pick">
+          <Chips label="Their drink now" items={SUGARY} sel={sid} onSel={setSid} />
+          <Chips label="Zero-calorie swap" items={ZERO} sel={zid} onSel={setZid} />
+        </div>
+        <div className="sd-pills" role="group" aria-label="Choose what happens">
+          <button type="button" className={`sd-pill keep${keep ? " on" : ""}`} aria-pressed={keep} onClick={() => setKeep(true)}>Keep {S.name.toLowerCase().startsWith("starbucks") ? "the Starbucks drink" : S.short}</button>
+          <button type="button" className={`sd-pill sw${!keep ? " on" : ""}`} aria-pressed={!keep} onClick={() => setKeep(false)}>Switch to {Z.short}</button>
         </div>
         <div className="sd-num" aria-live="polite">
           <div className="mk-num" style={{ color: keep ? "#f0936b" : "#5cc48e", fontSize: "3rem" }}>{shown} lb</div>
-          <div className="sd-cal">{keep ? "Extra calories" : "Calories cut"}</div>
-          <div className="sd-row">{([["Day", 1], ["Week", 7], ["Month", 30], ["Year", 365]] as const).map(([n, dd]) => <div key={n} className="sd-cell"><b style={{ color: keep ? "#f0936b" : "#5cc48e" }}>{keep ? "+" : "−"}{(dd * 140).toLocaleString()}</b><span>{n}</span></div>)}</div>
-          <div className="mk-small" style={{ marginTop: ".3rem" }}>{keep ? "+" : "−"}{cal.toLocaleString()} so far · a month here is 30 days</div>
-          <div className="mk-small">estimated weight change after {timeLabel(i).toLowerCase()}, about</div>
+          <div className="sd-cal">{keep ? "Extra calories" : "Calories cut"} <span className="mk-small">({S.kcal} − {Z.kcal} = {diff} a day)</span></div>
+          <div className="sd-row">{([["Day", 1], ["Week", 7], ["Month", 30], ["Year", 365]] as const).map(([n, dd]) => <div key={n} className="sd-cell"><b style={{ color: keep ? "#f0936b" : "#5cc48e" }}>{diff ? sign : ""}{(dd * diff).toLocaleString()}</b><span>{n}</span></div>)}</div>
+          <div className="mk-small" style={{ marginTop: ".3rem" }}>{diff ? sign : ""}{(Math.round(d) * diff).toLocaleString()} so far · a month here is 30 days · estimated weight change after {timeLabel(i).toLowerCase()}, about</div>
         </div>
         <svg className="sd-graph" viewBox={`0 0 ${G.w} ${G.h}`} role="img" aria-label={`Line graph: estimated weight change about ${shown} pounds after ${timeLabel(i)}`}>
           {yt.map((v) => <g key={v}><line x1={G.l} x2={G.w - G.r} y1={gy(v)} y2={gy(v)} stroke="#ffffff14" /><text x={G.l - 8} y={gy(v) + 4} textAnchor="end" className="sd-ax">{v > 0 ? `+${v}` : v}</text></g>)}
@@ -194,8 +234,9 @@ function SodaCard() {
           <text x={anchor === "end" ? lx - 12 : lx + 12} y={ly + (lb >= 0 ? -10 : 22)} textAnchor={anchor} className="sd-pt" fill={col}>{shown} lb</text>
         </svg>
         <TimeSlider id="mkr" value={i} onChange={setI} describedBy="mknote" />
-        <p id="mknote" className="mk-small" style={{ marginTop: "1rem" }}>Rough educational estimate only: 140 calories a day (a 12&nbsp;oz soda) added or cut. Many sweet coffee drinks run 200–400+ calories, so the real gap could be bigger. The pounds come from the simulator's energy-balance model, which includes metabolic adaptation, so both lines slow over time instead of adding up in a straight line. Real-life results vary from person to person. Not medical advice.</p>
+        <p id="mknote" className="mk-small" style={{ marginTop: "1rem" }}>Rough educational estimate only. The math uses the calorie difference between the two drinks, every day. The pounds come from the simulator's energy-balance model, which includes metabolic adaptation, so both lines slow over time instead of adding up in a straight line. Real-life results vary from person to person. Not medical advice.</p>
         <p className="mk-small" style={{ fontSize: ".78rem", opacity: 0.85 }}>{SODA_SR} Individual numbers will differ. Try the simulator to see your own.</p>
+        <p className="mk-small" style={{ fontSize: ".72rem", opacity: 0.75 }}>Calories used: {S.name}, {S.kcal} ({S.src}); {Z.name}, {Z.kcal} ({Z.src}). Fountain drinks with ice usually have a bit less.</p>
       </div>
       <div className="mk-btns"><Link className="mk-btn p" to="/hacks/$slug" params={{ slug: "dont-drink-calories" } as never}>Read the Health Hack →</Link></div>
       <a className="mk-simlink" href="/simulator/">See your own numbers in the simulator (Beta) →</a>

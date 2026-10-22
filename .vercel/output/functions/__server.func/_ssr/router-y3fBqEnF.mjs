@@ -5,7 +5,7 @@ import { _ as lazyRouteComponent, d as Scripts, f as HeadContent, g as Outlet, h
 import { i as require_jsx_runtime } from "../_libs/@radix-ui/react-label+[...].mjs";
 import { i as TriangleAlert } from "../_libs/lucide-react.mjs";
 import { a as union, i as string, n as number, r as object, t as literal } from "../_libs/zod.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/router-DPASjIjs.js
+//#region node_modules/.nitro/vite/services/ssr/assets/router-y3fBqEnF.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var __defProp = Object.defineProperty;
@@ -291,7 +291,7 @@ function PwaRegister() {
 	}, []);
 	return null;
 }
-var styles_default = "/assets/styles-Oo3kefRy.css";
+var styles_default = "/assets/styles-OBeC5OPb.css";
 var APP_NAME = site.name;
 var Route$12 = createRootRoute({
 	head: () => ({
@@ -422,7 +422,78 @@ var Route$12 = createRootRoute({
 		})]
 	})
 });
-var $$splitComponentImporter$11 = () => import("./routes-UJ6PkXV2.mjs");
+var LB = 2.2046226218;
+var RHO_F = 4250 * LB;
+var RHO_L = 1800;
+var TEF_BETA = .1;
+var AT_BETA_UP = .2;
+var AT_UP_MAXEXCESS = 1e3;
+var AT_TAU = 14;
+var AT_CAP = .25;
+var EXAMPLE = {
+	sex: "m",
+	age: 40,
+	heightCm: 175.3,
+	weightLb: 180,
+	bodyFatPct: 25,
+	lightActivityKcal: 250
+};
+/** Example person for the soda card: maintenance about 2,000 kcal/day. */
+var SODA_PERSON = {
+	sex: "f",
+	age: 40,
+	heightCm: 165.1,
+	weightLb: 170,
+	bodyFatPct: 35,
+	lightActivityKcal: 250
+};
+var bmrP = (P, kg) => 10 * kg + 6.25 * P.heightCm - 5 * P.age + (P.sex === "m" ? 5 : -161);
+var tdeeP = (P, kg) => bmrP(P, kg) * 1.2 + P.lightActivityKcal;
+/** Maintenance calories at starting weight. */
+var maintenance = (P) => tdeeP(P, P.weightLb / LB);
+/** Extra pounds vs staying at maintenance, for each day 0..365, when eating `surplus` kcal/day more. */
+function extraLbByDay(surplus, days = 365, P = EXAMPLE) {
+	const tdee = (kg) => tdeeP(P, kg);
+	const w0 = P.weightLb / LB;
+	let F = w0 * P.bodyFatPct / 100, L = w0 - F, adapt = 0;
+	const ei0 = tdee(w0), intake = ei0 + surplus;
+	const out = [0];
+	for (let d = 0; d < days; d++) {
+		const t = tdee(F + L);
+		const target = -Math.min(AT_CAP * t, AT_BETA_UP * Math.min(intake - ei0, AT_UP_MAXEXCESS));
+		adapt += (target - adapt) / AT_TAU;
+		const E = intake - (t - adapt - TEF_BETA * (ei0 - intake));
+		const pm = 10.4 / (10.4 + F);
+		const dF = E / (RHO_F + RHO_L * pm / (1 - pm));
+		F += dF;
+		L += dF * pm / (1 - pm);
+		out.push((F + L - w0) * LB);
+	}
+	return out;
+}
+var AT_BETA = .14;
+/** Pounds lost vs staying at maintenance, for each day 0..365, when eating `cut` kcal/day less. Includes metabolic adaptation. */
+function lostLbByDay(cut, days = 365, P = EXAMPLE) {
+	const tdee = (kg) => tdeeP(P, kg);
+	const w0 = P.weightLb / LB;
+	let F = w0 * P.bodyFatPct / 100, L = w0 - F, adapt = 0;
+	const ei0 = tdee(w0), intake = ei0 - cut;
+	const out = [0];
+	for (let d = 0; d < days; d++) {
+		const t = tdee(F + L);
+		const target = Math.min(AT_CAP * t, AT_BETA * Math.max(0, t - intake));
+		adapt += (target - adapt) / AT_TAU;
+		const E = intake - (t - adapt - TEF_BETA * (ei0 - intake));
+		const pm = 10.4 / (10.4 + F);
+		const dF = E / (RHO_F + RHO_L * pm / (1 - pm));
+		F += dF;
+		L += dF * pm / (1 - pm);
+		out.push((w0 - F - L) * LB);
+	}
+	return out;
+}
+var $$splitComponentImporter$11 = () => import("./routes-17jYd6Z-.mjs");
+Math.round(maintenance(SODA_PERSON) / 10) * 10;
 var Route$11 = createFileRoute("/")({ component: lazyRouteComponent($$splitComponentImporter$11, "component") });
 var $$splitComponentImporter$10 = () => import("./consumer-health-privacy-DiYeO6BI.mjs");
 var Route$10 = createFileRoute("/consumer-health-privacy")({
@@ -468,7 +539,7 @@ var Route$4 = createFileRoute("/hacks/")({
 		content: "Health Hacks: the 20% that does 80% of the work. Protein, calories, drinks, fast food, and the mechanisms behind them."
 	}] })
 });
-var $$splitComponentImporter$3 = () => import("../_slug-UGw_ieVN.mjs");
+var $$splitComponentImporter$3 = () => import("../_slug-B_KVSTh6.mjs");
 var Route$3 = createFileRoute("/hacks/$slug")({
 	component: lazyRouteComponent($$splitComponentImporter$3, "component"),
 	head: ({ params }) => {
@@ -489,7 +560,7 @@ var Route$1 = createFileRoute("/hacks/nerd-out/")({
 		content: "Mechanisms. How stuff actually works. Optional reading. Compulsory if you are me."
 	}] })
 });
-var $$splitComponentImporter = () => import("./nerd-out._topic-DuejPeWS.mjs");
+var $$splitComponentImporter = () => import("./nerd-out._topic-DEQOpJz7.mjs");
 var Route = createFileRoute("/hacks/nerd-out/$topic")({
 	component: lazyRouteComponent($$splitComponentImporter, "component"),
 	head: ({ params }) => {
@@ -584,4 +655,4 @@ function getRouter() {
 	});
 }
 //#endregion
-export { Route as n, Route$3 as r, router_exports as t };
+export { SODA_PERSON as a, maintenance as c, EXAMPLE as i, Route as n, extraLbByDay as o, Route$3 as r, lostLbByDay as s, router_exports as t };

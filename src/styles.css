@@ -417,3 +417,13 @@ sup a{color:#4587c6;text-decoration:none}
 .sd-cell{border:1px solid var(--color-border);padding:.45rem .25rem;display:flex;flex-direction:column;align-items:center}
 .sd-cell b{font-family:'Barlow Condensed';font-size:1.35rem;line-height:1.1}
 .sd-cell span{font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--color-muted)}
+.sd-pick{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.sd-chiplab{font-family:'Barlow Condensed';text-transform:uppercase;letter-spacing:.06em;font-size:.95rem;color:var(--color-muted);margin-bottom:.4rem}
+.sd-chips{display:flex;flex-wrap:wrap;gap:.5rem}
+.sd-chip{min-height:2.75rem;border-radius:999px;border:1.5px solid var(--color-border-strong);background:transparent;color:#fff;font-weight:600;font-size:.92rem;padding:.35rem .9rem;cursor:pointer;display:inline-flex;align-items:center;gap:.4rem;transition:background .2s,border-color .2s}
+.sd-chip small{font-weight:400;color:var(--color-muted);font-size:.78rem}
+.sd-chipgrp:first-child .sd-chip.on{background:#e07a4f33;border-color:#e07a4f}
+.sd-chipgrp:last-child .sd-chip.on{background:#3d9a6a33;border-color:#3d9a6a}
+.sd-chip.on small{color:#fff}
+.sd-chip:focus-visible{outline:3px solid #2a7ae0;outline-offset:2px}
+@media (max-width:640px){.sd-pick{grid-template-columns:1fr}.sd-pills{grid-template-columns:1fr}.sd-pill{min-height:3.1rem;white-space:nowrap}.sd-chip{font-size:.88rem;padding:.3rem .75rem}}
