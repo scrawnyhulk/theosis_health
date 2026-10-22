@@ -328,7 +328,7 @@ footer.th-foot{display:block;max-width:none;margin:0;padding:0;font-size:1rem}
               <option value="katch">Katch-McArdle (uses your lean mass)</option>
               <option value="mifflin">Mifflin-St Jeor (age, height, sex)</option>
             </select></span>
-            <span class="hint">Katch-McArdle fits best when your body-fat % is accurate. Mifflin-St Jeor is the general-population standard.</span></label>
+            <span class="hint">Katch-McArdle fits best when body-fat % is accurate. Mifflin-St Jeor is the general-population standard.</span></label>
         </div>
       </div>
 
@@ -515,7 +515,7 @@ function readInputs() {
   inp.weight = w;
 
   const bf = parse($("bf").value);
-  if (bf == null) errs["f-bf"] = "Enter your body fat %.";
+  if (bf == null) errs["f-bf"] = "Enter body fat %.";
   else if (!Number.isFinite(bf)) errs["f-bf"] = "Numbers only.";
   else if (bf < 3 || bf > 65) errs["f-bf"] = "Enter a body fat between 3% and 65%.";
   inp.bf = bf;
@@ -644,7 +644,7 @@ function teaserSvg(R) { const s = R.series, n = s.length, w0 = s[0].weight, w1 =
   const pts = s.filter((_, i) => i % Math.max(1, Math.floor(n / 60)) === 0 || i === n - 1).map((d) => `${X(s.indexOf(d)).toFixed(1)},${Y(d.weight).toFixed(1)}`).join(" ");
   return `<svg viewBox="0 0 300 120" aria-hidden="true" focusable="false"><g filter="url(#tz-blur)"><polyline points="${pts}" fill="none" stroke="#6aa8ff" stroke-width="4"/><polyline points="${pts}" fill="none" stroke="#f0c36a" stroke-width="3" transform="translate(0,10)" opacity=".7"/>
     <ellipse cx="250" cy="60" rx="18" ry="40" fill="#cfd6e0" opacity=".5"/><ellipse cx="215" cy="60" rx="22" ry="44" fill="#cfd6e0" opacity=".35"/></g><defs><filter id="tz-blur"><feGaussianBlur stdDeviation="3.5"/></filter></defs></svg>`; }
-function funnelHtml(inp, R) { return `<div class="funnel" id="funnel"><div class="funnel-txt"><p class="eyebrow">Next step</p><h3>See what this does to your body and your diabetes risk</h3>
+function funnelHtml(inp, R) { return `<div class="funnel" id="funnel"><div class="funnel-txt"><p class="eyebrow">Next step</p><h3>See how this might affect health and diabetes risk</h3>
     <p>The Metabolic Simulator shows how your shape changes week by week, where the fat comes off first, and what it can mean for blood sugar, with your numbers and pace already filled in.</p>
     <a class="chip funnel-btn" id="to-sim" href="${simHref(inp, R)}">Open the Metabolic Simulator →</a><p class="hint">Opens with ${esc(paceName(inp))}, ${fmt(toDispW(inp.weight))} ${wUnit()} and ${fmt(inp.bf)}% body fat. Nothing leaves your device.</p></div>
     <a class="funnel-peek" href="${simHref(inp, R)}" tabindex="-1" aria-hidden="true">${teaserSvg(R)}<span>Your projection is ready</span></a></div>`; }
@@ -718,7 +718,7 @@ function render() {
         <div class="eat-box"><div class="k">Protein</div><div class="eat-v">${protTxt(R, lean).total}</div><p class="d">${protTxt(R, lean).per}. ${esc(R.protWhy[0].toUpperCase() + R.protWhy.slice(1))}.</p></div>
       </div>
       <ul class="eat-notes">
-        <li><b>Your maintenance now: ${fmtInt(s0.tdee)} kcal a day.</b> That's roughly what you burn today. Eating ${fmtInt(s0.deficit)} kcal less than that is your fat-loss deficit.${Math.abs(s0.tdee - sN.tdee) >= 25 ? ` As you lose weight your body burns less, so maintenance falls to about <b>${fmtInt(sN.tdee)} kcal a day</b> by ${endTxt}.` : ""}</li>
+        <li><b>Your maintenance now: ${fmtInt(s0.tdee)} kcal a day.</b> That's roughly what you burn today. Eating ${fmtInt(s0.deficit)} kcal less than that is your fat-loss deficit.${Math.abs(s0.tdee - sN.tdee) >= 25 ? ` As weight comes off, the body tends to burn less, so maintenance falls to about <b>${fmtInt(sN.tdee)} kcal a day</b> by ${endTxt}.` : ""}</li>
         <li data-intake-trend="${trend}">${trend === "up" ? `As you lose fat, the deficit your fat stores can supply shrinks, so your eating target <b>rises gradually</b> from ${fmtInt(s0.intake)} to about <b>${fmtInt(sN.intake)} kcal a day</b> by ${endTxt}, which helps protect lean mass (Alpert 2005).` : trend === "down" ? `Your eating target <b>falls</b> from ${fmtInt(s0.intake)} to about <b>${fmtInt(sN.intake)} kcal a day</b> by ${endTxt}, mostly because your maintenance falls as you lose weight.` : `Your eating target stays about ${fmtInt(s0.intake)} kcal a day for the whole plan.`} See the <b>Eat ≈</b> column in the table below, week by week.</li>
         <li>Never go below <b>${fmtInt(s0.floor)} kcal a day</b> without medical supervision.</li>
       </ul>${floorNote}

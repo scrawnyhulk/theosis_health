@@ -624,8 +624,8 @@ export const nerdTopics = [
     stolenFrom: "Simpson and Raubenheimer, Dr. Ted Naiman, and a pile of unglamorous physiology",
     paragraphs: [
       "This is not a gym-bro religion. Protein is not the macronutrient we picked because it photographs well. It has a special place at the top because things fall apart without it. Proteins are building materials — muscle, enzymes, skin, and bone — the actual structure of you. Carbs and fat are fuel. Protein is crucial to take in every day, but even more so when trying to lose weight.",
-      "In a calorie deficit, low protein intake is a great way to lose the hard-earned muscle you wanted to keep. Lift a little and eat enough protein, and more of what comes off your body is fat. That is the whole argument for making protein the first number to count, not the last.",
-      "Your body is very reluctant to turn protein into fat even when you overconsume it. There is no protein storage container the way there is a fat warehouse. Excess amino acids (building blocks of proteins) get used for repair and growth, or they get burned. Turning them into stored body fat is theoretically possible, but the body has to work harder than it wants to to do it, so the juice is typically not worth the squeeze.",
+      "In a calorie deficit, low protein intake is a great way to lose the hard-earned muscle you wanted to keep. Lift a little and eat enough protein, and more of what comes off tends to be fat. That is the whole argument for making protein the first number to count, not the last.",
+      "The body is very reluctant to turn protein into fat even when you overconsume it. There is no protein storage container the way there is a fat warehouse. Excess amino acids (building blocks of proteins) get used for repair and growth, or they get burned. Turning them into stored body fat is theoretically possible, but the body has to work harder than it wants to to do it, so the juice is typically not worth the squeeze.",
       "Per calorie, protein is the most filling of the three macronutrients. Two hundred calories of chicken breast and two hundred calories of chips do not produce the same experience over the next hour or three. That is why the × 10 trick exists: you are picking food that shuts hunger down, gets on stage and does a great Ozempic impression. We all know this intuitively. Four eggs for breakfast keep us content much longer than a bowl of cinnamon and sugar-O’s.",
       "The protein leverage hypothesis in brief says: animals — including people — appear to eat until they hit a protein quota for the day. If the food around you is diluted with carbs and fat (a low P:E ratio, if you will), you keep eating to get enough protein, and the extra calories come along for the ride. Raise the protein density and calorie intake often falls without a heroic act of willpower. Fix the protein, and the overeating loses steam.",
       "One more quiet nerd fact: digesting protein costs more energy than digesting carbs or fats. Roughly 20–30% of the protein calories get used in the processing. So 400 calories of protein when all is said and done is really 300 calories, and so on and so forth.",
@@ -767,7 +767,7 @@ export const nerdTopics = [
   {
     id: "fuel-biochem",
     title: "What do we mean by “energy”? Part 2",
-    lede: "This is the super nerdy biochemistry of how your body literally makes the energy to contract muscle, send nerve signals, fight infection...you name it. ATP is the actual currency of energy that makes things happen. It is the final destination of the fuel you eat in your diet.\n\nBelow is the biochemistry of how fat and carbs turn into ATP...and then some. So buckle up!",
+    lede: "This is the super nerdy biochemistry of how the body literally makes the energy to contract muscle, send nerve signals, fight infection...you name it. ATP is the actual currency of energy that makes things happen. It is the final destination of the fuel you eat in your diet.\n\nBelow is the biochemistry of how fat and carbs turn into ATP...and then some. So buckle up!",
     paragraphs: [],
     steps: [
       {
@@ -846,7 +846,7 @@ export const nerdTopics = [
       {
         title: "Mix, not a switch",
         paragraphs: [
-          "Your body does not flip fuels on and off. It continuously changes the mix. Sprint and glycogen takes a bigger share. Sit and fat takes a bigger share. Both still contribute.",
+          "The body does not flip fuels on and off. It continuously changes the mix. Sprint and glycogen takes a bigger share. Sit and fat takes a bigger share. Both still contribute.",
         ],
         image: "/images/nerd-metabolic-flexibility.png",
         imageAlt:
