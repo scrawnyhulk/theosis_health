@@ -84,7 +84,7 @@ export function NavPlaque({ label, icon, size = "nav", featured, badge, classNam
     >
       {!featured ? <span className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-150 group-hover:opacity-100" style={{ backgroundColor: "#2a7ae0" }} aria-hidden /> : null}
       {icon ? <span className={cn("relative flex", featured ? "text-white" : "text-[#5b9cec] group-hover:text-white")}>{icon}</span> : null}
-      <span className={cn("relative font-display font-semibold uppercase", size === "nav" ? "text-[13px] tracking-[0.1em] 2xl:text-[15px] 2xl:tracking-[0.14em]" : "text-[16px] tracking-[0.14em]")}>
+      <span className={cn("relative font-display font-semibold uppercase", size === "nav" ? "text-[13px] tracking-[0.1em]" : "text-[16px] tracking-[0.14em]")}>
         {featured ? (
           <span className="text-white [text-shadow:0_1px_0_rgb(0_0_0_/_0.35)]"><span className="text-[#0b2a55] [text-shadow:0_1px_0_rgb(255_255_255_/_0.35)]">{label.slice(0, 1)}</span>{label.slice(1)}</span>
         ) : (

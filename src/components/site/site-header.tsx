@@ -27,7 +27,7 @@ export function SiteHeader() {
               <LogoLockup />
             </Link>
           )}
-          <nav className="hidden items-center gap-3 whitespace-nowrap xl:flex 2xl:gap-4" aria-label="Primary">
+          <nav className="hidden items-center gap-3 whitespace-nowrap xl:flex" aria-label="Primary">
             <Link to="/hacks" className="group shrink-0" aria-label="Health Hacks">
               <NavPlaque label="Health Hacks" />
             </Link>
