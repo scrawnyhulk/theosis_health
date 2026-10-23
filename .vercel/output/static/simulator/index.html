@@ -1542,6 +1542,8 @@ body{background-color:var(--bg);background-image:var(--app-bg-image);background-
 /* polish-1023: phone header pill fits ("Metabolic Simulator" was cut off); footer clears summary bar + tab bar */
 @media (max-width:480px){.site-header .prod-mark{font-size:min(.74rem,3.1vw);letter-spacing:.01em;padding:.34rem .55rem}}
 @media(max-width:63.99rem){body.has-tabs.has-mbar{padding-bottom:calc(var(--polish-bars,9.6rem) + env(safe-area-inset-bottom))}body.has-tabs.has-mbar main{padding-bottom:1.5rem}body.has-tabs.has-mbar .wiz-nav,body.has-tabs.has-mbar #wizard{padding-bottom:1rem}}
+/* ship-1023c: the new site header replaced the bottom tab bar, so the summary bar sits on the bottom edge again (was floating 3.9rem up over the footer) */
+@media(max-width:63.99rem){body.has-tabs.tabs-gone .mbar{bottom:env(safe-area-inset-bottom,0px)}body.has-tabs.tabs-gone{padding-bottom:env(safe-area-inset-bottom,0px)}body.has-tabs.tabs-gone .ask-fab{bottom:calc(1.1rem + env(safe-area-inset-bottom))}body.has-tabs.has-mbar.tabs-gone .ask-fab{bottom:calc(5.2rem + env(safe-area-inset-bottom))}body.has-tabs.has-mbar.tabs-gone{padding-bottom:calc(var(--polish-bars,6rem) + env(safe-area-inset-bottom))}}
 /* polish-1023: source number buttons get a 32px invisible tap area (looks unchanged) */
 .fn::before{content:"";position:absolute;left:50%;top:50%;width:max(100%,32px);height:max(100%,32px);transform:translate(-50%,-50%)}
 </style>
@@ -9465,7 +9467,7 @@ new MutationObserver((ms) => { for (const m of ms) m.addedNodes.forEach((n) => {
 </script>
 <script type="text/plain" id="zx-inline"></script><!-- v7.6.68: ZXing is loaded from scanner/ on demand; no inline copy -->
 <script id="polish-1023-bars">/* polish-1023: page bottom padding follows the real height of the phone summary bar + tab bar, so the footer never hides under them */
-(function(){function fit(){var m=document.getElementById("mbar"),t=document.getElementById("topnav");if(!m)return;var h=0;[m,t].forEach(function(e){if(e&&e.getClientRects().length&&getComputedStyle(e).position==="fixed")h+=e.querySelector(".mbar-head")&&e===m?e.querySelector(".mbar-head").getBoundingClientRect().height:e.getBoundingClientRect().height});if(h)document.body.style.setProperty("--polish-bars",Math.ceil(h+12)+"px")}
+(function(){function fit(){var m=document.getElementById("mbar"),t=document.getElementById("topnav");if(!m)return;var h=0;[m,t].forEach(function(e){if(e&&e.getClientRects().length&&getComputedStyle(e).position==="fixed")h+=e.querySelector(".mbar-head")&&e===m?e.querySelector(".mbar-head").getBoundingClientRect().height:e.getBoundingClientRect().height});var gone=!(t&&t.getClientRects().length&&t.getBoundingClientRect().height>0);document.body.classList.toggle("tabs-gone",gone);if(h)document.body.style.setProperty("--polish-bars",Math.ceil(h+12)+"px")}
 function init(){fit();if(window.ResizeObserver){var ro=new ResizeObserver(fit);["mbar","topnav"].forEach(function(id){var e=document.getElementById(id);if(e)ro.observe(e)})}addEventListener("resize",fit)}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);else init()})();</script>
 </body>
