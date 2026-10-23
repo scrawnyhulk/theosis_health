@@ -291,7 +291,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')set(false)})
   </div>
 <script>
 var $h=function(id){return document.getElementById(id)},hf=function(x,d){return (Math.round(x*Math.pow(10,d||0))/Math.pow(10,d||0)).toLocaleString('en-US')};
-function haWeeks(d){var w=d/7;return w<1.5?Math.max(1,Math.round(d))+' days':hf(w,w<10?1:0).replace(/\.0$/,'')+' weeks'}
+function haWeeks(d){var w=d/7;return w<1.5?Math.max(1,Math.round(d))+' days':hf(w,1).replace(/\.0$/,'')+' weeks'}
 window.heroArt=function(d){var p=d.fat0>0?Math.max(0,Math.min(1,(d.fat0-d.endFat)/d.fat0)):0;
 $h('ha-arc').setAttribute('stroke-dasharray',(p*100).toFixed(1)+' 100');$h('ha-pct').textContent=Math.round(p*100)+'%';
 $h('ha-v').innerHTML=hf(d.lost,1)+'<small>'+d.u+'</small>';$h('ha-s').textContent=hf(d.bf0,1)+'% → '+hf(d.endBf,1)+'% body fat in '+haWeeks(d.days);};
