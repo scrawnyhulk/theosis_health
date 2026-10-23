@@ -6,7 +6,7 @@ Theosis Health LLC ("we," "us"), 4026 Bristol Dr., Danville, IL 61834, runs theo
 
 **The short version**
 - What you enter in the simulator and calculators **stays in your browser on your device**. We have no user accounts and no database of your inputs.
-- **Optional AI features.** If you turn on AI features (Tell us what you ate, web label lookup, food and nutrition-label photos, Ask Theosis, and the AI plan note), what you type or the food photo you choose is sent to Google's Gemini AI to answer that request. We don't store it on our servers. Face, body, and lab-report uploads are turned off, and we collect no biometric information.
+- **Optional AI features.** If you turn on AI features (Tell us what you ate, web label lookup, food and nutrition-label photos, Ask Theosis, and the AI plan note), what you type or the food photo you choose is sent to Google's Gemini AI to answer that request. We don't store it on our servers. Face and body photos are used only with your separate consent (see Section 3), and lab-report upload is turned off.
 - We receive only what you choose to send us (contact form or email) and basic technical data our web host needs to run the site.
 - **We don't sell your data**, share it for advertising, or use ads, ad pixels, session replay, or third-party trackers. We see only aggregate, cookieless traffic counts from our host, Netlify.
 - We aren't a HIPAA covered entity, and the Service isn't "HIPAA compliant." Laws like the FTC Health Breach Notification Rule and state health-data laws still apply, and we follow them.
@@ -30,7 +30,18 @@ Only our service providers that run the Service for us: **Netlify** (hosting and
 ## 3. AI features, food photos, and features that are off
 **AI features (optional, off until you agree).** AI features work only after you check the AI-features consent box, and you can turn them off anytime in settings. When you use one, the text you type (which may include health details like what you ate, your weight, or your goals) or the food photo you choose is sent from your browser to Google Gemini, using Google's paid API, only to answer that request. Photos are resized and re-encoded on your device first, which removes location and other hidden data (EXIF/GPS). Results come back to your device. We don't store your requests, photos, or results on our servers. Google processes them as our service provider under its paid API terms, which don't allow it to train its models on your data, and may keep them briefly for abuse monitoring as those terms describe. Please don't include other people's information or photos of people. AI answers are general education, not medical advice, and can be wrong.
 
-**Features that are off.** Face or body photos, AI photo illustrations, and lab-report upload are **not available**. We collect no face geometry or other biometric information. If we turn these features on later, we will first update this policy, publish a biometric data retention and destruction schedule as Illinois' Biometric Information Privacy Act (BIPA) requires, and get your **written consent** before anything is collected.
+### Face and body photos: biometric information policy
+This is our public written policy under the Illinois Biometric Information Privacy Act (BIPA) and similar laws.
+
+- **What:** if you choose to use photo features, your photo (which may show your face and body) is used to create AI illustrations. We don't measure your face or body, but we treat these photos as biometric information to be safe.
+- **Why:** only to create the AI illustrations you ask for. We never use it for facial recognition or to identify you, and we never sell, lease, trade or otherwise profit from it.
+- **Consent first:** nothing is collected until you check the consent box (your written release). You can say no and still use the simulator without photos.
+- **Where it goes:** your photo is resized on your device and its location data (EXIF/GPS) removed, then sent to Google (Gemini API, paid tier) as our service provider. Google doesn't use it to train models and may keep it briefly for abuse monitoring under its API terms. We don't store photos or biometric information on our servers, and we share it with no one else unless the law requires it.
+- **Retention and destruction:** photos and any biometric information stay on your device until you delete them or withdraw consent. We permanently destroy any biometric information we control when its purpose is done, or within 3 years of your last interaction with us, whichever comes first.
+- **Security:** we protect it with at least the care we use for other confidential information, including encrypted transfer (HTTPS).
+- **Withdraw:** use "Withdraw consent" in the app's settings or email support@theosishealth.com. Withdrawing deletes saved photos on your device and turns photo features off.
+
+**Lab-report upload** is not available.
 
 ## 4. Consumer health data
 Some information, like weight or A1c, can be "consumer health data" under laws such as Washington's My Health My Data Act. That information stays on your device. See our separate [Consumer Health Data Privacy Policy](/consumer-health-privacy).
