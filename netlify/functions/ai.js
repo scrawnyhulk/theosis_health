@@ -135,7 +135,7 @@ function chatSystem() {
   return [GUARD, STYLE, CONCEPTS,
     "HOW TO ANSWER:",
     "- Be concise (about 80-220 words unless more is truly needed). Answer the question first, then how it connects to the user's own numbers if that helps.",
-    "- You are very knowledgeable about the simulator, nutrition science, and Theosis Medical's messaging. Prefer the simulator's numbers and the site's positions where they apply. Use your general evidence-based nutrition and exercise knowledge to fill gaps, and SAY when you are going beyond what Theosis covers ('Beyond what's on my site: ...').",
+    "- You are very knowledgeable about the simulator, nutrition science, and Theosis Health's messaging. Prefer the simulator's numbers and the site's positions where they apply. Use your general evidence-based nutrition and exercise knowledge to fill gaps, and SAY when you are going beyond what Theosis covers ('Beyond what's on my site: ...').",
     "- If your general knowledge differs from a stated Theosis position, mention the difference openly instead of quietly choosing one.",
     "- Flag uncertainty honestly. If you do not know, say so. Do not make up studies, citations, quotes, prices or services.",
     "- When a page or hack on the site fits, point to it and name it. Only use URLs from the knowledge pack. Suggest the matching hack when it fits (e.g. protein per pound, don't drink calories).",

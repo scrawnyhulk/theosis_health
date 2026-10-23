@@ -347,7 +347,9 @@ export function grokOgHeadTags({
   cwd = process.cwd(),
 } = {}) {
   const title = resolveOgTitle(site, appName, host, documentTitle);
-  const publicHost = resolvePublicHost(host);
+  const siteUrl = String(site.url ?? "").trim().replace(/\/+$/, "");
+  const siteHost = (() => { try { return siteUrl ? new URL(siteUrl).host : ""; } catch { return ""; } })();
+  const publicHost = resolvePublicHost(host) || siteHost;
   const tags = [
     `<meta name="twitter:card" content="summary_large_image">`,
     `<meta property="og:title" content="${escapeHtml(title)}">`,
@@ -355,6 +357,13 @@ export function grokOgHeadTags({
   const description = String(site.description ?? "").trim();
   if (description) {
     tags.push(`<meta property="og:description" content="${escapeHtml(description)}">`);
+  }
+  const siteName = String(site.siteName ?? "").trim();
+  if (siteName) tags.push(`<meta property="og:site_name" content="${escapeHtml(siteName)}">`);
+  if (siteUrl) {
+    tags.push(`<meta property="og:url" content="${escapeHtml(siteUrl)}">`);
+    tags.push(`<meta name="twitter:title" content="${escapeHtml(title)}">`);
+    if (description) tags.push(`<meta name="twitter:description" content="${escapeHtml(description)}">`);
   }
   if (String(site.type ?? "").toLowerCase() === "x:game") {
     tags.push(`<meta property="og:type" content="x:game">`);
@@ -370,6 +379,7 @@ export function grokOgHeadTags({
     tags.push(`<meta property="og:image" content="${escapeHtml(image)}">`);
     tags.push(`<meta property="og:image:width" content="1200">`);
     tags.push(`<meta property="og:image:height" content="630">`);
+    if (siteUrl) tags.push(`<meta name="twitter:image" content="${escapeHtml(image)}">`);
     const banner = String(site.banner ?? "").trim();
     if (banner) {
       const bannerUrl = `https://${publicHost}${banner.startsWith("/") ? banner : `/${banner}`}`;

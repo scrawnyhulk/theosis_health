@@ -39,7 +39,7 @@ export const Route = createFileRoute("/hacks/$slug")({
         },
         {
           name: "description",
-          content: hack?.lede ?? "Easy, high-leverage health hacks from Theosis Medical.",
+          content: hack?.lede ?? "Easy, high-leverage health hacks from Theosis Health.",
         },
       ],
     };

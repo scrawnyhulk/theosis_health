@@ -7,11 +7,11 @@ export const Route = createFileRoute("/install")({
   component: InstallPage,
   head: () => ({
     meta: [
-      { title: "Add to Home Screen — Theosis Medical" },
+      { title: "Add to Home Screen — Theosis Health" },
       {
         name: "description",
         content:
-          "Add Theosis Medical to your phone’s home screen so it opens like an app — no App Store needed.",
+          "Add Theosis Health to your phone’s home screen so it opens like an app — no App Store needed.",
       },
     ],
   }),
@@ -82,7 +82,7 @@ function InstallPage() {
           </p>
           <p className="mt-6">
             <Link to="/" className="text-sm font-medium text-accent hover:text-fg">
-              Back to Theosis Medical
+              Back to Theosis Health
             </Link>
           </p>
         </div>
