@@ -1,7 +1,8 @@
 /* Simulator app: service worker + a small "Add to home screen" button when the browser offers install. */
 (function () {
+  var BASE = (document.currentScript && document.currentScript.src || "/simulator/assets/pwa.js").replace(/assets\/pwa\.js.*$/, "");
   if ("serviceWorker" in navigator) {
-    window.addEventListener("load", function () { navigator.serviceWorker.register("/simulator/sw.js", { scope: "/simulator/" }).then(function () {
+    window.addEventListener("load", function () { navigator.serviceWorker.register(BASE + "sw.js", { scope: BASE }).then(function () {
       if (navigator.serviceWorker.controller) return;
       navigator.serviceWorker.ready.then(function (r) {
         var urls = [location.href].concat(performance.getEntriesByType("resource").map(function (e) { return e.name; }));

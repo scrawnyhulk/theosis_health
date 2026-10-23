@@ -6,7 +6,8 @@ const VER = "7698";
 const PAGES = "theosis-sim-pages-v1";
 const ASSETS = "theosis-sim-assets-v" + VER;
 const OURS = [PAGES, ASSETS];
-const LAST = "/simulator/__last-page__";
+const SCOPE = new URL(self.registration.scope).pathname; // "/simulator/" on the site
+const LAST = SCOPE + "__last-page__";
 
 self.addEventListener("install", (e) => { self.skipWaiting(); });
 self.addEventListener("activate", (e) => {
@@ -18,7 +19,7 @@ self.addEventListener("activate", (e) => {
 function skip(req, url) {
   if (req.method !== "GET") return true;
   if (url.origin !== self.location.origin) return true;
-  if (!url.pathname.startsWith("/simulator/")) return true;
+  if (!url.pathname.startsWith(SCOPE)) return true;
   if (url.pathname.startsWith("/.netlify/") || url.pathname.indexOf("/api/") >= 0 || url.pathname.endsWith("/sw.js")) return true;
   if (req.headers.has("range")) return true;
   return false;
