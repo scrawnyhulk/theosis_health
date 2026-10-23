@@ -1542,6 +1542,8 @@ body{background-color:var(--bg);background-image:var(--app-bg-image);background-
 /* polish-1023: phone header pill fits ("Metabolic Simulator" was cut off); footer clears summary bar + tab bar */
 @media (max-width:480px){.site-header .prod-mark{font-size:min(.74rem,3.1vw);letter-spacing:.01em;padding:.34rem .55rem}}
 @media(max-width:63.99rem){body.has-tabs.has-mbar{padding-bottom:calc(var(--polish-bars,9.6rem) + env(safe-area-inset-bottom))}body.has-tabs.has-mbar main{padding-bottom:1.5rem}body.has-tabs.has-mbar .wiz-nav,body.has-tabs.has-mbar #wizard{padding-bottom:1rem}}
+/* polish-1023: source number buttons get a 32px invisible tap area (looks unchanged) */
+.fn::before{content:"";position:absolute;left:50%;top:50%;width:max(100%,32px);height:max(100%,32px);transform:translate(-50%,-50%)}
 </style>
 </head>
 <body>
