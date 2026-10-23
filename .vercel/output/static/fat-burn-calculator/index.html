@@ -198,6 +198,13 @@ footer{max-width:80rem;margin:0 auto;padding:2rem 1rem 3rem;border-top:1px solid
 :root{--bg:#14171c;--bg-80:rgba(20,23,28,.82);--surface:rgba(28,32,39,.88);--surface-solid:#1c2027;--field:#101317;--ink:#14171c}
 html{background:#14171c}
 body{background-color:#14171c;background-image:radial-gradient(55% 50% at 74% 38%,rgba(42,122,224,.16),transparent 70%);background-repeat:no-repeat;background-size:100% 100%;background-attachment:fixed}
+
+/* Polish: blue card borders, phone-friendly chart */
+.card{box-shadow:0 0 0 1.5px rgba(42,122,224,.55),0 8px 28px rgba(0,0,0,.25)}
+#chart{touch-action:pan-y;overflow:visible}
+#chart text{font-size:12px}
+.legend{gap:.5rem 1.1rem;font-size:.9rem}
+@media(max-width:519px){.chart-wrap{margin-left:-.25rem;margin-right:-.25rem}}
 </style>
 <style>
 footer.th-foot{display:block;max-width:none;margin:0;padding:0;font-size:1rem}
@@ -363,9 +370,9 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')set(false)})
       </div>
       <div class="card" id="cal-card" hidden></div>
       <div class="card" id="timeline-card">
-        <div class="section-head" style="margin-bottom:0"><h2>Week by week</h2><span class="eyebrow" id="tl-note">Lean mass held steady</span></div>
+        <div class="section-head" style="margin-bottom:0"><h2>Your weight, week by week</h2><span class="eyebrow" id="tl-note">Muscle kept steady</span></div>
         <div class="chart-wrap"><svg id="chart" role="img" aria-labelledby="chart-desc" width="100%"></svg><p class="sr-only" id="chart-desc"></p>
-          <div class="legend" aria-hidden="true"><span><i style="background:var(--accent)"></i>Fat mass</span><span><i style="background:rgba(207,214,224,.28)"></i>Lean mass</span><span><i style="background:transparent;border-top:2px dashed var(--steel);height:0;border-radius:0"></i>Goal</span></div>
+          <div class="legend" aria-hidden="true"><span><i style="background:var(--accent)"></i>Fat you lose</span><span><i style="background:rgba(207,214,224,.28)"></i>Muscle, bone &amp; water (kept)</span><span><i style="background:transparent;border-top:2px dashed var(--steel);height:0;border-radius:0"></i>Where you end up</span></div>
         </div>
         <div class="table-wrap"><table id="table" aria-describedby="table-note"></table></div><p class="hint" id="table-note" style="margin-top:.6rem"></p>
       </div>
@@ -755,7 +762,7 @@ function sampleRows(R) {
 function renderTimeline(R) {
   const inp = R.inp, u = wUnit(), W = (lb) => fmt(toDispW(lb));
   const rows = sampleRows(R);
-  $("tl-note").textContent = `Lean mass held at ${W(inp.lean)} ${u}`;
+  $("tl-note").textContent = `Muscle, bone & water kept at ${W(inp.lean)} ${u}`;
   const cal = inp.cal;
   let html = `<thead><tr><th scope="col">Week</th><th scope="col">Date</th><th scope="col">Weight (${u})</th><th scope="col">Fat (${u})</th><th scope="col">Body fat</th><th scope="col">Deficit (kcal/d)</th>${cal ? '<th scope="col">Eat ≈</th>' : ""}<th scope="col">Loss / wk (${u})</th></tr></thead><tbody>`;
   rows.forEach((r, i) => {
@@ -775,11 +782,12 @@ function niceStep(range, target) {
   const raw = range / target, p = Math.pow(10, Math.floor(Math.log10(raw)));
   const n = raw / p; return (n < 1.5 ? 1 : n < 3 ? 2 : n < 7 ? 5 : 10) * p;
 }
+let CH_PREV = null, CH_RAF = 0;
 function drawChart(R) {
   const svg = $("chart"), inp = R.inp;
   const box = svg.getBoundingClientRect(); const Wd = Math.max(300, Math.round(box.width || 600));
-  const Ht = Wd < 520 ? 220 : 280;
-  const m = { l: 44, r: 12, t: 12, b: 28 };
+  const phone = Wd < 520, Ht = phone ? 240 : 280;
+  const m = { l: phone ? 40 : 46, r: 14, t: 26, b: 30 };
   const total = inp.mode === "goal" ? R.days : R.series[R.series.length - 1].day;
   const pts = R.series.filter((p) => p.day <= total + 1e-9).map((p) => ({ d: p.day, w: toDispW(p.weight) }));
   pts.push({ d: total, w: toDispW(inp.lean + R.endFat) });
@@ -789,23 +797,49 @@ function drawChart(R) {
   const yMin = Math.floor(yMinRaw / yStep) * yStep, yMax = Math.ceil(yMaxRaw / yStep) * yStep;
   const x = (d) => m.l + (Wd - m.l - m.r) * d / total;
   const y = (v) => m.t + (Ht - m.t - m.b) * (1 - (v - yMin) / (yMax - yMin));
+  // Resample the same computed weekly series onto fixed steps so the line can glide between input changes (no new data, just interpolation of the model's own points).
+  const N = 60, ys = [];
+  for (let i = 0, j = 0; i <= N; i++) {
+    const d = total * i / N; while (j < pts.length - 2 && pts[j + 1].d < d) j++;
+    const p0 = pts[j], p1 = pts[Math.min(j + 1, pts.length - 1)], f = p1.d > p0.d ? Math.min(1, Math.max(0, (d - p0.d) / (p1.d - p0.d))) : 0;
+    ys.push(y(p0.w + (p1.w - p0.w) * f));
+  }
+  const endW = toDispW(inp.lean + R.endFat);
+  const T = { ys, yLean: y(lean), yEnd: y(endW) };
   let g = "";
   for (let v = yMin; v <= yMax + 1e-9; v += yStep) g += `<line x1="${m.l}" x2="${Wd - m.r}" y1="${y(v)}" y2="${y(v)}" stroke="rgba(231,237,245,.08)"/><text x="${m.l - 8}" y="${y(v) + 4}" text-anchor="end">${fmt(v, yStep < 1 ? 1 : 0)}</text>`;
-  const wks = total / 7, xs = niceStep(wks, Wd < 520 ? 4 : 8);
-  for (let w = 0; w <= wks + 1e-9; w += Math.max(1, xs)) g += `<text x="${x(w * 7)}" y="${Ht - 8}" text-anchor="middle">${w === 0 ? "Now" : "Wk " + Math.round(w)}</text>`;
-  const line = pts.map((p, i) => `${i ? "L" : "M"}${x(p.d).toFixed(1)},${y(p.w).toFixed(1)}`).join("");
-  const fatArea = `${line}L${x(total)},${y(lean)}L${x(0)},${y(lean)}Z`;
-  const leanArea = `M${x(0)},${y(lean)}L${x(total)},${y(lean)}L${x(total)},${y(yMin)}L${x(0)},${y(yMin)}Z`;
-  const endW = toDispW(inp.lean + R.endFat);
+  g += `<text x="${m.l - 8}" y="14" text-anchor="end">${wUnit()}</text>`;
+  const wks = total / 7, xs = niceStep(wks, phone ? 4 : 8);
+  for (let w = 0; w <= wks + 1e-9; w += Math.max(1, xs)) g += `<text x="${x(w * 7)}" y="${Ht - 8}" text-anchor="middle">${w === 0 ? "Today" : "Week " + Math.round(w)}</text>`;
   svg.setAttribute("viewBox", `0 0 ${Wd} ${Ht}`); svg.setAttribute("height", Ht);
-  svg.innerHTML = `<defs><linearGradient id="fg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#2a7ae0" stop-opacity=".55"/><stop offset="1" stop-color="#2a7ae0" stop-opacity=".15"/></linearGradient></defs>
-    ${g}<path d="${leanArea}" fill="rgba(207,214,224,.12)"/><path d="${fatArea}" fill="url(#fg)"/>
-    <line x1="${m.l}" x2="${Wd - m.r}" y1="${y(lean)}" y2="${y(lean)}" stroke="rgba(207,214,224,.45)" stroke-width="1"/>
-    <line x1="${m.l}" x2="${Wd - m.r}" y1="${y(endW)}" y2="${y(endW)}" stroke="#cfd6e0" stroke-width="1.25" stroke-dasharray="4 4"/>
-    <path d="${line}" fill="none" stroke="#79b4f6" stroke-width="2.25" stroke-linejoin="round"/>
-    <circle cx="${x(total)}" cy="${y(endW)}" r="4.5" fill="#2a7ae0" stroke="#e7edf5" stroke-width="1.5"/>
-    <text x="${Math.min(x(total) - 8, Wd - m.r - 8)}" y="${y(endW) - 10}" text-anchor="end" style="fill:#e7edf5;font-weight:600">${fmt(endW)} ${wUnit()}</text>`;
-  $("chart-desc").textContent = `Chart: body weight falls from ${fmt(pts[0].w)} to ${fmt(endW)} ${wUnit()} over ${fmt(wks)} weeks. Lean mass stays at ${fmt(lean)} ${wUnit()}; only fat mass decreases. The table below lists the same data.`;
+  const startLbl = `<text x="${m.l + 6}" y="${y(pts[0].w) - 8}" style="fill:#cfd6e0;paint-order:stroke;stroke:#14171c;stroke-width:4px">${fmt(pts[0].w)} ${wUnit()} now</text>`;
+  const frame = (S) => {
+    const X = (i) => (m.l + (Wd - m.l - m.r) * i / N).toFixed(1);
+    const line = S.ys.map((v, i) => `${i ? "L" : "M"}${X(i)},${v.toFixed(1)}`).join("");
+    const xe = Wd - m.r;
+    svg.innerHTML = `<defs><linearGradient id="fg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#2a7ae0" stop-opacity=".6"/><stop offset="1" stop-color="#2a7ae0" stop-opacity=".18"/></linearGradient></defs>
+    ${g}<path d="M${m.l},${S.yLean}L${xe},${S.yLean}L${xe},${y(yMin)}L${m.l},${y(yMin)}Z" fill="rgba(207,214,224,.12)"/><path d="${line}L${xe},${S.yLean}L${m.l},${S.yLean}Z" fill="url(#fg)"/>
+    <line x1="${m.l}" x2="${xe}" y1="${S.yLean}" y2="${S.yLean}" stroke="rgba(207,214,224,.45)" stroke-width="1"/>
+    <line x1="${m.l}" x2="${xe}" y1="${S.yEnd}" y2="${S.yEnd}" stroke="#cfd6e0" stroke-width="1.25" stroke-dasharray="4 4"/>
+    <path d="${line}" fill="none" stroke="#79b4f6" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+    <circle cx="${xe}" cy="${S.yEnd}" r="5" fill="#2a7ae0" stroke="#e7edf5" stroke-width="1.5"/>
+    ${startLbl}<text x="${xe - 10}" y="${S.yEnd - 11}" text-anchor="end" style="fill:#e7edf5;font-weight:600;paint-order:stroke;stroke:#14171c;stroke-width:4px;stroke-linejoin:round">${fmt(endW)} ${wUnit()} at the end</text>`;
+  };
+  cancelAnimationFrame(CH_RAF);
+  const P = CH_PREV, reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  CH_PREV = T;
+  if (!P || reduce || P.ys.length !== T.ys.length) { frame(T); }
+  else {
+    const t0 = performance.now(), dur = 260, mix = (a, b, k) => a + (b - a) * k;
+    const step = (now) => {
+      const u = Math.min(1, (now - t0) / dur), k = 1 - Math.pow(1 - u, 3);
+      const S = { ys: T.ys.map((v, i) => mix(P.ys[i], v, k)), yLean: mix(P.yLean, T.yLean, k), yEnd: mix(P.yEnd, T.yEnd, k) };
+      frame(S); CH_PREV = S;
+      if (u < 1) CH_RAF = requestAnimationFrame(step); else CH_PREV = T;
+    };
+    CH_RAF = requestAnimationFrame(step);
+  }
+  $("chart-desc").textContent = `Chart: body weight falls from ${fmt(pts[0].w)} to ${fmt(endW)} ${wUnit()} over ${fmt(wks)} weeks. Muscle, bone and water stay at ${fmt(lean)} ${wUnit()}; only fat goes down. The table below lists the same numbers.`;
 }
 
 // ---------- units & canonical values ----------
@@ -883,8 +917,9 @@ $("form").addEventListener("input", (e) => {
     if (id === "goal" && radio("goaltype") === "bf") S.goalBfText = $("goal").value;
     syncCanonFromInputs(id);
   }
-  render(); updateGoalHint();
+  scheduleRender();
 });
+let RQ = 0; function scheduleRender() { if (RQ) return; RQ = requestAnimationFrame(() => { RQ = 0; render(); updateGoalHint(); }); }
 $("form").addEventListener("change", (e) => { if (e.target.tagName === "SELECT") { if (e.target.id === "pace") paintPace(); render(); } });
 $("rate").addEventListener("input", () => { $("def").value = String(Math.round(Number($("rate").value) * RHO / 7)); paintPace(); });
 $("def").addEventListener("input", () => { const d = parse($("def").value); if (d) $("rate").value = String(Math.min(3, Math.max(0.1, Math.round(d * 7 / RHO * 10) / 10))); paintPace(); });
