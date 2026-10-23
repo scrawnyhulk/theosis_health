@@ -209,13 +209,13 @@ body{background-color:#14171c;background-image:radial-gradient(55% 50% at 74% 38
 /* Top-right plan graphic (option A) */
 .top{display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:"text" "art" "presets";gap:0 2rem;align-items:start}
 .top-text{grid-area:text}.top .presets{grid-area:presets}
-.hero-art{grid-area:art;display:flex;align-items:center;gap:.9rem;margin:.9rem 0 .2rem;padding:.7rem .9rem;border-radius:16px;background:rgba(16,24,32,.6);box-shadow:0 0 0 1px rgba(42,122,224,.35)}
+.hero-art{grid-area:art;display:flex;align-items:center;gap:.9rem;margin:1.1rem 0 .6rem;padding:.8rem 1rem;border-radius:16px;background:rgba(16,24,32,.6);box-shadow:0 0 0 1px rgba(42,122,224,.35)}
 .hero-art .ha-g{flex:0 0 auto;width:76px}.hero-art svg{display:block;width:100%;height:auto}
 .ha-k{font-size:.85rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#8e9aab}
 .ha-v{font:700 1.9rem/1.05 var(--font-display);color:#e7edf5;font-variant-numeric:tabular-nums}.ha-v small{font-size:1rem;font-weight:600;color:#79b4f6;margin-left:.25rem}
 .ha-s{font-size:.95rem;color:#cfd6e0;line-height:1.35}
-@media(min-width:60rem){.top{grid-template-columns:minmax(0,1fr) minmax(16rem,19rem);grid-template-areas:"text art" "presets art"}
-.hero-art{flex-direction:column;align-self:center;text-align:center;gap:.5rem;margin:1.2rem 2rem 0 0;padding:1.3rem 1.2rem 1.2rem;border-radius:24px;background:radial-gradient(80% 60% at 50% 30%,rgba(42,122,224,.16),transparent 70%),rgba(16,24,32,.55)}
+@media(min-width:60rem){.top{grid-template-columns:minmax(0,1fr) minmax(16rem,23rem);grid-template-areas:"text art" "presets art"}
+.hero-art{flex-direction:column;align-self:center;text-align:center;gap:.5rem;justify-self:center;width:min(100%,17rem);margin:1.2rem 5rem 0 0;padding:1.3rem 1.2rem 1.2rem;border-radius:24px;background:radial-gradient(80% 60% at 50% 30%,rgba(42,122,224,.16),transparent 70%),rgba(16,24,32,.55)}
 .hero-art .ha-g{width:100%;max-width:15rem}.ha-v{font-size:2.6rem}}
 .hero-art[hidden]{display:none}
 #ha-arc{transition:stroke-dasharray .7s var(--ease)}
