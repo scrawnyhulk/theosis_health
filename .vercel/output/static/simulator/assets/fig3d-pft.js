@@ -31,7 +31,7 @@ function f3dView(v) { if (v === true) v = "ct"; else if (v === false || !v) v = 
    lifting rows train, Janssen 2000 muscle distribution + spillover). Only gained lean mass is drawn as growth (a loss is not shown as
    shrinking). Size on screen: group muscle ~ its share (MUSCLE_NAT) of skeletal muscle (~half of lean mass, an estimate); a relative gain r
    thickens a muscle by about r/2 of its ~4 cm depth; drawn MUS_EXAG times larger, capped. Illustration, not a measurement. */
-const MUS_EXAG = 8, MUS_DEPTH = 0.04, MUS_CAP = 0.024, MUS_FOCUS_CAP = 1.5;
+const MUS_EXAG = 8, MUS_DEPTH = 0.04, MUS_CAP = 0.024;
 const MUS_LABEL = { chest: "Chest", back: "Back", shoulders: "Shoulders", biceps: "Front of upper arms (biceps)", triceps: "Back of upper arms (triceps)", forearms: "Forearms", quads: "Front of thighs (quads)", hamstrings: "Back of thighs (hamstrings)", glutes: "Buttocks (glutes)", calves: "Calves", core: "Belly muscles (core)" };
 function f3dMusCalc(i) {
   const rows = f3dRows(); if (!rows) return null; const x = rows[Math.min(i, rows.length - 1)], a = rows[0];
@@ -47,21 +47,22 @@ function f3dMusCalc(i) {
      x age, protein, FFMI taper toward Kouri 1995's natural ceiling), and dayChange() sends any surplus beyond what that
      lean gain uses to fat (Slater 2019; Iraki 2019). So a bigger surplus never adds muscle past the cap, only fat. */
   const out = { lift: !!mr, dL, dLplan: x.leanKg - a.leanKg, dF: x.fatKg - a.fatKg, dFsurplus: dFs, surplus: surplusDays > 0, surplusDays,
-    avgSurplus: surplusDays ? kcal / surplusDays : 0, bigSurplus: surplusDays >= 7 && dFs > 0.5 && dFs > Math.max(0, dL), kg: {}, grow: {}, capped: [] };
+    avgSurplus: surplusDays ? kcal / surplusDays : 0, bigSurplus: surplusDays >= 7 && dFs > 0.5 && dFs > Math.max(0, dL), kg: {}, rel: {}, grow: {}, capped: [] };
   if (!mr || dL <= 0) return out;
-  /* Per-area split: muscleRegions() shares (volume per area with diminishing returns 1 - e^(-D/2), plus spillover).
-     Per-area cap (app assumption, not a published figure): one area can gain at most MUS_FOCUS_CAP x its share of what a
-     full-body program would add (dL / mr.factor x natural share, Janssen 2000). Lean the plan counts beyond the cap is not drawn. */
+  /* Per-area split: muscleRegions() shares (weekly hard sets per area, diminishing returns, plus a little spillover). */
   /* v7.6.82 (Nick): Simple mode, or general lifting with no exercises named, grows the whole body evenly (natural muscle spread,
      Janssen 2000). Advanced with named exercises uses muscleRegions()' exercise map (squat -> quads/glutes, deadlift -> glutes/hamstrings/back,
      bench/push-up -> chest/shoulders/triceps, row/pull-up -> back/biceps, overhead press -> shoulders/triceps). */
   const adv = document.body.classList.contains("mode-adv"), named = (mv.lifts || []).some((l) => l && String(l.ex || "").trim());
   out.even = !adv || mv.preset !== "custom" || !named;
   const shareOf = out.even ? mr.nat : mr.share; let nt = 0; for (const g in shareOf) nt += shareOf[g] || 0;
-  const sm = 0.5 * a.leanKg, full = dL / (mr.factor || 1);
-  for (const g in mr.share) { let kg = dL * (out.even ? (shareOf[g] || 0) / (nt || 1) : mr.share[g]); const cap = MUS_FOCUS_CAP * (mr.nat[g] || 0) * full; if (kg > cap) { kg = cap; out.capped.push(g); }
+  const sm = 0.5 * a.leanKg;
+  /* v7.6.83: no per-area cap any more. The cap dropped lean the plan counts (1.69 kg plan, 0.98 kg drawn) and pushed lightly trained areas
+     (core) above the trained ones. The volume model (muscleRegions(): weekly hard sets per muscle with diminishing returns) already limits
+     how much one area takes, so every area is its share of the plan's own total and the areas add up to it. */
+  for (const g in mr.share) { const kg = dL * (out.even ? (shareOf[g] || 0) / (nt || 1) : mr.share[g]);
     const base = Math.max(0.2, (mr.nat[g] || 0.05) * sm), r = kg / base;
-    out.kg[g] = kg; out.grow[g] = Math.min(MUS_CAP, MUS_EXAG * (r / 2) * MUS_DEPTH); }
+    out.kg[g] = kg; out.rel[g] = kg / Math.max(1e-6, mr.nat[g] || 0.05); out.grow[g] = Math.min(MUS_CAP, MUS_EXAG * (r / 2) * MUS_DEPTH); }
   out.dLshown = Object.values(out.kg).reduce((p, q) => p + q, 0);
   return out;
 }
@@ -75,10 +76,10 @@ function f3dMuscle() {
     : c.dL <= 0 ? "<b>Muscle view.</b> Your muscles hold steady at this point, so they don't look bigger."
     : c.even ? "<b>Muscle view.</b> Full-body lifting: muscle grows all over, a little at a time." : "<b>Muscle view.</b> You're lifting and eating a little above what you burn, so muscle grows steadily. Bars show where your training focuses.";
   const wn = $("#f3d-mwarn"); if (wn) { wn.hidden = !(c.lift && c.bigSurplus && F3D.i > 0); wn.innerHTML = `<b>A big calorie surplus doesn't build muscle faster. Past a point, the extra is stored as fat.</b> In this plan that's about ${fW(c.dF)} of fat by this point. Switch to 3D to see it on the body.`; }
-  if (l) { const all = Object.keys(c.kg).sort((p, q) => c.kg[q] - c.kg[p]), ks = all.filter((k) => c.kg[k] >= 0.025), rest = all.filter((k) => c.kg[k] < 0.025), mx = ks.length ? Math.max(1e-6, c.kg[ks[0]]) : 1;
+  if (l) { const all = Object.keys(c.kg).sort((p, q) => (Math.abs(c.rel[q] - c.rel[p]) > 1e-6 * Math.max(c.rel[q], c.rel[p]) ? c.rel[q] - c.rel[p] : 0) || c.kg[q] - c.kg[p])   /* ties (bench + press + dips work chest, shoulders and triceps equally): bigger muscle first */, top = all.length ? c.rel[all[0]] : 0, lit = (k) => c.kg[k] > 0.002 && c.rel[k] >= 0.12 * top, ks = all.filter(lit), rest = all.filter((k) => !lit(k))   /* v7.6.83: relative, so every muscle a compound lift mainly works lights up even early in a plan */, mx = ks.length ? Math.max(1e-6, c.rel[ks[0]]) : 1;   /* v7.6.83: bars = growth relative to each muscle's own size (what the figure shows), not raw mass, so a big muscle with a few helper sets doesn't outrank the trained ones */
     const amt = (kg) => kg / mx >= 0.66 ? "more focus" : kg / mx >= 0.33 ? "some" : "less focus";   // v7.6.82: relative words only, no amounts
     const box = l.closest(".f3d-mbars"); if (box) box.hidden = !!c.even;
-    l.innerHTML = (ks.length ? ks.map((k) => `<li><span>${esc(MUS_LABEL[k] || k)}</span><i style="--w:${Math.round(100 * c.kg[k] / mx)}%"></i><b>${amt(c.kg[k])}</b></li>`).join("") : "<li><span>Little or no change at this point</span></li>")
+    l.innerHTML = (ks.length ? ks.map((k) => `<li><span>${esc(MUS_LABEL[k] || k)}</span><i style="--w:${Math.round(100 * c.rel[k] / mx)}%"></i><b>${amt(c.rel[k])}</b></li>`).join("") : "<li><span>Little or no change at this point</span></li>")
       + (ks.length && rest.length ? `<li class="f3d-mrest"><span>Little or no change: ${esc(rest.map((k) => (MUS_LABEL[k] || k).replace(/ \(.*\)$/, "").toLowerCase()).join(", "))}</span></li>` : ""); }
 }
 function f3dShell() {

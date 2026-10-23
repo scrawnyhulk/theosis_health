@@ -92,11 +92,11 @@
   // same dose-response the app uses for "hard sets per muscle a week" (10 sets = 1.0, diminishing returns)
   const fSets = (s) => Math.max(0.5, Math.min(1.15, s <= 0 ? 0.5 : s < 10 ? 1 + 0.25 * Math.log2(s / 10) : 1 + 0.1 * Math.log2(s / 10)));
   /** hook called by the app's modeMove() in Advanced: returns the move with the log's lifting in place of manual Custom rows */
-  function apply(move) {
+  function apply(move) {   // v7.6.83: setsW (weekly hard sets per muscle, from logged reps + reps left) drives per-muscle growth in muscleRegions(); weight lifted is kept for your records but does not size growth (hard sets matter more than load, Schoenfeld 2017)
     if (!PRO_PREVIEW || !LOG.on || !move || move.noLift || move.plannerOn || move.preset !== "custom") return move;
     const d = derive(); if (!d) return move;
     const effort = d.rir === "0-1" ? "hard" : d.rir === "4+" ? "easy" : "moderate";
-    return { ...move, lifts: [{ type: "hypertrophy", effort, min: d.min, days: +d.freq.toFixed(2), groupW: d.groupW, xMul: fSets(d.avgSets), fromLog: true }],
+    return { ...move, lifts: [{ type: "hypertrophy", effort, min: d.min, days: +d.freq.toFixed(2), groupW: d.groupW, setsW: d.sets, xMul: fSets(d.avgSets), fromLog: true }],
       adv: { ...(move.adv || {}), sets: Math.round(d.avgSets), rir: d.rir } };
   }
   const S = () => window.BodyPlanApp && window.BodyPlanApp.state;
