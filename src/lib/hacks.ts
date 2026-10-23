@@ -868,7 +868,7 @@ export const nerdTopics = [
   },
   {
     id: "fat-burn-limit",
-    title: "Your body has a fat-burning speed limit",
+    title: "The human body has a fat-burning speed limit",
     lede: "Stored fat can only release energy so fast. Push the deficit past that ceiling and muscle starts paying the bill.",
     stolenFrom: "Klein et al., Gastroenterology (2002); Arner et al., Nature Medicine (2019)",
     paragraphs: [
