@@ -1,4 +1,4 @@
-/* Theosis hero FX F1 (v7.6.76, simulator first screen; toggle with HERO_ANIM in index.html): heavier man (soft belly, wide waist) leans in toward the trend graph and slims to a lean, defined build while stardust off his waist draws the line. 15 baked keyframes (hero-fx-keys.webp, 260x496 each, art rows 72-568), crossfaded; lean/bend baked in. Plays once, then holds the last frame. 480x640 art space. */
+/* Theosis hero FX F1 (v7.6.76, simulator first screen; toggle with HERO_ANIM in index.html): heavier man (soft belly, wide waist) stands still and upright (F2, Nick 10/23: no bend or lean) and slims to a lean, defined build while stardust off his waist draws the line. 15 baked keyframes (hero-fx-keys.webp, 260x496 each, art rows 72-568), crossfaded; upright, no lean. Plays once, then holds the last frame. 480x640 art space. */
 (function(){
 var fig=document.querySelector('.hero-fig')||document.getElementById('fxhost');if(!fig)return;
 var img=fig.querySelector('img');fig.style.position='relative';
@@ -7,7 +7,7 @@ var x=c.getContext('2d'),mob=Math.min(screen.width,screen.height)<600,dpr=Math.m
 function fit(){var r=img.getBoundingClientRect(),f=fig.getBoundingClientRect(),W=r.width,H=r.height;
 c.style.left=(r.left-f.left)+'px';c.style.top=(r.top-f.top)+'px';c.style.width=W+'px';c.style.height=H+'px';
 c.width=Math.round(W*dpr);c.height=Math.round(H*dpr);x.setTransform(dpr*W/480,0,0,dpr*W/480,0,0);x.imageSmoothingEnabled=true;}
-var L=[[205,240],[262,278],[298,307],[337,334],[377,360],[413,381],[450,399]];
+var L=[[180,206],[262,278],[298,307],[337,334],[377,360],[413,381],[450,399]];
 function rnd(s){s=Math.sin(s*127.1)*43758.5453;return s-Math.floor(s);}
 function sm(t){t=t<0?0:t>1?1:t;return t*t*(3-2*t);}
 function eio(t){t=t<0?0:t>1?1:t;return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;}
@@ -36,8 +36,8 @@ function figc(e){var k=Math.max(0,Math.min(KF-1,e*(KF-1))),a=Math.floor(k),f=k-a
  fx2.globalCompositeOperation='lighter';fx2.globalAlpha=f;fx2.drawImage(SO,b*KW,0,KW,KH,0,0,KW,KH);
  fx2.globalCompositeOperation='source-over';fx2.globalAlpha=1;x.drawImage(FC,0,KY);}
 /* same lean as the baked frames (bend at the hips + slight tilt from the feet), so the stardust leaves from the body, not the air */
-function lr(e){return sm(e/.32);}
-function lean(px,py,e){var r=lr(e),tl=2.5*r*Math.PI/180,a=11*r*Math.PI/180*sm((338+25-py)/90),dx=px-112,dy=py-338;
+function lr(e){return 0;}   /* F2: upright, no lean */
+function lean(px,py,e){if(!lr(e))return[px,py];var r=lr(e),tl=2.5*r*Math.PI/180,a=11*r*Math.PI/180*sm((338+25-py)/90),dx=px-112,dy=py-338;
  var X=112+dx*Math.cos(a)-dy*Math.sin(a),Y=338+dx*Math.sin(a)+dy*Math.cos(a);dx=X-110;dy=Y-548;
  return[110+dx*Math.cos(tl)-dy*Math.sin(tl),548+dx*Math.sin(tl)+dy*Math.cos(tl)];}
 var EW=[],ET=0;for(var i=0;i<ED.length;i++){ET+=Math.abs(ED[i][2]);EW.push(ET);}
