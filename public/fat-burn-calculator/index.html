@@ -206,18 +206,23 @@ body{background-color:#14171c;background-image:radial-gradient(55% 50% at 74% 38
 .legend{gap:.5rem 1.1rem;font-size:.9rem}
 @media(max-width:519px){.chart-wrap{margin-left:-.25rem;margin-right:-.25rem}}
 
-/* Decorative graphic in the top-right space */
-.top{display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:"text" "presets";gap:0 2rem;align-items:start}
+/* Top-right plan graphic (option A) */
+.top{display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:"text" "art" "presets";gap:0 2rem;align-items:start}
 .top-text{grid-area:text}.top .presets{grid-area:presets}
-.hero-art{display:none}
-@media(min-width:60rem){.top{grid-template-columns:minmax(0,1fr) minmax(16rem,20rem);grid-template-areas:"text art" "presets art"}.hero-art{display:block;grid-area:art;align-self:center;margin:1.2rem 2.5rem 0 0}}
-.hero-art svg{display:block;width:100%;height:auto}
-.ha-flame{transform-origin:160px 196px;animation:haFlick 3.2s ease-in-out infinite}
-.ha-inner{transform-origin:160px 196px;animation:haFlick 2.4s ease-in-out infinite reverse}
-.ha-glow{animation:haGlow 3.2s ease-in-out infinite}
-@keyframes haFlick{0%,100%{transform:scale(1,1)}50%{transform:scale(.96,1.05)}}
-@keyframes haGlow{0%,100%{opacity:.55}50%{opacity:.85}}
-@media(prefers-reduced-motion:reduce){.ha-flame,.ha-inner,.ha-glow{animation:none}}
+.hero-art{grid-area:art;display:flex;align-items:center;gap:.9rem;margin:.9rem 0 .2rem;padding:.7rem .9rem;border-radius:16px;background:rgba(16,24,32,.6);box-shadow:0 0 0 1px rgba(42,122,224,.35)}
+.hero-art .ha-g{flex:0 0 auto;width:76px}.hero-art svg{display:block;width:100%;height:auto}
+.ha-k{font-size:.85rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#8e9aab}
+.ha-v{font:700 1.9rem/1.05 var(--font-display);color:#e7edf5;font-variant-numeric:tabular-nums}.ha-v small{font-size:1rem;font-weight:600;color:#79b4f6;margin-left:.25rem}
+.ha-s{font-size:.95rem;color:#cfd6e0;line-height:1.35}
+@media(min-width:60rem){.top{grid-template-columns:minmax(0,1fr) minmax(16rem,19rem);grid-template-areas:"text art" "presets art"}
+.hero-art{flex-direction:column;align-self:center;text-align:center;gap:.5rem;margin:1.2rem 2rem 0 0;padding:1.3rem 1.2rem 1.2rem;border-radius:24px;background:radial-gradient(80% 60% at 50% 30%,rgba(42,122,224,.16),transparent 70%),rgba(16,24,32,.55)}
+.hero-art .ha-g{width:100%;max-width:15rem}.ha-v{font-size:2.6rem}}
+.hero-art[hidden]{display:none}
+#ha-arc{transition:stroke-dasharray .7s var(--ease)}
+.ha-pulse{transform-origin:100px 100px;animation:haP 3.6s ease-in-out infinite}
+@keyframes haP{0%,100%{opacity:.6;transform:scale(.96)}50%{opacity:1;transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){.ha-pulse{animation:none}#ha-arc{transition:none}}
+
 
 /* Week and Pace sliders under the main graph */
 .ctl{margin-top:1rem;display:grid;gap:.2rem;padding-top:.9rem;border-top:1px solid var(--border)}
@@ -271,26 +276,26 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')set(false)})
   <h1>Maximal Fat Loss Calculator</h1>
   <p class="lead">This calculator shows the <strong>maximum</strong> fat-loss rate, designed to limit muscle loss as much as possible (no trial shows any rate spares muscle completely). You can choose any slower pace in between. One published model (Alpert, 2005) estimates that body fat can release at most about <strong>31 kcal per pound of fat per day</strong> (range 29–34). This is an <strong>upper-limit estimate</strong>, not a proven ceiling. In that model, a calorie deficit bigger than this tends to come out of muscle and other lean tissue. Enter where you are and where you want to be, and this shows the <strong>fastest fat loss that still protects lean mass</strong>, week by week.</p>
   </div>
-  <div class="hero-art" aria-hidden="true">
-    <svg viewBox="0 0 320 250" focusable="false">
-      <defs>
-        <linearGradient id="ha-arc" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#2a7ae0" stop-opacity=".25"/><stop offset=".7" stop-color="#2a7ae0"/><stop offset="1" stop-color="#79b4f6"/></linearGradient>
-        <linearGradient id="ha-fl" x1="0" x2="0" y1="1" y2="0"><stop offset="0" stop-color="#2a7ae0"/><stop offset=".6" stop-color="#5b9cec"/><stop offset="1" stop-color="#bcd9fb"/></linearGradient>
-        <radialGradient id="ha-gl" cx=".5" cy=".7" r=".5"><stop offset="0" stop-color="#2a7ae0" stop-opacity=".55"/><stop offset="1" stop-color="#2a7ae0" stop-opacity="0"/></radialGradient>
-      </defs>
-      <ellipse class="ha-glow" cx="160" cy="160" rx="120" ry="90" fill="url(#ha-gl)"/>
-      <path d="M40 196a120 120 0 0 1 240 0" fill="none" stroke="rgba(231,237,245,.1)" stroke-width="18" stroke-linecap="round"/>
-      <path d="M40 196a120 120 0 0 1 240 0" fill="none" stroke="url(#ha-arc)" stroke-width="18" stroke-linecap="round" stroke-dasharray="300 400"/>
-      <g stroke="rgba(231,237,245,.35)" stroke-width="2" stroke-linecap="round">
-        <path d="M58 196h14"/><path d="M76 112l10 10"/><path d="M160 58v14"/><path d="M244 112l-10 10"/><path d="M262 196h-14"/>
-      </g>
-      <g class="ha-flame"><path d="M160 196c-30 0-50-20-50-46 0-27 23-42 27-69 15 10 23 23 23 38 8-6 12-15 13-25 22 15 37 33 37 56 0 26-20 46-50 46z" fill="url(#ha-fl)" opacity=".95"/></g>
-      <g class="ha-inner"><path d="M160 196c-14 0-24-9-24-22 0-13 11-20 14-33 7 6 11 12 11 19 4-3 6-7 7-12 10 8 16 16 16 26 0 13-10 22-24 22z" fill="#e7edf5" opacity=".9"/></g>
-      <circle cx="160" cy="196" r="9" fill="#14171c" stroke="#79b4f6" stroke-width="3"/>
-      <text x="40" y="226" text-anchor="middle" style="font:600 13px var(--font-sans);fill:#8b95a3">Slow</text>
-      <text x="280" y="226" text-anchor="middle" style="font:600 13px var(--font-sans);fill:#8b95a3">Fast</text>
-    </svg>
+  <div class="hero-art" id="hero-art" aria-hidden="true">
+    <div class="ha-g"><svg viewBox="0 0 200 200" focusable="false">
+      <defs><linearGradient id="ha-rg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#79b4f6"/><stop offset="1" stop-color="#2a7ae0"/></linearGradient>
+      <radialGradient id="ha-rc" cx=".5" cy=".5" r=".5"><stop offset=".6" stop-color="#2a7ae0" stop-opacity=".18"/><stop offset="1" stop-color="#2a7ae0" stop-opacity="0"/></radialGradient></defs>
+      <circle cx="100" cy="100" r="98" fill="url(#ha-rc)" class="ha-pulse"/>
+      <circle cx="100" cy="100" r="78" fill="none" stroke="rgba(231,237,245,.1)" stroke-width="16"/>
+      <circle id="ha-arc" cx="100" cy="100" r="78" fill="none" stroke="url(#ha-rg)" stroke-width="16" stroke-linecap="round" pathLength="100" stroke-dasharray="0 100" transform="rotate(-90 100 100)"/>
+      <text x="100" y="96" text-anchor="middle" id="ha-pct" style="font:700 40px var(--font-display);fill:#e7edf5">0%</text>
+      <text x="100" y="122" text-anchor="middle" style="font:600 14px var(--font-sans);fill:#8e9aab">of your fat</text>
+    </svg></div>
+    <div class="ha-t"><div class="ha-k">Fat you lose</div><div class="ha-v" id="ha-v">–</div><div class="ha-s" id="ha-s"></div></div>
   </div>
+<script>
+var $h=function(id){return document.getElementById(id)},hf=function(x,d){return (Math.round(x*Math.pow(10,d||0))/Math.pow(10,d||0)).toLocaleString('en-US')};
+function haWeeks(d){var w=d/7;return w<1.5?Math.max(1,Math.round(d))+' days':hf(w,w<10?1:0).replace(/\.0$/,'')+' weeks'}
+window.heroArt=function(d){var p=d.fat0>0?Math.max(0,Math.min(1,(d.fat0-d.endFat)/d.fat0)):0;
+$h('ha-arc').setAttribute('stroke-dasharray',(p*100).toFixed(1)+' 100');$h('ha-pct').textContent=Math.round(p*100)+'%';
+$h('ha-v').innerHTML=hf(d.lost,1)+'<small>'+d.u+'</small>';$h('ha-s').textContent=hf(d.bf0,1)+'% → '+hf(d.endBf,1)+'% body fat in '+haWeeks(d.days);};
+</script>
+
 
   <div class="presets" role="group" aria-label="Example scenarios">
     <button type="button" class="chip" data-preset="0">200 lb · 20% · 10 weeks</button>
@@ -782,6 +787,7 @@ function render() {
   </div>
   ${funnelHtml(inp, R)}`;
   out.innerHTML = `<div class="result-hero" style="margin-top:.75rem">${hero}</div>${stats}`;
+  if (window.heroArt) window.heroArt({ fat0: inp.fat0, endFat: R.endFat, bf0: inp.bf, endBf: R.endBf, w0: inp.weight, endW: R.endW, days: R.days, frac: R.frac0, lost: toDispW(inp.fat0 - R.endFat), u });
   alerts.innerHTML = R.warnings.map(([t, m]) => `<li class="alert ${t}">${ICONS[t]}<span>${esc(m)}</span></li>`).join("");
 
   // calorie card
