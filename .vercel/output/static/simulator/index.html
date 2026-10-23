@@ -1959,7 +1959,7 @@ body{background-color:var(--bg);background-image:var(--app-bg-image);background-
             <p class="eyebrow card-eyebrow">Optional · stays on this device</p>
             <div class="section-head"><h2>Your photo</h2></div>
             <div class="photo-row">
-              <img id="photo-thumb" class="photo-thumb" alt="Your cropped photo" hidden>
+              <img id="photo-thumb" class="photo-thumb" alt="Your cropped photo" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" hidden>
               <div class="actions" style="margin-top:0">
                 <button type="button" class="btn btn-ghost" id="btn-upload"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>Upload photo</button>
                 <button type="button" class="btn btn-ghost" id="btn-camera"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Take photo</button>
@@ -8498,7 +8498,7 @@ function bindCrop() {
   $("#file-camera").addEventListener("change", (ev) => { loadFile(ev.target.files[0]); ev.target.value = ""; });
   $("#btn-photo-remove").addEventListener("click", () => { photo = null; aiState.result = null; renderPhoto(); update(); });
 }
-function renderPhoto() { const t = $("#photo-thumb"); t.hidden = !photo; if (photo) t.src = photo; else t.removeAttribute("src"); $("#btn-photo-remove").hidden = !photo;}
+function renderPhoto() { const t = $("#photo-thumb"); t.hidden = !photo; if (photo) t.src = photo; else t.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"; $("#btn-photo-remove").hidden = !photo;}
 
 const F3 = { sup: null, rt: null, rtP: null, models: {}, slots: {}, io: null, failed: false, reason: "", unsupported: false };
 function webgl() {
