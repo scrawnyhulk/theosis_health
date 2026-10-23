@@ -2055,7 +2055,7 @@ body{background-color:var(--bg);background-image:var(--app-bg-image);background-
               </div>
               <div id="feas" aria-live="polite"></div>
             </div>
-            <details class="adv">
+            <details class="adv adv-only">
               <summary>Advanced: muscle-gain rates used</summary>
               <div class="adv-body stack small muted">
                 <p>Estimated lean-mass gain with consistent, well-programmed lifting (4+ sessions a week, enough protein, enough food). These are estimates, not guarantees. Genetics, sleep, age and program quality move them a lot.</p>
@@ -2239,7 +2239,7 @@ body{background-color:var(--bg);background-image:var(--app-bg-image);background-
             <label class="field mt1"><span class="label">Refeeds and diet breaks</span>
               <span class="control"><select data-sel="food.refeedDays">
                 <option value="0">No refeed days</option><option value="1">1 refeed day a week at maintenance</option><option value="2">2 refeed days a week at maintenance</option>
-              </select></span><span class="hint">Refeed days at maintenance during a diet may help training and adherence (Campbell 2020; Peos 2021). They slow weekly loss, and the timeline shows it. Longer diet breaks are under "More options" below.</span></label>
+              </select></span><span class="hint">Refeed days at maintenance during a diet may help training and adherence (Campbell 2020; Peos 2021). They slow weekly loss, and the timeline shows it.<span class="adv-only"> Longer diet breaks are under "Advanced: macro style, diet breaks" below.</span></span></label>
           </div>
           <div class="card" id="meals-card">
             <p class="eyebrow card-eyebrow">Meal ideas</p>
@@ -2247,9 +2247,9 @@ body{background-color:var(--bg);background-image:var(--app-bg-image);background-
             <div id="fav-card"></div>
             <div id="meals" aria-live="polite"></div>
           </div>
-          <div class="card" id="food-adv-card">
+          <div class="card adv-only" id="food-adv-card">
             <details class="adv" style="margin-top:0;border-top:0;padding-top:0">
-              <summary>More options: macro style, diet breaks, BMR equation</summary>
+              <summary>Advanced: macro style, diet breaks, BMR equation</summary>
               <div class="adv-body stack">
                 <div><span class="label">Macro style</span>
                   <fieldset class="seg sm"><legend class="sr-only">Macro style</legend>
@@ -5390,6 +5390,7 @@ const CONFIG = {
   PREVIEW_ENDPOINT: "/.netlify/functions/preview",   // v7.6.18 beta: single "See it on your photo" illustration (preview.js, same GEMINI_API_KEY)
   AI_ENDPOINT: "/.netlify/functions/ai",                  // v7.6.14: ONE Netlify Function holds GEMINI_API_KEY (see AI-SETUP.md). The AI features hide themselves when it isn't deployed or has no key.
   AI_EXPLAIN_PLAN: true,                                 // v7.6.14: the single switch for the "Explain my plan" section of the print-to-PDF recap. Set false to remove it completely.
+  LABS_UPLOAD_ON: false,  // polish-1023: set true together with LABS_ENABLED=true on Netlify
   LABS_ENDPOINT: "/.netlify/functions/labs",                                   // "/.netlify/functions/labs" once LABS_API_KEY (or GEMINI_API_KEY) is set on Netlify                                // "/.netlify/functions/preview" once GEMINI_API_KEY is set on Netlify
   STORAGE_KEY: "theosis-bodyplan-v1",
   PE_DOTS: typeof window !== "undefined" && window.__PE_DOTS === 1,                                        // v7.6.47: P:E colour dots + legend hidden until the produce-friendly rating is done (code kept; the meal solver tiebreaker still uses the ratio)
@@ -6083,7 +6084,7 @@ function renderWeekly() {
 /* v7.2 optional lab upload with AI reading (Netlify function holds the key; disabled until configured). Manual entry always works. */
 const LU = { busy: false, msg: "", found: null };
 function renderLabUpload() {
-  const box = $("#lab-upload"); if (!box) return; const on = !!CONFIG.LABS_ENDPOINT, C = window.TheosisConsent, ok = on && C && C.has("labAi");
+  const box = $("#lab-upload"); if (!box) return; /* polish-1023: lab upload is off on the server (LABS_ENABLED unset), so the upload button stays hidden; hand entry still works */ box.hidden = !CONFIG.LABS_UPLOAD_ON; if (!CONFIG.LABS_UPLOAD_ON) { box.innerHTML = ""; return; } const on = !!CONFIG.LABS_ENDPOINT, C = window.TheosisConsent, ok = on && C && C.has("labAi");
   box.innerHTML = !on ? `<p class="hint" data-lu="off">Lab report upload with automatic reading is not available here (for example in a drag-and-drop or offline copy). You can still add your values by hand with "Add lab results".</p>`
     : `<div class="lu-row"><button type="button" class="btn btn-ghost" id="lu-pick" ${LU.busy ? "disabled" : ""}>${LU.busy ? "Reading your report…" : "Upload a lab report (photo or PDF)"}</button>
       <span class="hint">${ok ? "Sent to an AI provider only to read the values. Not stored by Theosis Health. Google may keep it briefly for abuse monitoring under its paid API terms and doesn't use it to train AI. You'll confirm every value." : `Needs the "Lab upload and AI reading" opt-in. <a href="#" data-consent>Consent settings</a>`}</span></div>
