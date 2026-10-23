@@ -1,4 +1,4 @@
-//#region node_modules/.nitro/vite/services/ssr/assets/_tanstack-start-manifest_v-CG9RSQqe.js
+//#region node_modules/.nitro/vite/services/ssr/assets/_tanstack-start-manifest_v-BHLh9aqK.js
 var tsrStartManifest = () => ({ routes: {
 	__root__: {
 		filePath: "/workspace/th-nav/src/routes/__root.tsx",
@@ -15,7 +15,7 @@ var tsrStartManifest = () => ({ routes: {
 			"/hacks/"
 		],
 		preloads: [
-			"/assets/index-CjbRC-XA.js",
+			"/assets/index-lkAXrde0.js",
 			"/assets/useSelector-B0K6Mfa1.js",
 			"/assets/hacks-DNc3MQoh.js",
 			"/assets/preload-helper-B9MoI6v7.js",
@@ -24,14 +24,14 @@ var tsrStartManifest = () => ({ routes: {
 		scripts: [{ attrs: {
 			type: "module",
 			async: !0,
-			src: "/assets/index-CjbRC-XA.js"
+			src: "/assets/index-lkAXrde0.js"
 		} }]
 	},
 	"/": {
 		filePath: "/workspace/th-nav/src/routes/index.tsx",
 		children: void 0,
 		preloads: [
-			"/assets/routes-rWmqQx8k.js",
+			"/assets/routes-e75nVfu7.js",
 			"/assets/site-shell-BTcpRrTt.js",
 			"/assets/arrow-right-BdIbGYay.js"
 		]
@@ -75,7 +75,7 @@ var tsrStartManifest = () => ({ routes: {
 		filePath: "/workspace/th-nav/src/routes/hacks/$slug.tsx",
 		children: void 0,
 		preloads: [
-			"/assets/_slug-DHOz7dHa.js",
+			"/assets/_slug-BeWg07SI.js",
 			"/assets/site-shell-BTcpRrTt.js",
 			"/assets/nerd-paragraph-BqPwsOZN.js",
 			"/assets/arrow-right-BdIbGYay.js",
@@ -86,7 +86,7 @@ var tsrStartManifest = () => ({ routes: {
 	"/hacks/nerd-out": {
 		filePath: "/workspace/th-nav/src/routes/hacks/nerd-out.tsx",
 		children: ["/hacks/nerd-out/$topic", "/hacks/nerd-out/"],
-		preloads: ["/assets/nerd-out-DG8Vmbum.js"]
+		preloads: ["/assets/nerd-out-GHoCeq9q.js"]
 	},
 	"/hacks/": {
 		filePath: "/workspace/th-nav/src/routes/hacks/index.tsx",
@@ -101,7 +101,7 @@ var tsrStartManifest = () => ({ routes: {
 		filePath: "/workspace/th-nav/src/routes/hacks/nerd-out.$topic.tsx",
 		children: void 0,
 		preloads: [
-			"/assets/nerd-out._topic-Bq9hhBxG.js",
+			"/assets/nerd-out._topic-BOAab0mM.js",
 			"/assets/site-shell-BTcpRrTt.js",
 			"/assets/nerd-paragraph-BqPwsOZN.js",
 			"/assets/arrow-right-BdIbGYay.js",
