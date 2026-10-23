@@ -1538,6 +1538,11 @@ body{background-color:var(--bg);background-image:var(--app-bg-image);background-
 .entry-hero img{filter:var(--hero-filter)!important;max-width:24rem;mix-blend-mode:normal}
 
 </style>
+<style id="polish-1023-a">
+/* polish-1023: phone header pill fits ("Metabolic Simulator" was cut off); footer clears summary bar + tab bar */
+@media (max-width:480px){.site-header .prod-mark{font-size:min(.74rem,3.1vw);letter-spacing:.01em;padding:.34rem .55rem}}
+@media(max-width:63.99rem){body.has-tabs.has-mbar{padding-bottom:calc(9.2rem + env(safe-area-inset-bottom))}body.has-tabs.has-mbar main{padding-bottom:1.5rem}}
+</style>
 </head>
 <body>
 <!-- v7.6.69: charcoal/slate app background (grain texture removed) + simulation-trend hero -->
