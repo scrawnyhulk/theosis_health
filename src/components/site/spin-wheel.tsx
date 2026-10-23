@@ -156,7 +156,7 @@ export function SpinWheel({
         </div>
       </div>
 
-      <div className="relative left-1/2 mt-4 w-screen max-w-[100vw] -translate-x-1/2 overflow-visible">
+      <div className="relative left-1/2 mt-4 w-screen max-w-[100vw] -translate-x-1/2 overflow-x-clip">
         <div
           ref={stageRef}
           className="relative mx-auto h-[42rem] max-w-[90rem] cursor-grab touch-pan-y select-none overflow-visible active:cursor-grabbing sm:h-[46rem]"
