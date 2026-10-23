@@ -469,3 +469,38 @@ sup a{color:#4587c6;text-decoration:none}
   border-color: rgb(121 180 246 / 0.6) !important;
   box-shadow: 0 0 0 1px rgb(121 180 246 / 0.2), 0 0 20px rgb(42 122 224 / 0.26), 0 10px 30px -14px rgb(0 0 0 / 0.6) !important;
 }
+
+/* Home hero tagline: right-aligned pull quote under the wordmark */
+.hero-tagline {
+  position: relative; margin: -0.5rem 0 0 auto; max-width: 30rem;
+  padding: 0.35rem 0 0.35rem 1.25rem; border-left: 3px solid #5b9cec;
+  font-family: var(--font-display); font-style: italic; font-weight: 500;
+  font-size: 1.35rem; line-height: 1.35; letter-spacing: 0.01em; color: rgb(232 238 246 / 0.95);
+}
+@media (min-width: 640px) { .hero-tagline { font-size: 1.6rem; margin-top: -1.5rem; } }
+@media (max-width: 639px) { .hero-tagline { margin-left: 1.5rem; } }
+
+/* Home welcome: as wide as the feature cards, two columns on PC, blue accent */
+.mk-welcome { max-width: 64rem; position: relative; border-top: 0; }
+.mk-welcome::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, rgb(91 156 236 / 0.85), rgb(91 156 236 / 0.25) 60%, transparent);
+}
+.mk-welcome > h2 { padding-left: 0.9rem; border-left: 3px solid #5b9cec; line-height: 1.1; }
+.mk-welcome > p { max-width: 42rem; }
+@media (min-width: 1024px) {
+  .mk-welcome { display: grid; grid-template-columns: minmax(0, 1fr) 19rem; column-gap: 3rem; align-items: start; }
+  .mk-welcome > h2 { grid-column: 1 / -1; margin-bottom: 0.75rem; }
+  .mk-welcome > p { grid-column: 1; max-width: 40rem; }
+  .mk-welcome > .mk-chips { grid-column: 2; grid-row: 2 / span 3; flex-direction: column; gap: 0.9rem; margin: 0.25rem 0 0; }
+  .mk-welcome > .mk-chips li { border-radius: 0.75rem; padding: 0.9rem 1.1rem; font-size: 0.9rem; line-height: 1.4;
+    background: rgb(28 32 39 / 0.85); border: 1px solid rgb(91 156 236 / 0.4); border-left: 3px solid #5b9cec;
+    box-shadow: 0 0 14px rgb(42 122 224 / 0.14); }
+  .mk-welcome > .mk-chips li:nth-child(2) { margin-left: 1.5rem; }
+  .mk-welcome > .mk-chips b { display: block; font-family: var(--font-display); font-size: 1.6rem; line-height: 1.1; margin-bottom: 0.15rem; }
+  .mk-welcome > .mk-fn { grid-column: 1 / -1; }
+}
+
+/* Short three-beat tagline: bigger, one line on PC */
+.hero-tagline { max-width: none; width: fit-content; font-size: 1.5rem; letter-spacing: 0.02em; }
+@media (min-width: 640px) { .hero-tagline { font-size: 2.1rem; } }

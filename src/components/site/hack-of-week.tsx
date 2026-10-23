@@ -11,8 +11,7 @@ export function HackOfTheWeek() {
   if (!h) return null;
   const cover = hackCovers[h.slug];
   return (
-    <aside aria-labelledby="hotw-title" className="flare-card flex h-full flex-col overflow-hidden rounded-xl border border-border bg-surface/80 sm:flex-row">
-      {cover ? <img src={cover.src} alt={cover.alt} loading="lazy" className="h-40 w-full object-cover sm:h-auto sm:w-44" /> : null}
+    <aside aria-labelledby="hotw-title" className="flare-card flex h-full flex-col overflow-hidden rounded-xl border border-border bg-surface/80">
       <div className="flex flex-col gap-2 p-5">
         <span className="text-xs font-semibold tracking-[0.16em] text-health uppercase">Hack of the week</span>
         <h2 id="hotw-title" className="font-display text-xl font-semibold uppercase">
@@ -22,6 +21,7 @@ export function HackOfTheWeek() {
         <p className="text-xs text-ink-muted">General education, not medical advice. What works can vary from person to person.</p>
         <Link to="/hacks" className="group mt-1 self-start" aria-label="See all Health Hacks"><NavPlaque size="menu" label="See all Health Hacks" /></Link>
       </div>
+      {cover ? <img src={cover.src} alt={cover.alt} loading="lazy" width={1280} height={853} className="mt-auto block h-auto w-full" /> : null}
     </aside>
   );
 }

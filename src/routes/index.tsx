@@ -36,8 +36,8 @@ function Home() {
         <div className="mx-auto max-w-6xl px-5 py-12 sm:px-8 md:py-16">
           <div className="stagger-in">
             <h1 className="sr-only">Theosis Health</h1>
-            <p className="mt-2 max-w-xl text-lg leading-relaxed text-ink-fg/90 sm:text-xl">
-              Small changes, real results. Health Hacks that fit a hectic life, no chicken and broccoli required.
+            <p className="hero-tagline">
+              “Simple tools. Smarter choices. Meaningful change.”
             </p>
             <hr className="mk-hero-rule" aria-hidden="true" />
             <HomeFeatures />

@@ -4,9 +4,9 @@ import { n as require_react } from "../_libs/@radix-ui/react-compose-refs+[...].
 import { b as Link } from "../_libs/@tanstack/react-router+[...].mjs";
 import { i as require_jsx_runtime } from "../_libs/@radix-ui/react-label+[...].mjs";
 import { _ as ArrowRight, l as Footprints, p as Clock, u as FlaskConical } from "../_libs/lucide-react.mjs";
-import { a as SODA_PERSON, c as maintenance, i as EXAMPLE, o as extraLbByDay, s as lostLbByDay } from "./router-JoKvg7gS.mjs";
+import { a as SODA_PERSON, c as maintenance, i as EXAMPLE, o as extraLbByDay, s as lostLbByDay } from "./router-cQICj1Ks.mjs";
 import { a as SiteShell, i as NavPlaque, r as NavIcon } from "./site-shell-DeZc4Hhv.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/routes-HqjgXwzK.js
+//#region node_modules/.nitro/vite/services/ssr/assets/routes-KqkRByhj.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 /** Swap this slug to feature a different existing Health Hack. Text is pulled from src/lib/hacks.ts, not written here. */
@@ -17,13 +17,8 @@ function HackOfTheWeek() {
 	const cover = hackCovers[h.slug];
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("aside", {
 		"aria-labelledby": "hotw-title",
-		className: "flare-card flex h-full flex-col overflow-hidden rounded-xl border border-border bg-surface/80 sm:flex-row",
-		children: [cover ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
-			src: cover.src,
-			alt: cover.alt,
-			loading: "lazy",
-			className: "h-40 w-full object-cover sm:h-auto sm:w-44"
-		}) : null, /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "flare-card flex h-full flex-col overflow-hidden rounded-xl border border-border bg-surface/80",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 			className: "flex flex-col gap-2 p-5",
 			children: [
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
@@ -58,7 +53,14 @@ function HackOfTheWeek() {
 					})
 				})
 			]
-		})]
+		}), cover ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
+			src: cover.src,
+			alt: cover.alt,
+			loading: "lazy",
+			width: 1280,
+			height: 853,
+			className: "mt-auto block h-auto w-full"
+		}) : null]
 	});
 }
 /** Home: featured Metabolic Simulator card paired with the Hack of the week (side by side on PC, stacked on phone). */
@@ -171,8 +173,8 @@ function Home() {
 							children: "Theosis Health"
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-							className: "mt-2 max-w-xl text-lg leading-relaxed text-ink-fg/90 sm:text-xl",
-							children: "Small changes, real results. Health Hacks that fit a hectic life, no chicken and broccoli required."
+							className: "hero-tagline",
+							children: "“Simple tools. Smarter choices. Meaningful change.”"
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("hr", {
 							className: "mk-hero-rule",
