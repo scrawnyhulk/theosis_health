@@ -5,7 +5,7 @@ import { _ as lazyRouteComponent, d as Scripts, f as HeadContent, g as Outlet, h
 import { i as require_jsx_runtime } from "../_libs/@radix-ui/react-label+[...].mjs";
 import { a as TriangleAlert } from "../_libs/lucide-react.mjs";
 import { a as union, i as string, n as number, r as object, t as literal } from "../_libs/zod.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/router-Dl30kLho.js
+//#region node_modules/.nitro/vite/services/ssr/assets/router-Csxuu5dg.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var __defProp = Object.defineProperty;
@@ -344,7 +344,7 @@ var Route$12 = createRootRoute({
 			},
 			{
 				property: "og:image",
-				content: `${site.url}/og.jpg`
+				content: `${site.url}/og-theosishealth.png`
 			},
 			{
 				property: "og:image:width",
@@ -372,7 +372,7 @@ var Route$12 = createRootRoute({
 			},
 			{
 				name: "twitter:image",
-				content: `${site.url}/og.jpg`
+				content: `${site.url}/og-theosishealth.png`
 			}
 		],
 		links: [
@@ -508,7 +508,7 @@ function lostLbByDay(cut, days = 365, P = EXAMPLE) {
 	}
 	return out;
 }
-var $$splitComponentImporter$11 = () => import("./routes-DmXAgSic.mjs");
+var $$splitComponentImporter$11 = () => import("./routes-BkMnT9ka.mjs");
 Math.round(maintenance(SODA_PERSON) / 10) * 10;
 var Route$11 = createFileRoute("/")({ component: lazyRouteComponent($$splitComponentImporter$11, "component") });
 var $$splitComponentImporter$10 = () => import("./consumer-health-privacy--ZpGldp7.mjs");
@@ -555,7 +555,7 @@ var Route$4 = createFileRoute("/hacks/")({
 		content: "Health Hacks: the 20% that does 80% of the work. Protein, calories, drinks, fast food, and the mechanisms behind them."
 	}] })
 });
-var $$splitComponentImporter$3 = () => import("../_slug-Dpl63yVF.mjs");
+var $$splitComponentImporter$3 = () => import("../_slug-1tHw2hbp.mjs");
 var Route$3 = createFileRoute("/hacks/$slug")({
 	component: lazyRouteComponent($$splitComponentImporter$3, "component"),
 	head: ({ params }) => {
@@ -576,7 +576,7 @@ var Route$1 = createFileRoute("/hacks/nerd-out/")({
 		content: "Mechanisms. How stuff actually works. Optional reading. Compulsory if you are me."
 	}] })
 });
-var $$splitComponentImporter = () => import("./nerd-out._topic-GhP9J2Od.mjs");
+var $$splitComponentImporter = () => import("./nerd-out._topic-bG7cgtnK.mjs");
 var Route = createFileRoute("/hacks/nerd-out/$topic")({
 	component: lazyRouteComponent($$splitComponentImporter, "component"),
 	head: ({ params }) => {

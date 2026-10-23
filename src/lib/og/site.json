@@ -3,5 +3,7 @@
   "siteName": "Theosis Health",
   "description": "Simple tools. Smarter choices. Meaningful change. Free health education tools from Theosis Health. For education only, not medical advice.",
   "url": "https://theosishealth.com",
-  "card": "custom"
+  "card": "custom",
+  "image": "/og-theosishealth.png",
+  "imageAlt": "Theosis Health"
 }

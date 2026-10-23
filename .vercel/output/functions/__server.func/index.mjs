@@ -17,7 +17,8 @@ var grokOgIdentity = { "site": {
 	"description": "Simple tools. Smarter choices. Meaningful change. Free health education tools from Theosis Health. For education only, not medical advice.",
 	"url": "https://theosishealth.com",
 	"card": "custom",
-	"image": "/og.jpg"
+	"image": "/og-theosishealth.png",
+	"imageAlt": "Theosis Health"
 } };
 //#endregion
 //#region scripts/grok-pwa-shared.mjs
@@ -41,6 +42,8 @@ var SHARE_META_KEYS = /* @__PURE__ */ new Set([
 	"twitter:title",
 	"twitter:image",
 	"twitter:description",
+	"og:image:alt",
+	"twitter:image:alt",
 	"x:game:image",
 	"x:game:image:width",
 	"x:game:image:height"
@@ -189,6 +192,8 @@ function readOgSite(cwd = process.cwd()) {
 }
 /** Public path of an on-disk share card, or "" if neither file exists. */
 function ogCardPublicPath(cwd = process.cwd()) {
+	const pref = String(readOgSite(cwd).image ?? "").trim();
+	if (pref.startsWith("/") && existsSync(join(cwd, "public", pref))) return pref;
 	if (existsSync(join(cwd, "public/og.jpg"))) return "/og.jpg";
 	if (existsSync(join(cwd, "public/og.png"))) return "/og.png";
 	return "";
@@ -279,7 +284,10 @@ function grokOgHeadTags({ host = "", appName = DEFAULT_APP_NAME, site = {}, docu
 		tags.push(`<meta property="og:image" content="${escapeHtml(image)}">`);
 		tags.push(`<meta property="og:image:width" content="1200">`);
 		tags.push(`<meta property="og:image:height" content="630">`);
+		const alt = String(site.imageAlt ?? "").trim();
+		if (alt) tags.push(`<meta property="og:image:alt" content="${escapeHtml(alt)}">`);
 		if (siteUrl) tags.push(`<meta name="twitter:image" content="${escapeHtml(image)}">`);
+		if (siteUrl && alt) tags.push(`<meta name="twitter:image:alt" content="${escapeHtml(alt)}">`);
 		const banner = String(site.banner ?? "").trim();
 		if (banner) {
 			const bannerUrl = `https://${publicHost}${banner.startsWith("/") ? banner : `/${banner}`}`;
