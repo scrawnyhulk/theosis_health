@@ -1,7 +1,11 @@
 // Theosis Health service worker (site scope "/"). No analytics.
 // Pages: network-first with an offline fallback. Static assets: cache-first.
 // /simulator/** is never handled here (the simulator will ship its own worker).
-const VERSION = "theosis-v3";
+// Own caches all start with PREFIX; other caches (e.g. "theosis-sim-*") are never touched.
+const PREFIX = "theosis-site-";
+const VERSION = PREFIX + "v4";
+// Exact names used by earlier versions of this worker (cleaned up by name only).
+const LEGACY = ["theosis-v2", "theosis-v3-pages", "theosis-v3-assets"];
 const PAGES = VERSION + "-pages";
 const ASSETS = VERSION + "-assets";
 const OFFLINE = "/offline.html";
@@ -15,7 +19,7 @@ self.addEventListener("install", (event) => {
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys()
-      .then((keys) => Promise.all(keys.filter((k) => !k.startsWith(VERSION)).map((k) => caches.delete(k))))
+      .then((keys) => Promise.all(keys.filter((k) => LEGACY.includes(k) || (k.startsWith(PREFIX) && !k.startsWith(VERSION + "-"))).map((k) => caches.delete(k))))
       .then(() => self.clients.claim()),
   );
 });
