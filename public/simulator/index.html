@@ -350,7 +350,7 @@ input[type=range]{flex:1;accent-color:var(--accent);height:2rem}
 /* summary */
 .summary{padding:1.1rem}
 body:not(.f3d-old) #summary .sum-figs:not(.sum-ph),body:not(.f3d-old) #summary .f3-bar,body:not(.f3d-old) #summary .f3-legend,body:not(.f3d-old) #summary .anat-read,body:not(.f3d-old) .mbar-panel .sum-figs:not(.sum-ph){display:none!important}
-.f3d-sw{display:flex;justify-content:center;gap:0;margin:.55rem auto .45rem;width:max-content;padding:3px;border:1px solid rgba(231,237,245,.18);border-radius:999px;background:rgba(8,13,20,.55)}.f3d-sw button{min-height:36px;min-width:7.5rem;padding:.35rem 1rem;border:0;border-radius:999px;background:transparent;color:#c9d4e2;font:600 .9rem/1 var(--font-body,inherit);cursor:pointer}.f3d-sw button[aria-pressed=true]{background:#2a7ae0;color:#fff;box-shadow:0 0 12px rgba(92,160,255,.45)}#f3d-wk:empty::after{content:"\00a0"}.f3d-skins{display:flex;gap:.55rem;justify-content:center;margin:.55rem 0 .2rem}.f3d-skins button{width:30px;height:30px;border-radius:50%;background:var(--t);border:2px solid rgba(231,237,245,.25);cursor:pointer;padding:0}.f3d-skins button[aria-pressed=true]{border-color:#fff;box-shadow:0 0 0 3px rgba(92,160,255,.55)}.f3d-ctv #f3d-pfe .pfe-stage{height:0!important;min-height:0;margin:0;overflow:hidden;visibility:hidden}.f3d-ctv #f3d-pfe .pfe-intro,.f3d-ctv #f3d-pfe .pfe-list,.f3d-ctv #f3d-pfe .pfe-meta,.f3d-ctv #f3d-pfe .pfe-hint,.f3d-ctv #f3d-pfe .pfe-t{display:none}
+.f3d-sw{display:flex;justify-content:center;gap:0;margin:.55rem auto .45rem;width:max-content;padding:3px;border:1px solid rgba(231,237,245,.18);border-radius:999px;background:rgba(8,13,20,.55)}.f3d-sw button{min-height:36px;min-width:7.5rem;padding:.35rem 1rem;border:0;border-radius:999px;background:transparent;color:#c9d4e2;font:600 .9rem/1 var(--font-body,inherit);cursor:pointer}.f3d-sw button[aria-pressed=true]{background:#2470d4;color:#fff;box-shadow:0 0 12px rgba(92,160,255,.45)}#f3d-wk:empty::after{content:"\00a0"}.f3d-skins{display:flex;gap:.55rem;justify-content:center;margin:.55rem 0 .2rem}.f3d-skins button{width:30px;height:30px;border-radius:50%;background:var(--t);border:2px solid rgba(231,237,245,.25);cursor:pointer;padding:0}.f3d-skins button[aria-pressed=true]{border-color:#fff;box-shadow:0 0 0 3px rgba(92,160,255,.55)}.f3d-ctv #f3d-pfe .pfe-stage{height:0!important;min-height:0;margin:0;overflow:hidden;visibility:hidden}.f3d-ctv #f3d-pfe .pfe-intro,.f3d-ctv #f3d-pfe .pfe-list,.f3d-ctv #f3d-pfe .pfe-meta,.f3d-ctv #f3d-pfe .pfe-hint,.f3d-ctv #f3d-pfe .pfe-t{display:none}
 :root{--accent-ink:#5b9cec;--blue-edge:rgba(91,156,236,.5);--blue-glow:0 0 0 1px rgba(91,156,236,.5),0 0 16px rgba(59,130,246,.13),0 0 2px rgba(59,130,246,.25)}
 .card,.v-card,.hs-fx,.fs-card,.fs-log,#mbar-panel,dialog.info-dlg{box-shadow:var(--blue-glow)!important;border-radius:var(--r-lg)}.v-card,.hs-fx,.fs-card,.fs-log{border-radius:14px}
 a:not(.btn){color:#5b9cec}input[type=range]{accent-color:#3b82f6}.seg button[aria-pressed=true],[role=tab][aria-selected=true]{box-shadow:0 0 0 1px rgba(91,156,236,.7),0 0 10px rgba(59,130,246,.3)}.btn-ghost{box-shadow:0 0 0 1px var(--blue-edge)}
@@ -1538,6 +1538,13 @@ body{background-color:var(--bg);background-image:var(--app-bg-image);background-
 .entry-hero img{filter:var(--hero-filter)!important;max-width:24rem;mix-blend-mode:normal}
 
 </style>
+<style id="polish-1023-a">
+/* polish-1023: phone header pill fits ("Metabolic Simulator" was cut off); footer clears summary bar + tab bar */
+@media (max-width:480px){.site-header .prod-mark{font-size:min(.74rem,3.1vw);letter-spacing:.01em;padding:.34rem .55rem}}
+@media(max-width:63.99rem){body.has-tabs.has-mbar{padding-bottom:calc(var(--polish-bars,9.6rem) + env(safe-area-inset-bottom))}body.has-tabs.has-mbar main{padding-bottom:1.5rem}body.has-tabs.has-mbar .wiz-nav,body.has-tabs.has-mbar #wizard{padding-bottom:1rem}}
+/* polish-1023: source number buttons get a 32px invisible tap area (looks unchanged) */
+.fn::before{content:"";position:absolute;left:50%;top:50%;width:max(100%,32px);height:max(100%,32px);transform:translate(-50%,-50%)}
+</style>
 </head>
 <body>
 <!-- v7.6.69: charcoal/slate app background (grain texture removed) + simulation-trend hero -->
@@ -1969,7 +1976,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')set(false)})
             <p class="eyebrow card-eyebrow">Optional · stays on this device</p>
             <div class="section-head"><h2>Your photo</h2></div>
             <div class="photo-row">
-              <img id="photo-thumb" class="photo-thumb" alt="Your cropped photo" hidden>
+              <img id="photo-thumb" class="photo-thumb" alt="Your cropped photo" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" hidden>
               <div class="actions" style="margin-top:0">
                 <button type="button" class="btn btn-ghost" id="btn-upload"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>Upload photo</button>
                 <button type="button" class="btn btn-ghost" id="btn-camera"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Take photo</button>
@@ -2063,7 +2070,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')set(false)})
               </div>
               <div id="feas" aria-live="polite"></div>
             </div>
-            <details class="adv">
+            <details class="adv adv-only">
               <summary>Advanced: muscle-gain rates used</summary>
               <div class="adv-body stack small muted">
                 <p>Estimated lean-mass gain with consistent, well-programmed lifting (4+ sessions a week, enough protein, enough food). These are estimates, not guarantees. Genetics, sleep, age and program quality move them a lot.</p>
@@ -2247,7 +2254,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')set(false)})
             <label class="field mt1"><span class="label">Refeeds and diet breaks</span>
               <span class="control"><select data-sel="food.refeedDays">
                 <option value="0">No refeed days</option><option value="1">1 refeed day a week at maintenance</option><option value="2">2 refeed days a week at maintenance</option>
-              </select></span><span class="hint">Refeed days at maintenance during a diet may help training and adherence (Campbell 2020; Peos 2021). They slow weekly loss, and the timeline shows it. Longer diet breaks are under "Advanced: macro style, diet breaks" below.</span></label>
+              </select></span><span class="hint">Refeed days at maintenance during a diet may help training and adherence (Campbell 2020; Peos 2021). They slow weekly loss, and the timeline shows it.<span class="adv-only"> Longer diet breaks are under "Advanced: macro style, diet breaks" below.</span></span></label>
           </div>
           <div class="card" id="meals-card">
             <p class="eyebrow card-eyebrow">Meal ideas</p>
@@ -2255,7 +2262,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')set(false)})
             <div id="fav-card"></div>
             <div id="meals" aria-live="polite"></div>
           </div>
-          <div class="card" id="food-adv-card">
+          <div class="card adv-only" id="food-adv-card">
             <details class="adv" style="margin-top:0;border-top:0;padding-top:0">
               <summary>Advanced: macro style, diet breaks, BMR equation</summary>
               <div class="adv-body stack">
@@ -5416,7 +5423,7 @@ return { KEY, MEALS, MEAL_IDS, dateKey, addDays, isDate, mealFor, empty, normali
   function open() { build(); lastFocus = document.activeElement; if (!dlg.open) { try { dlg.showModal(); } catch (e) { dlg.setAttribute("open", ""); } } show(0); }
   function close() { mark(); if (dlg && dlg.open) dlg.close(); if (lastFocus && lastFocus.focus) try { lastFocus.focus(); } catch (e) {} }
   function maybe() { const C = window.TheosisConsent, test = window.__CONSENT_TEST_BYPASS && !/intro=1/.test(location.search);
-    if (test || seen()) return; if (C && !C.get()) return; const cd = document.getElementById("consent-dlg"); if (cd && cd.open) return; open(); }
+    if (test || seen()) return; if (C && !C.get()) return; const cd = document.getElementById("consent-dlg"); if (cd && cd.open) return; /* polish-1023: never open over another dialog (e.g. biometric consent on phone); retry once it closes */ const od = document.querySelector("dialog[open]:not(#intro-dlg)"); if (od) { od.addEventListener("close", () => setTimeout(maybe, 50), { once: true }); return; } open(); }
   function init() {
     document.addEventListener("click", (e) => { const t = e.target.closest("[data-intro]"); if (t) { e.preventDefault(); open(); } }, true);
     if (window.TheosisConsent) TheosisConsent.onChange(() => setTimeout(maybe, 50));
@@ -5438,6 +5445,7 @@ const CONFIG = {
   PREVIEW_ENDPOINT: "/.netlify/functions/preview",   // v7.6.18 beta: single "See it on your photo" illustration (preview.js, same GEMINI_API_KEY)
   AI_ENDPOINT: "/.netlify/functions/ai",                  // v7.6.14: ONE Netlify Function holds GEMINI_API_KEY (see AI-SETUP.md). The AI features hide themselves when it isn't deployed or has no key.
   AI_EXPLAIN_PLAN: true,                                 // v7.6.14: the single switch for the "Explain my plan" section of the print-to-PDF recap. Set false to remove it completely.
+  LABS_UPLOAD_ON: false,  // polish-1023: set true together with LABS_ENABLED=true on Netlify
   LABS_ENDPOINT: "/.netlify/functions/labs",                                   // "/.netlify/functions/labs" once LABS_API_KEY (or GEMINI_API_KEY) is set on Netlify                                // "/.netlify/functions/preview" once GEMINI_API_KEY is set on Netlify
   STORAGE_KEY: "theosis-bodyplan-v1",
   PE_DOTS: typeof window !== "undefined" && window.__PE_DOTS === 1,                                        // v7.6.47: P:E colour dots + legend hidden until the produce-friendly rating is done (code kept; the meal solver tiebreaker still uses the ratio)
@@ -6133,7 +6141,7 @@ function renderWeekly() {
 /* v7.2 optional lab upload with AI reading (Netlify function holds the key; disabled until configured). Manual entry always works. */
 const LU = { busy: false, msg: "", found: null };
 function renderLabUpload() {
-  const box = $("#lab-upload"); if (!box) return; const on = !!CONFIG.LABS_ENDPOINT, C = window.TheosisConsent, ok = on && C && C.has("labAi");
+  const box = $("#lab-upload"); if (!box) return; /* polish-1023: lab upload is off on the server (LABS_ENABLED unset), so the upload button stays hidden; hand entry still works */ box.hidden = !CONFIG.LABS_UPLOAD_ON; if (!CONFIG.LABS_UPLOAD_ON) { box.innerHTML = ""; return; } const on = !!CONFIG.LABS_ENDPOINT, C = window.TheosisConsent, ok = on && C && C.has("labAi");
   box.innerHTML = !on ? `<p class="hint" data-lu="off">Lab report upload with automatic reading is not available here (for example in a drag-and-drop or offline copy). You can still add your values by hand with "Add lab results".</p>`
     : `<div class="lu-row"><button type="button" class="btn btn-ghost" id="lu-pick" ${LU.busy ? "disabled" : ""}>${LU.busy ? "Reading your report…" : "Upload a lab report (photo or PDF)"}</button>
       <span class="hint">${ok ? "Sent to an AI provider only to read the values. Not stored by Theosis Health. Google may keep it briefly for abuse monitoring under its paid API terms and doesn't use it to train AI. You'll confirm every value." : `Needs the "Lab upload and AI reading" opt-in. <a href="#" data-consent>Consent settings</a>`}</span></div>
@@ -8559,7 +8567,7 @@ function bindCrop() {
   $("#file-camera").addEventListener("change", (ev) => { loadFile(ev.target.files[0]); ev.target.value = ""; });
   $("#btn-photo-remove").addEventListener("click", () => { photo = null; aiState.result = null; renderPhoto(); update(); });
 }
-function renderPhoto() { const t = $("#photo-thumb"); t.hidden = !photo; if (photo) t.src = photo; else t.removeAttribute("src"); $("#btn-photo-remove").hidden = !photo;}
+function renderPhoto() { const t = $("#photo-thumb"); t.hidden = !photo; if (photo) t.src = photo; else t.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"; $("#btn-photo-remove").hidden = !photo;}
 
 const F3 = { sup: null, rt: null, rtP: null, models: {}, slots: {}, io: null, failed: false, reason: "", unsupported: false };
 function webgl() {
@@ -9455,5 +9463,9 @@ new MutationObserver((ms) => { for (const m of ms) m.addedNodes.forEach((n) => {
 
 </script>
 <script type="text/plain" id="zx-inline"></script><!-- v7.6.68: ZXing is loaded from scanner/ on demand; no inline copy -->
+<script id="polish-1023-bars">/* polish-1023: page bottom padding follows the real height of the phone summary bar + tab bar, so the footer never hides under them */
+(function(){function fit(){var m=document.getElementById("mbar"),t=document.getElementById("topnav");if(!m)return;var h=0;[m,t].forEach(function(e){if(e&&e.getClientRects().length&&getComputedStyle(e).position==="fixed")h+=e.querySelector(".mbar-head")&&e===m?e.querySelector(".mbar-head").getBoundingClientRect().height:e.getBoundingClientRect().height});if(h)document.body.style.setProperty("--polish-bars",Math.ceil(h+12)+"px")}
+function init(){fit();if(window.ResizeObserver){var ro=new ResizeObserver(fit);["mbar","topnav"].forEach(function(id){var e=document.getElementById(id);if(e)ro.observe(e)})}addEventListener("resize",fit)}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);else init()})();</script>
 </body>
 </html>
