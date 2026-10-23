@@ -43,7 +43,7 @@ function Home() {
             <HomeFeatures />
             <div className="mk-welcome">
               <h2 className="font-display text-2xl font-semibold uppercase sm:text-3xl">Welcome to Theosis Health</h2>
-              <p className="mt-2 max-w-2xl text-ink-fg/85">Our bodies are a lot like machines. We’re made of parts (protein) and run on fuel (carbohydrates and fats). Most adults burn roughly 60–110 calories an hour, so a few sips of a sweet drink or a few extra bites can be more than we need in that moment. We store the extra, and small things add up fast.</p>
+              <p className="mt-2 max-w-2xl text-ink-fg/85">The human body works a lot like a machine. It’s made of parts (protein) and runs on fuel (carbohydrates and fats). Most adults tend to burn roughly 60–110 calories an hour, so a few sips of a sweet drink or a few extra bites can be more than we need in that moment. We store the extra, and small things add up fast.</p>
               <p className="mt-3 max-w-2xl text-ink-fg/85">We each have a different-sized fuel tank for storing fat safely, set largely by our genes. Once ours is full, the extra fuel has nowhere safe to go. It gets harder to clear sugar and fat from the bloodstream, so blood sugar starts to rise. That tipping point is our personal fat threshold, and it’s how so many people slide into insulin resistance, prediabetes and type 2 diabetes without realizing it. <a href="/simulator/pft-inside/" className="font-medium text-health underline underline-offset-2 hover:no-underline">See what happens inside as fat builds up →</a> Today 40.1 million people in the US have diabetes, 115.2 million adults have prediabetes,<sup><a href="#wf1" aria-label="Footnote 1">1</a></sup> and about 1 in 3 adults have metabolic syndrome.<sup><a href="#wf2" aria-label="Footnote 2">2</a></sup></p>
               <p className="mt-3 max-w-2xl text-ink-fg/85">Theosis Health and the <a href="/simulator/" className="font-medium text-health underline underline-offset-2 hover:no-underline">Theosis Metabolic Simulator</a> were created to help you find small, targeted changes that fit the life you already have, without giving up every food you enjoy.</p>
               <ul className="mk-chips" aria-label="Quick facts">
@@ -148,7 +148,7 @@ type Drink = { id: string; name: string; short: string; kcal: number; src: strin
 const SUGARY: Drink[] = [
   { id: "can", name: "Can of pop", short: "the can of pop", kcal: 140, src: "Coca-Cola, 12 fl oz can (coca-cola.com)" },
   { id: "20oz", name: "20 oz pop", short: "the 20 oz pop", kcal: 240, src: "Coca-Cola, 20 fl oz bottle (coca-cola.com)" },
-  { id: "sbux", name: "Starbucks drink", short: "the Starbucks drink", kcal: 380, src: "Grande Caramel Frappuccino, 16 fl oz (starbucks.com)" },
+  { id: "sbux", name: "Starbucks drink", short: "the Starbucks drink", kcal: 380, src: "Grande Caramel Frappuccino, 16 fl oz, whole milk and whipped cream (starbucks.com)" },
   { id: "gulp", name: "Big Gulp", short: "the Big Gulp", kcal: 420, src: "Coca-Cola fountain, 30 fl oz, no ice (Coca-Cola fountain nutrition chart)" },
   { id: "energy", name: "Full-sugar energy drink", short: "the energy drink", kcal: 230, src: "Monster Energy Original, 16 fl oz (monsterenergy.com)" },
   { id: "sweettea", name: "Sweet tea", short: "the sweet tea", kcal: 190, src: "Gold Peak Sweet Tea, 18.5 fl oz (coca-cola.com)" },
@@ -237,7 +237,7 @@ function SodaCard() {
           <text x={anchor === "end" ? lx - 12 : lx + 12} y={ly + (lb >= 0 ? -10 : 22)} textAnchor={anchor} className="sd-pt" fill={col}>{shown} lb</text>
         </svg>
         <TimeSlider id="mkr" value={i} onChange={setI} describedBy="mknote" />
-        <p id="mknote" className="mk-small" style={{ marginTop: "1rem" }}>Rough educational estimate only. The math uses the calorie difference between the two drinks, every day. The pounds come from the simulator's energy-balance model, which includes metabolic adaptation, so both lines slow over time instead of adding up in a straight line. Real-life results vary from person to person. Not medical advice.</p>
+        <p id="mknote" className="mk-small" style={{ marginTop: "1rem" }}>Rough educational estimate only. The math uses the calorie difference between the two drinks, every day. The pounds come from the simulator's energy-balance model, which includes metabolic adaptation, so both lines slow over time instead of adding up in a straight line. Real-life results vary from person to person. Not medical advice. Method based on Hall KD et al., Lancet 2011;378:826–837, which found the old 3,500-calories-per-pound rule overestimates long-term change.</p>
         <p className="mk-small" style={{ fontSize: ".78rem", opacity: 0.85 }}>{SODA_SR} Individual numbers will differ. Try the simulator to see your own.</p>
         <p className="mk-small" style={{ fontSize: ".72rem", opacity: 0.75 }}>Calories used: {S.name}, {S.kcal} ({S.src}); {Z.name}, {Z.kcal} ({Z.src}). Fountain drinks with ice usually have a bit less.</p>
       </div>

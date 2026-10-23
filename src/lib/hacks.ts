@@ -141,10 +141,10 @@ paragraphs: [
     title: "Don't Drink Calories",
     lede: "If it has calories and you can sip it, skip it. Hunger does not count a drink as a meal.",
 paragraphs: [
-      "Liquid calories do not fill you up the way food does. You can drink 400 calories and still be hungry enough to eat dinner like you never had them. That is why this is near the top of the list.",
+      "Research suggests liquid calories may not fill people up the way food does, so someone can drink 400 calories and still be hungry for a full dinner (DiMeglio & Mattes, Int J Obes 2000;24:794–800). That is why this is near the top of the list.",
       "Water. Sparkling water. Black coffee. Unsweetened tea. Diet soda. Zero-calorie flavored drinks. That is the drink list.",
       "We do not fear fake sweeteners as of the data to date. The human trial data does not support the internet panic. The scary headlines usually come from petri dishes and mega-doses, not from people drinking Diet Coke. [[sweeteners]]",
-      "Juice is fruit with the useful parts removed. Regular soda is dessert. The sweet coffee drink is a milkshake in a paper cup. Sports drinks are for people actually sweating through a long session — not for sitting at a desk.",
+      "Juice is basically fruit with most of the useful parts removed. Regular soda is pretty much dessert. The sweet coffee drink is often a milkshake in a paper cup. Sports drinks are mostly for people actually sweating through a long session — not for sitting at a desk.",
     ],
   },
   {
