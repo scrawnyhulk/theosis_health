@@ -81,7 +81,7 @@ window.PFTEmbed=function(host,opt){
  api.tissue=m=>{st.tissue=m||null;try{const d=D(),mb=d&&d.querySelector('[data-pft3d-mode="'+(m||opt.mode||'cut')+'"]');if(mb){mb.click();host.classList.toggle('pfe-half',m==='fat');return true}}catch(e){}return false};/* v7.6.80: Half & half = the PFT model's own 'Fat + muscle' mode (fat under the skin peeled off one side) */
  api.muscleFace=v=>{st.face=v==='side'?'side':'front';try{const w=W();if(w&&w.PFTAtlas&&st.muscle){w.PFTAtlas.setView(st.face);return true}}catch(e){}return false};/* v7.6.80 */
 api.faceAz=()=>{try{const i=W().PFTAtlas.inspect();return i?i.view:null}catch(e){return null}};
-api.grow=g=>{st.grow=g;try{const w=W();if(w&&w.PFTAtlas&&w.PFTAtlas.muscleGrowth){w.PFTAtlas.muscleGrowth(g||{});return true}}catch(e){}return false};
+api.bias=b=>{st.bias=b;try{const w=W();if(!w)return false;w.__pftBias=b;if(w.PFTAnatomyBias){w.PFTAnatomyBias(b);return true}}catch(e){}return false};api.grow=g=>{st.grow=g;try{const w=W();if(w&&w.PFTAtlas&&w.PFTAtlas.muscleGrowth){w.PFTAtlas.muscleGrowth(g||{});return true}}catch(e){}return false};
  api.set=o=>{if(o.load!=null&&o.start==null&&o.s==null)o={...o,start:o.load,s:o.later?100:0,end:o.later?o.load:st.end};Object.assign(st,o);apply()};
  api.state=()=>({...st});api.ready=()=>ready;
  api.ctList=()=>['liver','pan','vis','skin'].map(k=>[COL[k],CTT[k][words[k]||'low'],TXT[k][words[k]||'low'],cite(k,words[k]||'low')]);
