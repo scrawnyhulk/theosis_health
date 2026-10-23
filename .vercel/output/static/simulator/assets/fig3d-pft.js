@@ -101,7 +101,7 @@ function f3dShell() {
 }
 let f3dLib = null;   // assets/pft-embed.js is loaded on demand (keeps index.html small)
 function f3dLoadLib() { if (typeof PFTEmbed === "function") return Promise.resolve(); if (f3dLib) return f3dLib;
-  f3dLib = new Promise((res, rej) => { const s = document.createElement("script"); s.src = "assets/pft-embed.js?v=7695"; s.onload = res; s.onerror = rej; document.head.appendChild(s); }); return f3dLib; }
+  f3dLib = new Promise((res, rej) => { const s = document.createElement("script"); s.src = "assets/pft-embed.js?v=7696h"; s.onload = res; s.onerror = rej; document.head.appendChild(s); }); return f3dLib; }
 function f3dMountNow() {
   if (window.__NO_PFT_FIG) return;   // __NO_PFT_FIG: legacy test suites that check the older 2D/3D mannequin figure
   if (F3D.failed) { const fh = $(f3dWhere()); if (fh && !fh.querySelector(".f3d-fbfig")) { if (F3D.host && F3D.host !== fh) { F3D.host.innerHTML = ""; F3D.host.hidden = true; } F3D.host = fh; F3D.where = f3dWhere(); f3dFallback(fh); } return; }
@@ -128,6 +128,7 @@ function f3dApply() {
   r.setAttribute("aria-valuetext", F3D.i === 0 ? "Today" : last ? `${goal}: ${fDate(end.day)}` : `Week ${fWk(x.day)}, ${fDate(x.day)}`);
   $("#f3d-w").textContent = `${fW(rows[0].weightKg)} → ${fW(x.weightKg)}`; $("#f3d-f").textContent = `${fP(rows[0].bf)} → ${fP(x.bf)}`;
   if (F3D.api && F3D.api.ready()) F3D.api.set({ start: st.load, end: load, s: F3D.i ? 100 : 0, capacity: st.cap, a1c: f3dUserA1c(), outer: window.BodyPlanApp && BodyPlanApp.figOuter ? BodyPlanApp.figOuter(x) : null });
+  if (F3D.api && F3D.api.bias && window.BodyPlanApp && BodyPlanApp.figBias) F3D.api.bias(BodyPlanApp.figBias(x));   /* v7.6.90: frame from height, weight, sex */
   if (F3D.mus) f3dMuscle(); else if (F3D.half) f3dHalfGrow(false);
 }
 function f3dCt() { const b = $("#f3d-ctbox"); if (!b || !F3D.api) return; const u = F3D.api.ct(); if (u) $("#f3d-ctimg").src = u;
