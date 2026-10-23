@@ -5366,7 +5366,7 @@ return { KEY, MEALS, MEAL_IDS, dateKey, addDays, isDate, mealFor, empty, normali
   function open() { build(); lastFocus = document.activeElement; if (!dlg.open) { try { dlg.showModal(); } catch (e) { dlg.setAttribute("open", ""); } } show(0); }
   function close() { mark(); if (dlg && dlg.open) dlg.close(); if (lastFocus && lastFocus.focus) try { lastFocus.focus(); } catch (e) {} }
   function maybe() { const C = window.TheosisConsent, test = window.__CONSENT_TEST_BYPASS && !/intro=1/.test(location.search);
-    if (test || seen()) return; if (C && !C.get()) return; const cd = document.getElementById("consent-dlg"); if (cd && cd.open) return; open(); }
+    if (test || seen()) return; if (C && !C.get()) return; const cd = document.getElementById("consent-dlg"); if (cd && cd.open) return; /* polish-1023: never open over another dialog (e.g. biometric consent on phone); retry once it closes */ const od = document.querySelector("dialog[open]:not(#intro-dlg)"); if (od) { od.addEventListener("close", () => setTimeout(maybe, 50), { once: true }); return; } open(); }
   function init() {
     document.addEventListener("click", (e) => { const t = e.target.closest("[data-intro]"); if (t) { e.preventDefault(); open(); } }, true);
     if (window.TheosisConsent) TheosisConsent.onChange(() => setTimeout(maybe, 50));
