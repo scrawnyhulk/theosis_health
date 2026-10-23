@@ -1574,7 +1574,7 @@ body{background-color:var(--bg);background-image:var(--app-bg-image);background-
     subs.forEach((f) => { try { f(c); } catch (e) {} }); return c;
   }
   let dlg = null, lastFocus = null;
-  const NAMES = { ai: "AI features", photoAi: "face and body photos and AI images", biometric: "biometric (face and body photo) consent", labAi: "lab upload and AI reading" }, WHAT = { ai: "AI answers and drafts", photoAi: "your start photo, check-in photos and AI images", biometric: "body-shape estimates from photos", labAi: "lab values read from uploaded reports" };
+  const NAMES = { ai: "AI features", photoAi: "face and body photos and AI images", biometric: "biometric (face and body photo) consent", labAi: "lab upload and AI reading" }, WHAT = { ai: "AI answers and drafts", photoAi: "your start photo, check-in photos and AI images", biometric: "face and body photos you choose to use for AI illustrations", labAi: "lab values read from uploaded reports" };
   const name = (k) => NAMES[k] || k, what = (k) => WHAT[k] || k;
   const revokers = []; const onRevoke = (fn) => revokers.push(fn); const fire = (k) => revokers.forEach((f) => { try { f(k); } catch (e) {} });
   // v7.6.67e: the app's own large-type dialog instead of the browser's confirm(). Returns a Promise<boolean>.
@@ -1646,7 +1646,7 @@ body{background-color:var(--bg);background-image:var(--app-bg-image);background-
       then(confirmFn(`Turning off ${off.map(name).join(" and ")} will delete the related data stored on this device (${off.map(what).join("; ")}). Continue?`, "Yes, turn off and delete", "No, keep it on"), (ok) => {
         if (ok) return go(); off.forEach((k) => { const x = dlg.querySelector(`[data-opt="${k}"]`); if (x) x.checked = true; }); sync(); dlg.querySelector("#consent-msg").textContent = "Nothing changed."; }); });
     dlg.querySelector("#consent-withdraw").addEventListener("click", () => {
-      then(confirmFn("This withdraws all your consents, turns off photo and AI features, and deletes the photos, AI illustrations, and lab uploads saved on this device. This can't be undone.", "Yes, withdraw all", "No, keep my choices"), (ok) => { if (!ok) return;
+      then(confirmFn("This withdraws all your consents, turns off photo and AI features, and deletes the photos and AI illustrations saved on this device, plus any lab results read from your uploads. This can't be undone.", "Yes, withdraw all", "No, keep my choices"), (ok) => { if (!ok) return;
       try { localStorage.removeItem(KEY); const log = JSON.parse(localStorage.getItem(LOG) || "[]"); log.push({ withdrawn: true, ts: new Date().toISOString() }); localStorage.setItem(LOG, JSON.stringify(log.slice(-50))); } catch (e) {}
       OPT.forEach(([k]) => fire(k)); fire("all"); subs.forEach((f) => { try { f(null); } catch (e) {} }); dlg.close(); open(false);  }); });
     dlg._sync = sync; return dlg;
