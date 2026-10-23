@@ -71,7 +71,8 @@
     for (const ss of sessions) for (const e of ss.ex) { const m = exMus(e);
       for (const x of e.sets) { if (!(x.reps > 0)) continue; const r = setRir(x); if (r != null && r > 4) continue;
         hard++; if (r == null) blankN++; else { rirSum += r; rirN++; }
-        for (const k of m.pri) s[k] += 1; for (const k of m.sec) if (!m.pri.includes(k)) s[k] += 0.5; } }
+        const q = x.reps <= 5 ? 0.75 : 1;   // v7.6.84 (Nick 10/23): a hard set of 1-5 reps counts as 0.75 of a set for growth
+        for (const k of m.pri) s[k] += q; for (const k of m.sec) if (!m.pri.includes(k)) s[k] += 0.5 * q; } }
     return { sets: s, hard, blank: blankN, rir: rirN ? rirSum / rirN : null };
   }
   /** the log's training picture from the last 4 weeks (or less if the log is newer): null if nothing usable */
@@ -178,7 +179,7 @@ ${e.sets.map((x, j) => `<span class="n">${j + 1}</span><input inputmode="numeric
 <div class="ll-row"><button type="button" class="ll-btn pri" id="ll-csave">Add it</button><button type="button" class="ll-btn" id="ll-ccancel">Cancel</button></div></div>`;
     // weekly totals
     const t = dnum(today()), wkS = LOG.sessions.filter((x) => { const a = t - dnum(x.date); return a >= 0 && a < 7; }), w1 = setsPerMuscle(wkS);
-    h += `<div id="ll-stats"><h4 class="ll-h4">Hard sets per muscle</h4><p class="ll-sub" style="margin:.1rem 0 .5rem">Last 7 days${D && D.weeks > 1 ? `, and the weekly average over the ${wkLabel(D.weeks)}` : ""}. Main muscle = 1 set, helper muscle = ½ set.</p>`;
+    h += `<div id="ll-stats"><h4 class="ll-h4">Hard sets per muscle</h4><p class="ll-sub" style="margin:.1rem 0 .5rem">Last 7 days${D && D.weeks > 1 ? `, and the weekly average over the ${wkLabel(D.weeks)}` : ""}. Main muscle = 1 set, helper muscle = ½ set; a hard set of 1–5 reps counts as ¾.</p>`;
     const mx = Math.max(1, ...MK.map((k) => Math.max(w1.sets[k], D ? D.sets[k] : 0)));
     h += `<div class="ll-wk">${MK.map((k) => `<span>${MLAB[k]}</span><span class="t"><i style="width:${(100 * w1.sets[k] / mx).toFixed(1)}%"></i></span><span class="v" data-wk="${k}">${+w1.sets[k].toFixed(1)}${D && D.weeks > 1 ? ` <small>/ ${+D.sets[k].toFixed(1)}</small>` : ""}</span>`).join("")}</div>`;
     if (w1.blank) h += `<p class="ll-sub" style="margin-top:.5rem">${w1.blank} set${w1.blank === 1 ? "" : "s"} had no "reps left" filled in, so we counted ${w1.blank === 1 ? "it" : "them"} as hard sets. Sets with more than 4 reps left don't count as hard.</p>`;
