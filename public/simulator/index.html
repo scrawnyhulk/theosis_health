@@ -1652,9 +1652,11 @@ body{background-color:var(--bg);background-image:var(--app-bg-image);background-
     dlg._sync = sync; return dlg;
   }
   const O = (k) => OPT.find((o) => o[0] === k);
+  /* polish-1023: lab upload is off on the server (netlify LABS_ENABLED unset), so its consent step stays hidden; set true when LABS_ENABLED=true */
+  const LABS_ON = false;
   function paintSteps(d) {
     const ph = d.querySelector('[data-step="photo"]'), lab = d.querySelector('[data-step="labAi"]'), n = photoAvail() ? 4 : 3;
-    ph.hidden = !photoAvail();
+    ph.hidden = !photoAvail(); lab.hidden = !LABS_ON;
     ph.innerHTML = photoAvail() ? `<h3><span class="consent-n">3</span> Face and body photos (optional)</h3><p class="consent-what">${UNLOCK.photo} Nothing is captured or sent until both boxes are ticked.</p>${chk("photoAi", O("photoAi")[1], O("photoAi")[2])}${chk("biometric", O("biometric")[1], O("biometric")[2])}<div class="consent-no"><button type="button" class="btn btn-ghost" data-no="photo">No thanks, use without photos</button></div>` : "";
     lab.innerHTML = `<h3><span class="consent-n">${n}</span> Lab upload and AI reading (optional)</h3><p class="consent-what">${UNLOCK.labAi}</p>${chk("labAi", O("labAi")[1], O("labAi")[2])}<div class="consent-no"><button type="button" class="btn btn-ghost" data-no="labAi">No thanks</button></div>`;
   }
