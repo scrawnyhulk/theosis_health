@@ -4,9 +4,9 @@ import { n as require_react } from "../_libs/@radix-ui/react-compose-refs+[...].
 import { b as Link } from "../_libs/@tanstack/react-router+[...].mjs";
 import { i as require_jsx_runtime } from "../_libs/@radix-ui/react-label+[...].mjs";
 import { _ as ArrowRight, l as Footprints, p as Clock, u as FlaskConical } from "../_libs/lucide-react.mjs";
-import { a as SODA_PERSON, c as maintenance, i as EXAMPLE, o as extraLbByDay, s as lostLbByDay } from "./router-Ds95lnTn.mjs";
+import { a as SODA_PERSON, c as maintenance, i as EXAMPLE, o as extraLbByDay, s as lostLbByDay } from "./router-V0T7K8fG.mjs";
 import { a as SiteShell, i as NavPlaque, r as NavIcon } from "./site-shell-Chmc-Sqt.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/routes-Bv6IlZs_.js
+//#region node_modules/.nitro/vite/services/ssr/assets/routes-C3HaN_fX.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 /** Swap this slug to feature a different existing Health Hack. Text is pulled from src/lib/hacks.ts, not written here. */
@@ -188,44 +188,33 @@ function Home() {
 									className: "font-display text-2xl font-semibold uppercase sm:text-3xl",
 									children: "Welcome to Theosis Health"
 								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
 									className: "mt-2 max-w-2xl text-ink-fg/85",
-									children: "The human body works a lot like a machine. It’s made of parts (protein) and runs on fuel (carbohydrates and fats). Most adults tend to burn roughly 60–110 calories an hour, so a few sips of a sweet drink or a few extra bites can be more than we need in that moment. We store the extra, and small things add up fast."
+									children: ["We’ve all heard the advice: eat less, move more. Daily life makes it more complicated than that. Most of us have a general sense of what a “healthy diet” looks like, but putting it into practice day to day can be hard. Small food choices that don’t seem significant can add up more than we realize, and research shows metabolism can start drifting off track years before a diagnosis of type 2 diabetes.", /* @__PURE__ */ (0, import_jsx_runtime.jsx)("sup", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+										href: "#wf1",
+										"aria-label": "Footnote 1",
+										children: "1"
+									}) })]
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
 									className: "mt-3 max-w-2xl text-ink-fg/85",
 									children: [
-										"We each have a different-sized fuel tank for storing fat safely, set largely by our genes. Once ours is full, the extra fuel has nowhere safe to go. It gets harder to clear sugar and fat from the bloodstream, so blood sugar starts to rise. That tipping point is our personal fat threshold, and it’s how so many people slide into insulin resistance, prediabetes and type 2 diabetes without realizing it. ",
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
-											href: "/simulator/pft-inside/",
-											className: "font-medium text-health underline underline-offset-2 hover:no-underline",
-											children: "See what happens inside as fat builds up →"
-										}),
-										" Today 40.1 million people in the US have diabetes, 115.2 million adults have prediabetes,",
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("sup", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
-											href: "#wf1",
-											"aria-label": "Footnote 1",
-											children: "1"
-										}) }),
-										" and about 1 in 3 adults have metabolic syndrome.",
+										"If the human body were a machine, protein would be the parts, and carbohydrates and fats would be the fuel. Genetics help set how much fuel each person can safely store. Once that capacity is exceeded, fat tends to build up in organs like the liver and pancreas, which can contribute to insulin resistance and type 2 diabetes.",
 										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("sup", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
 											href: "#wf2",
 											"aria-label": "Footnote 2",
 											children: "2"
-										}) })
+										}) }),
+										" These changes often develop quietly, before obvious symptoms appear."
 									]
 								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 									className: "mt-3 max-w-2xl text-ink-fg/85",
-									children: [
-										"Theosis Health and the ",
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
-											href: "/simulator/",
-											className: "font-medium text-health underline underline-offset-2 hover:no-underline",
-											children: "Theosis Metabolic Simulator"
-										}),
-										" were created to help you find small, targeted changes that fit the life you already have, without giving up every food you enjoy."
-									]
+									children: "Theosis Health helps you look under the hood: how the human body works, what can knock it off track, and where simple changes can help. We pair clear explanations with practical tools, so you can focus on manageable choices that make a meaningful difference. It starts with knowing what matters and making it work in real life. For personal health decisions, talk with your healthcare provider."
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "mt-3 max-w-2xl text-ink-fg/85",
+									children: "Below are a couple of simple choices that can quietly derail our health, or be low-hanging fruit that moves things in the right direction, even if everything else stays the same."
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("ul", {
 									className: "mk-chips",
@@ -235,44 +224,63 @@ function Home() {
 											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("b", { children: "40.1 million" }),
 											" people in the US have diabetes (2023)",
 											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("sup", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
-												href: "#wf1",
-												"aria-label": "Footnote 1",
-												children: "1"
+												href: "#wf3",
+												"aria-label": "Footnote 3",
+												children: "3"
 											}) })
 										] }),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
 											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("b", { children: "115.2 million" }),
 											" US adults have prediabetes",
 											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("sup", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
-												href: "#wf1",
-												"aria-label": "Footnote 1",
-												children: "1"
+												href: "#wf3",
+												"aria-label": "Footnote 3",
+												children: "3"
 											}) })
 										] }),
 										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
 											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("b", { children: "About 1 in 3" }),
 											" US adults (34.7%) have metabolic syndrome (2011–2016)",
 											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("sup", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
-												href: "#wf2",
-												"aria-label": "Footnote 2",
-												children: "2"
+												href: "#wf4",
+												"aria-label": "Footnote 4",
+												children: "4"
 											}) })
 										] })
 									]
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("ol", {
 									className: "mk-fn",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", {
-										id: "wf1",
-										children: "CDC. National Diabetes Statistics Report (updated Sept 16, 2026)."
-									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", {
-										id: "wf2",
-										children: [
-											"Hirode G, Wong RJ. Trends in the prevalence of metabolic syndrome in the United States, 2011–2016. ",
-											/* @__PURE__ */ (0, import_jsx_runtime.jsx)("i", { children: "JAMA." }),
-											" 2020;323(24):2526–2528."
-										]
-									})]
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", {
+											id: "wf1",
+											children: [
+												"Tabák AG, et al. Trajectories of glycaemia, insulin sensitivity, and insulin secretion before diagnosis of type 2 diabetes: an analysis from the Whitehall II study. ",
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("i", { children: "Lancet." }),
+												" 2009;373(9682):2215–2221."
+											]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", {
+											id: "wf2",
+											children: [
+												"Taylor R, Holman RR. Normal weight individuals who develop type 2 diabetes: the personal fat threshold. ",
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("i", { children: "Clin Sci (Lond)." }),
+												" 2015;128(7):405–410."
+											]
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", {
+											id: "wf3",
+											children: "CDC. National Diabetes Statistics Report (updated Sept 16, 2026)."
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", {
+											id: "wf4",
+											children: [
+												"Hirode G, Wong RJ. Trends in the prevalence of metabolic syndrome in the United States, 2011–2016. ",
+												/* @__PURE__ */ (0, import_jsx_runtime.jsx)("i", { children: "JAMA." }),
+												" 2020;323(24):2526–2528."
+											]
+										})
+									]
 								})
 							]
 						}),
@@ -951,8 +959,8 @@ function ProteinCard() {
 						"Rough illustration only, not a prediction. In one study, people who raised protein from about 15% to 30% of their calories ate about 441 fewer calories a day on their own.",
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("sup", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
 							href: "#fn1",
-							"aria-label": "Footnote 3",
-							children: "3"
+							"aria-label": "Footnote 5",
+							children: "5"
 						}) }),
 						" To be careful, this uses a much smaller 150 calories a day, run through the simulator's energy-balance model with metabolic adaptation, so the loss slows over time. Results vary from person to person. Not medical advice."
 					]
@@ -973,7 +981,7 @@ function ProteinCard() {
 						opacity: .8
 					},
 					children: [
-						"3. Weigelt DS, et al. A high-protein diet induces sustained reductions in appetite, ad libitum caloric intake, and body weight. ",
+						"5. Weigelt DS, et al. A high-protein diet induces sustained reductions in appetite, ad libitum caloric intake, and body weight. ",
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("i", { children: "Am J Clin Nutr." }),
 						" 2005;82(1):41–48."
 					]
