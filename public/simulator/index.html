@@ -2923,7 +2923,7 @@ function muscleRows(move) {
   if (move.plannerOn) { const t = weeklyTraining(move); return t.liftSessions > 0 ? [{ days: t.liftSessions, x: 1, w: toW(MUSCLE_KEYS) }] : null; }
   if (move.preset === "custom" && Array.isArray(move.lifts)) {
     const r = move.lifts.map((e) => { const type = LIFT_TYPES[e.type] ? e.type : "hypertrophy", T = LIFT_TYPES[type], days = Math.max(0, Math.min(14, +e.days || 0)), min = Math.max(0, +e.min || 0);
-      return { days, x: T.q * (LIFT_EFFORT[e.effort] || 1) * Math.min(1.1, Math.pow(min / T.ref, 0.35)) * (e.xMul > 0 ? Math.min(1.2, +e.xMul) : 1), w: rowWeights(e) }; }).filter((e) => e.days > 0 && e.x > 0);
+      return { days, x: T.q * (LIFT_EFFORT[e.effort] || 1) * Math.min(1.1, Math.pow(min / T.ref, 0.35)), w: rowWeights(e), wSum: rowSetWeights(e), custom: true, setsW: e.setsW && typeof e.setsW === "object" ? e.setsW : null }; }).filter((e) => e.days > 0 && e.x > 0);   // v7.6.83: set counts come from weeklySets(); xMul (log volume) still feeds burn / retention
     return r.length ? r : null; }
   const days = move.preset === "4+" ? 4.5 : move.preset === "2-3" ? 2.5 : move.preset === "min" ? 2 : 0; if (!days) return null;
   const G = move.groups && Array.isArray(move.groups[move.preset]) ? move.groups[move.preset] : null;
@@ -2938,24 +2938,64 @@ function rowWeights(e) {
   if (Array.isArray(e.groups)) return toW(cleanGroups(e.groups, []));   // v6.5 early format (plain list)
   return base;
 }
-const musResp = (D) => 1 - Math.exp(-D / 2);
-/** regional split of lean gain: {share{g}, nat{g}, f{g}=share/nat, trained{g}, spill{g}, factor, coverage, groups[]} (null without lifting) */
-function muscleRegions(move, sex) {
+/** v7.6.83: per-muscle set weight for a row with exercises typed: each exercise adds its own sets (main mover 1, helper 0.25-0.75),
+    so squat + lunges count twice for quads while one calf raise counts once. null when the user set the chips by hand (then rowWeights()). */
+function rowSetWeights(e) {
+  if (Array.isArray(e.groups) || (e.groupW && typeof e.groupW === "object" && Object.keys(e.groupW).length)) return null;
+  const parts = String(e.ex || "").split(/[,;\/\n+&]|\band\b/i).map((x) => x.trim()).filter(Boolean); if (!parts.length) return null;
+  const w = {}; let n = 0; for (const t of parts) { const m = matchExercise(t); if (!m) continue; n++; for (const g in m.weights) w[g] = (w[g] || 0) + m.weights[g]; }
+  return n ? w : null;
+}
+/* v7.6.83 volume model (Nick, Oct 23 2026): muscle grows where it gets weekly HARD SETS, extended over the plan's weeks.
+   Evidence basis (shapes, not exact constants):
+   - Weekly set volume per muscle has a graded dose-response with diminishing returns: more sets grow more, but each extra set adds
+     less, flattening somewhere around 10-20+ sets a week (Schoenfeld, Ogborn & Krieger 2017 dose-response meta-analysis; Baz-Valle 2022;
+     Pelland 2024/2026 meta-regression). setsDose() is a log curve scaled so 10 sets = 1 (20 ~ 1.46, 30 ~ 1.77); counting stops at
+     SETS_MAX. The curve shape and the 5-set constant are the app's assumptions fitted to that pattern, not published values.
+   - A hard set is one taken near failure; load matters little for growth within roughly 6-30 reps when sets are hard
+     (Schoenfeld 2017 load meta-analysis; Refalo 2023 proximity to failure). So the Pro log counts hard sets (reps logged, <= 4 reps
+     left) and does not use the weight lifted to size growth.
+   - Compound lifts train several muscles: main movers count as a full set, helpers as a partial set (EXERCISES weights here,
+     liftlog.js uses 1 / 0.5, a common coaching convention).
+   - Weeks: growth is added day by day by the plan engine, so it scales with the plan's length. Training age (GAIN_RATE beginner ->
+     intermediate -> advanced, slower each step), age, protein and the FFMI taper set the ceiling, and a calorie deficit shrinks the
+     gain toward zero as it deepens (dayChange(), unchanged). Per-muscle values are always shares of that one plan total, so they add up. */
+const SETS_PER_SESSION = 3;    // app assumption: ~3 hard sets per main muscle in one session, so 3 full-body sessions ~ 9-10 sets a week
+const SETS_MAX = 30;           // app assumption: sets beyond ~30 a week per muscle are not counted (no data that more keeps helping)
+const setsDose = (s) => s <= 0 ? 0 : Math.log1p(Math.min(SETS_MAX, s) / 5) / Math.log(3);
+/** weekly hard sets per muscle: {sets{k}, src: "log" | "sets" | "est", rows} or null without lifting.
+    log = the Pro lifting log's counted sets; sets = Advanced "hard sets per muscle a week" spread by where each row trains;
+    est = sessions a week x SETS_PER_SESSION x effort/length x how much each row works the muscle. */
+function weeklySets(move) {
   const rows = muscleRows(move); if (!rows) return null;
-  const nat = MUSCLE_NAT[sex === "f" ? "f" : "m"], D = {};
-  for (const k of MUSCLE_KEYS) D[k] = 0;
-  for (const r of rows) for (const g in r.w) if (g in D) D[g] += r.days * r.x * r.w[g];
-  const trained = {}, eff = {}, spill = {}; let Dmax = 0;
-  for (const k of MUSCLE_KEYS) { trained[k] = D[k] > 0; Dmax = Math.max(Dmax, D[k]); }
-  if (Dmax <= 0) return null;
-  const rRef = musResp(Dmax);
-  for (const k of MUSCLE_KEYS) { let sp = 0;
-    for (const c in MUSCLE_SPILL) if (trained[c] && MUSCLE_SPILL[c][k]) sp = Math.max(sp, 0.35 * MUSCLE_SPILL[c][k] * musResp(D[c]) / rRef);
-    spill[k] = trained[k] ? 0 : sp; eff[k] = trained[k] ? musResp(D[k]) / rRef : sp; }
-  let tot = 0, coverage = 0; for (const k of MUSCLE_KEYS) { tot += nat[k] * eff[k]; coverage += nat[k] * Math.min(1, eff[k]); }
-  const share = {}, f = {}; for (const k of MUSCLE_KEYS) { share[k] = nat[k] * eff[k] / tot; f[k] = share[k] / nat[k]; }
-  const factor = clamp(0.75 + 0.25 * coverage, 0.75, 1);
-  return { share, nat, f, trained, spill, factor, coverage, groups: MUSCLE_KEYS.filter((k) => trained[k]), upper: MUSCLE_UPPER.reduce((a, k) => a + share[k], 0) };
+  const sets = {}; for (const k of MUSCLE_KEYS) sets[k] = 0;
+  const logRow = rows.find((r) => r.setsW);
+  if (logRow) { for (const k of MUSCLE_KEYS) sets[k] = Math.max(0, +logRow.setsW[k] || 0); return { sets, src: "log", rows }; }
+  const raw = {}; let mx = 0; for (const k of MUSCLE_KEYS) { raw[k] = 0; for (const r of rows) raw[k] += r.days * r.x * ((r.wSum || r.w)[k] || 0); mx = Math.max(mx, raw[k]); }
+  if (mx <= 0) return null;
+  const adv = move && move.adv && move.adv.sets != null && isFinite(+move.adv.sets) ? clamp(+move.adv.sets, 0, 40) : null;
+  for (const k of MUSCLE_KEYS) sets[k] = adv != null ? adv * raw[k] / mx : SETS_PER_SESSION * raw[k];
+  return { sets, src: adv != null ? "sets" : "est", rows };
+}
+/** regional split of lean gain: {share{g} (sums to 1), nat{g}, f{g}=share/nat, sets{g}, trained{g}, spill{g}, factor, volume, coverage, groups[]} (null without lifting) */
+function muscleRegions(move, sex) {
+  const ws = weeklySets(move); if (!ws) return null;
+  const nat = MUSCLE_NAT[sex === "f" ? "f" : "m"], sets = { ...ws.sets }, trained = {}, spill = {}, eff = {};
+  for (const k of MUSCLE_KEYS) trained[k] = sets[k] > 0;
+  if (!MUSCLE_KEYS.some((k) => trained[k])) return null;
+  // muscles not trained directly still get a little from big lifts nearby (stabilisers; app assumption, 35% of the MUSCLE_SPILL weight)
+  for (const k of MUSCLE_KEYS) { let sp = 0; if (!trained[k]) for (const c in MUSCLE_SPILL) if (trained[c] && MUSCLE_SPILL[c][k]) sp = Math.max(sp, 0.35 * MUSCLE_SPILL[c][k] * ws.sets[c]);
+    spill[k] = sp; if (!trained[k]) sets[k] = sp; }
+  let volume = 0, emax = 0; for (const k of MUSCLE_KEYS) { eff[k] = setsDose(sets[k]); volume += nat[k] * eff[k]; emax = Math.max(emax, eff[k]); }
+  if (volume <= 0) return null;
+  const share = {}, f = {}; let coverage = 0;
+  for (const k of MUSCLE_KEYS) { share[k] = nat[k] * eff[k] / volume; f[k] = share[k] / nat[k]; coverage += nat[k] * Math.min(1, eff[k] / emax); }
+  for (const k of MUSCLE_KEYS) spill[k] = trained[k] ? 0 : Math.min(1, setsDose(spill[k]) / emax);
+  // whole-body rate: presets keep their frequency steps (liftFactors() already counts Advanced sets there), so only cover-the-body matters;
+  // custom rows / the log carry their own volume, so the body-wide dose (10 sets on every muscle = 1) sets the rate
+  const custom = ws.rows.some((r) => r.custom);
+  const factor = custom ? clamp(volume, 0.15, 1.5) : clamp(0.75 + 0.25 * coverage, 0.75, 1);
+  return { share, nat, f, sets, trained, spill, factor, volume, coverage, custom, src: ws.src, groups: MUSCLE_KEYS.filter((k) => trained[k]), upper: MUSCLE_UPPER.reduce((a, k) => a + share[k], 0) };
 }
 
 // ---------- muscle-gain potential ----------
@@ -2969,10 +3009,10 @@ function leanPotentialPerDay(p, move, day, proteinLevel, L) {
   if (status === "beginner" && day > 365) status = "intermediate";
   else if (status === "intermediate" && day > 730) status = "advanced";
   const base = GAIN_RATE[p.sex][status] / 30.44;
-  const freq = t.custom ? liftGainFreq(t.liftX) : t.liftSessions >= 4 ? 1 : t.liftSessions >= 2 ? 0.75 : 0.4;
+  const mr = muscleRegions(move, p.sex);   // v7.6.83: custom rows / the log: weekly sets per muscle set the rate (mr.factor); presets: frequency steps x coverage
+  const freq = t.custom ? (mr && mr.custom ? 1 : liftGainFreq(t.liftX)) : t.liftSessions >= 4 ? 1 : t.liftSessions >= 2 ? 0.75 : 0.4;
   const age = p.age >= 60 ? 0.7 : p.age >= 40 ? 0.85 : 1;
   const prot = proteinLevel === "low" ? 0.5 : proteinLevel === "moderate" ? 0.8 : 1;
-  const mr = muscleRegions(move, p.sex);   // v6.5: training only a few muscle groups lowers the total a little
   return base * freq * age * prot * ffmiTaper(p, L) * liftFactors(move).gain * (mr ? mr.factor : 1);   // v5: style / weekly sets / proximity to failure (Advanced; 1 otherwise)
 }
 
@@ -3554,7 +3594,7 @@ const cancerRanges = (kg) => ({ kcalLo: Math.round(kg * 25 / 5) * 5, kcalHi: Mat
 const api = { nextStepsFor, cancerRanges, cancerRec, lactInfo, lactKcal, cancerOn, holdsGoal, floorOf, OVER_BUFFER_KCAL, LEAN_LOSS_CONSERVATIVE, overFuel, LIVER_GLY_G, LIVER_GLY_KCAL, LB, K_LB, K_KG, RHO_F, TAU, K_UNC, RHO_L_LOSS, RHO_L_GAIN, FLOOR, ESSENTIAL, VERY_LEAN, GAIN_RATE, GOALS,
   band, compareGain, BAND_SCALE, refit, params: () => ({ HALL_PA, TEF_BETA, BAND_SCALE, ADAPT_CAP: 0.25 }),
   navyBf, bmiBf, analyze, healthSummary, a1cStatus, diabetesStatus, a1cRefHtml, A1C_REF_TEXT, psmfPlan, psmfFor, bulkSurplus, fastGainSurplus, FAST_GAIN_NOTE, BULK_SURPLUS, idealBodyWeight, structuralShare, AT_BETA, AT_TAU, BMI_STOP, LEAN_STOP, bmr, activity, multiplierLabel, referenceWeight, proteinTarget, proteinPlan, highBodyFat, surplusFor, deficitFor, planBands, GAIN_KCAL, holdRatio, ffmiTaper, CARDIO, cardioNetMet, cardioWeek, cardioEntries, LIFT_STYLE, liftFactors, lossFactor, LIFT_TYPES, LIFT_EFFORT, MIN_PRESET, applyOptOuts, liftRows, liftRowNet, liftCustom, liftGainFreq, liftRetention, calibrate, macrosFromInput, macros, leanPotentialPerDay,
-  simulate, project, MUSCLES, MUSCLE_KEYS, MUSCLE_UPPER, MUSCLE_NAT, MUSCLE_SPILL, PRESET_GROUPS, PRESET_LABEL, defaultGroups, muscleRows, muscleRegions, EXERCISES, matchExercise, inferGroups, rowWeights, goalProblems, goalDirection, weeklyTraining, essentialFatKg };
+  simulate, project, MUSCLES, MUSCLE_KEYS, MUSCLE_UPPER, MUSCLE_NAT, MUSCLE_SPILL, PRESET_GROUPS, weeklySets, setsDose, PRESET_LABEL, defaultGroups, muscleRows, muscleRegions, EXERCISES, matchExercise, inferGroups, rowWeights, goalProblems, goalDirection, weeklyTraining, essentialFatKg };
 if (typeof module !== "undefined" && module.exports) module.exports = api;
 root.BodyEngine = api;
 })(typeof window !== "undefined" ? window : globalThis);
@@ -5884,8 +5924,10 @@ function renderRegional() {
   const fatRows = `${row("Around the organs", "vat", "visceral fat")}${row("Under the skin", "sub", "all subcutaneous fat")}${row("Hips &amp; thighs", "gf", "part of under-the-skin")}${row("Belly (under the skin)", "abd", "")}`;
   const lifts = E.weeklyTraining(effMove()).liftSessions > 0, dLean = eR.leanKg - s0.leanKg;
   const mr = musRegions(), gk = (f, k) => mr ? (f.row.leanKg - s0.leanKg) * mr.share[k] : 0;
-  const grow = (k) => `<tr class="mus-g" data-mus="${k}"><th scope="row">${musName(k)}<small>${mr.trained[k] ? "trained" : "spillover from compound lifts"}</small></th>${cM ? `<td>${relW(mr.share[k], 1)}</td>` : ""}<td>${relW(mr.share[k], 1)}</td></tr>`;
-  const perG = mr ? E.MUSCLE_KEYS.filter((k) => mr.share[k] >= 0.004).sort((a, b) => mr.share[b] - mr.share[a]).map(grow).join("") : "";
+  const grow = (k) => `<tr class="mus-g" data-mus="${k}"><th scope="row">${musName(k)}<small>${mr.trained[k] ? "trained" : "spillover from compound lifts"}</small></th>${cM ? `<td>${relF(k)}</td>` : ""}<td>${relF(k)}</td></tr>`;
+  // v7.6.83: same relative words as the Muscle view bars (growth for that muscle's size), most-focused first
+  const fMax = mr ? Math.max(1e-9, ...E.MUSCLE_KEYS.map((k) => mr.f[k])) : 1, relF = (k) => mr.f[k] / fMax >= 0.66 ? "more focus" : mr.f[k] / fMax >= 0.33 ? "some" : "less focus";
+  const perG = mr ? E.MUSCLE_KEYS.filter((k) => mr.share[k] >= 0.004 && mr.f[k] >= 0.12 * fMax).sort((a, b) => (Math.abs(mr.f[b] - mr.f[a]) > 1e-6 * fMax ? mr.f[b] - mr.f[a] : 0) || mr.share[b] - mr.share[a]).map(grow).join("") : "";
   const musRows = dLean > 0.1 ? `<tr class="grp"><th colspan="${cM ? 3 : 2}">Lean mass (mostly muscle)</th></tr>${mrow("Upper body", "up", "chest, back, shoulders, arms")}${mrow("Legs, glutes &amp; core", "lo", "")}${perG ? `<tr class="grp sub"><th colspan="${cM ? 3 : 2}">By muscle group</th></tr>` + perG : ""}` : "";
   const fatHead = (t) => `<tr class="grp"><th colspan="${cM ? 3 : 2}">${t}</th></tr>`;
   const liverWord = cE.liver.to < cE.liver.from * 0.6 ? "falls sharply" : cE.liver.to < cE.liver.from * 0.9 ? "falls" : cE.liver.to > cE.liver.from * 1.1 ? "rises" : "changes little";
