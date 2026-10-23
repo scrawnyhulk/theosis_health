@@ -4,12 +4,12 @@ import { n as require_react } from "./_libs/@radix-ui/react-compose-refs+[...].m
 import { b as Link } from "./_libs/@tanstack/react-router+[...].mjs";
 import { i as require_jsx_runtime } from "./_libs/@radix-ui/react-label+[...].mjs";
 import { E as ArrowLeft, S as ChevronLeft, T as ArrowRight, n as ZoomOut, t as ZoomIn, x as ChevronRight } from "./_libs/lucide-react.mjs";
-import { r as Route$3 } from "./_ssr/router-Csxuu5dg.mjs";
+import { r as Route$3 } from "./_ssr/router-BjMzDrFZ.mjs";
 import { a as SiteShell, o as cn, t as Button } from "./_ssr/site-shell-RWexaFBk.mjs";
 import { t as Input } from "./_ssr/input-Dh6o89JU.mjs";
 import { t as NerdParagraph } from "./_ssr/nerd-paragraph-CQuEwJxw.mjs";
 import { i as VideoCard, n as Label, r as NerdStepper, t as EnlargeableImage } from "./_ssr/video-card-CnHsfZr2.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/_slug-1tHw2hbp.js
+//#region node_modules/.nitro/vite/services/ssr/assets/_slug-DbmQxCvc.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 function sourceLabel(source) {

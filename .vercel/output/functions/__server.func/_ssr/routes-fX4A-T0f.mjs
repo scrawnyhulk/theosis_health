@@ -4,9 +4,9 @@ import { n as require_react } from "../_libs/@radix-ui/react-compose-refs+[...].
 import { b as Link } from "../_libs/@tanstack/react-router+[...].mjs";
 import { i as require_jsx_runtime } from "../_libs/@radix-ui/react-label+[...].mjs";
 import { T as ArrowRight, b as Clock, g as FlaskConical, h as Footprints } from "../_libs/lucide-react.mjs";
-import { a as SODA_PERSON, c as maintenance, i as EXAMPLE, o as extraLbByDay, s as lostLbByDay } from "./router-Csxuu5dg.mjs";
+import { a as SODA_PERSON, c as maintenance, i as EXAMPLE, o as extraLbByDay, s as lostLbByDay } from "./router-BjMzDrFZ.mjs";
 import { a as SiteShell, i as NavPlaque, r as NavIcon } from "./site-shell-RWexaFBk.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/routes-BkMnT9ka.js
+//#region node_modules/.nitro/vite/services/ssr/assets/routes-fX4A-T0f.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 /** Swap this slug to feature a different existing Health Hack. Text is pulled from src/lib/hacks.ts, not written here. */
@@ -205,12 +205,17 @@ function Home() {
 											"aria-label": "Footnote 2",
 											children: "2"
 										}) }),
-										" These changes often develop quietly, before obvious symptoms appear."
+										" These changes often develop quietly, before obvious symptoms appear. ",
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+											href: "/simulator/pft-inside/",
+											className: "font-medium text-health underline underline-offset-2 hover:no-underline",
+											children: "See what happens inside as fat builds up →"
+										})
 									]
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 									className: "mt-3 max-w-2xl text-ink-fg/85",
-									children: "Theosis Health helps you look under the hood: how the human body works, what can knock it off track, and where simple changes can help. We pair clear explanations with practical tools, so you can focus on manageable choices that make a meaningful difference. It starts with knowing what matters and making it work in real life. For personal health decisions, talk with your healthcare provider."
+									children: "Theosis Health helps you look under the hood: how the human body works, what can knock it off track, and where simple changes can help. We pair clear explanations with practical tools, so you can focus on manageable choices that make a meaningful difference. It starts with knowing what matters and making it work in real life."
 								}),
 								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 									className: "mt-3 max-w-2xl text-ink-fg/85",
