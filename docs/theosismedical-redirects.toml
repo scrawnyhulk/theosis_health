@@ -1,0 +1,66 @@
+# Proposed 301s for theosismedical.com (NOT applied). Paste into /workspace/site/netlify.toml
+# ABOVE the existing "/simulator" -> "/simulator/" rule and the "/*" catch-all, and remove
+# those local /simulator and /fat-burn-calculator rules. Apply only with Nick's OK, after theosishealth.com is live.
+
+[[redirects]]
+  from = "/hacks"
+  to = "https://theosishealth.com/hacks"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/hacks/*"
+  to = "https://theosishealth.com/hacks/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/simulator"
+  to = "https://theosishealth.com/simulator/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/simulator/*"
+  to = "https://theosishealth.com/simulator/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/personal-fat-threshold"
+  to = "https://theosishealth.com/simulator/pft-inside/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/personal-fat-threshold/*"
+  to = "https://theosishealth.com/simulator/pft-inside/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/personal-fat-threshold.html"
+  to = "https://theosishealth.com/simulator/pft-inside/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/pft/*"
+  to = "https://theosishealth.com/pft/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/fat-burn-calculator"
+  to = "https://theosishealth.com/fat-burn-calculator/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/fat-burn-calculator/*"
+  to = "https://theosishealth.com/fat-burn-calculator/:splat"
+  status = 301
+  force = true
+
+# Note: /.netlify/functions/* on theosismedical.com should keep working until the
+# simulator on theosishealth.com calls its own functions; do not redirect those.

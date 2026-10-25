@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Maximal Fat Loss Calculator · Theosis Health</title>
+<meta name="description" content="How fast can you lose fat while limiting muscle loss? An evidence-based calculator built on Alpert's (2005) limit on how much energy body fat can supply per day. From Theosis Health.">
+<meta name="theme-color" content="#14171c">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:ital,wght@0,400;0,500;0,600;1,400&display=swap" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:ital,wght@0,400;0,500;0,600;1,400&display=swap"></noscript>
+<style>
+/* Design tokens taken from theosismedical.com (assets/styles-B4gQf4aC.css) */
+:root{
+  --bg:#05080d; --bg-80:rgba(8,13,20,.80); --surface:rgba(16,24,32,.86); --surface-solid:#101820;
+  --field:#080d14; --fg:#e7edf5; --muted:#8e9aab; --ink-muted:#9aa6b8;
+  --accent:#2a7ae0; --accent-fg:#f4f8ff; --accent-soft:rgba(42,122,224,.14);
+  --steel:#cfd6e0; --ink:#05080d;
+  --danger:#e07070; --ok:#3d9a6a; --warn:#d4a056;
+  --border:rgba(231,237,245,.12); --border-strong:rgba(231,237,245,.22); --hairline:rgba(231,237,245,.10);
+  --r-sm:8px; --r-md:12px; --r-lg:20px; --r-xl:28px;
+  --font-sans:"Barlow","Segoe UI",system-ui,sans-serif;
+  --font-display:"Barlow Condensed","Segoe UI",system-ui,sans-serif;
+  --ease:cubic-bezier(.22,1,.36,1);
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--bg);-webkit-text-size-adjust:100%;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+body{min-height:100vh;color:var(--fg);font-family:var(--font-sans);line-height:1.55;
+  background-color:var(--bg);
+  background-image:radial-gradient(90% 70% at 50% 18%,rgba(16,34,52,.55),transparent 64%),url("data:image/jpeg;base64,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");
+  background-repeat:no-repeat,repeat;background-size:auto,420px}
+img,svg{display:block}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0}
+a{color:var(--accent)}
+a:hover{color:var(--fg)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:absolute;left:1rem;top:-4rem;background:var(--accent);color:var(--accent-fg);padding:.5rem 1rem;z-index:50;border-radius:var(--r-sm)}
+.skip:focus{top:1rem}
+
+/* header, same pattern as the site: sticky, blurred, hairline border */
+.site-header{position:sticky;top:0;z-index:40;border-bottom:1px solid var(--border);background:var(--bg-80);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.site-header .in{max-width:80rem;margin:0 auto;height:4rem;display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding:0 1rem}
+.lockup{height:3rem;width:auto}
+.hh-tag{display:inline-flex;align-items:center;padding:.4rem .65rem;border:1px solid rgba(255,255,255,.1);border-radius:3px;transform:rotate(-2deg);
+  background:rgba(8,13,20,.72);box-shadow:2px 3px 0 0 rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.16);
+  font-family:var(--font-display);font-weight:600;font-size:15px;letter-spacing:.16em;text-transform:uppercase;line-height:1}
+.hh-metal{background-image:linear-gradient(#f3f6fa 0%,#c5ced8 38%,#9aa6b4 52%,#d7dde6 72%,#7b8694 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hh-metal-blue{background-image:linear-gradient(#79b4f6 0%,#2a7ae0 42%,#163e7a 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+main{max-width:80rem;margin:0 auto;padding:2.5rem 1rem 4rem}
+.eyebrow{font-size:.75rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--font-display);font-weight:600;letter-spacing:.025em;font-size:clamp(2.25rem,6vw,3.75rem);line-height:1.02;margin-top:.6rem}
+.lead{margin-top:1rem;max-width:44rem;font-size:1.125rem;line-height:1.65;color:var(--muted)}
+.lead strong{color:var(--fg);font-weight:500}
+h2{font-family:var(--font-display);font-weight:600;letter-spacing:.025em;font-size:1.5rem;line-height:1.15}
+h3{font-family:var(--font-display);font-weight:600;letter-spacing:.04em;font-size:1.05rem;text-transform:uppercase}
+
+.layout{display:grid;gap:1.25rem;margin-top:2rem}
+@media(min-width:64rem){.layout{grid-template-columns:minmax(0,25rem) minmax(0,1fr);align-items:start;gap:1.5rem}.form-col{position:sticky;top:5rem}}
+
+.card{background:var(--surface);border-radius:var(--r-lg);box-shadow:0 0 0 1px var(--hairline);padding:1.25rem}
+@media(min-width:40rem){.card{padding:1.5rem}}
+.card+.card{margin-top:1rem}
+
+/* presets */
+.presets{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.5rem}
+.chip{min-height:2.5rem;padding:0 .9rem;border-radius:var(--r-sm);box-shadow:0 0 0 1px var(--border-strong);font-size:.875rem;font-weight:500;color:var(--fg);transition:background-color .15s,box-shadow .15s}
+.chip:hover{background:rgba(231,237,245,.06);box-shadow:0 0 0 1px var(--accent)}
+.chip.ghost{box-shadow:none;color:var(--muted)}
+.chip.ghost:hover{color:var(--fg);background:rgba(231,237,245,.06)}
+
+/* form */
+fieldset{border:0;min-width:0}
+.section{padding-top:1.25rem;margin-top:1.25rem;border-top:1px solid var(--border)}
+.section:first-child{padding-top:0;margin-top:0;border-top:0}
+.section-head{display:flex;align-items:center;justify-content:space-between;gap:.75rem;margin-bottom:.9rem}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.field{display:block}
+.section > * + *,#goal-block > * + *,.cal-fields > * + *{margin-top:.85rem}
+.section > .section-head + *{margin-top:0}
+.row > *{margin-top:0!important}
+.layout > *{min-width:0}
+.label{display:block;font-size:.7rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem}
+.control{display:flex;align-items:center;background:var(--field);border-radius:var(--r-sm);box-shadow:0 0 0 1px var(--border);transition:box-shadow .15s}
+.control:focus-within{box-shadow:0 0 0 1px var(--accent),0 0 0 4px rgba(42,122,224,.25)}
+.control input,.control select{flex:1;min-width:0;width:100%;background:transparent;border:0;outline:0;padding:.7rem .8rem;font-size:1.125rem;font-weight:500;font-variant-numeric:tabular-nums}
+.control select{font-size:1rem;appearance:none;-webkit-appearance:none;padding-right:2rem;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238e9aab' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .8rem center}
+.control select option{background:var(--surface-solid);color:var(--fg)}
+.unit{padding-right:.8rem;font-size:.875rem;color:var(--muted);white-space:nowrap}
+.field.invalid .control{box-shadow:0 0 0 1px var(--danger)}
+.err{display:none;margin-top:.35rem;font-size:.8rem;color:var(--danger)}
+.field.invalid .err{display:block}
+.hint{margin-top:.35rem;font-size:.8rem;color:var(--muted)}
+
+/* segmented control (radio group) */
+.seg{display:flex;padding:3px;gap:3px;border-radius:var(--r-sm);background:var(--field);box-shadow:0 0 0 1px var(--border)}
+.seg label{flex:1;position:relative}
+.seg input{position:absolute;opacity:0;inset:0;cursor:pointer}
+.seg span{display:flex;align-items:center;justify-content:center;min-height:2.5rem;padding:0 .6rem;border-radius:6px;font-size:.875rem;font-weight:500;color:var(--muted);text-align:center;line-height:1.15;transition:background-color .15s,color .15s}
+.seg input:checked + span{background:var(--steel);color:var(--ink)}
+.seg input:focus-visible + span{outline:2px solid var(--accent);outline-offset:1px}
+.seg label:hover input:not(:checked) + span{color:var(--fg)}
+.seg.sm span{min-height:2.25rem;font-size:.8rem}
+.units-seg{width:9rem;flex-shrink:0}
+.units-seg span{white-space:nowrap}
+
+/* switch */
+.switch{display:flex;align-items:center;gap:.75rem;min-height:2.75rem;text-align:left}
+.switch .track{position:relative;width:2.75rem;height:1.6rem;border-radius:999px;background:var(--border-strong);flex-shrink:0;transition:background-color .15s}
+.switch .thumb{position:absolute;top:3px;left:3px;width:calc(1.6rem - 6px);height:calc(1.6rem - 6px);border-radius:50%;background:var(--fg);transition:transform .2s var(--ease)}
+.switch[aria-checked="true"] .track{background:var(--accent)}
+.switch[aria-checked="true"] .thumb{transform:translateX(1.15rem)}
+.switch b{display:block;font-weight:500;font-size:.95rem}
+.switch small{display:block;font-size:.8rem;color:var(--muted)}
+.cal-fields[hidden]{display:none}
+
+details.adv{margin-top:1.25rem;border-top:1px solid var(--border);padding-top:1rem}
+details.adv summary{cursor:pointer;font-size:.875rem;font-weight:500;color:var(--muted);list-style:none;display:flex;align-items:center;gap:.4rem}
+details.adv summary::-webkit-details-marker{display:none}
+details.adv summary::before{content:"";width:.45rem;height:.45rem;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(-45deg);transition:transform .15s}
+details.adv[open] summary::before{transform:rotate(45deg)}
+details.adv summary:hover{color:var(--fg)}
+.adv-body{margin-top:1rem}
+
+/* results */
+.result-hero{display:grid;gap:1.25rem}
+@media(min-width:48rem){.result-hero{grid-template-columns:1.15fr 1fr;align-items:end}}
+.big{font-family:var(--font-display);font-weight:600;font-size:clamp(3rem,9vw,4.75rem);line-height:.95;letter-spacing:.01em;font-variant-numeric:tabular-nums}
+.big small{font-size:.42em;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-left:.35rem;font-weight:500}
+.big-sub{margin-top:.55rem;color:var(--muted);font-size:.95rem}
+.big-sub strong{color:var(--fg);font-weight:500}
+.summary{font-size:1.05rem;line-height:1.6;color:var(--ink-muted)}
+.summary strong{color:var(--fg);font-weight:600}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;margin-top:1.5rem;border-radius:var(--r-md);overflow:hidden;background:var(--border);box-shadow:0 0 0 1px var(--border)}
+@media(min-width:48rem){.stats{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.stat{background:var(--surface-solid);padding:.9rem 1rem}
+.stat .k{font-size:.68rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.stat .v{margin-top:.3rem;font-family:var(--font-display);font-weight:600;font-size:1.6rem;line-height:1.1;font-variant-numeric:tabular-nums}
+.stat .d{margin-top:.15rem;font-size:.8rem;color:var(--muted)}
+.stat .v .arrow{color:var(--accent);font-weight:500;margin:0 .15rem}
+
+.alerts{list-style:none;display:grid;gap:.5rem;margin-top:1rem}
+.alerts:empty{display:none}
+.alert{display:flex;gap:.65rem;align-items:flex-start;padding:.7rem .85rem;border-radius:var(--r-sm);font-size:.9rem;line-height:1.5;background:rgba(212,160,86,.10);box-shadow:inset 3px 0 0 var(--warn);color:var(--fg)}
+.alert.danger{background:rgba(224,112,112,.10);box-shadow:inset 3px 0 0 var(--danger)}
+.alert.info{background:var(--accent-soft);box-shadow:inset 3px 0 0 var(--accent)}
+.alert .ic{flex-shrink:0;width:1.1rem;height:1.1rem;margin-top:.15rem}
+.alert.warn .ic{color:var(--warn)} .alert.danger .ic{color:var(--danger)} .alert.info .ic{color:var(--accent)}
+
+.cal-grid{display:grid;gap:1px;grid-template-columns:repeat(2,minmax(0,1fr));margin-top:1rem;border-radius:var(--r-md);overflow:hidden;background:var(--border);box-shadow:0 0 0 1px var(--border)}
+@media(min-width:48rem){.cal-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+
+.chart-wrap{margin-top:1rem}
+.legend{display:flex;flex-wrap:wrap;gap:1rem;font-size:.8rem;color:var(--muted);margin-top:.5rem}
+.legend i{display:inline-block;width:.75rem;height:.75rem;border-radius:2px;margin-right:.4rem;vertical-align:-1px}
+#chart text{font-family:var(--font-sans);font-size:11px;fill:var(--muted)}
+.table-wrap{margin-top:1.25rem;overflow-x:auto;border-radius:var(--r-md);box-shadow:0 0 0 1px var(--border)}
+table{width:100%;border-collapse:collapse;font-size:.875rem;font-variant-numeric:tabular-nums;white-space:nowrap}
+caption{text-align:left;padding:.75rem 1rem;font-size:.8rem;color:var(--muted);caption-side:bottom;white-space:normal}
+th,td{padding:.6rem 1rem;text-align:right;border-bottom:1px solid var(--border)}
+th:first-child,td:first-child{text-align:left}
+thead th{font-size:.68rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);background:rgba(8,13,20,.6);position:sticky;top:0}
+tbody tr:last-child td{border-bottom:0}
+tbody tr.goal td{color:var(--fg);font-weight:600;background:var(--accent-soft)}
+td.muted{color:var(--muted)}
+.blocked{padding:1.25rem 0 .25rem;color:var(--muted)}
+
+.method{margin-top:1rem}
+.method summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+.method summary::-webkit-details-marker{display:none}
+.method summary::after{content:"+";font-family:var(--font-display);font-size:1.5rem;color:var(--accent);line-height:1}
+.method[open] summary::after{content:"\2013"}
+.method .body{margin-top:1rem;color:var(--muted);font-size:.95rem;line-height:1.7;display:grid;gap:.85rem}
+.method .body strong{color:var(--fg);font-weight:500}
+.method code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85em;color:var(--fg);background:rgba(231,237,245,.06);padding:.1rem .35rem;border-radius:4px}
+.method ol{padding-left:1.2rem;display:grid;gap:.35rem;font-size:.875rem}
+.disclaimer{margin-top:1rem;font-size:.85rem;line-height:1.6;color:var(--muted);padding:1rem 1.25rem;border-radius:var(--r-md);box-shadow:0 0 0 1px var(--border)}
+.disclaimer strong{color:var(--fg);font-weight:500}
+footer{max-width:80rem;margin:0 auto;padding:2rem 1rem 3rem;border-top:1px solid var(--border);display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;align-items:center;font-size:.8rem;color:var(--muted)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media print{body{background:#fff;color:#000}.site-header,.form-col,.presets{display:none}.layout{display:block}}
+.eat-main{display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:.75rem;margin:.9rem 0}
+.eat-box{border-radius:12px;padding:1rem;background:rgba(106,168,255,.08);box-shadow:0 0 0 1px var(--border)}
+.eat-box .k{font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}.eat-v{font-size:2rem;font-weight:800;line-height:1.15;margin:.2rem 0}.eat-v small{font-size:.95rem;font-weight:600;color:var(--muted)}
+.eat-box .d{margin:0;font-size:.9rem;color:var(--muted)}.eat-notes{margin:.2rem 0 .6rem;padding-left:1.1rem;line-height:1.55}.eat-notes li{margin-bottom:.35rem}
+.funnel{margin-top:1.1rem;display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:1rem;align-items:center;padding:1.1rem;border-radius:14px;background:linear-gradient(135deg,rgba(20,58,124,.55),rgba(8,13,20,.6));box-shadow:0 0 0 1px var(--border-strong)}
+.funnel h3{margin:.2rem 0 .4rem;font-size:1.25rem;text-transform:none;letter-spacing:normal}.funnel p{margin:.2rem 0 .6rem}.funnel-btn{font-weight:700;font-size:1rem;padding:.7rem 1.1rem;background:#2f6fe0;color:#fff;box-shadow:none}
+.funnel-peek{position:relative;display:block;border-radius:10px;overflow:hidden;background:#0b121c;text-decoration:none}.funnel-peek svg{display:block;width:100%;height:auto}
+.funnel-peek span{position:absolute;inset:auto 0 0 0;padding:.4rem;text-align:center;font-size:.85rem;font-weight:700;color:#fff;background:rgba(8,13,20,.7)}
+@media (max-width:640px){.funnel{grid-template-columns:1fr}}
+#rate{width:100%;accent-color:var(--accent)}
+
+/* Palette B: charcoal + soft blue glow, no grain */
+:root{--bg:#14171c;--bg-80:rgba(20,23,28,.82);--surface:rgba(28,32,39,.88);--surface-solid:#1c2027;--field:#101317;--ink:#14171c}
+html{background:#14171c}
+body{background-color:#14171c;background-image:radial-gradient(55% 50% at 74% 38%,rgba(42,122,224,.16),transparent 70%);background-repeat:no-repeat;background-size:100% 100%;background-attachment:fixed}
+
+/* Polish: blue card borders, phone-friendly chart */
+.card{box-shadow:0 0 0 1.5px rgba(42,122,224,.55),0 8px 28px rgba(0,0,0,.25)}
+#chart{touch-action:pan-y;overflow:visible}
+#chart text{font-size:12px}
+.legend{gap:.5rem 1.1rem;font-size:.9rem}
+@media(max-width:519px){.chart-wrap{margin-left:-.25rem;margin-right:-.25rem}}
+
+/* Top-right plan graphic (option A) */
+.top{display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:"text" "art" "presets";gap:0 2rem;align-items:start}
+.top-text{grid-area:text}.top .presets{grid-area:presets}
+.hero-art{grid-area:art;display:flex;align-items:center;gap:.9rem;margin:1.1rem 0 .6rem;padding:.8rem 1rem;border-radius:16px;background:rgba(16,24,32,.6);box-shadow:0 0 0 1px rgba(42,122,224,.35)}
+.hero-art .ha-g{flex:0 0 auto;width:76px}.hero-art svg{display:block;width:100%;height:auto}
+.ha-k{font-size:.85rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#8e9aab}
+.ha-v{font:700 1.9rem/1.05 var(--font-display);color:#e7edf5;font-variant-numeric:tabular-nums}.ha-v small{font-size:1rem;font-weight:600;color:#79b4f6;margin-left:.25rem}
+.ha-s{font-size:.95rem;color:#cfd6e0;line-height:1.35}
+@media(min-width:60rem){.top{grid-template-columns:minmax(0,1fr) minmax(16rem,23rem);grid-template-areas:"text art" "presets art"}
+.hero-art{flex-direction:column;align-self:center;text-align:center;gap:.5rem;justify-self:center;width:min(100%,17rem);margin:1.2rem 5rem 0 0;padding:1.3rem 1.2rem 1.2rem;border-radius:24px;background:radial-gradient(80% 60% at 50% 30%,rgba(42,122,224,.16),transparent 70%),rgba(16,24,32,.55)}
+.hero-art .ha-g{width:100%;max-width:15rem}.ha-v{font-size:2.6rem}}
+.hero-art[hidden]{display:none}
+#ha-arc{transition:stroke-dasharray .7s var(--ease)}
+.ha-pulse{transform-origin:100px 100px;animation:haP 3.6s ease-in-out infinite}
+@keyframes haP{0%,100%{opacity:.6;transform:scale(.96)}50%{opacity:1;transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){.ha-pulse{animation:none}#ha-arc{transition:none}}
+
+
+/* Week and Pace sliders under the main graph */
+.ctl{margin-top:1rem;display:grid;gap:.2rem;padding-top:.9rem;border-top:1px solid var(--border)}
+.ctl-row{display:grid;grid-template-columns:4.2rem minmax(0,1fr);align-items:center;gap:.75rem;min-height:48px}
+.ctl-lbl{font-size:1.05rem;font-weight:600;color:var(--fg)}
+.ctl-read{font-size:1.05rem;color:var(--fg);margin:0 0 .4rem 4.95rem;min-height:1.4em;font-variant-numeric:tabular-nums}
+.ctl-read b{color:#79b4f6}
+.ctl-ticks{display:flex;justify-content:space-between;margin-left:4.95rem;font-size:.9rem;color:var(--muted);margin-top:-.4rem;margin-bottom:.2rem}
+.ctl input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:48px;background:transparent;margin:0;touch-action:pan-y;cursor:pointer}
+.ctl input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:999px;background:rgba(42,122,224,.35)}
+.ctl input[type=range]::-moz-range-track{height:6px;border-radius:999px;background:rgba(42,122,224,.35)}
+.ctl input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:30px;margin-top:-12px;border-radius:50%;background:#2a7ae0;border:3px solid #e7edf5;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.ctl input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:#2a7ae0;border:3px solid #e7edf5}
+.ctl input[type=range]:focus-visible{outline:2px solid #79b4f6;outline-offset:2px;border-radius:6px}
+</style>
+<style>
+footer.th-foot{display:block;max-width:none;margin:0;padding:0;font-size:1rem}
+.th-foot{border-top:1px solid rgba(255,255,255,.1);background:#05080d;color:#e8edf2;font-family:Barlow,system-ui,sans-serif}
+.th-foot .tf-in{max-width:72rem;margin:0 auto;padding:2.5rem 1.25rem 1rem;display:flex;flex-wrap:wrap;gap:2rem;justify-content:space-between}
+.th-foot .tf-col{display:flex;flex-direction:column;gap:.75rem}
+.th-foot a{color:#9aa7b6;font-size:.875rem;text-decoration:none}.th-foot a:hover{color:#e8edf2}
+.th-foot .tf-r{align-items:flex-start}@media(min-width:48rem){.th-foot .tf-r{align-items:flex-end;text-align:right}}
+.th-foot p{margin:0;font-size:.75rem;color:#9aa7b6;max-width:34rem}.th-foot p a{font-size:inherit;text-decoration:underline}
+.th-foot .tf-promo{font-size:.875rem;color:#cbd5e1}.th-foot .tf-promo a{color:#4587c6;font-size:inherit;text-decoration:none;font-weight:600}
+.th-foot .tf-bot{max-width:72rem;margin:0 auto;padding:0 1.25rem 2rem;display:flex;flex-direction:column;gap:.4rem}
+.th-foot img.th-lockup{display:block;height:3rem;width:auto}@media(min-width:40rem){.th-foot img.th-lockup{height:3.5rem}}
+</style>
+<style>#results,#method{scroll-margin-top:5rem}</style>
+<style>img.th-lockup{display:block;height:35px;width:auto;max-width:none;object-fit:contain;object-position:left}@media(min-width:40rem){img.th-lockup{height:46px}}a.hh-tag{text-decoration:none}</style>
+</head>
+<body>
+<a class="skip" href="#results">Skip to results</a>
+<div id="th-header-host" style="position:sticky;top:0;z-index:40;min-height:65px;background:rgb(20 23 28/.8)"></div>
+<!--SITE-HEADER-->
+<template id="th-site-header"><link rel="stylesheet" href="/fat-burn-calculator/site-header.css"><header class="sticky top-0 z-40 border-b border-border bg-bg/80 backdrop-blur-md"><div class="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6"><div class="flex items-center gap-3 sm:gap-5"><button class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-sans text-sm font-medium transition-[color,background-color,box-shadow,transform,opacity] duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 active:not-disabled:scale-[0.96] bg-transparent text-fg hover:bg-fg/8 size-11 rounded-sm shrink-0" aria-expanded="false" aria-controls="quick-find-panel" aria-label="Quick find"><svg viewBox="0 0 28 20" class="size-6" aria-hidden="true"><path d="M2 4h24M2 10h24M2 16h24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"></path></svg></button><div class="hidden xl:contents"><a class="flex min-h-11 shrink-0 items-center" href="/"><img src="/images/theosis-health-header-lockup.png" width="900" height="168" alt="Theosis Health" class="no-outline block h-[35px] w-auto object-contain object-left sm:h-[46px]"/></a></div><nav class="hidden items-center gap-3 whitespace-nowrap xl:flex" aria-label="Primary"><a class="group shrink-0" aria-label="Health Hacks" href="/hacks"><span class="relative inline-flex items-center overflow-hidden rounded-[3px] border border-white/10 leading-none shadow-[2px_3px_0_0_rgb(0_0_0_/_0.55),inset_0_1px_0_rgb(255_255_255_/_0.16)] gap-1.5 px-2 py-1.5 transition-[box-shadow,background-color,border-color,filter] duration-150 group-hover:border-accent group-hover:bg-accent group-hover:shadow-[2px_3px_0_0_rgb(0_0_0_/_0.3)]" style="background-color:rgb(8 13 20 / 0.72);background-image:url(/images/navy-grain.jpg);background-size:420px"><span class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-150 group-hover:opacity-100" style="background-color:#2a7ae0" aria-hidden="true"></span><span class="relative font-display font-semibold uppercase text-[13px] tracking-[0.1em]"><span class="hh-metal-blue">H</span><span class="hh-metal">ealth Hacks</span></span></span></a><a href="/simulator/" class="group shrink-0" aria-label="Metabolic Simulator (Beta)"><span class="relative inline-flex items-center overflow-hidden rounded-[3px] border border-white/10 leading-none shadow-[2px_3px_0_0_rgb(0_0_0_/_0.55),inset_0_1px_0_rgb(255_255_255_/_0.16)] gap-1.5 px-2 py-1.5 transition-[box-shadow,background-color,border-color,filter] duration-150 group-hover:border-accent group-hover:bg-accent group-hover:shadow-[2px_3px_0_0_rgb(0_0_0_/_0.3)]" style="background-color:rgb(8 13 20 / 0.72);background-image:url(/images/navy-grain.jpg);background-size:420px"><span class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-150 group-hover:opacity-100" style="background-color:#2a7ae0" aria-hidden="true"></span><span class="relative flex text-[#5b9cec] group-hover:text-white"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" class="shrink-0 " fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2.5-6 4 12 2.5-6H21"></path></svg></span><span class="relative font-display font-semibold uppercase text-[13px] tracking-[0.1em]"><span class="hh-metal-blue">M</span><span class="hh-metal">etabolic Simulator</span></span><span class="relative ml-0.5 rounded-full bg-[#2a7ae0] px-1.5 py-px text-[9px] font-bold tracking-wide text-white uppercase group-hover:bg-white group-hover:text-[#1f63bd]">Beta</span></span></a><a href="/simulator/pft-inside/" class="group shrink-0" aria-label="Personal Fat Threshold Model"><span class="relative inline-flex items-center overflow-hidden rounded-[3px] border border-white/10 leading-none shadow-[2px_3px_0_0_rgb(0_0_0_/_0.55),inset_0_1px_0_rgb(255_255_255_/_0.16)] gap-1.5 px-2 py-1.5 transition-[box-shadow,background-color,border-color,filter] duration-150 group-hover:border-accent group-hover:bg-accent group-hover:shadow-[2px_3px_0_0_rgb(0_0_0_/_0.3)]" style="background-color:rgb(8 13 20 / 0.72);background-image:url(/images/navy-grain.jpg);background-size:420px"><span class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-150 group-hover:opacity-100" style="background-color:#2a7ae0" aria-hidden="true"></span><span class="relative flex text-[#5b9cec] group-hover:text-white"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" class="shrink-0 " fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18a8 8 0 1 1 16 0"></path><path d="M12 18l4-5"></path><circle cx="12" cy="18" r="1"></circle></svg></span><span class="relative font-display font-semibold uppercase text-[13px] tracking-[0.1em]"><span class="hh-metal-blue">P</span><span class="hh-metal">ersonal Fat Threshold Model</span></span></span></a><a href="/fat-burn-calculator/" class="group shrink-0" aria-label="Maximal Fat Loss Calculator"><span class="relative inline-flex items-center overflow-hidden rounded-[3px] border border-white/10 leading-none shadow-[2px_3px_0_0_rgb(0_0_0_/_0.55),inset_0_1px_0_rgb(255_255_255_/_0.16)] gap-1.5 px-2 py-1.5 transition-[box-shadow,background-color,border-color,filter] duration-150 group-hover:border-accent group-hover:bg-accent group-hover:shadow-[2px_3px_0_0_rgb(0_0_0_/_0.3)]" style="background-color:rgb(8 13 20 / 0.72);background-image:url(/images/navy-grain.jpg);background-size:420px"><span class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-150 group-hover:opacity-100" style="background-color:#2a7ae0" aria-hidden="true"></span><span class="relative flex text-[#5b9cec] group-hover:text-white"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" class="shrink-0 " fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c-3.9 0-6.5-2.6-6.5-6 0-3.5 3-5.5 3.5-9 2 1.3 3 3 3 5 1-.8 1.6-2 1.7-3.3C16.4 9.6 18.5 12 18.5 15c0 3.4-2.6 6-6.5 6z"></path></svg></span><span class="relative font-display font-semibold uppercase text-[13px] tracking-[0.1em]"><span class="hh-metal-blue">M</span><span class="hh-metal">aximal Fat Loss Calculator</span></span></span></a></nav></div><nav class="flex flex-1 items-stretch justify-around gap-0.5 xl:hidden" aria-label="Pages"><a href="/hacks" class="flex min-h-12 min-w-11 flex-1 flex-col items-center justify-center rounded-sm px-0.5 text-fg/85 gap-0.5 hover:bg-fg/8"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-lightbulb size-5 shrink-0 text-accent" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"></path><path d="M9 18h6"></path><path d="M10 22h4"></path></svg><span class="text-[10px] leading-none font-medium tracking-wide whitespace-nowrap">Hacks</span></a><a href="/simulator/" class="flex min-h-12 min-w-11 flex-1 flex-col items-center justify-center rounded-sm px-0.5 text-fg/85 gap-0.5 hover:bg-fg/8"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-person-standing size-5 shrink-0 text-accent" aria-hidden="true"><circle cx="12" cy="5" r="1"></circle><path d="m9 20 3-6 3 6"></path><path d="m6 8 6 2 6-2"></path><path d="M12 10v4"></path></svg><span class="text-[10px] leading-none font-medium tracking-wide whitespace-nowrap">Simulator</span></a><a href="/simulator/pft-inside/" class="flex min-h-12 min-w-11 flex-1 flex-col items-center justify-center rounded-sm px-0.5 text-fg/85 gap-0.5 hover:bg-fg/8"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-fuel size-5 shrink-0 text-accent" aria-hidden="true"><line x1="3" x2="15" y1="22" y2="22"></line><line x1="4" x2="14" y1="9" y2="9"></line><path d="M14 22V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v18"></path><path d="M14 13h2a2 2 0 0 1 2 2v2a2 2 0 0 0 2 2a2 2 0 0 0 2-2V9.83a2 2 0 0 0-.59-1.42L18 5"></path></svg><span class="text-[10px] leading-none font-medium tracking-wide whitespace-nowrap">PFT</span></a><a href="/fat-burn-calculator/" class="flex min-h-12 min-w-11 flex-1 flex-col items-center justify-center rounded-sm px-0.5 text-fg/85 gap-0.5 hover:bg-fg/8"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calculator size-5 shrink-0 text-accent" aria-hidden="true"><rect width="16" height="20" x="4" y="2" rx="2"></rect><line x1="8" x2="16" y1="6" y2="6"></line><line x1="16" x2="16" y1="14" y2="18"></line><path d="M16 10h.01"></path><path d="M12 10h.01"></path><path d="M8 10h.01"></path><path d="M12 14h.01"></path><path d="M8 14h.01"></path><path d="M12 18h.01"></path><path d="M8 18h.01"></path></svg><span class="text-[10px] leading-none font-medium tracking-wide whitespace-nowrap">Calculator</span></a><a href="/contact" aria-current="page" class="flex min-h-12 min-w-11 flex-1 flex-col items-center justify-center rounded-sm px-0.5 gap-0.5 hover:bg-fg/8 text-accent"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-circle size-5 shrink-0 text-accent" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path></svg><span class="text-[10px] leading-none font-medium tracking-wide whitespace-nowrap">Contact</span></a></nav><div class="hidden items-center gap-2 xl:flex"><a class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-sans text-sm font-medium transition-[color,background-color,box-shadow,transform,opacity] duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 active:not-disabled:scale-[0.96] bg-steel text-ink hover:bg-steel/90 h-9 rounded-sm px-3.5 active" href="/contact" data-status="active" aria-current="page">Contact</a></div></div></header></template>
+<!--/SITE-HEADER-->
+<script>
+(function(){var host=document.getElementById('th-header-host'),t=document.getElementById('th-site-header');if(!host||!t)return;
+var r=host.attachShadow({mode:'open'});r.appendChild(t.content.cloneNode(true));
+var mob=r.getElementById('mobile-nav'),btn=r.querySelector('[aria-controls="mobile-nav"]'),qf=r.querySelector('[aria-controls="quick-find-panel"]');
+var openSvg=btn?btn.innerHTML:'',xSvg='<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-5" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
+function set(o){if(!mob)return;mob.hidden=!o;mob.classList.toggle('hidden',!o);mob.classList.toggle('block',o);btn.setAttribute('aria-expanded',o);btn.setAttribute('aria-label',o?'Close menu':'Open menu');btn.innerHTML=o?xSvg:openSvg;}
+if(btn)btn.addEventListener('click',function(){set(mob.hidden)});
+if(qf){qf.setAttribute('aria-controls','mobile-nav');qf.setAttribute('aria-label','Menu');qf.addEventListener('click',function(){set(mob.hidden);if(!mob.hidden&&getComputedStyle(btn).display==='none'){mob.classList.remove('xl:hidden')}else{mob.classList.add('xl:hidden')}});}
+(function(){var row=r.querySelector('header > div');if(!row)return;var st=document.createElement('style');st.textContent='.th-tabs{display:none}@media (max-width:1279.98px){.th-tabs{display:flex;flex:1;justify-content:space-around;gap:2px}.th-tabs a{flex:1;min-width:44px;min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border-radius:2px;color:rgb(232 237 243/.85);text-decoration:none}.th-tabs a[aria-current]{color:#4d9bff}.th-tabs svg{width:20px;height:20px;color:#4d9bff}.th-tabs span{font-size:10px;line-height:1;font-weight:500;letter-spacing:.02em;white-space:nowrap}.th-hide-sm{display:none!important}}';r.appendChild(st);if(btn){btn.classList.add('th-mbtn');btn.parentElement.classList.add('th-hide-sm');}var logo=row.querySelector('a[href="/"]');if(logo)logo.classList.add('th-hide-sm');var nav=document.createElement('nav');nav.className='th-tabs';nav.setAttribute('aria-label','Pages');nav.innerHTML='<a href="/hacks"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"></path><path d="M9 18h6"></path><path d="M10 22h4"></path></svg><span>Hacks</span></a><a href="/simulator/"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"></circle><path d="m9 20 3-6 3 6"></path><path d="m6 8 6 2 6-2"></path><path d="M12 10v4"></path></svg><span>Simulator</span></a><a href="/simulator/pft-inside/"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" x2="15" y1="22" y2="22"></line><line x1="4" x2="14" y1="9" y2="9"></line><path d="M14 22V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v18"></path><path d="M14 13h2a2 2 0 0 1 2 2v2a2 2 0 0 0 2 2a2 2 0 0 0 2-2V9.83a2 2 0 0 0-.59-1.42L18 5"></path></svg><span>PFT</span></a><a href="/fat-burn-calculator/" aria-current=\"page\"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="20" x="4" y="2" rx="2"></rect><line x1="8" x2="16" y1="6" y2="6"></line><line x1="16" x2="16" y1="14" y2="18"></line><path d="M16 10h.01"></path><path d="M12 10h.01"></path><path d="M8 10h.01"></path><path d="M12 14h.01"></path><path d="M8 14h.01"></path><path d="M12 18h.01"></path><path d="M8 18h.01"></path></svg><span>Calculator</span></a><a href="/contact"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path></svg><span>Contact</span></a>';row.appendChild(nav);})();
+document.addEventListener('keydown',function(e){if(e.key==='Escape')set(false)});})();
+</script>
+
+<main id="main">
+  <div class="top">
+  <div class="top-text">
+  <p class="eyebrow">Health Hacks</p>
+  <h1>Maximal Fat Loss Calculator</h1>
+  <p class="lead">This calculator shows the <strong>maximum</strong> fat-loss rate, designed to limit muscle loss as much as possible (no trial shows any rate spares muscle completely). You can choose any slower pace in between. One published model (Alpert, 2005) estimates that body fat can release at most about <strong>31 kcal per pound of fat per day</strong> (range 29–34). This is an <strong>upper-limit estimate</strong>, not a proven ceiling. In that model, a calorie deficit bigger than this tends to come out of muscle and other lean tissue. Enter where you are and where you want to be, and this shows the <strong>fastest fat loss that still protects lean mass</strong>, week by week.</p>
+  </div>
+  <div class="hero-art" id="hero-art" aria-hidden="true">
+    <div class="ha-g"><svg viewBox="0 0 200 200" focusable="false">
+      <defs><linearGradient id="ha-rg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#79b4f6"/><stop offset="1" stop-color="#2a7ae0"/></linearGradient>
+      <radialGradient id="ha-rc" cx=".5" cy=".5" r=".5"><stop offset=".6" stop-color="#2a7ae0" stop-opacity=".18"/><stop offset="1" stop-color="#2a7ae0" stop-opacity="0"/></radialGradient></defs>
+      <circle cx="100" cy="100" r="98" fill="url(#ha-rc)" class="ha-pulse"/>
+      <circle cx="100" cy="100" r="78" fill="none" stroke="rgba(231,237,245,.1)" stroke-width="16"/>
+      <circle id="ha-arc" cx="100" cy="100" r="78" fill="none" stroke="url(#ha-rg)" stroke-width="16" stroke-linecap="round" pathLength="100" stroke-dasharray="0 100" transform="rotate(-90 100 100)"/>
+      <text x="100" y="96" text-anchor="middle" id="ha-pct" style="font:700 40px var(--font-display);fill:#e7edf5">0%</text>
+      <text x="100" y="122" text-anchor="middle" style="font:600 14px var(--font-sans);fill:#8e9aab">of your fat</text>
+    </svg></div>
+    <div class="ha-t"><div class="ha-k">Fat you lose</div><div class="ha-v" id="ha-v">–</div><div class="ha-s" id="ha-s"></div></div>
+  </div>
+<script>
+var $h=function(id){return document.getElementById(id)},hf=function(x,d){return (Math.round(x*Math.pow(10,d||0))/Math.pow(10,d||0)).toLocaleString('en-US')};
+function haWeeks(d){var w=d/7;return w<1.5?Math.max(1,Math.round(d))+' days':hf(w,1).replace(/\.0$/,'')+' weeks'}
+window.heroArt=function(d){var p=d.fat0>0?Math.max(0,Math.min(1,(d.fat0-d.endFat)/d.fat0)):0;
+$h('ha-arc').setAttribute('stroke-dasharray',(p*100).toFixed(1)+' 100');$h('ha-pct').textContent=Math.round(p*100)+'%';
+$h('ha-v').innerHTML=hf(d.lost,1)+'<small>'+d.u+'</small>';$h('ha-s').textContent=hf(d.bf0,1)+'% → '+hf(d.endBf,1)+'% body fat in '+haWeeks(d.days);};
+</script>
+
+
+  <div class="presets" role="group" aria-label="Example scenarios">
+    <button type="button" class="chip" data-preset="0">200 lb · 20% · 10 weeks</button>
+    <button type="button" class="chip" data-preset="1">200 lb · 20% → 12% body fat</button>
+    <button type="button" class="chip" data-preset="2">Female · 150 lb · 32% → 24%</button>
+    <button type="button" class="chip ghost" data-preset="reset">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:inline;vertical-align:-2px;margin-right:.35rem"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>Reset</button>
+  </div>
+
+  </div>
+
+  <div class="layout">
+    <!-- ============ FORM ============ -->
+    <form class="form-col card" id="form" novalidate autocomplete="off" onsubmit="return false">
+      <div class="section">
+        <div class="section-head">
+          <h2>You today</h2>
+          <div class="seg sm units-seg" role="radiogroup" aria-label="Units">
+            <label><input type="radio" name="units" value="imperial" checked><span>lb · in</span></label>
+            <label><input type="radio" name="units" value="metric"><span>kg · cm</span></label>
+          </div>
+        </div>
+        <fieldset class="seg" aria-label="Sex">
+          <legend class="sr-only">Sex</legend>
+          <label><input type="radio" name="sex" value="m" checked><span>Male</span></label>
+          <label><input type="radio" name="sex" value="f"><span>Female</span></label>
+        </fieldset>
+        <div class="row">
+          <label class="field" id="f-weight"><span class="label">Weight</span>
+            <span class="control"><input id="weight" inputmode="decimal" aria-describedby="e-weight"><span class="unit" data-u="w">lb</span></span>
+            <span class="err" id="e-weight"></span></label>
+          <label class="field" id="f-bf"><span class="label">Body fat</span>
+            <span class="control"><input id="bf" inputmode="decimal" aria-describedby="e-bf"><span class="unit">%</span></span>
+            <span class="err" id="e-bf"></span></label>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-head"><h2>Your goal</h2></div>
+        <fieldset class="seg" aria-label="What to calculate">
+          <legend class="sr-only">What to calculate</legend>
+          <label><input type="radio" name="mode" value="goal" checked><span>How long to my goal</span></label>
+          <label><input type="radio" name="mode" value="weeks"><span>Where I'll be in…</span></label>
+        </fieldset>
+        <div id="goal-block">
+          <fieldset class="seg sm" aria-label="Goal type">
+            <legend class="sr-only">Goal type</legend>
+            <label><input type="radio" name="goaltype" value="bf" checked><span>Goal body fat %</span></label>
+            <label><input type="radio" name="goaltype" value="wt"><span>Goal weight</span></label>
+          </fieldset>
+          <label class="field" id="f-goal"><span class="label" id="goal-label">Goal body fat</span>
+            <span class="control"><input id="goal" inputmode="decimal" aria-describedby="e-goal h-goal"><span class="unit" id="goal-unit">%</span></span>
+            <span class="err" id="e-goal"></span>
+            <span class="hint" id="h-goal"></span></label>
+        </div>
+        <div id="weeks-block" hidden>
+          <label class="field" id="f-weeks"><span class="label">Time frame</span>
+            <span class="control"><input id="weeks" inputmode="decimal" aria-describedby="e-weeks"><span class="unit">weeks</span></span>
+            <span class="err" id="e-weeks"></span></label>
+        </div>
+        <label class="field"><span class="label">Pace</span>
+          <span class="control"><select id="pace">
+            <option value="1">Maximum: 100% of the fat ceiling</option>
+            <option value="0.7">Moderate: 70% of the ceiling</option>
+            <option value="slight">Slight: about 0.5 lb of fat a week</option>
+            <option value="custom">Custom deficit or rate</option>
+          </select></span>
+          <span class="hint">Maximum is the fastest rate your fat can supply (an upper-limit estimate). Anything slower is fine: choose any pace up to it. Most people land a bit under the maximum.</span></label>
+        <div id="custom-block" hidden>
+          <label class="field" id="f-rate"><span class="label">Fat loss rate</span>
+            <input type="range" id="rate" min="0.1" max="3" step="0.1" value="1" aria-describedby="rate-out">
+            <span class="hint" id="rate-out" aria-live="polite"></span></label>
+          <label class="field" id="f-def"><span class="label">or a daily deficit</span>
+            <span class="control"><input id="def" inputmode="numeric" aria-describedby="e-def h-def"><span class="unit">kcal/day</span></span>
+            <span class="err" id="e-def"></span><span class="hint" id="h-def">Capped at your fat ceiling, the maximum.</span></label>
+        </div>
+      </div>
+
+      <div class="section">
+        <button type="button" class="switch" id="cal-toggle" role="switch" aria-checked="false" aria-controls="cal-fields">
+          <span class="track"><span class="thumb"></span></span>
+          <span><b>Daily calorie targets</b><small>Estimate what to eat each week, with a safe minimum</small></span>
+        </button>
+        <div class="cal-fields" id="cal-fields" hidden>
+          <div class="row">
+            <label class="field" id="f-age"><span class="label">Age</span>
+              <span class="control"><input id="age" inputmode="numeric" aria-describedby="e-age"><span class="unit">yr</span></span>
+              <span class="err" id="e-age"></span></label>
+            <div class="field" id="f-height"><span class="label" id="height-label">Height</span>
+              <div id="h-imp" class="row" style="gap:.5rem">
+                <span class="control"><input id="hft" inputmode="numeric" aria-labelledby="height-label" aria-describedby="e-height"><span class="unit">ft</span></span>
+                <span class="control"><input id="hin" inputmode="decimal" aria-label="Height, inches" aria-describedby="e-height"><span class="unit">in</span></span>
+              </div>
+              <div id="h-met" hidden><span class="control"><input id="hcm" inputmode="decimal" aria-labelledby="height-label" aria-describedby="e-height"><span class="unit">cm</span></span></div>
+              <span class="err" id="e-height"></span></div>
+          </div>
+          <label class="field"><span class="label">Activity</span>
+            <span class="control"><select id="activity">
+              <option value="1.2">Sedentary: desk job, little exercise</option>
+              <option value="1.375">Light: exercise 1–3 days/week</option>
+              <option value="1.55" selected>Moderate: exercise 3–5 days/week</option>
+              <option value="1.725">Very active: hard exercise 6–7 days/week</option>
+              <option value="1.9">Athlete: 2-a-days or a physical job</option>
+            </select></span></label>
+          <label class="field"><span class="label">BMR equation</span>
+            <span class="control"><select id="bmr-eq">
+              <option value="katch">Katch-McArdle (uses your lean mass)</option>
+              <option value="mifflin">Mifflin-St Jeor (age, height, sex)</option>
+            </select></span>
+            <span class="hint">Katch-McArdle fits best when body-fat % is accurate. Mifflin-St Jeor is the general-population standard.</span></label>
+        </div>
+      </div>
+
+      <details class="adv">
+        <summary>Assumption: fat-energy ceiling (cited)</summary>
+        <div class="adv-body">
+          <div class="field fixed-k" id="f-k"><span class="label">Max energy from fat (fixed assumption)</span>
+            <p class="hint" id="h-k"><b>31.4 kcal per lb of fat per day</b>, an upper-limit estimate from Alpert 2005 (290 ± 25 kJ per kg of fat per day). The results show its 28.7–34.1 range. It isn't editable, because it comes from the published evidence. See <a href="#method" data-open-method>How this is calculated</a> for the source.</p></div>
+        </div>
+      </details>
+    </form>
+
+    <!-- ============ RESULTS ============ -->
+    <section id="results" aria-labelledby="results-h" tabindex="-1">
+      <div class="card">
+        <p class="eyebrow" id="results-h">Your projection</p>
+        <div id="out" aria-live="polite"></div>
+        <ul class="alerts" id="alerts"></ul>
+      </div>
+      <div class="card" id="cal-card" hidden></div>
+      <div class="card" id="timeline-card">
+        <div class="section-head" style="margin-bottom:0"><h2>Your weight, week by week</h2><span class="eyebrow" id="tl-note">Muscle kept steady</span></div>
+        <div class="chart-wrap"><svg id="chart" role="img" aria-labelledby="chart-desc" width="100%"></svg><p class="sr-only" id="chart-desc"></p>
+          <div class="legend" aria-hidden="true"><span><i style="background:var(--accent)"></i>Fat you lose</span><span><i style="background:rgba(207,214,224,.28)"></i>Muscle, bone &amp; water (kept)</span><span><i style="background:transparent;border-top:2px dashed var(--steel);height:0;border-radius:0"></i>Where you end up</span></div>
+          <div class="ctl">
+            <label class="ctl-row" for="ch-wk"><span class="ctl-lbl">Week</span><input type="range" id="ch-wk" min="0" max="1" step="1" value="0" aria-describedby="ch-read"></label>
+            <p class="ctl-read" id="ch-read" aria-live="polite"></p>
+            <label class="ctl-row" for="ch-pace"><span class="ctl-lbl">Pace</span><input type="range" id="ch-pace" min="0" max="2" step="1" value="2" aria-describedby="ch-pace-out"></label>
+            <div class="ctl-ticks" aria-hidden="true"><span>Slight</span><span>Moderate</span><span>Maximum</span></div>
+            <p class="ctl-read" id="ch-pace-out" aria-live="polite"></p>
+          </div>
+        </div>
+        <div class="table-wrap"><table id="table" aria-describedby="table-note"></table></div><p class="hint" id="table-note" style="margin-top:.6rem"></p>
+      </div>
+
+      <details class="card method" id="method">
+        <summary><h2>How this is calculated</h2></summary>
+        <div class="body">
+          <p><strong>The ceiling.</strong> Alpert (2005) analyzed underfeeding data, chiefly the Minnesota Starvation Experiment, and found that the fat store can transfer at most about <strong>290 ± 25 kJ per kg of fat per day</strong>. That works out to <strong>31.4 kcal per lb of fat per day</strong>. Ask for a bigger deficit than <code>31.4 × fat lb</code> and the rest tends to come from lean tissue. Because the ceiling scales with how much fat you carry, it shrinks as you lean out.</p>
+          <p><strong>How solid is the 31?</strong> It is an <em>upper-limit estimate</em> from one theoretical analysis, not a measured physiological constant. The conversion is right (290 kJ/kg ÷ 4.184 ÷ 2.205 = 31.4 kcal/lb, and the paper's ±25 kJ gives 28.7–34.1). But the figure was fitted mostly to the Minnesota Starvation Experiment: lean young men, studied in the 1940s. It has not been confirmed in a prospective trial, and later starvation models treat it as one modelling assumption among several (Speakman &amp; Westerterp, 2013). A claim online that Alpert later revised it to 20–25 kcal/lb was never published, so this calculator does not use it. In practice the limit matters most for lean people. With around 100 lb of fat or more, 31 × fat lb is about as large as a whole day's energy use, so the limit rarely binds. Use the range, not the single number.</p>
+          <p><strong>Fat over time.</strong> At the ceiling, fat mass decays exponentially: <code>F(t) = F₀ · e^(−t / τ)</code>, where <code>τ = ρ / k</code>. <code>k</code> is the ceiling and <code>ρ</code> is the energy stored in a pound of <em>fat mass</em>, about 4,250 kcal/lb (≈ 9,400 kcal/kg, 39 MJ/kg). That makes <code>τ ≈ 135 days</code>, the same response time Alpert derived. Time to a goal is <code>t = τ · ln(F₀ / F_goal) / pace</code>.</p>
+          <p><strong>Why not 3,500 kcal per pound?</strong> The classic 3,500 kcal/lb rule (Wishnofsky, 1958) describes <em>adipose tissue</em>, which is only about 85–87% lipid. Body-fat % measures pure fat mass, which holds about 4,250 kcal/lb. Pairing Alpert's per-lb-of-fat-mass ceiling with 3,500 kcal/lb makes fat loss look about 20% faster than the data supports (τ = 113 days instead of 135). Hall (2008) also showed the 3,500 rule overstates long-term losses because it leaves out metabolic adaptation.</p>
+          <p><strong>Calorie targets (optional).</strong> BMR comes from Katch-McArdle (<code>370 + 21.6 × lean kg</code>) or Mifflin-St Jeor (1990). Either is multiplied by a standard activity factor to estimate TDEE. Target intake = TDEE − today's ceiling. Intake never drops below a floor of 1,500 kcal for men or 1,200 kcal for women, the usual minimum without medical supervision (NIH/NHLBI 1998 obesity guidelines). If the floor caps your deficit, the timeline slows to match.</p>
+          <p><strong>What it can't capture.</strong> Real bodies adapt: metabolic rate drops more than predicted (Hall et al., 2011, <em>Lancet</em>), water and glycogen swing the scale, and body-fat estimates from scales, calipers, or even DEXA can be off by 3–5 percentage points. Treat the result as a best case, and recheck your numbers every 4–6 weeks.</p>
+          <ol>
+            <li>Alpert SS. A limit on the energy transfer rate from the human fat store in hypophagia. <em>J Theor Biol.</em> 2005;233(1):1–13.</li>
+            <li>Helms ER, Zinn C, Rowlands DS, Brown SR. A systematic review of dietary protein during caloric restriction in resistance trained lean athletes: a case for higher intakes. <em>Int J Sport Nutr Exerc Metab.</em> 2014;24:127–138.</li>
+            <li>Morton RW, et al. A systematic review, meta-analysis and meta-regression of the effect of protein supplementation on resistance training-induced gains in muscle mass and strength in healthy adults. <em>Br J Sports Med.</em> 2018;52:376–384.</li>
+            <li>Schoenfeld BJ, Aragon AA. How much protein can the body use in a single meal for muscle-building? <em>J Int Soc Sports Nutr.</em> 2018;15:10.</li>
+            <li>Speakman JR, Westerterp KR. A mathematical model of weight loss under total starvation: evidence against the thrifty-gene hypothesis. <em>Dis Model Mech.</em> 2013;6(1):236–251.</li>
+            <li>Hall KD. What is the required energy deficit per unit weight loss? <em>Int J Obes.</em> 2008;32(3):573–576.</li>
+            <li>Hall KD, et al. Quantification of the effect of energy imbalance on bodyweight. <em>Lancet.</em> 2011;378(9793):826–837.</li>
+            <li>Mifflin MD, St Jeor ST, et al. A new predictive equation for resting energy expenditure in healthy individuals. <em>Am J Clin Nutr.</em> 1990;51(2):241–247.</li>
+            <li>Katch FI, McArdle WD. <em>Nutrition, Weight Control, and Exercise.</em> 1977; adapted BMR equation.</li>
+            <li>NHLBI. Clinical Guidelines on the Identification, Evaluation, and Treatment of Overweight and Obesity in Adults. 1998.</li>
+          </ol>
+        </div>
+      </details>
+
+      <p class="disclaimer"><strong>Educational tool, not medical advice.</strong> These are estimates for healthy adults. Talk with your clinician before a significant calorie deficit if you are pregnant or breastfeeding, under 18, have a history of disordered eating, take insulin or other glucose-lowering medicine, or have kidney, heart, or other chronic disease.</p>
+    </section>
+  </div>
+</main>
+<footer class="th-foot">
+  <div class="tf-in">
+    <div class="tf-col"><a href="/" aria-label="Theosis Health home"><img class="th-lockup" src="/images/theosis-health-header-lockup.png" alt="Theosis Health" width="900" height="168"></a>
+      <a href="/simulator/">Metabolic Simulator</a><a href="/simulator/pft-inside/">Personal Fat Threshold Model</a><a href="/hacks">Health Hacks</a><a href="/fat-burn-calculator/">Maximal Fat Loss Calculator</a></div>
+    <div class="tf-col tf-r"><a href="/contact">Contact</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/consumer-health-privacy">Consumer Health Privacy</a><a href="/disclaimer">Disclaimer</a>
+      <p>Founded by Nick Holwey, PA-C, a licensed physician assistant. Education only, no medical care. <a href="/disclaimer">Medical Disclaimer</a></p></div>
+  </div>
+  <div class="tf-bot">
+    <p>Built on Alpert (2005) · Calculations run privately in your browser</p>
+    <p class="tf-promo">More tools and plain-language Health Hacks at <a href="https://theosishealth.com">theosishealth.com</a></p>
+    <p>© 2026 Theosis Health LLC · Educational content only, not medical advice. Theosis Health does not provide medical care.</p>
+  </div>
+</footer>
+
+<script>
+(() => {
+"use strict";
+// ---------- constants ----------
+const LB_PER_KG = 2.2046226218;
+const CM_PER_IN = 2.54;
+const RHO = 4250;                 // kcal per lb of fat mass (~9,370 kcal/kg ~ 39 MJ/kg)
+const KJ_TO_KLB = 1 / 4.184 / LB_PER_KG; // kJ/kg/d -> kcal/lb/d
+const K_DEFAULT = 31.4;           // 290 kJ/kg/d (Alpert 2005)
+const K_UNC = 25 * KJ_TO_KLB;     // ±25 kJ/kg/d -> ±2.7 kcal/lb/d
+const FLOOR = { m: 1500, f: 1200 };
+const ESSENTIAL = { m: 5, f: 12 };   // hard minimum goal body fat %
+const VERY_LEAN = { m: 8, f: 15 };   // warn below this
+const MAX_DAYS = 3650;
+
+const $ = (id) => document.getElementById(id);
+const fmt = (n, d = 1) => Number.isFinite(n) ? Number(n.toFixed(d)).toLocaleString("en-US", { maximumFractionDigits: d }) : "–";
+const fmtInt = (n) => Math.round(n).toLocaleString("en-US");
+const parse = (s) => {
+  if (s == null) return null;
+  const t = String(s).trim().replace(",", ".");
+  if (t === "") return null;
+  if (!/^-?(\d+\.?\d*|\.\d+)$/.test(t)) return NaN;
+  return Number(t);
+};
+
+// ---------- state ----------
+const S = { units: "imperial", calOn: false, canon: { w: null, gw: null, hIn: null } };
+const isMetric = () => S.units === "metric";
+const wUnit = () => isMetric() ? "kg" : "lb";
+const toDispW = (lb) => isMetric() ? lb / LB_PER_KG : lb;
+
+// ---------- engine (all internal values in lb and kcal) ----------
+function bmrOf(eq, inp, weightLb) {
+  const leanKg = inp.lean / LB_PER_KG;
+  if (eq === "mifflin") {
+    const wKg = weightLb / LB_PER_KG;
+    return 10 * wKg + 6.25 * inp.heightCm - 5 * inp.age + (inp.sex === "m" ? 5 : -161);
+  }
+  return 370 + 21.6 * leanKg;
+}
+/* Daily simulation. Each day the planned deficit = min(pace*k*F, TDEE - floor).
+   While the ceiling binds, fat decays exactly: F *= exp(-pace*k/RHO). */
+function simulate(inp, k, stopFat, maxDays) {
+  const r = (inp.pace * k) / RHO;
+  let F = inp.fat0, day = 0;
+  const days = [{ day: 0, F, ...dayInfo(inp, k, F) }];
+  let reachedAt = null, floorDays = 0;
+  while (day < maxDays) {
+    const info = dayInfo(inp, k, F);
+    if (info.floorBinds) floorDays++;
+    let Fn;
+    if (!info.floorBinds && !inp.abs) Fn = F * Math.exp(-r);
+    else Fn = F - Math.max(0, info.deficit) / RHO;
+    if (stopFat != null && Fn <= stopFat) {
+      let frac;
+      if (!info.floorBinds && !inp.abs) frac = Math.log(F / stopFat) / r;
+      else frac = info.deficit > 0 ? (F - stopFat) * RHO / info.deficit : 1;
+      reachedAt = day + Math.min(1, Math.max(0, frac));
+      F = stopFat; day += 1;
+      days.push({ day, F, ...dayInfo(inp, k, F) });
+      break;
+    }
+    if (Fn >= F - 1e-9 && info.floorBinds) { day += 1; days.push({ day, F, ...dayInfo(inp, k, F) }); break; } // no deficit possible
+    F = Fn; day += 1;
+    days.push({ day, F, ...dayInfo(inp, k, F) });
+  }
+  return { days, reachedAt, endFat: F, floorDays, stalled: days.length < maxDays && reachedAt == null && stopFat != null };
+}
+function dayInfo(inp, k, F) {
+  const weight = inp.lean + F;
+  const ceiling = k * F;                 // 100% ceiling, kcal/day
+  const planned = inp.abs ? Math.min(inp.abs, ceiling) : inp.pace * ceiling;
+  if (!inp.cal) return { weight, ceiling, deficit: planned, floorBinds: false };
+  const tdee = bmrOf(inp.eq, inp, weight) * inp.af;
+  const floor = FLOOR[inp.sex];
+  const room = tdee - floor;
+  const floorBinds = planned > room;
+  const deficit = floorBinds ? Math.max(0, room) : planned;
+  return { weight, ceiling, deficit, floorBinds, tdee, intake: tdee - deficit, floor };
+}
+function timeTo(inp, k, goalFat) {
+  if (!inp.cal && !inp.abs) return (RHO / (inp.pace * k)) * Math.log(inp.fat0 / goalFat);
+  const s = simulate(inp, k, goalFat, MAX_DAYS);
+  return s.reachedAt;
+}
+
+// ---------- read + validate ----------
+function setErr(fieldId, msg) {
+  const f = $(fieldId); if (!f) return;
+  f.classList.toggle("invalid", !!msg);
+  const e = f.querySelector(".err"); if (e) e.textContent = msg || "";
+  f.querySelectorAll("input").forEach((i) => msg ? i.setAttribute("aria-invalid", "true") : i.removeAttribute("aria-invalid"));
+}
+function radio(name) { return document.querySelector(`input[name="${name}"]:checked`).value; }
+
+function readInputs() {
+  const errs = {}; const inp = {};
+  inp.sex = radio("sex"); inp.mode = radio("mode"); inp.goalType = radio("goaltype");
+  const pv = $("pace").value; inp.paceKey = pv; inp.cal = S.calOn;
+  if (pv === "slight") { inp.pace = 1; inp.abs = 0.5 * RHO / 7; }
+  else if (pv === "custom") { const d = parse($("def").value); inp.pace = 1;
+    if (d == null || !Number.isFinite(d) || d < 50 || d > 5000) errs["f-def"] = "Enter a deficit between 50 and 5,000 kcal a day, or use the slider."; else inp.abs = d; }
+  else inp.pace = Number(pv);
+  const k = null;
+  if (k == null) inp.k = K_DEFAULT;
+  else if (!Number.isFinite(k) || k < 15 || k > 45) errs["f-k"] = "Use a value between 15 and 45.";
+  else inp.k = k;
+
+  const w = S.canon.w;
+  if ($("weight").value.trim() === "") errs["f-weight"] = "Enter your current weight.";
+  else if (!Number.isFinite(w)) errs["f-weight"] = "Numbers only.";
+  else if (w < 70 || w > 700) errs["f-weight"] = isMetric() ? "Enter a weight between 32 and 318 kg." : "Enter a weight between 70 and 700 lb.";
+  inp.weight = w;
+
+  const bf = parse($("bf").value);
+  if (bf == null) errs["f-bf"] = "Enter body fat %.";
+  else if (!Number.isFinite(bf)) errs["f-bf"] = "Numbers only.";
+  else if (bf < 3 || bf > 65) errs["f-bf"] = "Enter a body fat between 3% and 65%.";
+  inp.bf = bf;
+  /* polish-1023: at or below essential fat the model has no fat to lose (it showed weight going UP); ask for a realistic value instead */
+  if (!errs["f-bf"] && inp.sex && ESSENTIAL[inp.sex] != null && bf <= ESSENTIAL[inp.sex]) errs["f-bf"] = `That's at or below essential fat (${ESSENTIAL[inp.sex]}% for ${inp.sex === "f" ? "women" : "men"}), so there's no fat left to lose. Enter a higher body fat.`;
+
+  if (!errs["f-weight"] && !errs["f-bf"]) {
+    inp.fat0 = w * bf / 100; inp.lean = w - inp.fat0;
+  }
+
+  if (inp.mode === "goal") {
+    if (inp.goalType === "bf") {
+      const g = parse($("goal").value);
+      if (g == null) errs["f-goal"] = "Enter a goal body fat %.";
+      else if (!Number.isFinite(g)) errs["f-goal"] = "Numbers only.";
+      else if (g < ESSENTIAL[inp.sex]) errs["f-goal"] = `Below ${ESSENTIAL[inp.sex]}% is essential fat for ${inp.sex === "m" ? "men" : "women"}. That isn't a safe target.`;
+      else if (inp.bf != null && g >= inp.bf) errs["f-goal"] = "Goal has to be lower than your current body fat.";
+      inp.goalBf = g;
+      if (!errs["f-goal"] && inp.lean != null) { inp.goalFat = inp.lean * g / (100 - g); inp.goalWeight = inp.lean + inp.goalFat; }
+    } else {
+      const gw = S.canon.gw;
+      if ($("goal").value.trim() === "") errs["f-goal"] = "Enter a goal weight.";
+      else if (!Number.isFinite(gw)) errs["f-goal"] = "Numbers only.";
+      else if (inp.weight != null && gw >= inp.weight) errs["f-goal"] = "Goal weight has to be below your current weight.";
+      else if (inp.lean != null) {
+        const minW = inp.lean / (1 - ESSENTIAL[inp.sex] / 100);
+        if (gw < minW) errs["f-goal"] = `With your lean mass held, ${fmt(toDispW(minW))} ${wUnit()} is the lowest weight that keeps essential fat (${ESSENTIAL[inp.sex]}%). Losing more would cost muscle.`;
+      }
+      inp.goalWeight = gw;
+      if (!errs["f-goal"] && inp.lean != null) { inp.goalFat = gw - inp.lean; inp.goalBf = 100 * inp.goalFat / gw; }
+    }
+  } else {
+    const wk = parse($("weeks").value);
+    if (wk == null) errs["f-weeks"] = "Enter a number of weeks.";
+    else if (!Number.isFinite(wk) || wk < 1 || wk > 260) errs["f-weeks"] = "Use 1 to 260 weeks.";
+    inp.weeks = wk;
+  }
+
+  if (inp.cal) {
+    inp.af = Number($("activity").value); inp.eq = $("bmr-eq").value;
+    const age = parse($("age").value);
+    const needMif = inp.eq === "mifflin";
+    if (age == null) { if (needMif) errs["f-age"] = "Needed for Mifflin-St Jeor."; }
+    else if (!Number.isFinite(age) || age < 18 || age > 100) errs["f-age"] = age < 18 ? "This tool is for adults (18+)." : "Enter an age from 18 to 100.";
+    inp.age = age;
+    const h = S.canon.hIn;
+    if (h == null) { if (needMif) errs["f-height"] = "Needed for Mifflin-St Jeor."; }
+    else if (!Number.isFinite(h) || h < 48 || h > 96) errs["f-height"] = isMetric() ? "Enter a height from 122 to 244 cm." : "Enter a height from 4 ft to 8 ft.";
+    inp.heightCm = h != null ? h * CM_PER_IN : null;
+  }
+  for (const id of ["f-weight", "f-bf", "f-goal", "f-weeks", "f-age", "f-height", "f-k", "f-def"]) setErr(id, errs[id]);
+  return { inp, errs };
+}
+
+// ---------- compute ----------
+function compute(inp) {
+  const warnings = [];
+  const k = inp.k;
+  const kLo = k - K_UNC, kHi = k + K_UNC;
+  let sim, days, range, capped = false;
+
+  if (inp.cal) {
+    const d0 = dayInfo(inp, k, inp.fat0);
+    if (d0.tdee - d0.floor <= 0) {
+      return { blocked: `Your estimated TDEE (${fmtInt(d0.tdee)} kcal) is at or below the ${fmtInt(d0.floor)} kcal minimum intake, so there's no room for a safe deficit from diet alone. Add activity, or work with a clinician on a supervised plan.` };
+    }
+  }
+
+  if (inp.mode === "goal") {
+    sim = simulate(inp, k, inp.goalFat, MAX_DAYS);
+    if (sim.reachedAt == null) return { blocked: "With the calorie floor in place, this goal can't be reached within 10 years. Try adding activity, or set a closer goal." };
+    days = sim.reachedAt;
+    range = [timeTo(inp, kHi, inp.goalFat), timeTo(inp, kLo, inp.goalFat)];
+  } else {
+    const n = Math.round(inp.weeks * 7);
+    const stop = inp.lean * ESSENTIAL[inp.sex] / (100 - ESSENTIAL[inp.sex]);
+    sim = simulate(inp, k, stop, n);
+    if (sim.reachedAt != null) capped = true;
+    days = n;
+    const lo = simulate(inp, kLo, stop, n).endFat, hi = simulate(inp, kHi, stop, n).endFat;
+    range = [inp.lean + hi, inp.lean + lo];
+  }
+  const series = sim.days;
+  const frac0 = inp.abs ? Math.min(1, inp.abs / (k * inp.fat0)) : inp.pace;   // share of today's maximum
+  // protein (v7.6.3, evidence-checked): near the maximum deficit, 2.3–3.1 g/kg of lean mass (Helms, Zinn et al. 2014, lean lifters dieting);
+  // slower paces, 1.6–2.2 g/kg of a healthy reference weight (Morton 2018: benefit plateaus ~1.6, upper CI ~2.2), reference = lean mass at 18% (men) / 28% (women) body fat,
+  // never total weight when body fat is high. Expressed back per kg of lean mass so one basis is shown.
+  const refLean = (inp.lean / LB_PER_KG) / (1 - (inp.sex === "m" ? 0.18 : 0.28)) / (inp.lean / LB_PER_KG);
+  const prot = frac0 >= 0.8 ? [2.3, 3.1] : [1.6 * refLean, 2.2 * refLean], protWhy = frac0 >= 0.8 ? "near the maximum deficit, the higher range for lean people dieting hard (Helms 2014)" : "the range where extra protein stops adding muscle for most people (Morton 2018)";
+  const last = series[series.length - 1];
+  const endFat = inp.mode === "goal" ? inp.goalFat : last.F;
+  const endW = inp.lean + endFat, endBf = 100 * endFat / endW;
+  const first = series[0];
+  const wk1 = series[Math.min(7, series.length - 1)];
+  const wk1Loss = (first.weight - wk1.weight) * (7 / Math.max(1, wk1.day));
+  const wk1Pct = 100 * wk1Loss / first.weight;
+
+  // warnings
+  if (capped) warnings.push(["warn", `Fat loss stops at essential fat (${ESSENTIAL[inp.sex]}%) about ${fmt(sim.reachedAt / 7)} weeks in. Past that point there's no safe fat left to lose.`]);
+  if (endBf < VERY_LEAN[inp.sex]) warnings.push(["warn", `${fmt(endBf)}% body fat is stage-lean for ${inp.sex === "m" ? "men" : "women"}. It's hard to hold and can affect hormones, sleep, mood and performance. Plan a maintenance phase.`]);
+  if (wk1Pct > 1.5) warnings.push(["warn", `Week-one pace is ${fmt(wk1Pct)}% of body weight per week. Above about 1% a week, keeping muscle depends heavily on high protein (about 1.6–2.2 g per kg of body weight a day) and resistance training. Faster rates are best done with medical supervision.`]);
+  if (inp.cal && sim.floorDays > 0) warnings.push(["info", `Your ${fmtInt(FLOOR[inp.sex])} kcal intake floor caps the deficit on ${sim.floorDays === series.length - 1 ? "every day" : `${sim.floorDays} of ${series.length - 1} days`}, so this timeline runs slower than the fat ceiling alone would allow.`]);
+  if (inp.k > K_DEFAULT + K_UNC + 0.05) warnings.push(["warn", `${fmt(inp.k)} kcal/lb/day is above the top of Alpert's range (${fmt(K_DEFAULT + K_UNC)}). The extra deficit may come out of lean mass.`]);
+  if (inp.mode === "goal" && days / 7 > 52) warnings.push(["info", "That's more than a year of continuous dieting. Breaking it into phases with maintenance breaks is usually easier to sustain."]);
+  warnings.push(["info", "Body-fat readings from smart scales and calipers can be off by 3–5 points, and that error carries straight into the timeline. Recheck every 4–6 weeks."]);
+
+  return { inp, series, days, range, endFat, endW, endBf, wk1Loss, wk1Pct, warnings, capped, reachedAt: sim.reachedAt, floorDays: sim.floorDays, prot, protWhy, frac0 };
+}
+
+// ---------- render ----------
+const ICONS = {
+  warn: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>',
+  danger: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>',
+  info: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>'
+};
+const dateFrom = (d) => { const t = new Date(); t.setHours(12, 0, 0, 0); t.setDate(t.getDate() + Math.ceil(d)); return t; };
+const fmtDate = (dt, yr = true) => dt.toLocaleDateString("en-US", yr ? { month: "short", day: "numeric", year: "numeric" } : { month: "short", day: "numeric" });
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+function protTxt(R, lean) { const kg = lean / LB_PER_KG, lo = R.prot[0] * kg, hi = R.prot[1] * kg;
+  return isMetric() ? { total: `${fmtInt(lo)}–${fmtInt(hi)} <small>g a day</small>`, per: `${R.prot[0].toFixed(1)}–${R.prot[1].toFixed(1)} g per kg of lean mass` }
+    : { total: `${fmtInt(lo)}–${fmtInt(hi)} <small>g a day</small>`, per: `${(R.prot[0] / LB_PER_KG).toFixed(2)}–${(R.prot[1] / LB_PER_KG).toFixed(2)} g per lb of lean mass (${fmtInt(lean)} lb)` }; }
+// v7.6.11: SIM_URL = where the simulator lives. "../index.html" works when both ship together (Netlify Drop zip); for a separate deploy set it to the full address.
+const SIM_URL = "/simulator/";
+function simHref(inp, R) { const q = [`u=${S.units}`, ...(inp.cal && inp.af ? [`act=${inp.af}`] : []), `calc-pace=${R.frac0.toFixed(3)}`, `label=${encodeURIComponent(paceName(inp))}`, `w=${(+inp.weight).toFixed(1)}`, `bf=${(+inp.bf).toFixed(1)}`, `sex=${inp.sex}`, `gbf=${(+R.endBf).toFixed(1)}`];
+  if (inp.age) q.push(`age=${Math.round(inp.age)}`); if (inp.heightCm) q.push(`h=${(+inp.heightCm).toFixed(1)}`); return SIM_URL + "#" + q.join("&"); }
+function teaserSvg(R) { const s = R.series, n = s.length, w0 = s[0].weight, w1 = s[n - 1].weight, X = (i) => 10 + 280 * i / Math.max(1, n - 1), Y = (v) => 20 + 80 * (w0 - v) / Math.max(1, w0 - w1);
+  const pts = s.filter((_, i) => i % Math.max(1, Math.floor(n / 60)) === 0 || i === n - 1).map((d) => `${X(s.indexOf(d)).toFixed(1)},${Y(d.weight).toFixed(1)}`).join(" ");
+  return `<svg viewBox="0 0 300 120" aria-hidden="true" focusable="false"><g filter="url(#tz-blur)"><polyline points="${pts}" fill="none" stroke="#6aa8ff" stroke-width="4"/><polyline points="${pts}" fill="none" stroke="#f0c36a" stroke-width="3" transform="translate(0,10)" opacity=".7"/>
+    <ellipse cx="250" cy="60" rx="18" ry="40" fill="#cfd6e0" opacity=".5"/><ellipse cx="215" cy="60" rx="22" ry="44" fill="#cfd6e0" opacity=".35"/></g><defs><filter id="tz-blur"><feGaussianBlur stdDeviation="3.5"/></filter></defs></svg>`; }
+function funnelHtml(inp, R) { return `<div class="funnel" id="funnel"><div class="funnel-txt"><p class="eyebrow">Next step</p><h3>See how this might affect health and diabetes risk</h3>
+    <p>The Metabolic Simulator shows how your shape changes week by week, where the fat comes off first, and what it can mean for blood sugar, with your numbers and pace already filled in.</p>
+    <a class="chip funnel-btn" id="to-sim" href="${simHref(inp, R)}">Open the Metabolic Simulator →</a><p class="hint">Opens with ${esc(paceName(inp))}, ${fmt(toDispW(inp.weight))} ${wUnit()} and ${fmt(inp.bf)}% body fat. Nothing leaves your device.</p></div>
+    <a class="funnel-peek" href="${simHref(inp, R)}" tabindex="-1" aria-hidden="true">${teaserSvg(R)}<span>Your projection is ready</span></a></div>`; }
+// same-origin fallback: remember the hand-off for the simulator in case the #hash is lost on the way (redirect, install prompt)
+document.addEventListener("click", (ev) => { const a = ev.target.closest && ev.target.closest("#to-sim, .funnel-peek"); if (!a) return;
+  try { localStorage.setItem("theosis-calc-handoff", JSON.stringify({ q: (a.getAttribute("href").split("#")[1] || ""), t: Date.now() })); } catch (e) { /* storage off */ } });
+function paceName(inp) { return inp.paceKey === "slight" ? "Slight, about 0.5 lb of fat a week" : inp.paceKey === "custom" ? `Custom, ${fmtInt(inp.abs)} kcal/day deficit` : inp.pace >= 1 ? "Maximum" : `Moderate, ${Math.round(inp.pace * 100)}% of the maximum`; }
+function paintPace() { const c = $("pace").value === "custom"; $("custom-block").hidden = !c;
+  if (c && !$("def").value) { $("def").value = String(Math.round(Number($("rate").value) * RHO / 7)); }
+  const d = parse($("def").value); $("rate-out").textContent = d ? `${fmt(d * 7 / RHO, 1)} lb (${fmt(d * 7 / RHO / LB_PER_KG, 2)} kg) of fat a week ≈ ${fmtInt(d)} kcal/day` : ""; }
+function render() {
+  const { inp, errs } = readInputs();
+  const out = $("out"), alerts = $("alerts");
+  const hasErr = Object.keys(errs).length > 0;
+  if (hasErr) {
+    out.innerHTML = `<p class="blocked">Fix the highlighted field${Object.keys(errs).length > 1 ? "s" : ""} to see your projection.</p>`;
+    alerts.innerHTML = Object.values(errs).map((m) => `<li class="alert danger">${ICONS.danger}<span>${esc(m)}</span></li>`).join("");
+    $("cal-card").hidden = true; $("timeline-card").hidden = true; return;
+  }
+  const R = compute(inp);
+  if (R.blocked) {
+    out.innerHTML = `<p class="blocked">No projection yet.</p>`;
+    alerts.innerHTML = `<li class="alert danger">${ICONS.danger}<span>${esc(R.blocked)}</span></li>`;
+    $("cal-card").hidden = true; $("timeline-card").hidden = true; return;
+  }
+  $("timeline-card").hidden = false;
+  const u = wUnit(), W = (lb, d = 1) => fmt(toDispW(lb), d);
+  const lean = inp.lean;
+  const floorLimited = inp.cal && R.floorDays > 0;
+  const paceTxt = floorLimited ? "Limited by your calorie floor" : inp.abs ? `At your chosen ${fmtInt(inp.abs)} kcal/day deficit (about ${fmt(inp.abs * 7 / RHO, 1)} lb of fat a week${inp.abs > R.series[0].ceiling ? ", capped at the maximum for now" : ""})` : inp.pace < 1 ? `At ${Math.round(inp.pace * 100)}% of the maximum` : "At the maximum fat-burn pace";
+  const flatRange = Math.abs(R.range[1] - R.range[0]) < (inp.mode === "goal" ? 0.5 : 0.05);
+  const rangeTxt = flatRange ? (floorLimited ? "Set by your calorie floor, not the fat ceiling" : R.capped ? "Capped at essential fat" : "") :
+    inp.mode === "goal" ? `Range ${fmt(R.range[0] / 7)}–${fmt(R.range[1] / 7)} weeks (Alpert ±25 kJ)` : `Range ${W(R.range[0])}–${W(R.range[1])} ${u} (Alpert ±25 kJ)`;
+  let hero;
+  if (inp.mode === "goal") {
+    const wk = R.days / 7;
+    hero = `<div>
+      <div class="big">${fmt(wk)}<small>weeks</small></div>
+      <p class="big-sub"><strong>${fmtInt(R.days)} days</strong> · around <strong>${fmtDate(dateFrom(R.days))}</strong>${rangeTxt ? "<br>" + rangeTxt : ""}</p>
+    </div>
+    <p class="summary">At ${W(inp.weight)} ${u} and ${fmt(inp.bf)}% body fat you carry <strong>${W(inp.fat0)} ${u} of fat</strong> and ${W(lean)} ${u} of lean mass. Holding that lean mass, <strong>${fmt(R.endBf)}% body fat is ${W(R.endW)} ${u}</strong>. ${paceTxt}, you get there in about ${fmt(wk)} weeks.</p>`;
+  } else {
+    hero = `<div>
+      <div class="big">${W(R.endW)}<small>${u}</small></div>
+      <p class="big-sub"><strong>${fmt(R.endBf)}% body fat</strong> after ${fmt(inp.weeks)} weeks · <strong>${fmtDate(dateFrom(R.days))}</strong>${rangeTxt ? "<br>" + rangeTxt : ""}</p>
+    </div>
+    <p class="summary">At ${W(inp.weight)} ${u} and ${fmt(inp.bf)}% body fat you carry <strong>${W(inp.fat0)} ${u} of fat</strong>. ${paceTxt}, ${fmt(inp.weeks)} weeks takes off <strong>${W(inp.fat0 - R.endFat)} ${u} of fat</strong> and leaves you at <strong>${W(R.endW)} ${u} and ${fmt(R.endBf)}%</strong>, with lean mass held at ${W(lean)} ${u}.</p>`;
+  }
+  const s0 = R.series[0], sN = R.series[R.series.length - 1];
+  const stats = `<div class="stats">
+    <div class="stat"><div class="k">Fat</div><div class="v">${W(inp.fat0)}<span class="arrow">→</span>${W(R.endFat)}</div><div class="d">${u} · −${W(inp.fat0 - R.endFat)} ${u}</div></div>
+    <div class="stat"><div class="k">Body fat</div><div class="v">${fmt(inp.bf)}<span class="arrow">→</span>${fmt(R.endBf)}%</div><div class="d">lean held at ${W(lean)} ${u}</div></div>
+    <div class="stat"><div class="k">Fat ceiling</div><div class="v">${fmtInt(s0.ceiling)}<span class="arrow">→</span>${fmtInt(sN.ceiling)}</div><div class="d">max kcal/day deficit your fat can cover</div></div>
+    <div class="stat"><div class="k">Week-1 pace</div><div class="v">${W(R.wk1Loss, 1)} ${u}</div><div class="d">${fmt(R.wk1Pct, 2)}% of body weight / week · ${Math.round(R.frac0 * 100)}% of the maximum</div></div>
+    <div class="stat"><div class="k">Protein</div><div class="v">${fmtInt(R.prot[0] * lean / LB_PER_KG)}–${fmtInt(R.prot[1] * lean / LB_PER_KG)}</div><div class="d">g/day at this pace</div></div>
+  </div>
+  ${funnelHtml(inp, R)}`;
+  out.innerHTML = `<div class="result-hero" style="margin-top:.75rem">${hero}</div>${stats}`;
+  if (window.heroArt) window.heroArt({ fat0: inp.fat0, endFat: R.endFat, bf0: inp.bf, endBf: R.endBf, w0: inp.weight, endW: R.endW, days: R.capped && R.reachedAt != null ? R.reachedAt : R.days, frac: R.frac0, lost: toDispW(inp.fat0 - R.endFat), u });
+  alerts.innerHTML = R.warnings.map(([t, m]) => `<li class="alert ${t}">${ICONS[t]}<span>${esc(m)}</span></li>`).join("");
+
+  // calorie card
+  const cc = $("cal-card");
+  if (inp.cal) {
+    cc.hidden = false;
+    const floorNote = s0.floorBinds ? `<p class="hint" style="margin-top:.75rem">Today's ceiling (${fmtInt(s0.ceiling * inp.pace)} kcal) would put you under your ${fmtInt(s0.floor)} kcal floor, so the deficit is capped at ${fmtInt(s0.deficit)} kcal.</p>` : "";
+    // v7.6.9: maintenance and the eating target are separate numbers and can move in opposite directions
+    const trend = sN.intake - s0.intake >= 25 ? "up" : s0.intake - sN.intake >= 25 ? "down" : "flat", endTxt = inp.mode === "goal" ? "your goal" : "the end of the plan";
+    cc.innerHTML = `<div class="section-head" style="margin-bottom:0"><h2>What to eat</h2><span class="eyebrow">${inp.eq === "mifflin" ? "Mifflin-St Jeor" : "Katch-McArdle"} × ${inp.af}</span></div>
+      <div class="eat-main">
+        <div class="eat-box"><div class="k">Eat about</div><div class="eat-v">${fmtInt(s0.intake)} <small>kcal a day</small></div><p class="d">to lose fat at your chosen pace (${esc(paceName(inp))}).</p></div>
+        <div class="eat-box"><div class="k">Protein</div><div class="eat-v">${protTxt(R, lean).total}</div><p class="d">${protTxt(R, lean).per}. ${esc(R.protWhy[0].toUpperCase() + R.protWhy.slice(1))}.</p></div>
+      </div>
+      <ul class="eat-notes">
+        <li><b>Your maintenance now: ${fmtInt(s0.tdee)} kcal a day.</b> That's roughly what you burn today. Eating ${fmtInt(s0.deficit)} kcal less than that is your fat-loss deficit.${Math.abs(s0.tdee - sN.tdee) >= 25 ? ` As weight comes off, the body tends to burn less, so maintenance falls to about <b>${fmtInt(sN.tdee)} kcal a day</b> by ${endTxt}.` : ""}</li>
+        <li data-intake-trend="${trend}">${trend === "up" ? `As you lose fat, the deficit your fat stores can supply shrinks, so your eating target <b>rises gradually</b> from ${fmtInt(s0.intake)} to about <b>${fmtInt(sN.intake)} kcal a day</b> by ${endTxt}, which helps protect lean mass (Alpert 2005).` : trend === "down" ? `Your eating target <b>falls</b> from ${fmtInt(s0.intake)} to about <b>${fmtInt(sN.intake)} kcal a day</b> by ${endTxt}, mostly because your maintenance falls as you lose weight.` : `Your eating target stays about ${fmtInt(s0.intake)} kcal a day for the whole plan.`} See the <b>Eat ≈</b> column in the table below, week by week.</li>
+        <li>Never go below <b>${fmtInt(s0.floor)} kcal a day</b> without medical supervision.</li>
+      </ul>${floorNote}
+      <p class="hint">Spread it over 3–4 meals (Schoenfeld &amp; Aragon 2018). Pair the protein with resistance training (2–3 sessions a week) so the weight you lose comes from fat, not muscle.</p>`;
+  } else cc.hidden = true;
+
+  renderTimeline(R);
+}
+
+function sampleRows(R) {
+  const S0 = R.series, total = R.inp.mode === "goal" ? R.days : S0[S0.length - 1].day;
+  const weeks = total / 7;
+  const step = weeks <= 20 ? 1 : weeks <= 40 ? 2 : weeks <= 80 ? 4 : 8;
+  const rows = [];
+  for (let w = 0; w * 7 < total - 0.5; w += step) rows.push(S0[Math.min(w * 7, S0.length - 1)]);
+  const end = S0[S0.length - 1];
+  rows.push({ ...end, day: total, F: R.endFat, weight: R.inp.lean + R.endFat, isEnd: true });
+  return rows;
+}
+
+function renderTimeline(R) {
+  const inp = R.inp, u = wUnit(), W = (lb) => fmt(toDispW(lb));
+  const rows = sampleRows(R);
+  $("tl-note").textContent = `Muscle, bone & water kept at ${W(inp.lean)} ${u}`;
+  const cal = inp.cal;
+  let html = `<thead><tr><th scope="col">Week</th><th scope="col">Date</th><th scope="col">Weight (${u})</th><th scope="col">Fat (${u})</th><th scope="col">Body fat</th><th scope="col">Deficit (kcal/d)</th>${cal ? '<th scope="col">Eat ≈</th>' : ""}<th scope="col">Loss / wk (${u})</th></tr></thead><tbody>`;
+  rows.forEach((r, i) => {
+    const prev = rows[i - 1];
+    const lossWk = prev ? (prev.weight - r.weight) * 7 / Math.max(0.5, r.day - prev.day) : null;
+    const wkLabel = r.isEnd ? (inp.mode === "goal" ? `${fmt(r.day / 7)} · goal` : `${fmt(r.day / 7)} · end`) : String(Math.round(r.day / 7));
+    const info = dayInfo(inp, inp.k, r.F);
+    html += `<tr${r.isEnd ? ' class="goal"' : ""}><td>${wkLabel}</td><td class="muted">${fmtDate(dateFrom(r.day), false)}</td><td>${W(r.weight)}</td><td>${W(r.F)}</td><td>${fmt(100 * r.F / r.weight)}%</td><td>${fmtInt(info.deficit)}</td>${cal ? `<td>${fmtInt(info.intake)}</td>` : ""}<td>${lossWk == null ? "–" : fmt(toDispW(lossWk), 2)}</td></tr>`;
+  });
+  html += `</tbody>`;
+  $("table").innerHTML = html;
+  $("table-note").textContent = `Deficit = the most energy (kcal/day) your fat can supply at that point${inp.abs ? `, or your chosen ${fmtInt(inp.abs)} kcal/day if that is lower` : inp.pace < 1 ? `, times your ${Math.round(inp.pace * 100)}% pace` : ""}${cal ? ", capped by your intake floor" : ""}. It's a deficit, not an amount to eat.${cal ? " “Eat ≈” is the matching daily intake." : ""}`;
+  drawChart(R);
+}
+
+function niceStep(range, target) {
+  const raw = range / target, p = Math.pow(10, Math.floor(Math.log10(raw)));
+  const n = raw / p; return (n < 1.5 ? 1 : n < 3 ? 2 : n < 7 ? 5 : 10) * p;
+}
+let CH_PREV = null, CH_RAF = 0;
+function drawChart(R) {
+  const svg = $("chart"), inp = R.inp;
+  const box = svg.getBoundingClientRect(); const Wd = Math.max(300, Math.round(box.width || 600));
+  const phone = Wd < 520, Ht = phone ? 240 : 280;
+  const m = { l: phone ? 40 : 46, r: 14, t: 26, b: 30 };
+  const total = inp.mode === "goal" ? R.days : R.series[R.series.length - 1].day;
+  const pts = R.series.filter((p) => p.day <= total + 1e-9).map((p) => ({ d: p.day, w: toDispW(p.weight) }));
+  pts.push({ d: total, w: toDispW(inp.lean + R.endFat) });
+  const lean = toDispW(inp.lean);
+  const yMaxRaw = pts[0].w, yMinRaw = lean * 0.92;
+  const yStep = niceStep(yMaxRaw - yMinRaw, 4);
+  const yMin = Math.floor(yMinRaw / yStep) * yStep, yMax = Math.ceil(yMaxRaw / yStep) * yStep;
+  const x = (d) => m.l + (Wd - m.l - m.r) * d / total;
+  const y = (v) => m.t + (Ht - m.t - m.b) * (1 - (v - yMin) / (yMax - yMin));
+  // Resample the same computed weekly series onto fixed steps so the line can glide between input changes (no new data, just interpolation of the model's own points).
+  const N = 60, ys = [];
+  for (let i = 0, j = 0; i <= N; i++) {
+    const d = total * i / N; while (j < pts.length - 2 && pts[j + 1].d < d) j++;
+    const p0 = pts[j], p1 = pts[Math.min(j + 1, pts.length - 1)], f = p1.d > p0.d ? Math.min(1, Math.max(0, (d - p0.d) / (p1.d - p0.d))) : 0;
+    ys.push(y(p0.w + (p1.w - p0.w) * f));
+  }
+  const endW = toDispW(inp.lean + R.endFat);
+  const T = { ys, yLean: y(lean), yEnd: y(endW) };
+  let g = "";
+  for (let v = yMin; v <= yMax + 1e-9; v += yStep) g += `<line x1="${m.l}" x2="${Wd - m.r}" y1="${y(v)}" y2="${y(v)}" stroke="rgba(231,237,245,.08)"/><text x="${m.l - 8}" y="${y(v) + 4}" text-anchor="end">${fmt(v, yStep < 1 ? 1 : 0)}</text>`;
+  g += `<text x="${m.l - 8}" y="14" text-anchor="end">${wUnit()}</text>`;
+  const wks = total / 7, xs = niceStep(wks, phone ? 4 : 8);
+  for (let w = 0; w <= wks + 1e-9; w += Math.max(1, xs)) g += `<text x="${x(w * 7)}" y="${Ht - 8}" text-anchor="middle">${w === 0 ? "Today" : "Week " + Math.round(w)}</text>`;
+  svg.setAttribute("viewBox", `0 0 ${Wd} ${Ht}`); svg.setAttribute("height", Ht);
+  const startLbl = `<text x="${m.l + 6}" y="${y(pts[0].w) - 8}" style="fill:#cfd6e0;paint-order:stroke;stroke:#14171c;stroke-width:4px">${fmt(pts[0].w)} ${wUnit()} now</text>`;
+  const frame = (S) => {
+    const X = (i) => (m.l + (Wd - m.l - m.r) * i / N).toFixed(1);
+    const line = S.ys.map((v, i) => `${i ? "L" : "M"}${X(i)},${v.toFixed(1)}`).join("");
+    const xe = Wd - m.r;
+    svg.innerHTML = `<defs><linearGradient id="fg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#2a7ae0" stop-opacity=".6"/><stop offset="1" stop-color="#2a7ae0" stop-opacity=".18"/></linearGradient></defs>
+    ${g}<path d="M${m.l},${S.yLean}L${xe},${S.yLean}L${xe},${y(yMin)}L${m.l},${y(yMin)}Z" fill="rgba(207,214,224,.12)"/><path d="${line}L${xe},${S.yLean}L${m.l},${S.yLean}Z" fill="url(#fg)"/>
+    <line x1="${m.l}" x2="${xe}" y1="${S.yLean}" y2="${S.yLean}" stroke="rgba(207,214,224,.45)" stroke-width="1"/>
+    <line x1="${m.l}" x2="${xe}" y1="${S.yEnd}" y2="${S.yEnd}" stroke="#cfd6e0" stroke-width="1.25" stroke-dasharray="4 4"/>
+    <path d="${line}" fill="none" stroke="#79b4f6" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+    <circle cx="${xe}" cy="${S.yEnd}" r="5" fill="#2a7ae0" stroke="#e7edf5" stroke-width="1.5"/>
+    ${startLbl}<text x="${xe - 10}" y="${S.yEnd - 11}" text-anchor="end" style="fill:#e7edf5;font-weight:600;paint-order:stroke;stroke:#14171c;stroke-width:4px;stroke-linejoin:round">${fmt(endW)} ${wUnit()} at the end</text><g id="ch-mk"></g>`;
+    chMarker();
+  };
+  MI = { R, rows: sampleRows(R), x, y, top: m.t - 6, bot: Ht - m.b };
+  chSync();
+  cancelAnimationFrame(CH_RAF);
+  const P = CH_PREV, reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  CH_PREV = T;
+  if (!P || reduce || P.ys.length !== T.ys.length) { frame(T); }
+  else {
+    const t0 = performance.now(), dur = 260, mix = (a, b, k) => a + (b - a) * k;
+    const step = (now) => {
+      const u = Math.min(1, (now - t0) / dur), k = 1 - Math.pow(1 - u, 3);
+      const S = { ys: T.ys.map((v, i) => mix(P.ys[i], v, k)), yLean: mix(P.yLean, T.yLean, k), yEnd: mix(P.yEnd, T.yEnd, k) };
+      frame(S); CH_PREV = S;
+      if (u < 1) CH_RAF = requestAnimationFrame(step); else CH_PREV = T;
+    };
+    CH_RAF = requestAnimationFrame(step);
+  }
+  $("chart-desc").textContent = `Chart: body weight falls from ${fmt(pts[0].w)} to ${fmt(endW)} ${wUnit()} over ${fmt(wks)} weeks. Muscle, bone and water stay at ${fmt(lean)} ${wUnit()}; only fat goes down. The table below lists the same numbers.`;
+}
+
+// ---------- units & canonical values ----------
+function syncCanonFromInputs(id) {
+  const toLb = (v) => v == null || !Number.isFinite(v) ? v : (isMetric() ? v * LB_PER_KG : v);
+  if (id === "weight") S.canon.w = toLb(parse($("weight").value));
+  if (id === "goal" && radio("goaltype") === "wt") S.canon.gw = toLb(parse($("goal").value));
+  if (id === "hft" || id === "hin" || id === "hcm") {
+    if (isMetric()) { const c = parse($("hcm").value); S.canon.hIn = c == null || !Number.isFinite(c) ? c : c / CM_PER_IN; }
+    else {
+      const ft = parse($("hft").value), inch = parse($("hin").value);
+      if (ft == null && inch == null) S.canon.hIn = null;
+      else if (!Number.isFinite(ft ?? 0) || !Number.isFinite(inch ?? 0)) S.canon.hIn = NaN;
+      else S.canon.hIn = (ft ?? 0) * 12 + (inch ?? 0);
+    }
+  }
+}
+function paintUnits() {
+  const met = isMetric(), u = wUnit();
+  document.querySelectorAll('[data-u="w"]').forEach((e) => (e.textContent = u));
+  const showW = (lb) => lb == null || !Number.isFinite(lb) ? "" : String(Number(toDispW(lb).toFixed(1)));
+  if (Number.isFinite(S.canon.w)) $("weight").value = showW(S.canon.w);
+  if (radio("goaltype") === "wt") { if (Number.isFinite(S.canon.gw)) $("goal").value = showW(S.canon.gw); $("goal-unit").textContent = u; }
+  $("h-imp").hidden = met; $("h-met").hidden = !met;
+  if (Number.isFinite(S.canon.hIn)) {
+    if (met) $("hcm").value = String(Math.round(S.canon.hIn * CM_PER_IN));
+    else { let ft = Math.floor(S.canon.hIn / 12), inch = Math.round((S.canon.hIn - ft * 12) * 10) / 10; if (inch >= 12) { ft++; inch -= 12; } $("hft").value = ft; $("hin").value = inch; }
+  }
+}
+function paintGoalType() {
+  const t = radio("goaltype");
+  $("goal-label").textContent = t === "bf" ? "Goal body fat" : "Goal weight";
+  $("goal-unit").textContent = t === "bf" ? "%" : wUnit();
+  $("goal").value = t === "bf" ? (S.goalBfText ?? "") : (Number.isFinite(S.canon.gw) ? String(Number(toDispW(S.canon.gw).toFixed(1))) : "");
+}
+function updateGoalHint() {
+  const { inp } = readInputs();
+  const h = $("h-goal");
+  if (inp.mode !== "goal" || inp.lean == null || !Number.isFinite(inp.lean)) { h.textContent = ""; return; }
+  if (inp.goalType === "bf" && Number.isFinite(inp.goalWeight)) h.textContent = `= ${fmt(toDispW(inp.goalWeight))} ${wUnit()} with lean mass held at ${fmt(toDispW(inp.lean))} ${wUnit()}`;
+  else if (inp.goalType === "wt" && Number.isFinite(inp.goalBf)) h.textContent = `= ${fmt(inp.goalBf)}% body fat with lean mass held at ${fmt(toDispW(inp.lean))} ${wUnit()}`;
+  else h.textContent = "";
+}
+
+// ---------- presets ----------
+const PRESETS = [
+  { sex: "m", w: 200, bf: 20, mode: "weeks", weeks: 10 },
+  { sex: "m", w: 200, bf: 20, mode: "goal", goaltype: "bf", goal: 12 },
+  { sex: "f", w: 150, bf: 32, mode: "goal", goaltype: "bf", goal: 24 },
+];
+function applyPreset(p) {
+  document.querySelector(`input[name="units"][value="imperial"]`).checked = true; S.units = "imperial";
+  document.querySelector(`input[name="sex"][value="${p.sex}"]`).checked = true;
+  document.querySelector(`input[name="mode"][value="${p.mode}"]`).checked = true;
+  $("weight").value = p.w; $("bf").value = p.bf; S.canon.w = p.w;
+  $("weeks").value = p.weeks ?? 12;
+  const gt = p.goaltype ?? "bf";
+  document.querySelector(`input[name="goaltype"][value="${gt}"]`).checked = true;
+  S.goalBfText = gt === "bf" ? String(p.goal ?? 12) : "12"; S.canon.gw = gt === "wt" ? p.goal : null;
+  $("pace").value = "1"; $("def").value = ""; $("custom-block").hidden = true;
+  paintModes(); paintGoalType(); paintUnits(); render(); updateGoalHint();
+}
+function paintModes() {
+  const m = radio("mode");
+  $("goal-block").hidden = m !== "goal"; $("weeks-block").hidden = m !== "weeks";
+}
+
+// ---------- wire up ----------
+$("form").addEventListener("input", (e) => {
+  const id = e.target.id;
+  if (e.target.name === "units") { S.units = e.target.value; paintUnits(); paintGoalType(); }
+  else if (e.target.name === "goaltype") { paintGoalType(); }
+  else if (e.target.name === "mode") { paintModes(); }
+  else {
+    if (id === "goal" && radio("goaltype") === "bf") S.goalBfText = $("goal").value;
+    syncCanonFromInputs(id);
+  }
+  scheduleRender();
+});
+let RQ = 0; function scheduleRender() { if (RQ) return; RQ = requestAnimationFrame(() => { RQ = 0; render(); updateGoalHint(); }); }
+$("form").addEventListener("change", (e) => { if (e.target.tagName === "SELECT") { if (e.target.id === "pace") paintPace(); render(); } });
+$("rate").addEventListener("input", () => { $("def").value = String(Math.round(Number($("rate").value) * RHO / 7)); paintPace(); });
+$("def").addEventListener("input", () => { const d = parse($("def").value); if (d) $("rate").value = String(Math.min(3, Math.max(0.1, Math.round(d * 7 / RHO * 10) / 10))); paintPace(); });
+document.addEventListener("click", (e) => { const a = e.target.closest("[data-open-method]"); if (!a) return; e.preventDefault(); const m = $("method"); m.open = true; m.scrollIntoView({ block: "start" }); });
+$("cal-toggle").addEventListener("click", () => {
+  S.calOn = !S.calOn; $("cal-toggle").setAttribute("aria-checked", String(S.calOn)); $("cal-fields").hidden = !S.calOn; render();
+});
+document.querySelectorAll("[data-preset]").forEach((b) => b.addEventListener("click", () => {
+  const v = b.dataset.preset; applyPreset(PRESETS[v === "reset" ? 0 : Number(v)]);
+}));
+let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(render, 120); });
+
+let MI = null, MI_WK = null;   // MI_WK: week chosen on the Week slider (null = start at today)
+const CH_PACES = ["slight", "0.7", "1"], CH_PACE_TXT = ["Slight: about 0.5 lb of fat a week", "Moderate: 70% of the fastest", "Maximum: the fastest your fat can supply"];
+function chSync() {
+  const wk = $("ch-wk"), rows = MI.rows, last = rows.length - 1;
+  wk.max = String(last);
+  let i = last;
+  if (MI_WK != null) { i = rows.findIndex((r) => !r.isEnd && Math.round(r.day / 7) === MI_WK); if (i < 0) i = rows[last].day / 7 <= MI_WK ? last : last; }
+  wk.value = String(i);
+  const pv = $("pace").value, pi = CH_PACES.indexOf(pv), pc = $("ch-pace");
+  if (pi >= 0) pc.value = String(pi);
+  const ptxt = pi >= 0 ? CH_PACE_TXT[pi] : `Custom: ${fmt(Number($("rate").value), 1)} lb a week (set under Pace below). Slide to pick a preset.`;
+  $("ch-pace-out").textContent = ptxt; pc.setAttribute("aria-valuetext", pi >= 0 ? CH_PACE_TXT[pi] : "Custom pace");
+  chMarker();
+}
+function chRowText(r) {
+  const u = wUnit(), wkN = r.isEnd ? fmt(r.day / 7) : String(Math.round(r.day / 7));
+  const lbl = r.day === 0 ? "Today" : `Week ${wkN}${r.isEnd ? (MI.R.inp.mode === "goal" ? " (goal)" : " (end)") : ""}`;
+  return `${lbl}: ${fmt(toDispW(r.weight))} ${u}, ${fmt(100 * r.F / r.weight)}% body fat`;
+}
+function chMarker() {
+  if (!MI) return; const g = document.getElementById("ch-mk"); const i = Math.min(Number($("ch-wk").value), MI.rows.length - 1), r = MI.rows[i];
+  const t = chRowText(r); $("ch-read").textContent = t; $("ch-wk").setAttribute("aria-valuetext", t);
+  if (!g) return; const cx = MI.x(r.day), cy = MI.y(toDispW(r.weight));
+  g.innerHTML = `<line x1="${cx}" x2="${cx}" y1="${MI.top}" y2="${MI.bot}" stroke="#79b4f6" stroke-width="1.5" stroke-dasharray="3 3" opacity=".8"/><circle cx="${cx}" cy="${cy}" r="6" fill="#e7edf5" stroke="#2a7ae0" stroke-width="3"/>`;
+}
+$("ch-wk").addEventListener("input", () => { const r = MI && MI.rows[Number($("ch-wk").value)]; MI_WK = !r || r.isEnd ? null : Math.round(r.day / 7); chMarker(); });
+$("ch-pace").addEventListener("input", () => { $("pace").value = CH_PACES[Number($("ch-pace").value)]; paintPace(); render(); });
+applyPreset(PRESETS[0]);
+// test hook (read-only)
+window.__fatcalc = { compute: (inp) => compute(inp), RHO, K_DEFAULT };
+})();
+</script>
+</body>
+</html>

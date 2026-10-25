@@ -1,0 +1,74 @@
+# Privacy Policy — Theosis Health
+
+**Effective date:** October 22, 2026 · **Last updated:** October 22, 2026
+
+Theosis Health LLC ("we," "us"), 4026 Bristol Dr., Danville, IL 61834, runs theosishealth.com and its tools (the "Service"). This policy explains what we collect, why, who processes it, how long we keep it, and your choices. Contact: **support@theosishealth.com**.
+
+**The short version**
+- What you enter in the simulator and calculators **stays in your browser on your device**. We have no user accounts and no database of your inputs.
+- **Optional AI features.** If you turn on AI features (Tell us what you ate, web label lookup, food and nutrition-label photos, Ask Theosis, and the AI plan note), what you type or the food photo you choose is sent to Google's Gemini AI to answer that request. We don't store it on our servers. Face and body photos are used only with your separate consent (see Section 3), and lab-report upload is turned off.
+- We receive only what you choose to send us (contact form or email) and basic technical data our web host needs to run the site.
+- **We don't sell your data**, share it for advertising, or use ads, ad pixels, session replay, or third-party trackers. We see only aggregate, cookieless traffic counts from our host, Netlify.
+- We aren't a HIPAA covered entity, and the Service isn't "HIPAA compliant." Laws like the FTC Health Breach Notification Rule and state health-data laws still apply, and we follow them.
+
+## 1. What we collect and how
+
+| Data | Where it goes | Kept for |
+|---|---|---|
+| Info you type in tools (age, sex, height, weight, waist, activity, diet, diabetes status you select, A1c/glucose, goals) | Stored **only in your browser** (local storage). Not sent to us. | Until you clear your browser's site data for theosishealth.com |
+| Contact-form messages (name, email, message) | Our web host's form service (**Netlify Forms**), then our email | Up to 2 years after your last message, then deleted |
+| Emails you send us | Our email provider (Microsoft 365 through GoDaddy) | Up to 3 years after your last message, then deleted |
+| AI feature requests: typed text or food photo (only if you turn on AI features) | Sent to **Google Gemini** (paid API) to answer your request | Not stored by us. Google may keep it briefly for abuse monitoring under its terms |
+| Technical data (IP address, browser, request logs) | Our web host (**Netlify**). IP addresses are converted to a one-way hash for daily usage limits. | Usage counters reset daily. Host logs are kept briefly under Netlify's own retention for security and operations. |
+| Aggregate traffic stats (page views, visitor counts, top pages, referrers) | **Netlify Analytics**, computed by our host from its server logs. No cookies or tracking scripts. | Shown to us only as totals, under Netlify's retention |
+
+We use this information only to run and secure the Service and to reply to you. Please don't send us medical records or clinical details; we can't give individual medical advice.
+
+## 2. Who we share it with
+Only our service providers that run the Service for us: **Netlify** (hosting and contact forms) and **Microsoft/GoDaddy** (email). We may also disclose information if the law requires it or to protect our rights. We don't sell or rent personal information.
+
+## 3. AI features, food photos, and features that are off
+**AI features (optional, off until you agree).** AI features work only after you check the AI-features consent box, and you can turn them off anytime in settings. When you use one, the text you type (which may include health details like what you ate, your weight, or your goals) or the food photo you choose is sent from your browser to Google Gemini, using Google's paid API, only to answer that request. Photos are resized and re-encoded on your device first, which removes location and other hidden data (EXIF/GPS). Results come back to your device. We don't store your requests, photos, or results on our servers. Google processes them as our service provider under its paid API terms, which don't allow it to train its models on your data, and may keep them briefly for abuse monitoring as those terms describe. Please don't include other people's information or photos of people. AI answers are general education, not medical advice, and can be wrong.
+
+### Face and body photos: biometric information policy
+This is our public written policy under the Illinois Biometric Information Privacy Act (BIPA) and similar laws.
+
+- **What:** if you choose to use photo features, your photo (which may show your face and body) is used to create AI illustrations. We don't measure your face or body, but we treat these photos as biometric information to be safe.
+- **Why:** only to create the AI illustrations you ask for. We never use it for facial recognition or to identify you, and we never sell, lease, trade or otherwise profit from it.
+- **Consent first:** nothing is collected until you check the consent box (your written release). You can say no and still use the simulator without photos.
+- **Where it goes:** your photo is resized on your device and its location data (EXIF/GPS) removed, then sent to Google (Gemini API, paid tier) as our service provider. Google doesn't use it to train models and may keep it briefly for abuse monitoring under its API terms. We don't store photos or biometric information on our servers, and we share it with no one else unless the law requires it.
+- **Retention and destruction:** photos and any biometric information stay on your device until you delete them or withdraw consent. We permanently destroy any biometric information we control when its purpose is done, or within 3 years of your last interaction with us, whichever comes first.
+- **Security:** we protect it with at least the care we use for other confidential information, including encrypted transfer (HTTPS).
+- **Withdraw:** use "Withdraw consent" in the app's settings or email support@theosishealth.com. Withdrawing deletes saved photos on your device and turns photo features off.
+
+**Lab-report upload** is not available.
+
+## 4. Consumer health data
+Some information, like weight or A1c, can be "consumer health data" under laws such as Washington's My Health My Data Act. That information stays on your device. See our separate [Consumer Health Data Privacy Policy](/consumer-health-privacy).
+
+## 5. FTC Health Breach Notification Rule
+If there is a breach of unsecured identifiable health information we hold, we will notify affected users, the FTC, and where required the media, **without unreasonable delay and within 60 days** of discovery, as 16 CFR Part 318 requires.
+
+## 6. Cookies, local storage, and analytics
+- We use **essential storage only**: browser local storage to remember your inputs, consent choices, and settings. A service worker lets the app work offline.
+- **Traffic stats:** our host, Netlify, gives us **aggregate, cookieless** site statistics (like page views and visitor counts) built from its server logs. We use them only to understand overall site usage. They don't identify you, we don't build individual profiles, and they're never sold or used for ads. Nothing you type in the tools is included, because that stays in your browser.
+- **No advertising cookies, tracking pixels, session replay, or third-party trackers.**
+- We honor **Global Privacy Control**. Since we don't sell or share data for advertising, there's nothing more to opt out of.
+
+## 7. Your privacy rights
+Depending on where you live, you may have the right to know, access, correct, delete, and get a copy of your personal information, and to opt out of sale, sharing, targeted advertising, or profiling (we do none of these). We honor these requests for everyone. Email support@theosishealth.com. We'll verify your request reasonably and respond within 45 days. An authorized agent can make a request for you with proof of authorization. If we deny a request, you can appeal by replying "Appeal."
+
+## 8. Children
+The Service is for adults **18+**. We don't knowingly collect information from anyone under 18. If you believe a minor sent us information, email us and we'll delete it.
+
+## 9. Security
+We use HTTPS encryption, keep data on your device where possible, hash IP addresses, apply rate limits, and limit who can access our systems. No system is perfectly secure. Protect your device, because your saved inputs live there.
+
+## 10. Theosis Medical is separate
+Theosis Medical LLC (theosismedical.com) is a separate clinical company with its own privacy practices. Don't send patient or clinical information to theosishealth.com or any @theosishealth.com address.
+
+## 11. Changes
+We'll post updates here with a new date. For material changes, especially to how we use health or biometric data, we'll give notice and ask for consent where required.
+
+## 12. Contact
+Theosis Health LLC · 4026 Bristol Dr., Danville, IL 61834 · support@theosishealth.com

@@ -1,0 +1,3 @@
+grab3d-human-muscles.glb: "Human Muscles" (light, 300k tris) by Grab3D, https://grab3d.com/models/anatomy/human-muscles/
+License: CC0 1.0 Universal (public domain). No attribution required; credited here as courtesy.
+Used as the Muscle-view base mesh; per-muscle growth is applied on top by anatomy-v23.js (r26 / R12).
