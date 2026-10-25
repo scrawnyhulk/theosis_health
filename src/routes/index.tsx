@@ -174,70 +174,82 @@ const curve = (diff: number, gain: boolean) => {
 };
 const at = (c: number[], d: number) => { const a = Math.floor(d), b = Math.min(365, a + 1); return c[a] + (c[b] - c[a]) * (d - a); };
 
-function Chips({ label, items, sel, onSel }: { label: string; items: Drink[]; sel: string; onSel: (id: string) => void }) {
+// Default zero-calorie swap for each drink (the user can still change it).
+const PAIR: Record<string, string> = { can: "dpzcan", "20oz": "dpz20", sbux: "coffee", gulp: "water", energy: "zeroenergy", sweettea: "unsweet" };
+
+function DrinkSide({ id, kind, label, items, sel, onSel }: { id: string; kind: "now" | "swap"; label: string; items: Drink[]; sel: Drink; onSel: (id: string) => void }) {
   return (
-    <div className="sd-chipgrp" role="group" aria-label={label}>
-      <div className="sd-chiplab">{label}</div>
-      <div className="sd-chips">{items.map((x) => <button key={x.id} type="button" className={`sd-chip${sel === x.id ? " on" : ""}`} aria-pressed={sel === x.id} onClick={() => onSel(x.id)}>{x.name}<small>{x.kcal} cal</small></button>)}</div>
+    <div className={`sd-side ${kind}`}>
+      <label htmlFor={id} className="sd-step">{label}</label>
+      <div className="sd-selwrap">
+        <select id={id} className="sd-select" value={sel.id} onChange={(e) => onSel(e.target.value)}>
+          {items.map((x) => <option key={x.id} value={x.id}>{x.name} ({x.kcal} cal)</option>)}
+        </select>
+      </div>
+      <div className="sd-kcal"><b>{sel.kcal}</b> cal a day</div>
+      <div className="sd-src">{sel.src}</div>
     </div>
   );
 }
 
 function SodaCard() {
   const [i, setI] = useState(365);
-  const [keep, setKeep] = useState(false);
   const [sid, setSid] = useState("can");
-  const [zid, setZid] = useState("water");
+  const [zid, setZid] = useState(PAIR.can);
   const narrow = useNarrow();
   const G = narrow ? G_PH : G_PC;
   const S = SUGARY.find((x) => x.id === sid)!, Z = ZERO.find((x) => x.id === zid)!;
+  const pick = (id: string) => { setSid(id); setZid(PAIR[id] ?? "water"); };
   const diff = Math.max(0, S.kcal - Z.kcal);
-  const d = useTween(i), k = useTween(keep ? 1 : 0, 450);
+  const d = useTween(i);
   const g = curve(diff, true), l = curve(diff, false);
-  const yNeed = Math.max(g[365], l[365]);
-  const yMax = useTween(Math.max(4, Math.ceil((yNeed * 1.15) / 4) * 4), 450);
+  const yMax = useTween(Math.max(4, Math.ceil((Math.max(g[365], l[365]) * 1.15) / 4) * 4), 450);
   const tg = useTween(at(g, i), 450), tl = useTween(at(l, i), 450);
-  const val = (x: number) => k * at(g, x) - (1 - k) * at(l, x);
   const gx = (x: number) => G.l + (x / 365) * (G.w - G.l - G.r);
   const gy = (lb: number) => G.t + ((yMax - lb) / (2 * yMax)) * (G.h - G.t - G.b);
-  const lb = k * tg - (1 - k) * tl;
-  const pts: string[] = [];
-  for (let x = 0; x < d; x += 3) pts.push(`${gx(x).toFixed(1)},${gy(val(x) * (lb / (val(d) || 1) || 1)).toFixed(1)}`);
-  pts.push(`${gx(d).toFixed(1)},${gy(lb).toFixed(1)}`);
-  const col = keep ? GAIN : LOSS;
-  const shown = Math.abs(lb) < 0.05 ? "0" : `${lb > 0 ? "+" : "−"}${fmtLb(Math.abs(lb))}`;
-  const lx = gx(d), ly = gy(lb), anchor = lx > G.w - 90 ? "end" : "start";
+  const line = (c: number[], s: number, end: number) => {
+    const p: string[] = [];
+    const k = (x: number) => s * at(c, x) * (end / (at(c, d) || 1) || 1);
+    for (let x = 0; x < d; x += 3) p.push(`${gx(x).toFixed(1)},${gy(k(x)).toFixed(1)}`);
+    p.push(`${gx(d).toFixed(1)},${gy(s * end).toFixed(1)}`);
+    return p.join(" ");
+  };
+  const lbTxt = (v: number, s: string) => (Math.abs(v) < 0.05 ? "0" : `${s}${fmtLb(Math.abs(v))}`);
+  const keepTxt = lbTxt(tg, "+"), swapTxt = lbTxt(tl, "−");
+  const lx = gx(d), anchor = lx > G.w - 90 ? "end" : "start";
   const yt = [1, 0.5, 0, -0.5, -1].map((f) => Math.round(f * yMax));
-  const sign = keep ? "+" : "−";
+  const when = timeLabel(i).toLowerCase();
   return (
     <>
-      <h2 className="mk-h2">See how your favorite drink alone affects your day, week, month, and year</h2>
-      <p className="mk-sub">Example: someone who needs about 2,000 calories a day. Pick a drink and a zero-calorie swap. If nothing else about their diet changes, keeping that drink or cutting it could add up like this.</p>
+      <h2 className="mk-h2">What one daily drink can add up to</h2>
+      <p className="mk-sub">Pick a drink. It’s paired with a zero-calorie swap (change it if you like), and the result shows how far apart the two paths could get for an example person, if nothing else changes.</p>
       <div className="mk-card sd-card">
-        <div className="sd-tags"><span className="sd-tag">Example person, not a prediction</span><span className="mk-adapt" style={{ marginTop: 0 }}>Includes metabolic adaptation</span></div>
-        <div className="sd-pick">
-          <Chips label="Their drink now" items={SUGARY} sel={sid} onSel={setSid} />
-          <Chips label="Zero-calorie swap" items={ZERO} sel={zid} onSel={setZid} />
+        <div className="sd-vs">
+          <DrinkSide id="sd-now" kind="now" label="1. Pick a drink" items={SUGARY} sel={S} onSel={pick} />
+          <div className="sd-arrow" aria-hidden="true">→</div>
+          <DrinkSide id="sd-swap" kind="swap" label="2. Zero-calorie swap" items={ZERO} sel={Z} onSel={setZid} />
         </div>
-        <div className="sd-pills" role="group" aria-label="Choose what happens">
-          <button type="button" className={`sd-pill keep${keep ? " on" : ""}`} aria-pressed={keep} onClick={() => setKeep(true)}>Keep {S.name.toLowerCase().startsWith("starbucks") ? "the Starbucks drink" : S.short}</button>
-          <button type="button" className={`sd-pill sw${!keep ? " on" : ""}`} aria-pressed={!keep} onClick={() => setKeep(false)}>Switch to {Z.short}</button>
+        <div className="sd-diff">
+          <div className="sd-step" style={{ textAlign: "center" }}>3. The difference</div>
+          <div className="sd-cal"><b>{diff.toLocaleString()}</b> calories a day <span className="mk-small">({S.kcal} − {Z.kcal})</span></div>
+          <div className="sd-row">{([["Day", 1], ["Week", 7], ["Month", 30], ["Year", 365]] as const).map(([n, dd]) => <div key={n} className="sd-cell"><b>{(dd * diff).toLocaleString()}</b><span>{n}</span></div>)}</div>
         </div>
-        <div className="sd-num" aria-live="polite">
-          <div className="mk-num" style={{ color: keep ? "#f0936b" : "#5cc48e", fontSize: "3rem" }}>{shown} lb</div>
-          <div className="sd-cal">{keep ? "Extra calories" : "Calories cut"} <span className="mk-small">({S.kcal} − {Z.kcal} = {diff} a day)</span></div>
-          <div className="sd-row">{([["Day", 1], ["Week", 7], ["Month", 30], ["Year", 365]] as const).map(([n, dd]) => <div key={n} className="sd-cell"><b style={{ color: keep ? "#f0936b" : "#5cc48e" }}>{diff ? sign : ""}{(dd * diff).toLocaleString()}</b><span>{n}</span></div>)}</div>
-          <div className="mk-small" style={{ marginTop: ".3rem" }}>{diff ? sign : ""}{(Math.round(d) * diff).toLocaleString()} cal by {timeLabel(i).toLowerCase()} · month = 30 days · weight change is an estimate</div>
+        <div className="sd-out" aria-live="polite">
+          <div className="sd-o keep"><span>Keep {S.short}</span><b>{keepTxt} lb</b></div>
+          <div className="sd-o swap"><span>Switch to {Z.short}</span><b>{swapTxt} lb</b></div>
+          <div className="sd-when mk-small">Estimated weight change after {when} · example person, not a prediction · includes metabolic adaptation</div>
         </div>
-        <svg className="sd-graph" viewBox={`0 0 ${G.w} ${G.h}`} role="img" aria-label={`Line graph: estimated weight change about ${shown} pounds after ${timeLabel(i)}`}>
+        <svg className="sd-graph" viewBox={`0 0 ${G.w} ${G.h}`} role="img" aria-label={`Line graph after ${when}: keeping ${S.short} about ${keepTxt} pounds, switching to ${Z.short} about ${swapTxt} pounds`}>
           {yt.map((v) => <g key={v}><line x1={G.l} x2={G.w - G.r} y1={gy(v)} y2={gy(v)} stroke="#ffffff14" /><text x={G.l - 8} y={gy(v) + 4} textAnchor="end" className="sd-ax">{v > 0 ? `+${v}` : v}</text></g>)}
           {TICKS.filter(([t]) => !narrow || t !== 30).map(([t, lab]) => <text key={t} x={gx(t)} y={G.h - 10} textAnchor={t === 0 ? "start" : t === 365 ? "end" : "middle"} className="sd-ax">{lab}</text>)}
           <text x={12} y={G.t + (G.h - G.t - G.b) / 2} className="sd-ax" transform={`rotate(-90 12 ${G.t + (G.h - G.t - G.b) / 2})`} textAnchor="middle">lb</text>
           <line x1={G.l} x2={G.w - G.r} y1={gy(0)} y2={gy(0)} stroke="#9fb0c4" strokeDasharray="6 6" strokeWidth={1.5} />
-          <text x={G.w - G.r} y={gy(0) + (keep ? 18 : -8)} textAnchor="end" className="sd-base">2,000-calorie day, nothing else changes</text>
-          <polyline points={pts.join(" ")} fill="none" stroke={col} strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" style={{ transition: "stroke .4s" }} />
-          <circle cx={lx} cy={ly} r={7} fill={col} stroke="#0b1320" strokeWidth={3} style={{ transition: "fill .4s" }} />
-          <text x={anchor === "end" ? lx - 12 : lx + 12} y={ly + (lb >= 0 ? -10 : 22)} textAnchor={anchor} className="sd-pt" fill={col}>{shown} lb</text>
+          <polyline points={line(g, 1, tg)} fill="none" stroke={GAIN} strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" />
+          <polyline points={line(l, -1, tl)} fill="none" stroke={LOSS} strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" />
+          <circle cx={lx} cy={gy(tg)} r={7} fill={GAIN} stroke="#0b1320" strokeWidth={3} />
+          <circle cx={lx} cy={gy(-tl)} r={7} fill={LOSS} stroke="#0b1320" strokeWidth={3} />
+          <text x={anchor === "end" ? lx - 12 : lx + 12} y={gy(tg) - 10} textAnchor={anchor} className="sd-pt" fill={GAIN}>{keepTxt} lb</text>
+          <text x={anchor === "end" ? lx - 12 : lx + 12} y={gy(-tl) + 22} textAnchor={anchor} className="sd-pt" fill={LOSS}>{swapTxt} lb</text>
         </svg>
         <TimeSlider id="mkr" value={i} onChange={setI} describedBy="mknote" />
         <p id="mknote" className="mk-small" style={{ marginTop: "1rem" }}>Rough educational estimate only. The math uses the calorie difference between the two drinks, every day. The pounds come from the simulator's energy-balance model, which includes metabolic adaptation, so both lines slow over time instead of adding up in a straight line. Real-life results vary from person to person. Not medical advice. Method based on Hall KD et al., Lancet 2011;378:826–837, which found the old 3,500-calories-per-pound rule overestimates long-term change.</p>

@@ -510,3 +510,29 @@ sup a{color:#4587c6;text-decoration:none}
 
 /* Never scroll sideways: full-bleed (100vw) strips are wider than the page when a scrollbar shows */
 html { overflow-x: clip; }
+
+/* Drink comparison v2: pick → side-by-side → difference → two outcomes */
+.sd-vs{display:grid;grid-template-columns:1fr auto 1fr;gap:.75rem;align-items:stretch}
+.sd-side{border:1px solid var(--color-border);border-top:3px solid #e07a4f;padding:.85rem 1rem;background:rgba(255,255,255,.02);display:flex;flex-direction:column;gap:.45rem;min-width:0}
+.sd-side.swap{border-top-color:#3d9a6a}
+.sd-step{font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.06em;font-size:.95rem;color:#c7d2de}
+.sd-selwrap{position:relative}
+.sd-selwrap::after{content:"▾";position:absolute;right:.8rem;top:50%;transform:translateY(-50%);pointer-events:none;color:#9fc3ee}
+.sd-select{width:100%;min-height:2.9rem;appearance:none;-webkit-appearance:none;background:#0d1117;color:#fff;border:1.5px solid var(--color-border-strong);border-radius:.5rem;padding:.5rem 2.2rem .5rem .8rem;font:600 1rem/1.2 inherit;cursor:pointer}
+.sd-select:focus-visible{outline:3px solid #2a7ae0;outline-offset:2px}
+.sd-kcal{font-size:.9rem;color:var(--color-muted)}
+.sd-kcal b{font-family:'Barlow Condensed',sans-serif;font-size:2rem;line-height:1;margin-right:.2rem}
+.sd-side.now .sd-kcal b{color:#f0936b}.sd-side.swap .sd-kcal b{color:#5cc48e}
+.sd-src{font-size:.72rem;color:var(--color-muted);opacity:.85}
+.sd-arrow{align-self:center;font-size:1.6rem;color:#9fc3ee}
+.sd-diff{margin:1rem 0 .25rem;text-align:center}
+.sd-diff .sd-cal b{font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;color:#fff}
+.sd-diff .sd-cell b{color:#dbe6f3}
+.sd-out{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin:1rem 0 .25rem}
+.sd-o{border:1px solid var(--color-border);padding:.6rem .8rem;text-align:center}
+.sd-o span{display:block;font-size:.85rem;color:var(--color-muted)}
+.sd-o b{font-family:'Barlow Condensed',sans-serif;font-size:2.2rem;line-height:1.1}
+.sd-o.keep{border-color:#e07a4f88}.sd-o.keep b{color:#f0936b}
+.sd-o.swap{border-color:#3d9a6a88}.sd-o.swap b{color:#5cc48e}
+.sd-when{grid-column:1/-1;text-align:center}
+@media (max-width:640px){.sd-vs{grid-template-columns:1fr}.sd-arrow{transform:rotate(90deg);justify-self:center;line-height:1}.sd-o b{font-size:1.8rem}.sd-out{gap:.5rem}}

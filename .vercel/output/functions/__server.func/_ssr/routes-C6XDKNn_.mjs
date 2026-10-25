@@ -4,9 +4,9 @@ import { n as require_react } from "../_libs/@radix-ui/react-compose-refs+[...].
 import { b as Link } from "../_libs/@tanstack/react-router+[...].mjs";
 import { i as require_jsx_runtime } from "../_libs/@radix-ui/react-label+[...].mjs";
 import { T as ArrowRight, b as Clock, g as FlaskConical, h as Footprints } from "../_libs/lucide-react.mjs";
-import { a as SODA_PERSON, c as maintenance, i as EXAMPLE, o as extraLbByDay, s as lostLbByDay } from "./router-BjMzDrFZ.mjs";
+import { a as SODA_PERSON, c as maintenance, i as EXAMPLE, o as extraLbByDay, s as lostLbByDay } from "./router-twP2qEEP.mjs";
 import { a as SiteShell, i as NavPlaque, r as NavIcon } from "./site-shell-RWexaFBk.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/routes-fX4A-T0f.js
+//#region node_modules/.nitro/vite/services/ssr/assets/routes-C6XDKNn_.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 /** Swap this slug to feature a different existing Health Hack. Text is pulled from src/lib/hacks.ts, not written here. */
@@ -537,50 +537,80 @@ var at = (c, d) => {
 	const a = Math.floor(d), b = Math.min(365, a + 1);
 	return c[a] + (c[b] - c[a]) * (d - a);
 };
-function Chips({ label, items, sel, onSel }) {
+var PAIR = {
+	can: "dpzcan",
+	"20oz": "dpz20",
+	sbux: "coffee",
+	gulp: "water",
+	energy: "zeroenergy",
+	sweettea: "unsweet"
+};
+function DrinkSide({ id, kind, label, items, sel, onSel }) {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: "sd-chipgrp",
-		role: "group",
-		"aria-label": label,
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-			className: "sd-chiplab",
-			children: label
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-			className: "sd-chips",
-			children: items.map((x) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
-				type: "button",
-				className: `sd-chip${sel === x.id ? " on" : ""}`,
-				"aria-pressed": sel === x.id,
-				onClick: () => onSel(x.id),
-				children: [x.name, /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("small", { children: [x.kcal, " cal"] })]
-			}, x.id))
-		})]
+		className: `sd-side ${kind}`,
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
+				htmlFor: id,
+				className: "sd-step",
+				children: label
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "sd-selwrap",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("select", {
+					id,
+					className: "sd-select",
+					value: sel.id,
+					onChange: (e) => onSel(e.target.value),
+					children: items.map((x) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("option", {
+						value: x.id,
+						children: [
+							x.name,
+							" (",
+							x.kcal,
+							" cal)"
+						]
+					}, x.id))
+				})
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "sd-kcal",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("b", { children: sel.kcal }), " cal a day"]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "sd-src",
+				children: sel.src
+			})
+		]
 	});
 }
 function SodaCard() {
 	const [i, setI] = (0, import_react.useState)(365);
-	const [keep, setKeep] = (0, import_react.useState)(false);
 	const [sid, setSid] = (0, import_react.useState)("can");
-	const [zid, setZid] = (0, import_react.useState)("water");
+	const [zid, setZid] = (0, import_react.useState)(PAIR.can);
 	const narrow = useNarrow();
 	const G = narrow ? G_PH : G_PC;
 	const S = SUGARY.find((x) => x.id === sid), Z = ZERO.find((x) => x.id === zid);
+	const pick = (id) => {
+		setSid(id);
+		setZid(PAIR[id] ?? "water");
+	};
 	const diff = Math.max(0, S.kcal - Z.kcal);
-	const d = useTween(i), k = useTween(keep ? 1 : 0, 450);
+	const d = useTween(i);
 	const g = curve(diff, true), l = curve(diff, false);
-	const yNeed = Math.max(g[365], l[365]);
-	const yMax = useTween(Math.max(4, Math.ceil(yNeed * 1.15 / 4) * 4), 450);
+	const yMax = useTween(Math.max(4, Math.ceil(Math.max(g[365], l[365]) * 1.15 / 4) * 4), 450);
 	const tg = useTween(at(g, i), 450), tl = useTween(at(l, i), 450);
-	const val = (x) => k * at(g, x) - (1 - k) * at(l, x);
 	const gx = (x) => G.l + x / 365 * (G.w - G.l - G.r);
 	const gy = (lb) => G.t + (yMax - lb) / (2 * yMax) * (G.h - G.t - G.b);
-	const lb = k * tg - (1 - k) * tl;
-	const pts = [];
-	for (let x = 0; x < d; x += 3) pts.push(`${gx(x).toFixed(1)},${gy(val(x) * (lb / (val(d) || 1) || 1)).toFixed(1)}`);
-	pts.push(`${gx(d).toFixed(1)},${gy(lb).toFixed(1)}`);
-	const col = keep ? GAIN : LOSS;
-	const shown = Math.abs(lb) < .05 ? "0" : `${lb > 0 ? "+" : "−"}${fmtLb(Math.abs(lb))}`;
-	const lx = gx(d), ly = gy(lb), anchor = lx > G.w - 90 ? "end" : "start";
+	const line = (c, s, end) => {
+		const p = [];
+		const k = (x) => s * at(c, x) * (end / (at(c, d) || 1) || 1);
+		for (let x = 0; x < d; x += 3) p.push(`${gx(x).toFixed(1)},${gy(k(x)).toFixed(1)}`);
+		p.push(`${gx(d).toFixed(1)},${gy(s * end).toFixed(1)}`);
+		return p.join(" ");
+	};
+	const lbTxt = (v, s) => Math.abs(v) < .05 ? "0" : `${s}${fmtLb(Math.abs(v))}`;
+	const keepTxt = lbTxt(tg, "+"), swapTxt = lbTxt(tl, "−");
+	const lx = gx(d), anchor = lx > G.w - 90 ? "end" : "start";
 	const yt = [
 		1,
 		.5,
@@ -588,79 +618,58 @@ function SodaCard() {
 		-.5,
 		-1
 	].map((f) => Math.round(f * yMax));
-	const sign = keep ? "+" : "−";
+	const when = timeLabel(i).toLowerCase();
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
 			className: "mk-h2",
-			children: "See how your favorite drink alone affects your day, week, month, and year"
+			children: "What one daily drink can add up to"
 		}),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 			className: "mk-sub",
-			children: "Example: someone who needs about 2,000 calories a day. Pick a drink and a zero-calorie swap. If nothing else about their diet changes, keeping that drink or cutting it could add up like this."
+			children: "Pick a drink. It’s paired with a zero-calorie swap (change it if you like), and the result shows how far apart the two paths could get for an example person, if nothing else changes."
 		}),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 			className: "mk-card sd-card",
 			children: [
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "sd-tags",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-						className: "sd-tag",
-						children: "Example person, not a prediction"
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-						className: "mk-adapt",
-						style: { marginTop: 0 },
-						children: "Includes metabolic adaptation"
-					})]
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "sd-pick",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Chips, {
-						label: "Their drink now",
-						items: SUGARY,
-						sel: sid,
-						onSel: setSid
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Chips, {
-						label: "Zero-calorie swap",
-						items: ZERO,
-						sel: zid,
-						onSel: setZid
-					})]
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "sd-pills",
-					role: "group",
-					"aria-label": "Choose what happens",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
-						type: "button",
-						className: `sd-pill keep${keep ? " on" : ""}`,
-						"aria-pressed": keep,
-						onClick: () => setKeep(true),
-						children: ["Keep ", S.name.toLowerCase().startsWith("starbucks") ? "the Starbucks drink" : S.short]
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
-						type: "button",
-						className: `sd-pill sw${!keep ? " on" : ""}`,
-						"aria-pressed": !keep,
-						onClick: () => setKeep(false),
-						children: ["Switch to ", Z.short]
-					})]
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "sd-num",
-					"aria-live": "polite",
+					className: "sd-vs",
 					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "mk-num",
-							style: {
-								color: keep ? "#f0936b" : "#5cc48e",
-								fontSize: "3rem"
-							},
-							children: [shown, " lb"]
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DrinkSide, {
+							id: "sd-now",
+							kind: "now",
+							label: "1. Pick a drink",
+							items: SUGARY,
+							sel: S,
+							onSel: pick
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "sd-arrow",
+							"aria-hidden": "true",
+							children: "→"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DrinkSide, {
+							id: "sd-swap",
+							kind: "swap",
+							label: "2. Zero-calorie swap",
+							items: ZERO,
+							sel: Z,
+							onSel: setZid
+						})
+					]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "sd-diff",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "sd-step",
+							style: { textAlign: "center" },
+							children: "3. The difference"
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "sd-cal",
 							children: [
-								keep ? "Extra calories" : "Calories cut",
-								" ",
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("b", { children: diff.toLocaleString() }),
+								" calories a day ",
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
 									className: "mk-small",
 									children: [
@@ -668,9 +677,7 @@ function SodaCard() {
 										S.kcal,
 										" − ",
 										Z.kcal,
-										" = ",
-										diff,
-										" a day)"
+										")"
 									]
 								})
 							]
@@ -684,21 +691,29 @@ function SodaCard() {
 								["Year", 365]
 							].map(([n, dd]) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "sd-cell",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("b", {
-									style: { color: keep ? "#f0936b" : "#5cc48e" },
-									children: [diff ? sign : "", (dd * diff).toLocaleString()]
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: n })]
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("b", { children: (dd * diff).toLocaleString() }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: n })]
 							}, n))
+						})
+					]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "sd-out",
+					"aria-live": "polite",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "sd-o keep",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: ["Keep ", S.short] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("b", { children: [keepTxt, " lb"] })]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "mk-small",
-							style: { marginTop: ".3rem" },
+							className: "sd-o swap",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: ["Switch to ", Z.short] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("b", { children: [swapTxt, " lb"] })]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "sd-when mk-small",
 							children: [
-								diff ? sign : "",
-								(Math.round(d) * diff).toLocaleString(),
-								" cal by ",
-								timeLabel(i).toLowerCase(),
-								" · month = 30 days · weight change is an estimate"
+								"Estimated weight change after ",
+								when,
+								" · example person, not a prediction · includes metabolic adaptation"
 							]
 						})
 					]
@@ -707,7 +722,7 @@ function SodaCard() {
 					className: "sd-graph",
 					viewBox: `0 0 ${G.w} ${G.h}`,
 					role: "img",
-					"aria-label": `Line graph: estimated weight change about ${shown} pounds after ${timeLabel(i)}`,
+					"aria-label": `Line graph after ${when}: keeping ${S.short} about ${keepTxt} pounds, switching to ${Z.short} about ${swapTxt} pounds`,
 					children: [
 						yt.map((v) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("g", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("line", {
 							x1: G.l,
@@ -746,38 +761,53 @@ function SodaCard() {
 							strokeDasharray: "6 6",
 							strokeWidth: 1.5
 						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("text", {
-							x: G.w - G.r,
-							y: gy(0) + (keep ? 18 : -8),
-							textAnchor: "end",
-							className: "sd-base",
-							children: "2,000-calorie day, nothing else changes"
-						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("polyline", {
-							points: pts.join(" "),
+							points: line(g, 1, tg),
 							fill: "none",
-							stroke: col,
+							stroke: GAIN,
 							strokeWidth: 4,
 							strokeLinecap: "round",
-							strokeLinejoin: "round",
-							style: { transition: "stroke .4s" }
+							strokeLinejoin: "round"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("polyline", {
+							points: line(l, -1, tl),
+							fill: "none",
+							stroke: LOSS,
+							strokeWidth: 4,
+							strokeLinecap: "round",
+							strokeLinejoin: "round"
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("circle", {
 							cx: lx,
-							cy: ly,
+							cy: gy(tg),
 							r: 7,
-							fill: col,
+							fill: GAIN,
 							stroke: "#0b1320",
-							strokeWidth: 3,
-							style: { transition: "fill .4s" }
+							strokeWidth: 3
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("circle", {
+							cx: lx,
+							cy: gy(-tl),
+							r: 7,
+							fill: LOSS,
+							stroke: "#0b1320",
+							strokeWidth: 3
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("text", {
 							x: anchor === "end" ? lx - 12 : lx + 12,
-							y: ly + (lb >= 0 ? -10 : 22),
+							y: gy(tg) - 10,
 							textAnchor: anchor,
 							className: "sd-pt",
-							fill: col,
-							children: [shown, " lb"]
+							fill: GAIN,
+							children: [keepTxt, " lb"]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("text", {
+							x: anchor === "end" ? lx - 12 : lx + 12,
+							y: gy(-tl) + 22,
+							textAnchor: anchor,
+							className: "sd-pt",
+							fill: LOSS,
+							children: [swapTxt, " lb"]
 						})
 					]
 				}),
