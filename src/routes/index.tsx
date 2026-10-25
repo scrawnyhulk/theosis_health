@@ -7,8 +7,6 @@ import { EXAMPLE, SODA_PERSON, extraLbByDay, lostLbByDay, maintenance } from "@/
 
 const SODA_MAINT = Math.round(maintenance(SODA_PERSON) / 10) * 10;
 const PROT_LB = lostLbByDay(150);
-const BAR_MAX = PROT_LB[365] * 1.05;
-const barH = (lb: number) => `${Math.max(4, (lb / BAR_MAX) * 100)}%`;
 const EXAMPLE_NOTE = `Example person, not a prediction: a ${EXAMPLE.age}-year-old, 5'9", ${EXAMPLE.weightLb}-lb man with about ${EXAMPLE.bodyFatPct}% body fat who is lightly active; individual numbers will differ. Try the simulator to see your own.`;
 
 export const Route = createFileRoute("/")({ component: Home });
@@ -130,7 +128,6 @@ function TimeSlider({ id, value, onChange, describedBy }: { id: string; value: n
 }
 
 const LOSS = "#3d9a6a";
-const ADAPT_NOTE = <div className="mk-adapt">Includes metabolic adaptation</div>;
 
 const GAIN = "#e07a4f";
 const G_PC = { w: 760, h: 200, l: 46, r: 18, t: 18, b: 32 };
@@ -262,22 +259,79 @@ function SodaCard() {
   );
 }
 
+// Two sourced scenarios: a cautious 150 cal/day (default) and the study average of 441 cal/day (Weigle 2005).
+const PROT_CUTS = [
+  { cut: 150, label: "About 150 calories (cautious example)" },
+  { cut: 441, label: "About 441 calories (study average)" },
+] as const;
+const PROT_CURVES = PROT_CUTS.map((x) => (x.cut === 150 ? PROT_LB : lostLbByDay(x.cut)));
+
 function ProteinCard() {
-  const [i, setI] = useState(0);
-  const c = useTween(i * 150), lb = useTween(PROT_LB[i]);
+  const [i, setI] = useState(365);
+  const [ci, setCi] = useState(0);
+  const narrow = useNarrow();
+  const G = narrow ? G_PH : G_PC;
+  const cut = PROT_CUTS[ci].cut, cv = PROT_CURVES[ci];
+  const d = useTween(i);
+  const lb = useTween(at(cv, i), 450);
+  const yMax = useTween(Math.max(4, Math.ceil((cv[365] * 1.15) / 4) * 4), 450);
+  const gx = (x: number) => G.l + (x / 365) * (G.w - G.l - G.r);
+  const top = G.t + 14;
+  const gy = (v: number) => top + (-v / yMax) * (G.h - top - G.b); // v is signed: 0 at top, losses go DOWN
+  const pts: string[] = [];
+  for (let x = 0; x < d; x += 3) pts.push(`${gx(x).toFixed(1)},${gy(-at(cv, x) * (lb / (at(cv, d) || 1) || 1)).toFixed(1)}`);
+  pts.push(`${gx(d).toFixed(1)},${gy(-lb).toFixed(1)}`);
+  const lossTxt = lb < 0.05 ? "0" : `−${fmtLb(lb)}`;
+  const lx = gx(d), anchor = lx > G.w - 90 ? "end" : "start";
+  const yt = [0, -0.5, -1].map((f) => Math.round(f * yMax));
+  const when = timeLabel(i).toLowerCase();
   return (
     <>
-      <h2 className="mk-h2">One small swap: lower-protein → higher-protein day</h2>
-      <p className="mk-sub">Protein tends to help people feel full longer, so many end up eating a bit less without trying. Say someone switches to higher-protein meals and eats about 150 fewer calories a day on their own. Slide forward to see about how much they could lose.</p>
-      <div className="mk-card">
-        <TimeSlider id="mkp" value={i} onChange={setI} describedBy="mkpnote" />
-        <div className="mk-paths" aria-live="polite">
-          <div className="mk-path"><h3>🥯 Stay lower-protein</h3><div className="mk-small" style={{ marginTop: ".6rem" }}>Fullness</div><div className="mk-meter" role="img" aria-label="Fullness: lower"><i style={{ width: "40%", background: "#d4a056" }} /></div><div className="mk-small">Tends to get hungry sooner</div><div className="mk-barbox"><div className="mk-bar" style={{ background: "#d4a056", height: "4px" }} /></div><div className="mk-num">0 lb</div><div className="mk-small">no change in weight</div></div>
-          <div className="mk-path mk-win"><h3>🍳 Switch to higher-protein</h3><div className="mk-small" style={{ marginTop: ".6rem" }}>Fullness</div><div className="mk-meter" role="img" aria-label="Fullness: higher"><i style={{ width: "80%", background: LOSS }} /></div><div className="mk-small">Tends to feel full longer</div><div className="mk-barbox"><div className="mk-bar" style={{ background: LOSS, height: barH(lb) }} /></div><div className="mk-num mk-loss">{lb < 0.05 ? "0" : `−${fmtLb(lb)}`} lb</div><div className="mk-small">could lose about {fmtLb(lb)} lb · about {Math.round(c).toLocaleString()} fewer calories eaten so far</div>{ADAPT_NOTE}</div>
+      <h2 className="mk-h2">More protein, fewer calories: how feeling fuller could add up</h2>
+      <p className="mk-sub">Protein tends to help people feel full longer, so many end up eating a bit less without trying. Compare a lower-protein day with a higher-protein one, then slide forward to see how the gap could grow for an example person.</p>
+      <div className="mk-card sd-card">
+        <div className="sd-vs">
+          <div className="sd-side now">
+            <div className="sd-step">Lower-protein day</div>
+            <div className="sd-kcal"><b>~15%</b> of calories from protein</div>
+            <div className="mk-small">Tends to get hungry sooner</div>
+          </div>
+          <div className="sd-arrow" aria-hidden="true">→</div>
+          <div className="sd-side swap">
+            <div className="sd-step">Higher-protein day</div>
+            <div className="sd-kcal"><b>~30%</b> of calories from protein</div>
+            <div className="mk-small">Tends to feel full longer</div>
+          </div>
         </div>
-        <p id="mkpnote" className="mk-small" style={{ marginTop: "1rem" }}>Rough illustration only, not a prediction. In one study, people who raised protein from about 15% to 30% of their calories ate about 441 fewer calories a day on their own.<sup><a href="#fn1" aria-label="Footnote 5">5</a></sup> To be careful, this uses a much smaller 150 calories a day, run through the simulator's energy-balance model with metabolic adaptation, so the loss slows over time. Results vary from person to person. Not medical advice.</p>
+        <div className="sd-diff">
+          <label htmlFor="pr-cut" className="sd-step" style={{ display: "block", textAlign: "center" }}>How much less they eat each day, on their own</label>
+          <div className="sd-selwrap" style={{ maxWidth: "24rem", margin: ".4rem auto 0" }}>
+            <select id="pr-cut" className="sd-select" value={ci} onChange={(e) => setCi(Number(e.target.value))}>
+              {PROT_CUTS.map((x, j) => <option key={x.cut} value={j}>{x.label}</option>)}
+            </select>
+          </div>
+          <div className="sd-row">{([["Day", 1], ["Week", 7], ["Month", 30], ["Year", 365]] as const).map(([n, dd]) => <div key={n} className="sd-cell"><b>{(dd * cut).toLocaleString()}</b><span>{n}</span></div>)}</div>
+          <div className="mk-small" style={{ marginTop: ".3rem" }}>fewer calories eaten · month = 30 days</div>
+        </div>
+        <div className="sd-out" aria-live="polite">
+          <div className="sd-o"><span>Stay lower-protein</span><b style={{ color: "#c7d2de" }}>0 lb</b></div>
+          <div className="sd-o swap"><span>Switch to higher-protein</span><b>{lossTxt} lb</b></div>
+          <div className="sd-when mk-small">Estimated weight change after {when} · example person, not a prediction · includes metabolic adaptation</div>
+        </div>
+        <svg className="sd-graph" viewBox={`0 0 ${G.w} ${G.h}`} role="img" aria-label={`Line graph after ${when}: staying lower-protein stays at 0 pounds; switching to higher-protein about ${lossTxt} pounds`}>
+          {yt.map((v) => <g key={v}><line x1={G.l} x2={G.w - G.r} y1={gy(v)} y2={gy(v)} stroke="#ffffff14" /><text x={G.l - 8} y={gy(v) + 4} textAnchor="end" className="sd-ax">{v}</text></g>)}
+          {TICKS.filter(([t]) => !narrow || t !== 30).map(([t, lab]) => <text key={t} x={gx(t)} y={G.h - 10} textAnchor={t === 0 ? "start" : t === 365 ? "end" : "middle"} className="sd-ax">{lab}</text>)}
+          <text x={12} y={top + (G.h - top - G.b) / 2} className="sd-ax" transform={`rotate(-90 12 ${top + (G.h - top - G.b) / 2})`} textAnchor="middle">lb</text>
+          <line x1={G.l} x2={G.w - G.r} y1={gy(0)} y2={gy(0)} stroke="#9fb0c4" strokeDasharray="6 6" strokeWidth={1.5} />
+          <text x={G.w - G.r} y={gy(0) - 6} textAnchor="end" className="sd-base">Stay lower-protein: no change</text>
+          <polyline points={pts.join(" ")} fill="none" stroke={LOSS} strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" />
+          <circle cx={lx} cy={gy(-lb)} r={7} fill={LOSS} stroke="#0b1320" strokeWidth={3} />
+          <text x={anchor === "end" ? lx - 12 : lx + 12} y={gy(-lb) + 22} textAnchor={anchor} className="sd-pt" fill={LOSS}>{lossTxt} lb</text>
+        </svg>
+        <TimeSlider id="mkp" value={i} onChange={setI} describedBy="mkpnote" />
+        <p id="mkpnote" className="mk-small" style={{ marginTop: "1rem" }}>Rough illustration only, not a prediction. In one study, people who raised protein from about 15% to 30% of their calories ate about 441 fewer calories a day on their own.<sup><a href="#fn1" aria-label="Footnote 5">5</a></sup> The default uses a much smaller, more cautious 150 calories a day. Both are run through the simulator's energy-balance model with metabolic adaptation, so the loss slows over time. Results vary from person to person. Not medical advice.</p>
         <p className="mk-small" style={{ fontSize: ".78rem", opacity: 0.85 }}>{EXAMPLE_NOTE}</p>
-        <p id="fn1" className="mk-small" style={{ fontSize: ".75rem", opacity: 0.8 }}>5. Weigelt DS, et al. A high-protein diet induces sustained reductions in appetite, ad libitum caloric intake, and body weight. <i>Am J Clin Nutr.</i> 2005;82(1):41–48.</p>
+        <p id="fn1" className="mk-small" style={{ fontSize: ".75rem", opacity: 0.8 }}>5. Weigle DS, et al. A high-protein diet induces sustained reductions in appetite, ad libitum caloric intake, and body weight despite compensatory changes in diurnal plasma leptin and ghrelin concentrations. <i>Am J Clin Nutr.</i> 2005;82(1):41–48.</p>
       </div>
       <div className="mk-btns"><Link className="mk-btn p" to="/hacks/$slug" params={{ slug: "protein-label" } as never}>Read the Health Hack: The Protein × 10 Trick →</Link></div>
       <a className="mk-simlink" href="/simulator/">See your own numbers in the simulator (Beta) →</a>
