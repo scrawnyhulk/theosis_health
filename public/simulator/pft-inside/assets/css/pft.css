@@ -896,8 +896,8 @@ sup>a[href^="#"]::before{content:"";position:absolute;left:50%;top:50%;width:32p
 .human-3d-stage[data-renderer="2d"][data-g3d2d="on"] .pft2d-g3d{display:block}
 .human-3d-stage[data-renderer="2d"][data-g3d2d="on"]>.human{opacity:0 !important;visibility:hidden !important;pointer-events:none}
 .pft2d-g3d-frames{position:absolute;inset:8px 8px 52px}
-.pft2d-g3d-frames img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transition:opacity .12s linear}
-.pft2d-g3d-frames img.a{opacity:1}
+.pft2d-g3d-frames img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;will-change:opacity}
+/* day 1026: frame opacities set per animation frame in JS */
 .pft2d-g3d-bar{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);display:flex;gap:6px;pointer-events:auto}
 .pft2d-g3d-bar button{font:inherit;font-size:12.5px;padding:6px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:rgba(10,14,22,.65);color:#e8eef6;cursor:pointer}
 .pft2d-g3d-bar button.active{background:#e8eef6;color:#0b1018}

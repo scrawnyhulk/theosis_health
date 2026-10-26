@@ -9,22 +9,22 @@
   try{if(localStorage.getItem("pft-2d-legacy")==="1")legacy=true;if(/[?&]legacy2d=0/.test(q))legacy=false}catch(e){}
   var stage=document.getElementById("pft3d-stage"),range=document.getElementById("fat-range");
   if(legacy||!stage||!range)return;
-  var V="7720",BASE="assets/img/figure-g3d/",X=[0,25,50,75,100];
+  var V="7731",BASE="assets/img/figure-g3d/",X=[0,10,20,30,40,50,60,70,80,90,100]; /* day 1026: 11 stops, all stacked + preloaded, opacity-only crossfade (no src swaps = no skips) */
   var mode="fat";try{mode=localStorage.getItem("pft-2d-g3d-mode")==="cut"?"cut":"fat"}catch(e){}
   var wrap=document.createElement("div");wrap.className="pft2d-g3d";wrap.setAttribute("role","img");
   wrap.setAttribute("aria-label","Front-view teaching illustration of how fat is stored as the slider moves, illustrating typical patterns");
-  wrap.innerHTML='<div class="pft2d-g3d-frames"><img alt="" decoding="async" class="a"><img alt="" decoding="async" class="b"></div>'+
+  wrap.innerHTML='<div class="pft2d-g3d-frames"></div>'+
     '<div class="pft2d-g3d-bar" role="group" aria-label="2D tissue view"><button type="button" data-g2="fat">Fat + muscle</button><button type="button" data-g2="cut">Inside abdomen</button></div>';
   stage.appendChild(wrap);stage.dataset.g3d2d="on";
-  var A=wrap.querySelector("img.a"),B=wrap.querySelector("img.b");
+  var box=wrap.querySelector(".pft2d-g3d-frames");
   var url=function(m,x){return BASE+m+"-"+x+".webp?v="+V};
-  var pre={};function want(m){if(pre[m])return;pre[m]=1;X.forEach(function(x){var i=new Image();i.src=url(m,x)})}
-  function draw(){
+  var imgs={};function want(m){if(imgs[m])return;imgs[m]=X.map(function(x){var i=document.createElement("img");i.alt="";i.decoding="async";i.src=url(m,x);i.style.opacity="0";i.dataset.m=m;box.appendChild(i);return i})}
+  var raf=0;function draw(){if(!raf)raf=requestAnimationFrame(paint)}
+  function paint(){raf=0;want(mode);
     var v=Math.max(0,Math.min(100,+range.value||0)),i=0;while(i<X.length-2&&v>X[i+1])i++;
     var t=Math.max(0,Math.min(1,(v-X[i])/(X[i+1]-X[i])));
-    var ua=url(mode,X[i]),ub=url(mode,X[i+1]);
-    if(A.getAttribute("src")!==ua)A.setAttribute("src",ua);if(B.getAttribute("src")!==ub)B.setAttribute("src",ub);
-    B.style.opacity=t.toFixed(3);wrap.dataset.frame=mode+":"+X[i]+"-"+X[i+1]+"@"+t.toFixed(2);
+    for(var m in imgs)imgs[m].forEach(function(im,j){var o=m!==mode?0:j===i?1:j===i+1?t:0;im.style.opacity=String(o);im.style.zIndex=j===i+1?2:j===i?1:0});
+    wrap.dataset.frame=mode+":"+X[i]+"-"+X[i+1]+"@"+t.toFixed(2);
   }
   function setMode(m){mode=m==="cut"?"cut":"fat";wrap.dataset.mode=mode;
     wrap.querySelectorAll("[data-g2]").forEach(function(b){var on=b.dataset.g2===mode;b.classList.toggle("active",on);b.setAttribute("aria-pressed",String(on))});

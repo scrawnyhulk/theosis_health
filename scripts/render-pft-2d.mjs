@@ -3,6 +3,7 @@
 // and the WebGL canvas is captured with a transparent background.
 // Usage: serve ./public on :8765 (python3 -m http.server 8765 -d public), then
 //   NODE_PATH=<dir with playwright> node scripts/render-pft-2d.mjs   (needs Chrome at $CHROME or /usr/bin/google-chrome)
+// LEVELS env (default 0,10,...,100) sets which slider stops are rendered.
 // Output: public/simulator/pft-inside/assets/img/figure-g3d/{mode}-{level}.png (convert to .webp with cwebp for the site).
 import { createRequire } from 'module';
 import fs from 'fs';
@@ -19,7 +20,7 @@ for (const mode of ['cut', 'fat']) {
   await p.evaluate(m => { document.querySelector(`[data-pft3d-mode="${m}"]`).click(); const f = [...document.querySelectorAll('#pft3d-stage button')].find(x => x.textContent.trim() === 'Front'); f && f.click(); }, mode);
   await p.waitForTimeout(800);
   if (mode === 'cut') await p.addStyleTag({ content: HIDE });
-  for (const lv of [0, 25, 50, 75, 100]) {
+  for (const lv of (process.env.LEVELS || '0,10,20,30,40,50,60,70,80,90,100').split(',').map(Number)) {
     await p.evaluate(v => { const r = document.getElementById('fat-range'); r.value = v; r.dispatchEvent(new Event('input', { bubbles: true })); r.dispatchEvent(new Event('change', { bubbles: true })); }, lv);
     await p.waitForTimeout(4000);
     await p.locator('#pft3d-canvas').screenshot({ path: `${out}${mode}-${lv}.png`, omitBackground: true });

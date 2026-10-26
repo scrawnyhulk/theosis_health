@@ -55,8 +55,9 @@
   function update(m){
     if(!m)return;
     // v7.6.78: only an A1c the person entered is shown (as estimated average glucose); blank = dial hidden, no invented value
-    box.hidden=typeof m.userA1c!=="number";if(box.hidden)return;
-    var v=eag(m.userA1c);a1c=m.userA1c;
+    // day 1026: dial always shown again - uses the A1c the person entered, otherwise the slider's illustrative A1c
+    var ua=typeof m.userA1c==="number"?m.userA1c:(typeof m.a1c==="number"?m.a1c:null);box.hidden=ua==null;if(box.hidden)return;
+    var v=eag(ua);a1c=ua;
     if(first){cur=v;tgt=v;quiet();render();lastSaid="Estimated average glucose "+txt(v)+" "+unitTxt()+", "+WORD[band(v)]+".";first=false;return}
     if(Math.abs(v-tgt)<1e-6)return;
     tgt=v;quiet();announce();go();
