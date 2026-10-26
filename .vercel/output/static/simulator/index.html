@@ -6255,7 +6255,29 @@ function pftFigOuter(row) { const P = S.profile; if (!row) return null; const bf
   let wc = null; try { wc = waistAt(row.fatKg, row.leanKg); } catch (e) { wc = null; }
   const wh = wc > 0 && P.heightCm > 0 ? Math.min(0.9, wc / P.heightCm) : null, z = pftSizeT(P.sex, bf, wh, true);
   const e = z; /* v7.6.90: straight line (was ease-out 1-(1-z)^2, which flattened big bodies so 38% -> 33% barely changed); z itself is still capped */
-  return { subq: +(0.05 + 1.0 * e).toFixed(3), mass: +(0.75 * e).toFixed(3), belly: +(0.95 * e).toFixed(3) }; }
+  const o = { subq: +(0.05 + 1.0 * e).toFixed(3), mass: +(0.75 * e).toFixed(3), belly: +(0.95 * e).toFixed(3) };
+  try { const v = pftFigInner(row, z, wh); if (v) { o.visc = v.visc; o.liver = v.liver; } } catch (x) { /* depot model unavailable: figure keeps its default inner fat */ }
+  return o; }
+/* day1026 fat-scaling (Nick): the Inside-abdomen fat (omentum, mesentery, fat along the bowel) and the liver tint follow this point of the plan,
+   so the open belly is not a fixed pad while only the outer body changes. Illustration only, no diagnosis.
+   1. Visceral fat mass comes from the app's own depot model (FD.at: this person's pattern from sex, age, waist-for-BMI, carry, menopause,
+      ancestry, selected diabetes status and fatty liver, followed along the plan's fat mass, visceral fat lost first / regained per gainK).
+      Display level: about 0.6 kg -> nothing visible, rising to full at about 4.8 kg (CT/MRI ranges: lean adults ~0.5-1.5 kg, central obesity 3-6 kg).
+   2. Blood-sugar / fatty-liver clues (ir 0-1): an entered A1c (5.5% -> 0, 7.0% -> 1), selected prediabetes (0.4) or type 2 (0.8), fatty liver
+      "yes" (0.7). With clues, the same visceral fat is drawn up to 60% fuller plus a little extra scaled by body size, so a lean person with a
+      high A1c gets a modest amount, not a huge apron.
+   3. No clues: visceral stays at most 0.4 and is damped (x0.7), so extra fat shows mainly under the skin (outer subq/belly), except a
+      spill-over share once the under-skin store is nearly full (size z > 0.65), as in the PFT model's slider order.
+   4. Liver fat look: from the depot model's liver fat % (3% -> 0, 20% -> 1), or with clues at least ir x (0.25 + 0.6 x visceral). */
+function pftFigInner(row, z, wh) {
+  if (typeof fatPattern !== "function" || !FD || !FD.at) return null; const fp = fatPattern(); if (!fp || !fp.st || !(row.fatKg > 0)) return null;
+  const d = FD.at(fp.st, row.fatKg), c = (v) => Math.max(0, Math.min(1, v)), h = S.profile.health || {}, a1c = +h.a1c, dx = E.diabetesStatus(h).value;
+  let ir = 0; if (h.a1c != null && h.a1c !== "" && a1c >= 3 && a1c <= 20) ir = c((a1c - 5.5) / 1.5);
+  if (dx === "t2") ir = Math.max(ir, 0.8); else if (dx === "prediabetes") ir = Math.max(ir, 0.4); if (h.fattyLiver === "yes") ir = Math.max(ir, 0.7);
+  const vb = c((d.vat - 1.2) / 7), spill = c((z - 0.65) / 0.35), sat = (x, k) => (1 - Math.exp(-k * x)) / (1 - Math.exp(-k));
+  const visc = ir > 0 ? c(sat(c(vb * (1 + 0.35 * ir) + 0.08 * ir * z + 0.15 * spill), 1.1)) : 0.4 * sat(c(0.8 * vb + 0.2 * spill), 1.4);
+  const lv = c((d.liverPct - 3) / 17), liver = ir > 0 ? Math.max(lv, c(ir * (0.1 + 0.75 * visc))) : lv * 0.8;
+  return { visc: +visc.toFixed(3), liver: +liver.toFixed(3), ir: +ir.toFixed(2), vatKg: +d.vat.toFixed(2), liverPct: +d.liverPct.toFixed(1) }; }
 /* v7.6.90: body frame from the user's own entries, for one point on the plan (anatomy-v23 PFTAnatomyBias; it caps every value).
    Height: figure height scales with height / 175 cm (the model's built height), capped at +/-8%.
    Girth: proportional to sqrt(BMI / 23) (BMI from that point's projected weight and the entered height), damped to 30% so it adds to
@@ -8502,7 +8524,7 @@ function renderSnapshot() { if (typeof window.renderSnapshotNow === "function") 
 function a1cCardHtml() { if (typeof window.a1cCardHtmlNow === "function") return window.a1cCardHtmlNow(); lazyLoad("assets/a1c-log.js?v=7655").then(() => { if (V.open && V.view === "home") renderViews(); }, () => {}); return `<div class="v-card a1-card" id="a1-card"><h2>A1c log</h2><p class="hint">Loading…</p></div>`; }
 window.BodyPlanFig3D = window.BodyPlanFig3D || { state: { on: false, failed: false, where: null } };
 function f3dMount() { if (window.__NO_PFT_FIG) return; if (typeof window.f3dMountNow === "function") return window.f3dMountNow(); if (!R || R.blocked) return;
-  lazyLoad("assets/fig3d-pft.js?v=7734").then(() => window.f3dMountNow(), () => { window.BodyPlanFig3D.state.failed = true; const h = document.getElementById("sum-pft"); if (h && !h.innerHTML) { h.hidden = false; h.innerHTML = `<figure class="f3d-fbfig"><img src="assets/f3d-ct-fallback.webp" alt="Example cross-section through the middle of the model" width="720" height="560"><figcaption>Example cross-section. The 3D model can't load on this device.</figcaption></figure>`; } }); }
+  lazyLoad("assets/fig3d-pft.js?v=7735").then(() => window.f3dMountNow(), () => { window.BodyPlanFig3D.state.failed = true; const h = document.getElementById("sum-pft"); if (h && !h.innerHTML) { h.hidden = false; h.innerHTML = `<figure class="f3d-fbfig"><img src="assets/f3d-ct-fallback.webp" alt="Example cross-section through the middle of the model" width="720" height="560"><figcaption>Example cross-section. The 3D model can't load on this device.</figcaption></figure>`; } }); }
 function printRegional(s, e) { const k = changeKind(s, e), c = FD.change(depotsAt(s.fatKg), depotsAt(e.fatKg)), m = muscleSplit(S.profile.sex, e.leanKg - s.leanKg);
   const fat = `around the organs ${fWd(c.vat.kg)} (${fPct(c.vat.pct)}), under the skin ${fWd(c.sub.kg)} (${fPct(c.sub.pct)})`, mus = `upper body ${fWd(m.up)}, legs &amp; glutes ${fWd(m.lo)}`;
   return `<p class="small"><b>${{ loss: "Where fat comes off first", gain: "Where muscle builds, and where fat would add", recomp: "Where you lose fat and gain muscle", hold: "Where things shift" }[k]} (estimate):</b> ${k === "gain" ? `lean (mostly muscle): ${mus}; fat: ${fat}.` : k === "recomp" ? `fat: ${fat}; lean (mostly muscle): ${mus}.` : `fat ${fat}.`}</p>`; }

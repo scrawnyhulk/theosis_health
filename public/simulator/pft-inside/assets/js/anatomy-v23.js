@@ -1101,7 +1101,10 @@
         // v7.6.78: the simulator's outer body for this point of the plan (from projected body fat % and waist); inner organs untouched
         if(s&&s.outer&&typeof s.outer.subq==="number"){tgt.subq=Math.max(0,Math.min(1.25,s.outer.subq));tgt.mass=Math.max(0,Math.min(1.1,s.outer.mass||0));tgt.belly=Math.max(tgt.belly*.5,Math.min(1.25,s.outer.belly||0));}
         // v7.6.78: an A1c the person entered re-splits inner fat only (around the organs + liver); outer subq/mass/belly unchanged.
-        if(s&&typeof s.organTilt==="number"){const t=Math.max(0,Math.min(1,s.organTilt));tgt.visc=tgt.visc*.2+t*(1-tgt.visc*.2);tgt.liver=tgt.liver*.1+t*(1-tgt.liver*.1);}
+        // day1026 fat-scaling: when the simulator sends its own visceral / liver amounts (from the person's depot model: body fat, waist, weight,
+        // plus blood-sugar / fatty-liver clues), those drive omentum, mesentery, bowel fat and liver directly; the fixed A1c tilt is skipped.
+        const ov=s&&s.outer&&typeof s.outer.visc==="number";if(ov){tgt.visc=Math.max(0,Math.min(1,s.outer.visc));if(typeof s.outer.liver==="number")tgt.liver=Math.max(0,Math.min(1,s.outer.liver));}
+        if(!ov&&s&&typeof s.organTilt==="number"){const t=Math.max(0,Math.min(1,s.organTilt));tgt.visc=tgt.visc*.2+t*(1-tgt.visc*.2);tgt.liver=tgt.liver*.1+t*(1-tgt.liver*.1);}
         // glycogen: strong while it fills (prelude), then a quieter "stocked" tint
         const gm=+(s&&s.glycogenMuscle)||0,gl=+(s&&s.glycogenLiver)||0,ph=!!(s&&s.glycogenPhase);
         tgt.gly=gm*(ph?1:.45);tgt.glyL=gl*(ph?1:.45);kick()},
