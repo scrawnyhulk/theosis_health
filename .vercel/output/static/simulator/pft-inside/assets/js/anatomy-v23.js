@@ -1022,7 +1022,7 @@
       Object.keys(L).forEach(role=>{const old=(byRole[role]||[]).filter(m=>!m.userData.g3d&&m.userData.role===role);if(!old.length)return;
         ld.load(base+L[role]+v,g=>{try{
           if(role==="kidney"&&old.length>1){old.forEach((m,i)=>{const gs=i?g.scene.clone(true):g.scene;const b=boxOf([m]);fit(gs,b,b.getCenter(new T.Vector3()).x<0,.96);adopt(gs,role,[m])})}
-          else{fit(g.scene,boxOf(old),false,role==="lung"?.86:.96);adopt(g.scene,role,old)}
+          else{if(window.__PFT_G3DROT!==0)g.scene.rotation.y=Math.PI; /* Grab3D organs are authored facing -z; turn them to face forward so the liver sits on the patient's right */fit(g.scene,boxOf(old),false,role==="lung"?.86:.96);adopt(g.scene,role,old)}
           window.__pftG3DO=(window.__pftG3DO||0)+1;applyMode();kick()}catch(e){console.warn("g3d organ "+role,e)}},undefined,e=>console.warn("g3d organ load "+role,e))});
     }
     // file:// pages cannot fetch the .glb (browsers block local XHR/fetch), so the same model also ships as a
