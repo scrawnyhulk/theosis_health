@@ -1,0 +1,8 @@
+Grab3D organ models (light versions, re-compressed with gltfpack/meshopt + WebP textures, simplified):
+  g3d-human-heart-cutaway.glb  https://grab3d.com/models/anatomy/human-heart-cutaway/
+  g3d-human-lungs.glb          https://grab3d.com/models/anatomy/human-lungs/
+  g3d-human-liver.glb          https://grab3d.com/models/anatomy/human-liver/
+  g3d-human-stomach.glb        https://grab3d.com/models/anatomy/human-stomach/
+  g3d-human-kidney.glb         https://grab3d.com/models/anatomy/human-kidney/
+License: CC0 1.0 Universal (public domain), https://creativecommons.org/publicdomain/zero/1.0/ . No attribution required; credited here as courtesy.
+Fitted into the figure by anatomy-v23.js (r27 g3dOrgans). The liver uses Theosis Health's fatty-liver material.

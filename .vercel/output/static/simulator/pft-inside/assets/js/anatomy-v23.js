@@ -226,7 +226,7 @@
       // r06: small bowel - circumferential vasa recta running from the mesenteric border (fade before the antimesenteric
       // border, fwidth-faded when sub-pixel), a soft yellow mesenteric fat strip (grows with visceral fat) and a slightly
       // deeper, less uniform wall tone on the mesenteric side.
-      if(o.sib)f=f.replace("#include <emissivemap_fragment>","#include <emissivemap_fragment>\n{float ms=vSb.y;float ph=vSb.x/.0052+.9*pN(vPw*36.)+.35*pN(vPw*97.+2.);float wd=fwidth(ph);float gr=fwidth(vSb.x)/max(length(dFdx(vPw))+length(dFdy(vPw)),1e-7);float fa=(1.-smoothstep(.22,.55,wd))*(1.-smoothstep(1.2,1.8,gr));float aa=abs(fract(ph)-.5);float ti=pH(vec3(floor(ph),3.1,7.7));float ln=1.-smoothstep(.06+wd*.5,.13+wd*1.3,aa);float mm=smoothstep(-.75+.95*ti,-.45+.95*ti,ms)*(.55+.45*pH(vec3(floor(ph),9.2,1.3)));float cal=smoothstep(.0,.25,ms+.5);diffuseColor.rgb*=mix(1.05,.93,cal)*(1.+.06*(pN(vPw*48.)-.5));diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.56,.11,.10),ln*mm*fa*.72);float fm=smoothstep(.78,.96,ms)*(.55+.45*min(1.,uVisc*1.4));diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.88,.68,.38)*(.92+.16*pN(vPw*140.)),fm*.5);}");
+      if(o.sib)f=f.replace("#include <emissivemap_fragment>","#include <emissivemap_fragment>\n{float ms=vSb.y;float ph=vSb.x/.0052+.9*pN(vPw*36.)+.35*pN(vPw*97.+2.);float wd=fwidth(ph);float gr=fwidth(vSb.x)/max(length(dFdx(vPw))+length(dFdy(vPw)),1e-7);float fa=(1.-smoothstep(.22,.55,wd))*(1.-smoothstep(1.2,1.8,gr));float aa=abs(fract(ph)-.5);float ti=pH(vec3(floor(ph),3.1,7.7));float ln=1.-smoothstep(.06+wd*.5,.13+wd*1.3,aa);float mm=smoothstep(-.75+.95*ti,-.45+.95*ti,ms)*(.55+.45*pH(vec3(floor(ph),9.2,1.3)));float cal=smoothstep(.0,.25,ms+.5);diffuseColor.rgb*=mix(1.05,.93,cal)*(1.+.06*(pN(vPw*48.)-.5));diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.56,.11,.10),ln*mm*fa*.72);float vz=min(1.,uVisc*1.4);float fm=smoothstep(.86-.42*vz,.97-.12*vz,ms+.12*(pN(vPw*60.)-.5))*(.45+.55*vz);float lb=smoothstep(.0,.35,pV(vPw*170.));float dm2=pN(vPw*230.);diffuseColor.rgb=mix(diffuseColor.rgb,mix(vec3(.80,.52,.28),vec3(.97,.78,.38)*(.9+.18*dm2),lb),fm*(.5+.38*vz)); /* r27: lobulated mesenteric fat creeping around the loops from the mesenteric border as visceral fat rises */}");
       // r10: the two cool (a9c8ff) back/rim key lights lit the pancreas groove between head and uncinate (surfaces facing away from the camera) as a lilac/grey-blue smudge;
       // `wl` keeps each pixel's light brightness but re-hues direct diffuse (and, at half strength, indirect diffuse) toward the tissue colour, and direct/indirect/clearcoat/sheen specular toward warm white, so creases shade warm brown
       if(o.wl)f=f.replace("#include <lights_fragment_end>","#include <lights_fragment_end>\n{vec3 lw=vec3(.2126,.7152,.0722);vec3 ah=diffuseColor.rgb/max(dot(diffuseColor.rgb,lw),1e-4);vec3 dd=reflectedLight.directDiffuse;reflectedLight.directDiffuse=mix(dd,dot(dd,lw)*ah,"+o.wl.toFixed(2)+");vec3 ds=reflectedLight.directSpecular;reflectedLight.directSpecular=mix(ds,vec3(dot(ds,lw))*vec3(1.04,1.,.94),"+Math.min(1,o.wl).toFixed(2)+");vec3 is=reflectedLight.indirectSpecular;reflectedLight.indirectSpecular=mix(is,vec3(dot(is,lw))*vec3(1.04,1.,.94),"+Math.min(1,o.wl).toFixed(2)+");vec3 id=reflectedLight.indirectDiffuse;reflectedLight.indirectDiffuse=mix(id,dot(id,lw)*ah,"+(o.wl*.5).toFixed(2)+");\n#ifdef USE_CLEARCOAT\nclearcoatSpecularDirect=mix(clearcoatSpecularDirect,vec3(dot(clearcoatSpecularDirect,lw))*vec3(1.04,1.,.94),"+Math.min(1,o.wl).toFixed(2)+");\n#endif\n#ifdef USE_SHEEN\nsheenSpecularDirect=mix(sheenSpecularDirect,vec3(dot(sheenSpecularDirect,lw))*vec3(1.04,1.,.94),"+Math.min(1,o.wl).toFixed(2)+");\n#endif\n}");
@@ -745,15 +745,20 @@
         let E=[];for(let k=0;k<K;k++){const b=bins[k].sort((a,c)=>a[0]-c[0]);const f=(k+.5)/K,r=R0.clone().addScaledVector(rd,f*rl);if(b.length<3){E.push(null);continue}const s=b[Math.floor(b.length*.8)];E.push(new T.Vector3(s[1],s[2],s[3]).sub(r))}
         const okE=E.filter(Boolean);if(okE.length>K/3){const avg=okE.reduce((a,c)=>a.add(c),new T.Vector3()).multiplyScalar(1/okE.length);E=E.map(e=>e||avg.clone());
           for(let r=0;r<4;r++)E=E.map((e,k)=>k==0||k==K-1?e:e.clone().multiplyScalar(.5).addScaledVector(E[k-1],.25).addScaledVector(E[k+1],.25));
-          const pos=[],col=[],idx=[];for(let k=0;k<K;k++){const f=(k+.5)/K,r=R0.clone().addScaledVector(rd,f*rl),e=E[k],nr=new T.Vector3().crossVectors(rd,e).normalize(),el=e.length(),end=SS(f,0,.07)*(1-SS(f,.93,1));
+          const pos=[],col=[],idx=[],ft=[];for(let k=0;k<K;k++){const f=(k+.5)/K,r=R0.clone().addScaledVector(rd,f*rl),e=E[k],nr=new T.Vector3().crossVectors(rd,e).normalize(),el=e.length(),end=SS(f,0,.07)*(1-SS(f,.93,1));
             const vs=(k%4===0)?1:(k%4===2?.35:0);
             for(let j=0;j<=J;j++){const t=j/J,pl=.0045*Math.pow(t,1.3)*Math.sin(k*Math.PI/2.5+t*2.0)+.0012*Math.sin(k*1.7+t*9.);
               const p=r.clone().addScaledVector(e,t*(.35+.65*end)).addScaledVector(nr,pl+.006*Math.sin(Math.PI*t)*el/.05);pos.push(p.x,p.y,p.z);
-              const fat=(1-SS(t,.0,.45))*.7,vv=vs*SS(t,.05,.2)*(1-SS(t,.75,.95))*.8;let cr=.94-.06*fat,cg=.80-.03*fat,cb=.64-.22*fat;cr=cr*(1-vv)+.62*vv;cg=cg*(1-vv)+.16*vv;cb=cb*(1-vv)+.13*vv;
+              ft.push(t,f);const fat=(1-SS(t,.0,.45))*.7,vv=vs*SS(t,.05,.2)*(1-SS(t,.75,.95))*.8;let cr=.94-.06*fat,cg=.80-.03*fat,cb=.64-.22*fat;cr=cr*(1-vv)+.62*vv;cg=cg*(1-vv)+.16*vv;cb=cb*(1-vv)+.13*vv;
               const a=(.42+.2*fat+.25*vv)*(1-SS(t,.8,1))*SS(f,0,.05)*(1-SS(f,.95,1));col.push(cr,cg,cb,a)}}
           for(let k=0;k<K-1;k++)for(let j=0;j<J;j++){const A=k*(J+1)+j,B=A+J+1;idx.push(A,B,A+1,B,B+1,A+1)}
-          const g=new T.BufferGeometry();g.setAttribute("position",new T.Float32BufferAttribute(pos,3));g.setAttribute("color",new T.Float32BufferAttribute(col,4));g.setIndex(idx);g.computeVertexNormals();g.computeBoundingSphere();
-          const mat=M.mesFan||(M.mesFan=new T.MeshStandardMaterial({color:0xffffff,vertexColors:true,transparent:true,depthWrite:false,side:T.DoubleSide,roughness:.55,metalness:0}));
+          const g=new T.BufferGeometry();g.setAttribute("position",new T.Float32BufferAttribute(pos,3));g.setAttribute("color",new T.Float32BufferAttribute(col,4));g.setIndex(idx);g.setAttribute("aFt",new T.Float32BufferAttribute(ft,2));g.computeVertexNormals();g.computeBoundingSphere();
+          const mat=M.mesFan||(M.mesFan=window.__PFT_R27MES===0?new T.MeshStandardMaterial({color:0xffffff,vertexColors:true,transparent:true,depthWrite:false,side:T.DoubleSide,roughness:.55,metalness:0}):patch(new T.MeshPhysicalMaterial({color:0xffffff,vertexColors:true,transparent:true,depthWrite:false,side:T.DoubleSide,roughness:.42,metalness:0,clearcoat:.35,clearcoatRoughness:.3}),"mesfan27",{uniforms:omU,
+            /* r27: mesenteric fat - with visceral fat the thin fan fills with yellow lobulated fat from the root outward and puffs up along the arcades (driven by uVisc = A1c / PFT visceral input) */
+            vdecl:"attribute vec2 aFt;varying vec2 vFt;uniform float uVisc;\n",vpre:"{float th=uVisc*(1.-smoothstep(.15,.95,aFt.x*(1.-.55*uVisc)));float lb=.5+.5*sin(aFt.y*260.+aFt.x*17.)*sin(aFt.x*31.+aFt.y*90.);transformed+=normalize(objectNormal)*th*(.0025+.0045*lb);}\n",vmain:"vFt=aFt;\n",
+            fdecl:"uniform float uVisc;varying vec2 vFt;\n",
+            color:"{float reach=.18+.8*min(1.,uVisc*1.25);float fz=(1.-smoothstep(reach-.25,reach,vFt.x))*min(1.,uVisc*1.8);vec2 c=pftCell(vPos*150.);float lob=smoothstep(.02,.2,c.y-c.x);float dm=1.-smoothstep(.0,.8,c.x);vec2 c2=pftCell(vPos*380.);float sub=smoothstep(.02,.14,c2.y-c2.x);vec3 fat=mix(vec3(.86,.60,.20),vec3(1.,.82,.40),dm*.6+.4*pftNoise(vPos*40.))*mix(.88,1.,sub)*mix(.74,1.,dm);vec3 sep=vec3(.80,.50,.32);diffuseColor.rgb=mix(diffuseColor.rgb,mix(sep,fat,lob),fz*.92);diffuseColor.a=mix(diffuseColor.a,max(diffuseColor.a,.82*mix(.75,1.,lob)),fz);pftDome=mix(1.,.78+.3*dm,fz);}",
+            normal:"normal=pftBump(normal,pftCell(vPos*150.).x*-1.*min(1.,uVisc*1.6),.0022);"}));
           const fm=new T.Mesh(g,mat);fm.name="Mesentery fan";fm.userData.role="mesentery";fm.userData.v68=true;fm.frustumCulled=false;fm.renderOrder=2;fm.receiveShadow=false;const hp=m.parent;hp.updateMatrixWorld(true);{const A=g.attributes.position;for(let i=0;i<A.count;i++){v.fromBufferAttribute(A,i);hp.worldToLocal(v);A.setXYZ(i,v.x,v.y,v.z)}g.computeVertexNormals();g.computeBoundingSphere()}hp.add(fm);meshes.push(fm);(byRole.mesentery=byRole.mesentery||[]).push(fm)}}}catch(e){console.warn("r25 mesentery fan",e)}
       // (b) the reference arterial tree has a few square-section stubs at the top of the stomach (left gastric /
       // oesophageal branches). Each one is replaced by a round, tapered tube fitted to its centre line (same material).
@@ -971,6 +976,7 @@
       try{v67Anatomy(root)}catch(e){console.warn("anatomy pass",e)}try{root.userData.hra=v69HRA(root)}catch(e){console.warn("anatomy pass v69",e)}try{v70Stomach()}catch(e){console.warn("anatomy pass v70",e)}try{v73LiverDiaph()}catch(e){console.warn("anatomy pass v73",e)}try{musclePrep()}catch(e){console.warn("muscle prep",e)}rootRef=root;scene.add(root);ready=true;if(/pftdebug/.test(location.hash))window.__pft3d={scene,meshes,T,renderer,camera};applyMode();applyState();resize();kick();
       opts.onReady&&opts.onReady();syncNav(false);
       try{g3dLoad(root)}catch(e){console.warn("g3d",e)}
+      try{g3dOrgans()}catch(e){console.warn("g3d organs",e)}
     }
     // r26 (R12, day 1025): Muscle-view base mesh = Grab3D "Human Muscles" (CC0 1.0). Fitted to our figure (feet, height,
     // centre) with a 1 mm forward offset. Growth is kept: each Grab3D vertex inherits the muscle id + belly weight of the
@@ -996,6 +1002,28 @@
             sh.vertexShader=sh.vertexShader.replace("#include <common>","#include <common>\nattribute float aMid;attribute float aGB;uniform float uMG[48];uniform float uMGk;").replace("#include <begin_vertex>","#include <begin_vertex>\n{int mi0=int(aMid+.5);float g0=(mi0>0&&mi0<48)?uMG[mi0]:0.;transformed+=normalize(objectNormal)*g0*aGB*uMGk;}")};
           mt.customProgramCacheKey=()=>"g3dgrow";o.userData.role="g3d";o.castShadow=o.receiveShadow=true;o.frustumCulled=false;meshes.push(o);(byRole.g3d=byRole.g3d||[]).push(o)});
         scene.add(gs);g3dOn=true;window.__pftG3D=1;applyMode();kick()}catch(e){console.warn("g3d fit",e)}},undefined,e=>console.warn("g3d load",e));
+    }
+    // r27 (day 1025): Grab3D CC0 1.0 organ models (heart, lungs, liver, stomach, kidneys) replace the procedural/HRA organ
+    // shapes in every inside view (Half & half, Inside, and the simulator's embedded inside view, which loads this same file).
+    // Each is fitted to the bounding box of the organ it replaces (per-axis scale held within +/-20% of uniform), so positions
+    // stay anatomical. The liver keeps our steatosis material (driven by liver fat / A1c) and the lungs our see-through pink veil; heart, stomach and kidneys keep Grab3D's textures.
+    // The replaced meshes are only hidden (role "<role>P"). window.__PFT_G3DO=0 restores the previous organs.
+    function g3dOrgans(){
+      if(window.__PFT_G3DO===0||!url)return;const base=url.replace(/[^\/]*$/,""),v="?v=7710";
+      const L={heart:"g3d-human-heart-cutaway.glb",lung:"g3d-human-lungs.glb",liver:"g3d-human-liver.glb",stomach:"g3d-human-stomach.glb",kidney:"g3d-human-kidney.glb"};
+      const ld=new T.GLTFLoader();ld.setMeshoptDecoder&&T.MeshoptDecoder&&ld.setMeshoptDecoder(T.MeshoptDecoder);
+      const fit=(gs,box,mirror,sh)=>{if(sh){const c0=box.getCenter(new T.Vector3());box=box.clone().translate(c0.clone().negate());box.min.multiplyScalar(sh);box.max.multiplyScalar(sh);box.translate(c0)}gs.updateMatrixWorld(true);const gb=new T.Box3().setFromObject(gs),ge=gb.getSize(new T.Vector3()),te=box.getSize(new T.Vector3());
+        const k=[te.x/ge.x,te.y/ge.y,te.z/ge.z],u=Math.cbrt(k[0]*k[1]*k[2]);gs.scale.set(...k.map(x=>Math.max(u*.8,Math.min(u*1.2,x))));if(mirror)gs.scale.x*=-1;gs.updateMatrixWorld(true);
+        gb.setFromObject(gs);const c=box.getCenter(new T.Vector3()),gc=gb.getCenter(new T.Vector3());gs.position.add(c.sub(gc));gs.updateMatrixWorld(true)};
+      const adopt=(gs,role,old)=>{gs.traverse(o=>{if(!o.isMesh)return;o.userData.role=role;o.userData.g3d=1;if(role==="heart")o.userData.hra=1;o.frustumCulled=false;o.castShadow=false;o.receiveShadow=true;
+          if(role==="liver")o.material=M.liver;else if(role==="lung"){o.material=M.lung;o.renderOrder=2}else{const mt=o.material;if(mt)mt.roughness=Math.min(.6,mt.roughness==null?.5:mt.roughness)}
+          meshes.push(o);(byRole[role]=byRole[role]||[]).push(o)});scene.add(gs);old.forEach(m=>{m.userData.role=role+"P"})};
+      const boxOf=list=>{const b=new T.Box3();list.forEach(m=>{m.updateMatrixWorld(true);b.expandByObject(m)});return b};
+      Object.keys(L).forEach(role=>{const old=(byRole[role]||[]).filter(m=>!m.userData.g3d&&m.userData.role===role);if(!old.length)return;
+        ld.load(base+L[role]+v,g=>{try{
+          if(role==="kidney"&&old.length>1){old.forEach((m,i)=>{const gs=i?g.scene.clone(true):g.scene;const b=boxOf([m]);fit(gs,b,b.getCenter(new T.Vector3()).x<0,.96);adopt(gs,role,[m])})}
+          else{fit(g.scene,boxOf(old),false,role==="lung"?.86:.96);adopt(g.scene,role,old)}
+          window.__pftG3DO=(window.__pftG3DO||0)+1;applyMode();kick()}catch(e){console.warn("g3d organ "+role,e)}},undefined,e=>console.warn("g3d organ load "+role,e))});
     }
     // file:// pages cannot fetch the .glb (browsers block local XHR/fetch), so the same model also ships as a
     // classic script (assets/models/pft-anatomy.glb.js) that defines a base64 string; it is used on file:// or if the fetch fails.
