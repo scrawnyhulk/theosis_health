@@ -1796,7 +1796,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')set(false)})
 
   <!-- ================= WIZARD ================= -->
   <section id="wizard" class="wiz" hidden aria-label="Simulator">
-  <div class="startover-bar"><button type="button" id="btn-startover" class="startover-btn" title="Go back to the first screen and pick a different path"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>Start over</button></div>
+  <div class="startover-bar"><button type="button" id="btn-startover" class="startover-btn" title="Go back to the first screen to pick a different path. Your body info is kept." aria-label="Change path. Goes back to the first choice and keeps your info."><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>Change path</button></div>
     <p class="prog-mobile" id="prog-mobile"></p>
     <div class="mode-row"><div class="mode-sw" role="radiogroup" aria-label="Detail level">
       <button type="button" role="radio" data-uimode="simple" aria-checked="true">Simple</button><button type="button" role="radio" data-uimode="advanced" aria-checked="false">Advanced</button></div>
@@ -2352,7 +2352,10 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')set(false)})
             <div class="actions">
               <button type="button" class="btn btn-steel" id="btn-print"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="1"/><path d="M6 14h12v7H6z"/></svg>Print / save as PDF</button>
               <button type="button" class="btn btn-ghost" data-goto="1">Edit answers</button>
-              <button type="button" class="btn btn-ghost" id="btn-restart">Start over</button>
+              <button type="button" class="btn btn-ghost" id="btn-restart" aria-label="Clear everything. Erases all your info and starts fresh.">Clear everything</button>
+            </div>
+            <p class="restart-hint" style="font-size:.85em;opacity:.75;margin:.4em 0 0">“Clear everything” erases all your info. To just try a different path, use “Change path” at the top.</p>
+            <div>
             </div>
           </div>
         </section>
@@ -5042,7 +5045,7 @@ return { KEY, MEALS, MEAL_IDS, dateKey, addDays, isDate, mealFor, empty, normali
       <p>If you have chest pain, fainting, severe shortness of breath or thoughts of self-harm, seek emergency care.</p>` },
     privacy: { s: "Your answers stay on your device unless you choose an optional feature that sends something.", t: "Privacy", h: `
       <p><b>Your answers stay on your device.</b> The plan is calculated in your browser. Nothing you enter (weight, health answers, photos, check-ins) is sent to us or stored on a server.</p>
-      <ul><li>Your inputs and check-ins are saved in your browser's local storage so you can come back. Use <b>Start over</b> or clear your browser data to remove them.</li>
+      <ul><li>Your inputs and check-ins are saved in your browser's local storage so you can come back. Use <b>Clear everything</b> or clear your browser data to remove them.</li>
       <li>Photos are processed on your device. They are only sent anywhere if you choose the optional AI illustration, and then only the photo, the projection numbers and a few plan details (age, height, calorie level, steps, which muscles you train, your fat-storage pattern, and any measured fat values you entered), after you consent. Your name, labs, medications and ancestry are never sent.</li>
       <li>Lab results you type in stay in this browser like your other answers and are used only for the estimates shown to you.</li>
       <li>The optional food search looks up the food name or barcode you type in a public food database; it doesn't include anything about you.</li>
