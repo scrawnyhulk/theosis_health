@@ -132,7 +132,7 @@
       normal:"normal=pftBump(normal,pftNoise(vPos*38.)+.35*pftNoise(vPos*110.),.0016);"});
     const muscleU={uSel:U(0),...shared,uGly:U(0),uMG:{value:new Array(48).fill(0)},uMGk:U(1),uMView:U(0)}; /* v7.6.78: per-muscle growth (index = muscle id), local-unit scale, muscle-only view */
     M.muscle=patch(new T.MeshStandardMaterial({color:0x7d1d17,roughness:.55,metalness:0}),"muscle25",{
-      uniforms:muscleU,vdecl:"attribute vec3 color;\nattribute float aBelly;\nattribute float aFib;attribute float aEdge;attribute float aTd;varying float vTd;varying float vBel;\nuniform float uMG[48];uniform float uMGk;\nvarying float vMid;varying float vGrow;varying float vFib;varying float vEdge;\n",vpre:"{int mi0=int(floor(color.r*64.+.5));float g0=(mi0>0&&mi0<48)?uMG[mi0]:0.;vGrow=g0;transformed+=normalize(objectNormal)*g0*aBelly*uMGk;}\n",vmain:"vMid=color.r;vFib=aFib;vEdge=aEdge;vTd=aTd;vBel=aBelly;\n",fdecl:"uniform float uGly,uSel,uMView;\nvarying float vMid;varying float vGrow;varying float vFib;varying float vEdge;varying float vTd;varying float vBel;\n",discard:"if(uCut>.5&&pftAbd(vPos,.03)>.5)discard;",
+      uniforms:muscleU,vdecl:"attribute vec3 color;\nattribute float aBelly;\nattribute float aFib;attribute float aEdge;attribute float aTd;varying float vTd;varying float vBel;\nuniform float uMG[48];uniform float uMGk;\nvarying float vMid;varying float vGrow;varying float vFib;varying float vEdge;\n",vpre:"{int mi0=int(floor(color.r*64.+.5));float g0=(mi0>0&&mi0<48)?uMG[mi0]:0.;vGrow=g0;transformed+=normalize(objectNormal)*g0*aBelly*uMGk;}\n",vmain:"vMid=color.r;vFib=aFib;vEdge=aEdge;vTd=aTd;vBel=aBelly;\n",fdecl:"uniform float uGly,uSel,uMView;\nvarying float vMid;varying float vGrow;varying float vFib;varying float vEdge;varying float vTd;varying float vBel;\n",discard:"if(uCut>.5&&pftAbd(vPos,.03)>.5)discard;if(uCut>.5&&uHalf<.5&&vPos.y>1.47)discard; ",
       color:`float fib,fib2;if(vEdge>=0.){float fq=vFib*1500.+pftNoise(vPos*70.)*3.;float fa=1.-smoothstep(.4,1.2,fwidth(fq));fib=mix(.6,.5+.5*sin(fq),fa);fib2=mix(.85,.75+.25*sin(fq*2.7+1.3),fa);}else{fib=sin(vPos.x*1400.+pftNoise(vPos*vec3(60.,8.,60.))*9.)*.5+.5;fib2=sin(vPos.z*1400.+pftNoise(vPos*vec3(60.,8.,60.)+7.)*9.)*.5+.5;}
         float s=fib*fib2;diffuseColor.rgb*=mix(.62,1.12,s);
         float mid=vMid*64.;float mi=floor(mid+.5);float mt=abs(mi-27.)<.5?26.:mi;float hv=fract(sin(mt*12.9898+.7)*43758.5453); /* r25n: pec abdominal part shares the pec tone (no mid-chest colour step) */diffuseColor.rgb*=mi>.5?(vEdge>=0.?(.86+.24*hv):(.74+.46*hv)):1.;
@@ -148,7 +148,7 @@
         float gr=smoothstep(.64,.74,pftNoise(vPos*230.));diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.15,.62,.55),uGly*.12);diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.5,1.,.9),min(.55,uGly*.6*gr)); // V32g: lighter glycogen speckle so muscle borders stay readable`,
       normal:`normal=pftBump(normal,fib*fib2,.0006);`,light:"if(uMView>.5&&vEdge>=0.)reflectedLight.indirectDiffuse+=diffuseColor.rgb*.08;"});
     M.nail=new T.MeshStandardMaterial({color:0xc99a8c,roughness:.42,metalness:0});
-    const boneU={...shared,uBMV:U(0)};M.bone=patch(new T.MeshStandardMaterial({color:0xcfc4ae,roughness:.62}),"bone",{uniforms:boneU,fdecl:"uniform float uBMV;\n",discard:"if(uCut>.5&&pftAbd(vPos,.03)>.5)discard;if(uBMV>.5&&((vPos.z<-.02&&abs(vPos.x)<.035&&vPos.y>1.05&&vPos.y<1.52)||vPos.y>1.47))discard; /* r25n: Muscle view - spinous processes sit under the trapezius/erector origins; the clavicles stay as a pale shelf */"});
+    const boneU={...shared,uBMV:U(0)};M.bone=patch(new T.MeshStandardMaterial({color:0xcfc4ae,roughness:.62}),"bone",{uniforms:boneU,fdecl:"uniform float uBMV;\n",discard:"if(uCut>.5&&pftAbd(vPos,.03)>.5)discard;if(uCut>.5&&uHalf<.5&&vPos.y>1.47)discard; if(uBMV>.5&&((vPos.z<-.02&&abs(vPos.x)<.035&&vPos.y>1.05&&vPos.y<1.52)||vPos.y>1.47))discard; /* r25n: Muscle view - spinous processes sit under the trapezius/erector origins; the clavicles stay as a pale shelf */"});
     const organ=(c,r,extra)=>new T.MeshPhysicalMaterial(Object.assign({color:c,roughness:Math.min(.8,r+.2),clearcoat:.06,clearcoatRoughness:.6,specularIntensity:.35,sheen:.12,sheenColor:new T.Color(0xffc0b0)},extra||{}));
     const liverU={...shared,uLiver:U(0),uGlyL:U(0)},pancU={...shared,uPanc:U(0)},omU={...shared,uVisc:U(0)};
     // V26: hepatic steatosis - the whole liver turns paler and yellower from within (diffuse, patchy/mottled
@@ -194,7 +194,7 @@
       normal:"normal=pftBump(normal,dm*min(1.,uVisc*1.5),.002);"});
     M.heart=organ(0x8f1a14,.3,{emissive:new T.Color(0x5a0804),emissiveIntensity:.6});
     M.gall=organ(window.__PFT_R25===0?0x8a8e66:0x6e6a40,.3); /* r25: muted olive (was a brighter sage green) */M.stomach=organ(0xc4787a,.36);M.intestine=bowel(0xc08a80,.38,"intestine");M.colon=bowel(0xae8070,.4,"colon");
-    M.vessel=patch(organ(0x8a0f0c,.3,{emissive:new T.Color(0x3a0402),emissiveIntensity:.5}),"vessel",{uniforms:shared,discard:"if(uCut>.5&&pftAbd(vPos,.03)>.5)discard;"});
+    M.vessel=patch(organ(0x8a0f0c,.3,{emissive:new T.Color(0x3a0402),emissiveIntensity:.5}),"vessel",{uniforms:shared,discard:"if(uCut>.5&&pftAbd(vPos,.03)>.5)discard;if(uCut>.5&&uHalf<.5&&vPos.y>1.47)discard; "});
     M.spleen=organ(0x7a2240,.35);M.kidney=organ(0x8e3a2a,.35);M.duodenum=bowel(0xd09a7e,.38,"intestine");M.bladder=organ(0xc9a08a,.4);
     // anatomy pass: lungs (pale pink, see-through so the heart reads), diaphragm (muscle with a paler central tendon), IVC (deoxygenated blue)
     M.lung=organ(0xe3aaa6,.6,{transparent:true,opacity:.5,depthWrite:false,clearcoat:.1,sheen:.4});
@@ -312,9 +312,29 @@
     window.PFTAnatomyBias=function(b){b=b||{};const c=(x,l)=>Math.max(-l,Math.min(l,+x||0));bias.subq=c(b.subq,.35);bias.mass=c(b.mass,.3);bias.belly=c(b.belly,.3);bias.visc=c(b.visc,.25);bias.liver=c(b.liver,.2);bias.pancreas=c(b.pancreas,.15);
       bias.sx=1+c((+b.sx||1)-1,.12);bias.sy=1+c((+b.sy||1)-1,.08);dirty=true;applyState();kick&&kick()};
     if(window.__pftBias)Promise.resolve().then(()=>{try{window.PFTAnatomyBias(window.__pftBias)}catch(e){}});
+    // r29 (day 1026): visceral-fat envelope. The omentum/mesentery "visc" morph is authored for a full belly; when the outer body comes from
+    // the person's own height/weight/waist (setOuter) or an A1c tilts fat inward, visc can be high while the skin belly stays small, and the
+    // omentum apron pushed out through the abdominal wall (a floating yellow fat pad in side/3/4 Inside view). Cap visc per mesh so every
+    // omentum vertex stays >= 12 mm behind the skin front surface for the current skin morph state.
+    let envP=null;
+    function envPrep(){envP=[];const sk=byRole.skin&&byRole.skin[0];if(!sk||!rootRef)return;rootRef.updateMatrixWorld(true);const MX=rootRef.matrixWorld.constructor;
+      const inv=new MX().copy(rootRef.matrixWorld).invert(),v=new T.Vector3(),cell=.015,key=(x,y)=>Math.round(x/cell)+","+Math.round(y/cell);
+      const morphs=(m,names)=>{const g=m.geometry,d=m.morphTargetDictionary||{},ma=g.morphAttributes.position||[];return names.map(n=>n in d?ma[d[n]]:null)};
+      const sm=new MX().multiplyMatrices(inv,sk.matrixWorld),sp=sk.geometry.attributes.position,[mb,ms,mm]=morphs(sk,["belly","subq","mass"]),rel=sk.geometry.morphTargetsRelative,grid=new Map();
+      const P=new T.Vector3(),Q=new T.Vector3(),D3=(a,i,base)=>{if(!a)return 0;Q.fromBufferAttribute(a,i);if(!rel)Q.sub(base);Q.applyMatrix4(sm).sub(new T.Vector3().setFromMatrixPosition(sm));return Q.z};
+      const nrm=new T.Vector3();for(let i=0;i<sp.count;i++){P.fromBufferAttribute(sp,i);const base=P.clone();P.applyMatrix4(sm);if(P.y<.6||P.y>1.4||Math.abs(P.x)>.22)continue;
+        const k=key(P.x,P.y),e={z:P.z,b:D3(mb,i,base),s:D3(ms,i,base),m:D3(mm,i,base)},o=grid.get(k);if(!o||e.z>o.z)grid.set(k,e)}
+      ["omentum","mesentery"].forEach(r=>(byRole[r]||[]).forEach(m=>{const d=m.morphTargetDictionary;if(!d||!("visc" in d)||m.userData.g3d)return;const g=m.geometry,pp=g.attributes.position,mv=g.morphAttributes.position[d.visc],rl=g.morphTargetsRelative;
+        const om=new MX().multiplyMatrices(inv,m.matrixWorld),t0=new T.Vector3().setFromMatrixPosition(om),vs=[];
+        for(let i=0;i<pp.count;i+=1){P.fromBufferAttribute(pp,i);const base=P.clone();P.applyMatrix4(om);Q.fromBufferAttribute(mv,i);if(!rl)Q.sub(base);Q.applyMatrix4(om).sub(t0);if(Q.z<=1e-5)continue;
+          const S=grid.get(key(P.x+Q.x*.5,P.y+Q.y*.5));if(S)vs.push([P.z,Q.z,S])}
+        envP.push({m,vs})}));window.__pftEnv=envP}
+    function envCap(m,want){if(!envP)try{envPrep()}catch(e){console.warn("venv",e);envP=[]}const E=envP.find(e=>e.m===m);if(!E||window.__PFT_VENV===0)return want;
+      const b=bz(st.belly+bias.belly,1.25),s=bz(st.subq+bias.subq,1.25),ma=bz(st.mass+bias.mass,1.1);let cap=want;
+      for(const [z0,dz,S] of E.vs){const lim=(S.z+S.b*b+S.s*s+S.m*ma-.012-z0)/dz;if(lim<cap)cap=lim}return Math.max(0,cap)}
     function applyState(){
       meshes.forEach(m=>{const d=m.morphTargetDictionary,inf=m.morphTargetInfluences;if(!d)return;
-        if("subq" in d)inf[d.subq]=bz(st.subq+bias.subq,1.25);if("mass" in d)inf[d.mass]=bz(st.mass+bias.mass,1.1);if("belly" in d)inf[d.belly]=bz(st.belly+bias.belly,1.25);if("visc" in d)inf[d.visc]=bz(st.visc+bias.visc,1);if("hyper" in d)inf[d.hyper]=st.hyper;});
+        if("subq" in d)inf[d.subq]=bz(st.subq+bias.subq,1.25);if("mass" in d)inf[d.mass]=bz(st.mass+bias.mass,1.1);if("belly" in d)inf[d.belly]=bz(st.belly+bias.belly,1.25);if("visc" in d){const w=bz(st.visc+bias.visc,1);inf[d.visc]=(m.userData.role==="omentum"||m.userData.role==="mesentery")?envCap(m,w):w;}if("hyper" in d)inf[d.hyper]=st.hyper;});
       const B=bias;fatU.uSubq.value=bz(st.subq+B.subq,1.25);fatU.uMass.value=bz(st.mass+B.mass,1.1);fatU.uBelly.value=bz(st.belly+B.belly,1.25);fatU.uHyper.value=st.hyper;
       liverU.uLiver.value=bz(st.liver+B.liver,1);liverU.uGlyL.value=glyOn?st.glyL:0;muscleU.uGly.value=glyOn&&mode!=="muscle"?st.gly:0;pancU.uPanc.value=bz(st.pancreas+B.pancreas,1);omU.uVisc.value=bz(st.visc+B.visc,1);if(rootRef){rootRef.scale.set(B.sx,B.sy,B.sx);rootRef.position.y=1.05*(1-B.sy);}
       if(M.heart)M.heart.emissiveIntensity=.45;
@@ -1021,7 +1041,7 @@
         gb.setFromObject(gs);const c=box.getCenter(new T.Vector3()),gc=gb.getCenter(new T.Vector3());gs.position.add(c.sub(gc));gs.updateMatrixWorld(true)};
       const adopt=(gs,role,old)=>{gs.traverse(o=>{if(!o.isMesh)return;o.userData.role=role;o.userData.g3d=1;if(role==="heart")o.userData.hra=1;o.frustumCulled=false;o.castShadow=false;o.receiveShadow=true;
           if(role==="liver")o.material=M.liver;else if(role==="lung"){o.material=M.lung;o.renderOrder=2}else{const mt=o.material;if(mt)mt.roughness=Math.min(.6,mt.roughness==null?.5:mt.roughness)}
-          meshes.push(o);(byRole[role]=byRole[role]||[]).push(o)});scene.add(gs);old.forEach(m=>{m.userData.role=role+"P"})};
+          meshes.push(o);(byRole[role]=byRole[role]||[]).push(o)});if(rootRef&&window.__PFT_G3DROOT!==0)rootRef.attach(gs);else scene.add(gs); /* r29 (day 1026): parent to the body root so the per-person sx/sy body scale also moves these organs (on the scene they stayed at default size and the lungs/heart poked out through the neck/back of the head when the body was scaled down) */old.forEach(m=>{m.userData.role=role+"P"})};
       const boxOf=list=>{const b=new T.Box3();list.forEach(m=>{m.updateMatrixWorld(true);b.expandByObject(m)});return b};
       Object.keys(L).forEach(role=>{const old=(byRole[role]||[]).filter(m=>!m.userData.g3d&&m.userData.role===role);if(!old.length)return;
         ld.load(base+L[role]+v,g=>{try{

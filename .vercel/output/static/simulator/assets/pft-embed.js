@@ -9,7 +9,7 @@
    anchor faces away from the camera. Drag on the figure rotates it (the model's own controls).
    Needs the model's #pftdebug hook (exposes scene/meshes/THREE) and http(s) same-origin. */
 (function(){
-const SRC='pft-inside/figure.html?view=3d&v=7695#pftdebug';/* v7.6.71: figure-only document; same shared engine+anatomy files as the PFT page */
+const SRC='pft-inside/figure.html?view=3d&v=7730#pftdebug';/* v7.6.71: figure-only document; same shared engine+anatomy files as the PFT page */
 const SHORT={liver:'Liver',pan:'Pancreas',vis:'Belly fat',skin:'Under skin'};
 const COL={liver:'#e07070',pan:'#c792ea',vis:'#e8a84a',skin:'#e8c27a'};
 // Plain-language label text. Now ('up') = what is likely happening and how it affects that organ; Later ('down') = what
@@ -55,12 +55,13 @@ window.PFTEmbed=function(host,opt){
   // face = how much the body's front (the model's local +z axis, fixed) faces the camera: 1 front, 0 side, -1 back
   for(const k of ['liver','pan','vis','skin']){const p=world(k),q=p.clone().project(cam);
    const a=k=='liver'||k=='pan'?Math.max(.15,Math.min(1,(face+.5)/.5)):Math.max(0,Math.min(1,(face+.15)/.45));
-   pts[k]={x:fb.left-hb.left+(q.x+1)/2*fb.width,y:fb.top-hb.top+(1-q.y)/2*fb.height,a}}
+   const on=q.z<1&&Math.abs(q.x)<.98&&Math.abs(q.y)<.98;/* r29 (day 1026): anchor off-screen or behind the camera (zoomed onto the head) - hide the callout instead of drawing a line to a wrong spot */
+   pts[k]={x:fb.left-hb.left+(q.x+1)/2*fb.width,y:fb.top-hb.top+(1-q.y)/2*fb.height,a:on?a:0,off:!on}}
   api.face=face;
   const mid=fb.left-hb.left+fb.width/2,sides={L:[],R:[]};for(const k in pts)sides[pts[k].x<mid?'L':'R'].push(k);
   let svg='',html='';for(const sd of ['L','R']){const ks=sides[sd].sort((a,b)=>pts[a].y-pts[b].y);ks.forEach((k,j)=>{const P=pts[k],y=H*(ks.length==1?.4:.18+.6*j/(ks.length-1)),x=sd=='L'?66:Wd-66,col=COL[k],ww=words[k]||'low',mk=ww=='up'?'▲ ':ww=='down'?'▼ ':'● ';
    svg+=`<g data-k="${k}" opacity="${P.a.toFixed(2)}"><polyline points="${P.x.toFixed(1)},${P.y.toFixed(1)} ${sd=='L'?x+6:x-6},${y} ${x},${y}" fill="none" stroke="${col}" stroke-width="1"/><circle cx="${P.x.toFixed(1)}" cy="${P.y.toFixed(1)}" r="3" fill="${col}" stroke="#05080d" stroke-width="1.5"/></g>`;
-   html+=`<button type="button" class="pfe-t" data-k="${k}" style="${sd=='L'?'left:2px':'right:2px'};top:${y-10}px;opacity:${Math.max(.35,P.a).toFixed(2)}" aria-label="${TXT[k].t}: show explanation"><i style="background:${col}"></i>${SHORT[k]}</button>`})}
+   html+=`<button type="button" class="pfe-t" data-k="${k}" ${P.off?'hidden ':''}style="${sd=='L'?'left:2px':'right:2px'};top:${y-10}px;opacity:${Math.max(.35,P.a).toFixed(2)}" aria-label="${TXT[k].t}: show explanation"><i style="background:${col}"></i>${SHORT[k]}</button>`})}
   ov.setAttribute('viewBox',`0 0 ${Wd} ${H}`);ov.innerHTML=svg;lab.innerHTML=html;api.pts=pts;}
  function apply(){if(!ready)return;const w=W();if(st.s!=null&&st.start!=null){st.load=st.start+(st.end-st.start)*st.s/100;st.later=st.s>0}
   if(w.PFTAtlas.setUserA1c&&w.PFTAtlas.userA1c()!==(st.a1c??null))w.PFTAtlas.setUserA1c(st.a1c??null);if(w.PFTAtlas.setOuter)w.PFTAtlas.setOuter(st.outer||null);w.PFTAtlas.setState(st.load,st.capacity);host.dataset.load=Math.round(st.load);
