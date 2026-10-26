@@ -1,5 +1,5 @@
 /* Personal Fat Threshold V22 · lazy 3D anatomy runtime.
-   Geometry: Theosis Medical procedural anatomy on a MakeHuman CC0 base, see CREDITS.md.
+   Geometry: Theosis Health procedural anatomy on a MakeHuman CC0 base, see CREDITS.md.
    Shape changes (fat pads, abdominal projection, omental fat, organ tint) are illustrative, not measurements. */
 (function(){
   "use strict";

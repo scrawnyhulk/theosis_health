@@ -60,7 +60,7 @@ Taylor 2018, DiRECT) sits above the sources.
 ## The figure (V26)
 
 The 2D figure is a series of pixel-aligned Blender Cycles renders of one
-body built by Theosis Medical (V31: MakeHuman CC0 surface, procedural organs/muscles/skeleton/arteries; see `CREDITS.md`): semi-transparent skin
+body built by Theosis Health (V31: MakeHuman CC0 surface, procedural organs/muscles/skeleton/arteries; see `CREDITS.md`): semi-transparent skin
 over muscle and skeleton, heart, liver, gallbladder, stomach, pancreas,
 intestines and omentum in an abdominal window. Each threshold profile has six
 frames (fuel 0, 40, 55, 70, 85, 100); `pft-figure.js` crossfades the two

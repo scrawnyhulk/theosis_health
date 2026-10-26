@@ -1,6 +1,6 @@
 /* Lazy-loaded 3D atlas for the Personal Fat Threshold model (own procedural anatomy, see CREDITS.md). */
 
-/* Anatomical geometry: Theosis Medical procedural anatomy on a MakeHuman CC0 base (see CREDITS.md).
+/* Anatomical geometry: Theosis Health procedural anatomy on a MakeHuman CC0 base (see CREDITS.md).
    Deformations illustrate composition; they are not anatomical measurements. */
 (function(root,factory){const api=factory(root.AnatomyThree);if(typeof module==='object'&&module.exports)module.exports=api;else root.Anatomy3D=api;})(typeof globalThis!=='undefined'?globalThis:this,function(T){
  'use strict';

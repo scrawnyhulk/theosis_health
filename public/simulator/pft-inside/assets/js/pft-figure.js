@@ -1,5 +1,5 @@
 /* V23 · rendered figure series (V22 base + per-profile masks, glycogen fill).
-   Pixel-aligned Cycles renders of Theosis Medical's own procedural anatomy (MakeHuman CC0 body base; see CREDITS.md) at
+   Pixel-aligned Cycles renders of Theosis Health's own procedural anatomy (MakeHuman CC0 body base; see CREDITS.md) at
    six fuel levels per threshold profile. The slider crossfades neighbouring
    frames; a profile change fades between series. Callouts stay as SVG/HTML.
    Also: "Become diabetic" / "Reverse diabetes" slider animations. */
