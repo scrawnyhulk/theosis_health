@@ -336,7 +336,7 @@
       meshes.forEach(m=>{const d=m.morphTargetDictionary,inf=m.morphTargetInfluences;if(!d)return;
         if("subq" in d)inf[d.subq]=bz(st.subq+bias.subq,1.25);if("mass" in d)inf[d.mass]=bz(st.mass+bias.mass,1.1);if("belly" in d)inf[d.belly]=bz(st.belly+bias.belly,1.25);if("visc" in d){const w=bz(st.visc+bias.visc,1);inf[d.visc]=(m.userData.role==="omentum"||m.userData.role==="mesentery")?envCap(m,w):w;}if("hyper" in d)inf[d.hyper]=st.hyper;});
       const B=bias;fatU.uSubq.value=bz(st.subq+B.subq,1.25);fatU.uMass.value=bz(st.mass+B.mass,1.1);fatU.uBelly.value=bz(st.belly+B.belly,1.25);fatU.uHyper.value=st.hyper;
-      liverU.uLiver.value=bz(st.liver+B.liver,1);liverU.uGlyL.value=glyOn?st.glyL:0;muscleU.uGly.value=glyOn&&mode!=="muscle"?st.gly:0;pancU.uPanc.value=bz(st.pancreas+B.pancreas,1);omU.uVisc.value=bz(st.visc+B.visc,1);if(rootRef){rootRef.scale.set(B.sx,B.sy,B.sx);rootRef.position.y=1.05*(1-B.sy);}
+      liverU.uLiver.value=bz(st.liver+B.liver,1);liverU.uGlyL.value=glyOn?st.glyL:0;muscleU.uGly.value=glyOn&&mode!=="muscle"?st.gly:0;pancU.uPanc.value=bz(st.pancreas+B.pancreas,1);omU.uVisc.value=bz(st.visc+B.visc,1);if(rootRef){rootRef.scale.set(B.sx*B.sy,B.sy,B.sx*B.sy);/* day1026b: height scales the body proportionally (a taller person is not a vertically stretched one); sx = BMI build on top */rootRef.position.y=1.05*(1-B.sy);}
       if(M.heart)M.heart.emissiveIntensity=.45;
     }
     const v3=new T.Vector3();
@@ -1019,13 +1019,26 @@
         const H=.02,grid=new Map(),pts=[],V=new T.Vector3();
         ms.forEach(m=>{const P=m.geometry.attributes.position,C=m.geometry.attributes.color,B=m.geometry.attributes.aBelly;if(!C)return;for(let i=0;i<P.count;i++){V.fromBufferAttribute(P,i).applyMatrix4(m.matrixWorld);const j=pts.length;pts.push([V.x,V.y,V.z,Math.round(C.getX(i)*64),B?B.getX(i):1]);const key=Math.floor(V.x/H)+","+Math.floor(V.y/H)+","+Math.floor(V.z/H);(grid.get(key)||grid.set(key,[]).get(key)).push(j)}});
         const near=(x,y,z)=>{const a=Math.floor(x/H),b=Math.floor(y/H),c=Math.floor(z/H);let best=-1,bd=1e9;for(let r=1;r<=3&&best<0;r++)for(let i=-r;i<=r;i++)for(let j=-r;j<=r;j++)for(let l=-r;l<=r;l++){const L=grid.get((a+i)+","+(b+j)+","+(c+l));if(L)for(const q of L){const p=pts[q],d=(p[0]-x)**2+(p[1]-y)**2+(p[2]-z)**2;if(d<bd){bd=d;best=q}}}return best};
-        gs.traverse(o=>{if(!o.isMesh)return;const P=o.geometry.attributes.position,n=P.count,mid=new Float32Array(n),bel=new Float32Array(n),wst=new Float32Array(n);const hY=bb.max.y-bb.min.y,wY=bb.min.y+.6*hY,cX=(bb.min.x+bb.max.x)/2;
-          for(let i=0;i<n;i++){V.fromBufferAttribute(P,i).applyMatrix4(o.matrixWorld);const q=near(V.x,V.y,V.z);if(q>=0){mid[i]=pts[q][3];bel[i]=pts[q][4]}const dy=(V.y-wY)/(.11*hY),dx=Math.abs(V.x-cX)/(.13*hY);wst[i]=dx<1?Math.exp(-dy*dy)*(1-dx*dx*.5):0}
-          o.geometry.setAttribute("aMid",new T.BufferAttribute(mid,1));o.geometry.setAttribute("aWst",new T.BufferAttribute(wst,1));o.geometry.setAttribute("aGB",new T.BufferAttribute(bel,1));
-          const mt=o.material;mt.onBeforeCompile=sh=>{sh.uniforms.uMG=muscleU.uMG;sh.uniforms.uMGk={get value(){return muscleU.uMGk.value/k}};sh.uniforms.uWst={get value(){return .07*Math.max(0,fatU.uBelly.value+.5*fatU.uSubq.value+.3*fatU.uMass.value)/k}};
-            sh.vertexShader=sh.vertexShader.replace("#include <common>","#include <common>\nattribute float aMid;attribute float aGB;uniform float uMG[48];uniform float uMGk;attribute float aWst;uniform float uWst;").replace("#include <begin_vertex>","#include <begin_vertex>\n{int mi0=int(aMid+.5);float g0=(mi0>0&&mi0<48)?uMG[mi0]:0.;transformed+=normalize(objectNormal)*(g0*aGB*uMGk+aWst*uWst);}")};
+        /* day1026b: waist/belly follow the SKIN's own belly/subq/mass morph targets (nearest skin vertex, 2 cm grid), not a hand-made
+             Gaussian push. Muscles get a damped share (abdominal wall rides out on visceral growth; fat sits outside them), and only where the
+             skin itself moves, so arms/hands at waist height and pecs no longer inflate. */
+          const SG=window.__g3dSkinGrid||(window.__g3dSkinGrid=(()=>{const g=sk.geometry,sp=g.attributes.position,d=sk.morphTargetDictionary||{},ma=g.morphAttributes.position||[],rel=g.morphTargetsRelative;
+            const tg=["belly","subq","mass"].map(n=>n in d?ma[d[n]]:null);sk.updateMatrixWorld(true);const L=sk.matrixWorld.clone().setPosition(0,0,0),G=new Map(),arr=[],A=new T.Vector3(),Bq=new T.Vector3();
+            for(let i=0;i<sp.count;i++){A.fromBufferAttribute(sp,i);const base=A.clone();A.applyMatrix4(sk.matrixWorld);const e=[A.x,A.y,A.z];
+              tg.forEach(t=>{if(!t){e.push(0,0,0);return}Bq.fromBufferAttribute(t,i);if(!rel)Bq.sub(base);Bq.applyMatrix4(L);e.push(Bq.x,Bq.y,Bq.z)});
+              const j=arr.length;arr.push(e);const key=Math.floor(A.x/H)+","+Math.floor(A.y/H)+","+Math.floor(A.z/H);(G.get(key)||G.set(key,[]).get(key)).push(j)}
+            return {G,arr}})());
+          const snear=(x,y,z)=>{const a=Math.floor(x/H),b=Math.floor(y/H),c=Math.floor(z/H);let best=-1,bd=1e9;for(let r=1;r<=3&&best<0;r++)for(let i=-r;i<=r;i++)for(let j=-r;j<=r;j++)for(let l=-r;l<=r;l++){const L=SG.G.get((a+i)+","+(b+j)+","+(c+l));if(L)for(const q of L){const p=SG.arr[q],dd=(p[0]-x)**2+(p[1]-y)**2+(p[2]-z)**2;if(dd<bd){bd=dd;best=q}}}return best};
+        gs.traverse(o=>{if(!o.isMesh)return;const P=o.geometry.attributes.position,n=P.count,mid=new Float32Array(n),bel=new Float32Array(n),dB=new Float32Array(n*3),dS=new Float32Array(n*3),dM=new Float32Array(n*3);
+          o.updateMatrixWorld(true);const Li=o.matrixWorld.clone().setPosition(0,0,0).invert(),W3=new T.Vector3();
+          for(let i=0;i<n;i++){V.fromBufferAttribute(P,i).applyMatrix4(o.matrixWorld);const q=near(V.x,V.y,V.z);if(q>=0){mid[i]=pts[q][3];bel[i]=pts[q][4]}
+            const s2=snear(V.x,V.y,V.z);if(s2>=0){const e=SG.arr[s2];[[dB,3],[dS,6],[dM,9]].forEach(([D,o3])=>{W3.set(e[o3],e[o3+1],e[o3+2]).applyMatrix4(Li);D[i*3]=W3.x;D[i*3+1]=W3.y;D[i*3+2]=W3.z})}}
+          o.geometry.setAttribute("aMid",new T.BufferAttribute(mid,1));o.geometry.setAttribute("aGB",new T.BufferAttribute(bel,1));
+          o.geometry.setAttribute("aDB",new T.BufferAttribute(dB,3));o.geometry.setAttribute("aDS",new T.BufferAttribute(dS,3));o.geometry.setAttribute("aDM",new T.BufferAttribute(dM,3));
+          const mt=o.material;mt.onBeforeCompile=sh=>{sh.uniforms.uMG=muscleU.uMG;sh.uniforms.uMGk={get value(){return muscleU.uMGk.value/k}};sh.uniforms.uFB=fatU.uBelly;sh.uniforms.uFS=fatU.uSubq;sh.uniforms.uFM=fatU.uMass;
+            sh.vertexShader=sh.vertexShader.replace("#include <common>","#include <common>\nattribute float aMid;attribute float aGB;uniform float uMG[48];uniform float uMGk;attribute vec3 aDB;attribute vec3 aDS;attribute vec3 aDM;uniform float uFB,uFS,uFM;").replace("#include <begin_vertex>","#include <begin_vertex>\n{int mi0=int(aMid+.5);float g0=(mi0>0&&mi0<48)?uMG[mi0]:0.;transformed+=normalize(objectNormal)*(g0*aGB*uMGk)+aDB*(.62*uFB)+aDS*(.12*uFS)+aDM*(.3*uFM);}")};
           mt.customProgramCacheKey=()=>"g3dgrow";o.userData.role="g3d";o.castShadow=o.receiveShadow=true;o.frustumCulled=false;meshes.push(o);(byRole.g3d=byRole.g3d||[]).push(o)});
-        (rootRef||scene).attach(gs);g3dOn=true;/* day1026: under the body root so height/frame scale applies; aWst follows waist/belly */window.__pftG3D=1;applyMode();kick()}catch(e){console.warn("g3d fit",e)}},undefined,e=>console.warn("g3d load",e));
+        (rootRef||scene).attach(gs);g3dOn=true;/* day1026: under the body root so height/frame scale applies */window.__pftG3D=1;applyMode();kick()}catch(e){console.warn("g3d fit",e)}},undefined,e=>console.warn("g3d load",e));
     }
     // r27 (day 1025): Grab3D CC0 1.0 organ models (heart, lungs, liver, stomach, kidneys) replace the procedural/HRA organ
     // shapes in every inside view (Half & half, Inside, and the simulator's embedded inside view, which loads this same file).
