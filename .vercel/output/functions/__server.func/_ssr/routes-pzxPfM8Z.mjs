@@ -4,9 +4,9 @@ import { n as require_react } from "../_libs/@radix-ui/react-compose-refs+[...].
 import { b as Link } from "../_libs/@tanstack/react-router+[...].mjs";
 import { i as require_jsx_runtime } from "../_libs/@radix-ui/react-label+[...].mjs";
 import { T as ArrowRight, b as Clock, g as FlaskConical, h as Footprints } from "../_libs/lucide-react.mjs";
-import { a as SODA_PERSON, c as maintenance, i as EXAMPLE, o as extraLbByDay, s as lostLbByDay } from "./router-CWhTIqEe.mjs";
+import { a as extraLbByDay, i as SODA_PERSON, o as lostLbByDay, s as maintenance } from "./router-C6RH_tH_.mjs";
 import { a as SiteShell, i as NavPlaque, r as NavIcon } from "./site-shell-RWexaFBk.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/routes-Dt3oMpbg.js
+//#region node_modules/.nitro/vite/services/ssr/assets/routes-pzxPfM8Z.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 /** Swap this slug to feature a different existing Health Hack. Text is pulled from src/lib/hacks.ts, not written here. */
@@ -114,8 +114,6 @@ function HomeFeatures() {
 	});
 }
 Math.round(maintenance(SODA_PERSON) / 10) * 10;
-var PROT_LB = lostLbByDay(150);
-var EXAMPLE_NOTE = `Example person, not a prediction: a ${EXAMPLE.age}-year-old, 5'9", ${EXAMPLE.weightLb}-lb man with about ${EXAMPLE.bodyFatPct}% body fat who is lightly active; individual numbers will differ. Try the simulator to see your own.`;
 var tools = [
 	{
 		href: "/simulator/",
@@ -865,269 +863,305 @@ function SodaCard() {
 		})
 	] });
 }
-var PROT_CUTS = [{
-	cut: 150,
-	label: "About 150 calories (cautious example)"
-}, {
-	cut: 441,
-	label: "About 441 calories (study average)"
-}];
-var PROT_CURVES = PROT_CUTS.map((x) => x.cut === 150 ? PROT_LB : lostLbByDay(x.cut));
-function ProteinCard() {
-	const [i, setI] = (0, import_react.useState)(365);
-	const [ci, setCi] = (0, import_react.useState)(0);
-	const narrow = useNarrow();
-	const G = narrow ? G_PH : G_PC;
-	const cut = PROT_CUTS[ci].cut, cv = PROT_CURVES[ci];
-	const d = useTween(i);
-	const lb = useTween(at(cv, i), 450);
-	const yMax = useTween(Math.max(4, Math.ceil(cv[365] * 1.15 / 4) * 4), 450);
-	const gx = (x) => G.l + x / 365 * (G.w - G.l - G.r);
-	const top = G.t + 14;
-	const gy = (v) => top + -v / yMax * (G.h - top - G.b);
-	const pts = [];
-	for (let x = 0; x < d; x += 3) pts.push(`${gx(x).toFixed(1)},${gy(-at(cv, x) * (lb / (at(cv, d) || 1) || 1)).toFixed(1)}`);
-	pts.push(`${gx(d).toFixed(1)},${gy(-lb).toFixed(1)}`);
-	const lossTxt = lb < .05 ? "0" : `−${fmtLb(lb)}`;
-	const lx = gx(d), anchor = lx > G.w - 90 ? "end" : "start";
-	const yt = [
+var MEALS = [
+	{
+		id: "breakfast",
+		label: "Breakfast: cereal vs eggs",
+		lo: {
+			title: "Frosted flakes and milk",
+			items: [{
+				name: "Frosted flakes cereal, 1½ cups",
+				g: 62,
+				fdc: 172990,
+				per: [
+					389,
+					4.25,
+					.87,
+					90.2,
+					1.2
+				]
+			}, {
+				name: "2% milk, 1 cup",
+				g: 244,
+				fdc: 171267,
+				per: [
+					50,
+					3.3,
+					1.98,
+					4.8,
+					0
+				]
+			}]
+		},
+		hi: {
+			title: "Scrambled eggs",
+			items: [{
+				name: "3 large eggs, scrambled",
+				g: 183,
+				fdc: 172187,
+				per: [
+					149,
+					9.99,
+					10.98,
+					1.61,
+					0
+				]
+			}]
+		}
+	},
+	{
+		id: "lunch",
+		label: "Lunch: mac and cheese vs chicken salad",
+		lo: {
+			title: "Mac and cheese",
+			items: [{
+				name: "Macaroni and cheese, 1 cup",
+				g: 230,
+				fdc: 2708811,
+				per: [
+					223,
+					8.68,
+					10.5,
+					23.1,
+					1.2
+				]
+			}]
+		},
+		hi: {
+			title: "Chicken and greens",
+			items: [{
+				name: "Roasted chicken breast, 1 cup diced",
+				g: 140,
+				fdc: 171477,
+				per: [
+					165,
+					31.02,
+					3.57,
+					0,
+					0
+				]
+			}, {
+				name: "Romaine, 2 cups (no dressing)",
+				g: 94,
+				fdc: 169247,
+				per: [
+					17,
+					1.23,
+					.3,
+					3.29,
+					2.1
+				]
+			}]
+		}
+	},
+	{
+		id: "dinner",
+		label: "Dinner: pizza vs steak and broccoli",
+		lo: {
+			title: "Pepperoni pizza",
+			items: [{
+				name: "3 slices, medium restaurant pizza",
+				g: 264,
+				fdc: 2708640,
+				per: [
+					282,
+					11.7,
+					11.9,
+					32,
+					2.3
+				]
+			}]
+		},
+		hi: {
+			title: "Steak and broccoli",
+			items: [{
+				name: "Lean top sirloin, 6 oz cooked",
+				g: 170,
+				fdc: 168635,
+				per: [
+					188,
+					30.29,
+					6.55,
+					0,
+					0
+				]
+			}, {
+				name: "Broccoli, 1 cup, boiled",
+				g: 156,
+				fdc: 169967,
+				per: [
+					35,
+					2.38,
+					.41,
+					7.18,
+					3.3
+				]
+			}]
+		}
+	}
+];
+var tot = (items) => {
+	const s = [
 		0,
-		-.5,
-		-1
-	].map((f) => Math.round(f * yMax));
-	const when = timeLabel(i).toLowerCase();
+		0,
+		0,
+		0,
+		0
+	];
+	for (const f of items) f.per.forEach((v, j) => s[j] += v * f.g / 100);
+	const [kcal, p, fat, carb, fib] = s;
+	return {
+		kcal: Math.round(kcal),
+		p: Math.round(p)
+	};
+};
+function MealSide({ kind, step, title, items, note }) {
+	const t = tot(items);
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: `sd-side ${kind}`,
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "sd-step",
+				children: step
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				style: {
+					fontWeight: 600,
+					fontSize: "1.05rem"
+				},
+				children: title
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("ul", {
+				className: "pm-items",
+				children: items.map((f) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: f.name }, f.fdc))
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "pm-stats",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("b", { children: t.kcal }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "calories" })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("b", { children: [t.p, " g"] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "protein" })] })]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "mk-small",
+				children: note
+			})
+		]
+	});
+}
+function ProteinCard() {
+	const [mid, setMid] = (0, import_react.useState)("breakfast");
+	const M = MEALS.find((m) => m.id === mid);
+	const a = tot(M.lo.items), b = tot(M.hi.items);
+	const dk = b.kcal - a.kcal, dp = b.p - a.p;
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
 			className: "mk-h2",
-			children: "More protein, fewer calories: how feeling fuller could add up"
+			children: "Choose protein at every meal"
 		}),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 			className: "mk-sub",
-			children: "Protein tends to help people feel full longer, so many end up eating a bit less without trying. Compare a lower-protein day with a higher-protein one, then slide forward to see how the gap could grow for an example person."
+			children: "High-calorie, low-protein plates tend to leave people hungry sooner. Protein-first plates tend to keep people full on fewer calories. Pick a meal to compare."
 		}),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 			className: "mk-card sd-card",
 			children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
+					htmlFor: "pm-meal",
+					className: "sd-step",
+					style: { display: "block" },
+					children: "Pick a meal"
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+					className: "sd-selwrap",
+					style: {
+						maxWidth: "26rem",
+						margin: ".4rem 0 1rem"
+					},
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("select", {
+						id: "pm-meal",
+						className: "sd-select",
+						value: mid,
+						onChange: (e) => setMid(e.target.value),
+						children: MEALS.map((m) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", {
+							value: m.id,
+							children: m.label
+						}, m.id))
+					})
+				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "sd-vs",
+					"aria-live": "polite",
 					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "sd-side now",
-							children: [
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-									className: "sd-step",
-									children: "Lower-protein day"
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "sd-kcal",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("b", { children: "~15%" }), " of calories from protein"]
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-									className: "mk-small",
-									children: "Tends to get hungry sooner"
-								})
-							]
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MealSide, {
+							kind: "now",
+							step: "High-calorie, low-protein",
+							title: M.lo.title,
+							items: M.lo.items,
+							note: "Tends to leave people hungry sooner"
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 							className: "sd-arrow",
 							"aria-hidden": "true",
 							children: "→"
 						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "sd-side swap",
-							children: [
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-									className: "sd-step",
-									children: "Higher-protein day"
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "sd-kcal",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("b", { children: "~30%" }), " of calories from protein"]
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-									className: "mk-small",
-									children: "Tends to feel full longer"
-								})
-							]
-						})
-					]
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "sd-diff",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
-							htmlFor: "pr-cut",
-							className: "sd-step",
-							style: {
-								display: "block",
-								textAlign: "center"
-							},
-							children: "How much less they eat each day, on their own"
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "sd-selwrap",
-							style: {
-								maxWidth: "24rem",
-								margin: ".4rem auto 0"
-							},
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("select", {
-								id: "pr-cut",
-								className: "sd-select",
-								value: ci,
-								onChange: (e) => setCi(Number(e.target.value)),
-								children: PROT_CUTS.map((x, j) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", {
-									value: j,
-									children: x.label
-								}, x.cut))
-							})
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "sd-row",
-							children: [
-								["Day", 1],
-								["Week", 7],
-								["Month", 30],
-								["Year", 365]
-							].map(([n, dd]) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "sd-cell",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("b", { children: (dd * cut).toLocaleString() }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: n })]
-							}, n))
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "mk-small",
-							style: { marginTop: ".3rem" },
-							children: "fewer calories eaten · month = 30 days"
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MealSide, {
+							kind: "swap",
+							step: "Protein-first",
+							title: M.hi.title,
+							items: M.hi.items,
+							note: "Tends to stay full longer"
 						})
 					]
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "sd-out",
-					"aria-live": "polite",
 					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "sd-o",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Stay lower-protein" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("b", {
-								style: { color: "#c7d2de" },
-								children: "0 lb"
-							})]
-						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "sd-o swap",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Switch to higher-protein" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("b", { children: [lossTxt, " lb"] })]
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "More protein" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("b", { children: [
+								dp >= 0 ? "+" : "−",
+								Math.abs(dp),
+								" g"
+							] })]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: `sd-o ${dk <= 0 ? "swap" : "keep"}`,
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Calories" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("b", { children: [dk > 0 ? "+" : dk < 0 ? "−" : "", Math.abs(dk)] })]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 							className: "sd-when mk-small",
-							children: [
-								"Estimated weight change after ",
-								when,
-								" · example person, not a prediction · includes metabolic adaptation"
-							]
+							children: "For this one meal"
 						})
 					]
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("svg", {
-					className: "sd-graph",
-					viewBox: `0 0 ${G.w} ${G.h}`,
-					role: "img",
-					"aria-label": `Line graph after ${when}: staying lower-protein stays at 0 pounds; switching to higher-protein about ${lossTxt} pounds`,
-					children: [
-						yt.map((v) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("g", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("line", {
-							x1: G.l,
-							x2: G.w - G.r,
-							y1: gy(v),
-							y2: gy(v),
-							stroke: "#ffffff14"
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("text", {
-							x: G.l - 8,
-							y: gy(v) + 4,
-							textAnchor: "end",
-							className: "sd-ax",
-							children: v
-						})] }, v)),
-						TICKS.filter(([t]) => !narrow || t !== 30).map(([t, lab]) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("text", {
-							x: gx(t),
-							y: G.h - 10,
-							textAnchor: t === 0 ? "start" : t === 365 ? "end" : "middle",
-							className: "sd-ax",
-							children: lab
-						}, t)),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("text", {
-							x: 12,
-							y: top + (G.h - top - G.b) / 2,
-							className: "sd-ax",
-							transform: `rotate(-90 12 ${top + (G.h - top - G.b) / 2})`,
-							textAnchor: "middle",
-							children: "lb"
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("line", {
-							x1: G.l,
-							x2: G.w - G.r,
-							y1: gy(0),
-							y2: gy(0),
-							stroke: "#9fb0c4",
-							strokeDasharray: "6 6",
-							strokeWidth: 1.5
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("text", {
-							x: G.w - G.r,
-							y: gy(0) - 6,
-							textAnchor: "end",
-							className: "sd-base",
-							children: "Stay lower-protein: no change"
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("polyline", {
-							points: pts.join(" "),
-							fill: "none",
-							stroke: LOSS,
-							strokeWidth: 4,
-							strokeLinecap: "round",
-							strokeLinejoin: "round"
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("circle", {
-							cx: lx,
-							cy: gy(-lb),
-							r: 7,
-							fill: LOSS,
-							stroke: "#0b1320",
-							strokeWidth: 3
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("text", {
-							x: anchor === "end" ? lx - 12 : lx + 12,
-							y: gy(-lb) + 22,
-							textAnchor: anchor,
-							className: "sd-pt",
-							fill: LOSS,
-							children: [lossTxt, " lb"]
-						})
-					]
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TimeSlider, {
-					id: "mkp",
-					value: i,
-					onChange: setI,
-					describedBy: "mkpnote"
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
-					id: "mkpnote",
+					id: "pmnote",
 					className: "mk-small",
 					style: { marginTop: "1rem" },
 					children: [
-						"Rough illustration only, not a prediction. In one study, people who raised protein from about 15% to 30% of their calories ate about 441 fewer calories a day on their own.",
+						"Research shows people tend to eat less on their own when more of their calories come from protein: in one study, going from about 15% to 30% protein, people ate about 441 fewer calories a day.",
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("sup", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
 							href: "#fn1",
 							"aria-label": "Footnote 5",
 							children: "5"
 						}) }),
-						" The default uses a much smaller, more cautious 150 calories a day. Both are run through the simulator's energy-balance model with metabolic adaptation, so the loss slows over time. Results vary from person to person. Not medical advice."
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("sup", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+							href: "#fn2",
+							"aria-label": "Footnote 6",
+							children: "6"
+						}) }),
+						" Results vary. Education only, not medical advice."
 					]
 				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
 					className: "mk-small",
 					style: {
-						fontSize: ".78rem",
-						opacity: .85
+						fontSize: ".72rem",
+						opacity: .75
 					},
-					children: EXAMPLE_NOTE
+					children: [
+						"Nutrients: USDA FoodData Central, per item: ",
+						[...M.lo.items, ...M.hi.items].map((f) => `${f.name} (${f.g} g, FDC ${f.fdc})`).join("; "),
+						". Brands, recipes and portions vary."
+					]
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
 					id: "fn1",
@@ -1140,6 +1174,19 @@ function ProteinCard() {
 						"5. Weigle DS, et al. A high-protein diet induces sustained reductions in appetite, ad libitum caloric intake, and body weight despite compensatory changes in diurnal plasma leptin and ghrelin concentrations. ",
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("i", { children: "Am J Clin Nutr." }),
 						" 2005;82(1):41–48."
+					]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+					id: "fn2",
+					className: "mk-small",
+					style: {
+						fontSize: ".75rem",
+						opacity: .8
+					},
+					children: [
+						"6. Simpson SJ, Raubenheimer D. Obesity: the protein leverage hypothesis. ",
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("i", { children: "Obes Rev." }),
+						" 2005;6(2):133–142."
 					]
 				})
 			]

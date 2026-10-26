@@ -536,3 +536,11 @@ html { overflow-x: clip; }
 .sd-o.swap{border-color:#3d9a6a88}.sd-o.swap b{color:#5cc48e}
 .sd-when{grid-column:1/-1;text-align:center}
 @media (max-width:640px){.sd-vs{grid-template-columns:1fr}.sd-arrow{transform:rotate(90deg);justify-self:center;line-height:1}.sd-o b{font-size:1.8rem}.sd-out{gap:.5rem}}
+
+/* Protein meal comparison */
+.pm-items{margin:0;padding-left:1.1rem;font-size:.85rem;color:var(--color-muted)}
+.pm-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;margin-top:auto}
+.pm-stats div{border:1px solid var(--color-border);padding:.35rem .2rem;text-align:center}
+.pm-stats b{display:block;font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;line-height:1.1}
+.pm-stats span{font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--color-muted)}
+.sd-side.now .pm-stats b{color:#f0936b}.sd-side.swap .pm-stats b{color:#5cc48e}

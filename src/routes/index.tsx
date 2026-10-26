@@ -3,11 +3,9 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowRight, Clock, FlaskConical, Footprints } from "lucide-react";
 import { SiteShell } from "@/components/site/site-shell";
 import { HomeFeatures } from "@/components/site/hack-of-week";
-import { EXAMPLE, SODA_PERSON, extraLbByDay, lostLbByDay, maintenance } from "@/lib/swap-model";
+import { SODA_PERSON, extraLbByDay, lostLbByDay, maintenance } from "@/lib/swap-model";
 
 const SODA_MAINT = Math.round(maintenance(SODA_PERSON) / 10) * 10;
-const PROT_LB = lostLbByDay(150);
-const EXAMPLE_NOTE = `Example person, not a prediction: a ${EXAMPLE.age}-year-old, 5'9", ${EXAMPLE.weightLb}-lb man with about ${EXAMPLE.bodyFatPct}% body fat who is lightly active; individual numbers will differ. Try the simulator to see your own.`;
 
 export const Route = createFileRoute("/")({ component: Home });
 
@@ -259,79 +257,84 @@ function SodaCard() {
   );
 }
 
-// Two sourced scenarios: a cautious 150 cal/day (default) and the study average of 441 cal/day (Weigle 2005).
-const PROT_CUTS = [
-  { cut: 150, label: "About 150 calories (cautious example)" },
-  { cut: 441, label: "About 441 calories (study average)" },
-] as const;
-const PROT_CURVES = PROT_CUTS.map((x) => (x.cut === 150 ? PROT_LB : lostLbByDay(x.cut)));
+// Per 100 g, from USDA FoodData Central (fdc.nal.usda.gov), checked Oct 25, 2026.
+// kcal, protein, fat, carbohydrate, fiber (g).
+type Food = { name: string; g: number; fdc: number; per: [number, number, number, number, number] };
+type Meal = { id: string; label: string; lo: { title: string; items: Food[] }; hi: { title: string; items: Food[] } };
+const MEALS: Meal[] = [
+  { id: "breakfast", label: "Breakfast: cereal vs eggs",
+    lo: { title: "Frosted flakes and milk", items: [
+      { name: "Frosted flakes cereal, 1½ cups", g: 62, fdc: 172990, per: [389, 4.25, 0.87, 90.2, 1.2] },
+      { name: "2% milk, 1 cup", g: 244, fdc: 171267, per: [50, 3.3, 1.98, 4.8, 0] }] },
+    hi: { title: "Scrambled eggs", items: [
+      { name: "3 large eggs, scrambled", g: 183, fdc: 172187, per: [149, 9.99, 10.98, 1.61, 0] }] } },
+  { id: "lunch", label: "Lunch: mac and cheese vs chicken salad",
+    lo: { title: "Mac and cheese", items: [
+      { name: "Macaroni and cheese, 1 cup", g: 230, fdc: 2708811, per: [223, 8.68, 10.5, 23.1, 1.2] }] },
+    hi: { title: "Chicken and greens", items: [
+      { name: "Roasted chicken breast, 1 cup diced", g: 140, fdc: 171477, per: [165, 31.02, 3.57, 0, 0] },
+      { name: "Romaine, 2 cups (no dressing)", g: 94, fdc: 169247, per: [17, 1.23, 0.3, 3.29, 2.1] }] } },
+  { id: "dinner", label: "Dinner: pizza vs steak and broccoli",
+    lo: { title: "Pepperoni pizza", items: [
+      { name: "3 slices, medium restaurant pizza", g: 264, fdc: 2708640, per: [282, 11.7, 11.9, 32.0, 2.3] }] },
+    hi: { title: "Steak and broccoli", items: [
+      { name: "Lean top sirloin, 6 oz cooked", g: 170, fdc: 168635, per: [188, 30.29, 6.55, 0, 0] },
+      { name: "Broccoli, 1 cup, boiled", g: 156, fdc: 169967, per: [35, 2.38, 0.41, 7.18, 3.3] }] } },
+];
+const tot = (items: Food[]) => {
+  const s = [0, 0, 0, 0, 0];
+  for (const f of items) f.per.forEach((v, j) => (s[j] += (v * f.g) / 100));
+  const [kcal, p, fat, carb, fib] = s;
+  void fat; void carb; void fib;
+  return { kcal: Math.round(kcal), p: Math.round(p) };
+};
+
+function MealSide({ kind, step, title, items, note }: { kind: "now" | "swap"; step: string; title: string; items: Food[]; note: string }) {
+  const t = tot(items);
+  return (
+    <div className={`sd-side ${kind}`}>
+      <div className="sd-step">{step}</div>
+      <div style={{ fontWeight: 600, fontSize: "1.05rem" }}>{title}</div>
+      <ul className="pm-items">{items.map((f) => <li key={f.fdc}>{f.name}</li>)}</ul>
+      <div className="pm-stats">
+        <div><b>{t.kcal}</b><span>calories</span></div>
+        <div><b>{t.p} g</b><span>protein</span></div>
+      </div>
+      <div className="mk-small">{note}</div>
+    </div>
+  );
+}
 
 function ProteinCard() {
-  const [i, setI] = useState(365);
-  const [ci, setCi] = useState(0);
-  const narrow = useNarrow();
-  const G = narrow ? G_PH : G_PC;
-  const cut = PROT_CUTS[ci].cut, cv = PROT_CURVES[ci];
-  const d = useTween(i);
-  const lb = useTween(at(cv, i), 450);
-  const yMax = useTween(Math.max(4, Math.ceil((cv[365] * 1.15) / 4) * 4), 450);
-  const gx = (x: number) => G.l + (x / 365) * (G.w - G.l - G.r);
-  const top = G.t + 14;
-  const gy = (v: number) => top + (-v / yMax) * (G.h - top - G.b); // v is signed: 0 at top, losses go DOWN
-  const pts: string[] = [];
-  for (let x = 0; x < d; x += 3) pts.push(`${gx(x).toFixed(1)},${gy(-at(cv, x) * (lb / (at(cv, d) || 1) || 1)).toFixed(1)}`);
-  pts.push(`${gx(d).toFixed(1)},${gy(-lb).toFixed(1)}`);
-  const lossTxt = lb < 0.05 ? "0" : `−${fmtLb(lb)}`;
-  const lx = gx(d), anchor = lx > G.w - 90 ? "end" : "start";
-  const yt = [0, -0.5, -1].map((f) => Math.round(f * yMax));
-  const when = timeLabel(i).toLowerCase();
+  const [mid, setMid] = useState("breakfast");
+  const M = MEALS.find((m) => m.id === mid)!;
+  const a = tot(M.lo.items), b = tot(M.hi.items);
+  const dk = b.kcal - a.kcal, dp = b.p - a.p;
   return (
     <>
-      <h2 className="mk-h2">More protein, fewer calories: how feeling fuller could add up</h2>
-      <p className="mk-sub">Protein tends to help people feel full longer, so many end up eating a bit less without trying. Compare a lower-protein day with a higher-protein one, then slide forward to see how the gap could grow for an example person.</p>
+      <h2 className="mk-h2">Choose protein at every meal</h2>
+      <p className="mk-sub">High-calorie, low-protein plates tend to leave people hungry sooner. Protein-first plates tend to keep people full on fewer calories. Pick a meal to compare.</p>
       <div className="mk-card sd-card">
-        <div className="sd-vs">
-          <div className="sd-side now">
-            <div className="sd-step">Lower-protein day</div>
-            <div className="sd-kcal"><b>~15%</b> of calories from protein</div>
-            <div className="mk-small">Tends to get hungry sooner</div>
-          </div>
+        <label htmlFor="pm-meal" className="sd-step" style={{ display: "block" }}>Pick a meal</label>
+        <div className="sd-selwrap" style={{ maxWidth: "26rem", margin: ".4rem 0 1rem" }}>
+          <select id="pm-meal" className="sd-select" value={mid} onChange={(e) => setMid(e.target.value)}>
+            {MEALS.map((m) => <option key={m.id} value={m.id}>{m.label}</option>)}
+          </select>
+        </div>
+        <div className="sd-vs" aria-live="polite">
+          <MealSide kind="now" step="High-calorie, low-protein" title={M.lo.title} items={M.lo.items} note="Tends to leave people hungry sooner" />
           <div className="sd-arrow" aria-hidden="true">→</div>
-          <div className="sd-side swap">
-            <div className="sd-step">Higher-protein day</div>
-            <div className="sd-kcal"><b>~30%</b> of calories from protein</div>
-            <div className="mk-small">Tends to feel full longer</div>
-          </div>
+          <MealSide kind="swap" step="Protein-first" title={M.hi.title} items={M.hi.items} note="Tends to stay full longer" />
         </div>
-        <div className="sd-diff">
-          <label htmlFor="pr-cut" className="sd-step" style={{ display: "block", textAlign: "center" }}>How much less they eat each day, on their own</label>
-          <div className="sd-selwrap" style={{ maxWidth: "24rem", margin: ".4rem auto 0" }}>
-            <select id="pr-cut" className="sd-select" value={ci} onChange={(e) => setCi(Number(e.target.value))}>
-              {PROT_CUTS.map((x, j) => <option key={x.cut} value={j}>{x.label}</option>)}
-            </select>
-          </div>
-          <div className="sd-row">{([["Day", 1], ["Week", 7], ["Month", 30], ["Year", 365]] as const).map(([n, dd]) => <div key={n} className="sd-cell"><b>{(dd * cut).toLocaleString()}</b><span>{n}</span></div>)}</div>
-          <div className="mk-small" style={{ marginTop: ".3rem" }}>fewer calories eaten · month = 30 days</div>
+        <div className="sd-out">
+          <div className="sd-o swap"><span>More protein</span><b>{dp >= 0 ? "+" : "−"}{Math.abs(dp)} g</b></div>
+          <div className={`sd-o ${dk <= 0 ? "swap" : "keep"}`}><span>Calories</span><b>{dk > 0 ? "+" : dk < 0 ? "−" : ""}{Math.abs(dk)}</b></div>
+          <div className="sd-when mk-small">For this one meal</div>
         </div>
-        <div className="sd-out" aria-live="polite">
-          <div className="sd-o"><span>Stay lower-protein</span><b style={{ color: "#c7d2de" }}>0 lb</b></div>
-          <div className="sd-o swap"><span>Switch to higher-protein</span><b>{lossTxt} lb</b></div>
-          <div className="sd-when mk-small">Estimated weight change after {when} · example person, not a prediction · includes metabolic adaptation</div>
-        </div>
-        <svg className="sd-graph" viewBox={`0 0 ${G.w} ${G.h}`} role="img" aria-label={`Line graph after ${when}: staying lower-protein stays at 0 pounds; switching to higher-protein about ${lossTxt} pounds`}>
-          {yt.map((v) => <g key={v}><line x1={G.l} x2={G.w - G.r} y1={gy(v)} y2={gy(v)} stroke="#ffffff14" /><text x={G.l - 8} y={gy(v) + 4} textAnchor="end" className="sd-ax">{v}</text></g>)}
-          {TICKS.filter(([t]) => !narrow || t !== 30).map(([t, lab]) => <text key={t} x={gx(t)} y={G.h - 10} textAnchor={t === 0 ? "start" : t === 365 ? "end" : "middle"} className="sd-ax">{lab}</text>)}
-          <text x={12} y={top + (G.h - top - G.b) / 2} className="sd-ax" transform={`rotate(-90 12 ${top + (G.h - top - G.b) / 2})`} textAnchor="middle">lb</text>
-          <line x1={G.l} x2={G.w - G.r} y1={gy(0)} y2={gy(0)} stroke="#9fb0c4" strokeDasharray="6 6" strokeWidth={1.5} />
-          <text x={G.w - G.r} y={gy(0) - 6} textAnchor="end" className="sd-base">Stay lower-protein: no change</text>
-          <polyline points={pts.join(" ")} fill="none" stroke={LOSS} strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" />
-          <circle cx={lx} cy={gy(-lb)} r={7} fill={LOSS} stroke="#0b1320" strokeWidth={3} />
-          <text x={anchor === "end" ? lx - 12 : lx + 12} y={gy(-lb) + 22} textAnchor={anchor} className="sd-pt" fill={LOSS}>{lossTxt} lb</text>
-        </svg>
-        <TimeSlider id="mkp" value={i} onChange={setI} describedBy="mkpnote" />
-        <p id="mkpnote" className="mk-small" style={{ marginTop: "1rem" }}>Rough illustration only, not a prediction. In one study, people who raised protein from about 15% to 30% of their calories ate about 441 fewer calories a day on their own.<sup><a href="#fn1" aria-label="Footnote 5">5</a></sup> The default uses a much smaller, more cautious 150 calories a day. Both are run through the simulator's energy-balance model with metabolic adaptation, so the loss slows over time. Results vary from person to person. Not medical advice.</p>
-        <p className="mk-small" style={{ fontSize: ".78rem", opacity: 0.85 }}>{EXAMPLE_NOTE}</p>
+        <p id="pmnote" className="mk-small" style={{ marginTop: "1rem" }}>Research shows people tend to eat less on their own when more of their calories come from protein: in one study, going from about 15% to 30% protein, people ate about 441 fewer calories a day.<sup><a href="#fn1" aria-label="Footnote 5">5</a></sup><sup><a href="#fn2" aria-label="Footnote 6">6</a></sup> Results vary. Education only, not medical advice.</p>
+        <p className="mk-small" style={{ fontSize: ".72rem", opacity: 0.75 }}>Nutrients: USDA FoodData Central, per item: {[...M.lo.items, ...M.hi.items].map((f) => `${f.name} (${f.g} g, FDC ${f.fdc})`).join("; ")}. Brands, recipes and portions vary.</p>
         <p id="fn1" className="mk-small" style={{ fontSize: ".75rem", opacity: 0.8 }}>5. Weigle DS, et al. A high-protein diet induces sustained reductions in appetite, ad libitum caloric intake, and body weight despite compensatory changes in diurnal plasma leptin and ghrelin concentrations. <i>Am J Clin Nutr.</i> 2005;82(1):41–48.</p>
+        <p id="fn2" className="mk-small" style={{ fontSize: ".75rem", opacity: 0.8 }}>6. Simpson SJ, Raubenheimer D. Obesity: the protein leverage hypothesis. <i>Obes Rev.</i> 2005;6(2):133–142.</p>
       </div>
       <div className="mk-btns"><Link className="mk-btn p" to="/hacks/$slug" params={{ slug: "protein-label" } as never}>Read the Health Hack: The Protein × 10 Trick →</Link></div>
       <a className="mk-simlink" href="/simulator/">See your own numbers in the simulator (Beta) →</a>
