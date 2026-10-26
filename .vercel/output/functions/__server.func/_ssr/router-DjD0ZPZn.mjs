@@ -5,7 +5,7 @@ import { _ as lazyRouteComponent, d as Scripts, f as HeadContent, g as Outlet, h
 import { i as require_jsx_runtime } from "../_libs/@radix-ui/react-label+[...].mjs";
 import { a as TriangleAlert } from "../_libs/lucide-react.mjs";
 import { a as union, i as string, n as number, r as object, t as literal } from "../_libs/zod.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/router-BjMzDrFZ.js
+//#region ../th-nav/node_modules/.nitro/vite/services/ssr/assets/router-DjD0ZPZn.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var __defProp = Object.defineProperty;
@@ -291,7 +291,7 @@ function PwaRegister() {
 	}, []);
 	return null;
 }
-var styles_default = "/assets/styles-BOzUhkxp.css";
+var styles_default = "/assets/styles-DN-YolsA.css";
 var APP_NAME = site.name;
 var Route$12 = createRootRoute({
 	head: () => ({
@@ -508,7 +508,7 @@ function lostLbByDay(cut, days = 365, P = EXAMPLE) {
 	}
 	return out;
 }
-var $$splitComponentImporter$11 = () => import("./routes-fX4A-T0f.mjs");
+var $$splitComponentImporter$11 = () => import("./routes-BWSTawj_.mjs");
 Math.round(maintenance(SODA_PERSON) / 10) * 10;
 var Route$11 = createFileRoute("/")({ component: lazyRouteComponent($$splitComponentImporter$11, "component") });
 var $$splitComponentImporter$10 = () => import("./consumer-health-privacy--ZpGldp7.mjs");
@@ -524,7 +524,7 @@ var Route$9 = createFileRoute("/contact")({
 	}] }),
 	component: lazyRouteComponent($$splitComponentImporter$9, "component")
 });
-var $$splitComponentImporter$8 = () => import("./disclaimer-CBUsTsBd.mjs");
+var $$splitComponentImporter$8 = () => import("./disclaimer-CnYt_jYS.mjs");
 var Route$8 = createFileRoute("/disclaimer")({
 	head: () => ({ meta: [{ title: "Medical Disclaimer — Theosis Health" }] }),
 	component: lazyRouteComponent($$splitComponentImporter$8, "component")
@@ -537,12 +537,12 @@ var Route$7 = createFileRoute("/install")({
 		content: "Add Theosis Health to your phone’s home screen so it opens like an app — no App Store needed."
 	}] })
 });
-var $$splitComponentImporter$6 = () => import("./privacy-Cf52qyx2.mjs");
+var $$splitComponentImporter$6 = () => import("./privacy-CmIUxYdo.mjs");
 var Route$6 = createFileRoute("/privacy")({
 	head: () => ({ meta: [{ title: "Privacy Policy — Theosis Health" }] }),
 	component: lazyRouteComponent($$splitComponentImporter$6, "component")
 });
-var $$splitComponentImporter$5 = () => import("./terms-BotSrm6I.mjs");
+var $$splitComponentImporter$5 = () => import("./terms-CfZJMYOn.mjs");
 var Route$5 = createFileRoute("/terms")({
 	head: () => ({ meta: [{ title: "Terms of Use — Theosis Health" }] }),
 	component: lazyRouteComponent($$splitComponentImporter$5, "component")
@@ -555,7 +555,7 @@ var Route$4 = createFileRoute("/hacks/")({
 		content: "Health Hacks: the 20% that does 80% of the work. Protein, calories, drinks, fast food, and the mechanisms behind them."
 	}] })
 });
-var $$splitComponentImporter$3 = () => import("../_slug-DbmQxCvc.mjs");
+var $$splitComponentImporter$3 = () => import("../_slug-6mnds5P0.mjs");
 var Route$3 = createFileRoute("/hacks/$slug")({
 	component: lazyRouteComponent($$splitComponentImporter$3, "component"),
 	head: ({ params }) => {
@@ -576,7 +576,7 @@ var Route$1 = createFileRoute("/hacks/nerd-out/")({
 		content: "Mechanisms. How stuff actually works. Optional reading. Compulsory if you are me."
 	}] })
 });
-var $$splitComponentImporter = () => import("./nerd-out._topic-CZK7to8u.mjs");
+var $$splitComponentImporter = () => import("./nerd-out._topic-Dc_v0c4U.mjs");
 var Route = createFileRoute("/hacks/nerd-out/$topic")({
 	component: lazyRouteComponent($$splitComponentImporter, "component"),
 	head: ({ params }) => {
@@ -671,4 +671,4 @@ function getRouter() {
 	});
 }
 //#endregion
-export { SODA_PERSON as a, maintenance as c, EXAMPLE as i, Route as n, extraLbByDay as o, Route$3 as r, lostLbByDay as s, router_exports as t };
+export { extraLbByDay as a, SODA_PERSON as i, Route as n, lostLbByDay as o, Route$3 as r, maintenance as s, router_exports as t };

@@ -4,9 +4,9 @@ import { n as require_react } from "../_libs/@radix-ui/react-compose-refs+[...].
 import { b as Link } from "../_libs/@tanstack/react-router+[...].mjs";
 import { i as require_jsx_runtime } from "../_libs/@radix-ui/react-label+[...].mjs";
 import { T as ArrowRight, b as Clock, g as FlaskConical, h as Footprints } from "../_libs/lucide-react.mjs";
-import { a as SODA_PERSON, c as maintenance, i as EXAMPLE, o as extraLbByDay, s as lostLbByDay } from "./router-BjMzDrFZ.mjs";
+import { a as extraLbByDay, i as SODA_PERSON, o as lostLbByDay, s as maintenance } from "./router-DjD0ZPZn.mjs";
 import { a as SiteShell, i as NavPlaque, r as NavIcon } from "./site-shell-RWexaFBk.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/routes-fX4A-T0f.js
+//#region ../th-nav/node_modules/.nitro/vite/services/ssr/assets/routes-BWSTawj_.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 /** Swap this slug to feature a different existing Health Hack. Text is pulled from src/lib/hacks.ts, not written here. */
@@ -114,10 +114,6 @@ function HomeFeatures() {
 	});
 }
 Math.round(maintenance(SODA_PERSON) / 10) * 10;
-var PROT_LB = lostLbByDay(150);
-var BAR_MAX = PROT_LB[365] * 1.05;
-var barH = (lb) => `${Math.max(4, lb / BAR_MAX * 100)}%`;
-var EXAMPLE_NOTE = `Example person, not a prediction: a ${EXAMPLE.age}-year-old, 5'9", ${EXAMPLE.weightLb}-lb man with about ${EXAMPLE.bodyFatPct}% body fat who is lightly active; individual numbers will differ. Try the simulator to see your own.`;
 var tools = [
 	{
 		href: "/simulator/",
@@ -402,10 +398,6 @@ function TimeSlider({ id, value, onChange, describedBy }) {
 	] });
 }
 var LOSS = "#3d9a6a";
-var ADAPT_NOTE = /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-	className: "mk-adapt",
-	children: "Includes metabolic adaptation"
-});
 var GAIN = "#e07a4f";
 var G_PC = {
 	w: 760,
@@ -537,50 +529,80 @@ var at = (c, d) => {
 	const a = Math.floor(d), b = Math.min(365, a + 1);
 	return c[a] + (c[b] - c[a]) * (d - a);
 };
-function Chips({ label, items, sel, onSel }) {
+var PAIR = {
+	can: "dpzcan",
+	"20oz": "dpz20",
+	sbux: "coffee",
+	gulp: "water",
+	energy: "zeroenergy",
+	sweettea: "unsweet"
+};
+function DrinkSide({ id, kind, label, items, sel, onSel }) {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: "sd-chipgrp",
-		role: "group",
-		"aria-label": label,
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-			className: "sd-chiplab",
-			children: label
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-			className: "sd-chips",
-			children: items.map((x) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
-				type: "button",
-				className: `sd-chip${sel === x.id ? " on" : ""}`,
-				"aria-pressed": sel === x.id,
-				onClick: () => onSel(x.id),
-				children: [x.name, /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("small", { children: [x.kcal, " cal"] })]
-			}, x.id))
-		})]
+		className: `sd-side ${kind}`,
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
+				htmlFor: id,
+				className: "sd-step",
+				children: label
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "sd-selwrap",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("select", {
+					id,
+					className: "sd-select",
+					value: sel.id,
+					onChange: (e) => onSel(e.target.value),
+					children: items.map((x) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("option", {
+						value: x.id,
+						children: [
+							x.name,
+							" (",
+							x.kcal,
+							" cal)"
+						]
+					}, x.id))
+				})
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "sd-kcal",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("b", { children: sel.kcal }), " cal a day"]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "sd-src",
+				children: sel.src
+			})
+		]
 	});
 }
 function SodaCard() {
 	const [i, setI] = (0, import_react.useState)(365);
-	const [keep, setKeep] = (0, import_react.useState)(false);
 	const [sid, setSid] = (0, import_react.useState)("can");
-	const [zid, setZid] = (0, import_react.useState)("water");
+	const [zid, setZid] = (0, import_react.useState)(PAIR.can);
 	const narrow = useNarrow();
 	const G = narrow ? G_PH : G_PC;
 	const S = SUGARY.find((x) => x.id === sid), Z = ZERO.find((x) => x.id === zid);
+	const pick = (id) => {
+		setSid(id);
+		setZid(PAIR[id] ?? "water");
+	};
 	const diff = Math.max(0, S.kcal - Z.kcal);
-	const d = useTween(i), k = useTween(keep ? 1 : 0, 450);
+	const d = useTween(i);
 	const g = curve(diff, true), l = curve(diff, false);
-	const yNeed = Math.max(g[365], l[365]);
-	const yMax = useTween(Math.max(4, Math.ceil(yNeed * 1.15 / 4) * 4), 450);
+	const yMax = useTween(Math.max(4, Math.ceil(Math.max(g[365], l[365]) * 1.15 / 4) * 4), 450);
 	const tg = useTween(at(g, i), 450), tl = useTween(at(l, i), 450);
-	const val = (x) => k * at(g, x) - (1 - k) * at(l, x);
 	const gx = (x) => G.l + x / 365 * (G.w - G.l - G.r);
 	const gy = (lb) => G.t + (yMax - lb) / (2 * yMax) * (G.h - G.t - G.b);
-	const lb = k * tg - (1 - k) * tl;
-	const pts = [];
-	for (let x = 0; x < d; x += 3) pts.push(`${gx(x).toFixed(1)},${gy(val(x) * (lb / (val(d) || 1) || 1)).toFixed(1)}`);
-	pts.push(`${gx(d).toFixed(1)},${gy(lb).toFixed(1)}`);
-	const col = keep ? GAIN : LOSS;
-	const shown = Math.abs(lb) < .05 ? "0" : `${lb > 0 ? "+" : "−"}${fmtLb(Math.abs(lb))}`;
-	const lx = gx(d), ly = gy(lb), anchor = lx > G.w - 90 ? "end" : "start";
+	const line = (c, s, end) => {
+		const p = [];
+		const k = (x) => s * at(c, x) * (end / (at(c, d) || 1) || 1);
+		for (let x = 0; x < d; x += 3) p.push(`${gx(x).toFixed(1)},${gy(k(x)).toFixed(1)}`);
+		p.push(`${gx(d).toFixed(1)},${gy(s * end).toFixed(1)}`);
+		return p.join(" ");
+	};
+	const lbTxt = (v, s) => Math.abs(v) < .05 ? "0" : `${s}${fmtLb(Math.abs(v))}`;
+	const keepTxt = lbTxt(tg, "+"), swapTxt = lbTxt(tl, "−");
+	const lx = gx(d), anchor = lx > G.w - 90 ? "end" : "start";
 	const yt = [
 		1,
 		.5,
@@ -588,79 +610,58 @@ function SodaCard() {
 		-.5,
 		-1
 	].map((f) => Math.round(f * yMax));
-	const sign = keep ? "+" : "−";
+	const when = timeLabel(i).toLowerCase();
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
 			className: "mk-h2",
-			children: "See how your favorite drink alone affects your day, week, month, and year"
+			children: "What one daily drink can add up to"
 		}),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 			className: "mk-sub",
-			children: "Example: someone who needs about 2,000 calories a day. Pick a drink and a zero-calorie swap. If nothing else about their diet changes, keeping that drink or cutting it could add up like this."
+			children: "Pick a drink. It’s paired with a zero-calorie swap (change it if you like), and the result shows how far apart the two paths could get for an example person, if nothing else changes."
 		}),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 			className: "mk-card sd-card",
 			children: [
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "sd-tags",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-						className: "sd-tag",
-						children: "Example person, not a prediction"
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-						className: "mk-adapt",
-						style: { marginTop: 0 },
-						children: "Includes metabolic adaptation"
-					})]
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "sd-pick",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Chips, {
-						label: "Their drink now",
-						items: SUGARY,
-						sel: sid,
-						onSel: setSid
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Chips, {
-						label: "Zero-calorie swap",
-						items: ZERO,
-						sel: zid,
-						onSel: setZid
-					})]
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "sd-pills",
-					role: "group",
-					"aria-label": "Choose what happens",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
-						type: "button",
-						className: `sd-pill keep${keep ? " on" : ""}`,
-						"aria-pressed": keep,
-						onClick: () => setKeep(true),
-						children: ["Keep ", S.name.toLowerCase().startsWith("starbucks") ? "the Starbucks drink" : S.short]
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
-						type: "button",
-						className: `sd-pill sw${!keep ? " on" : ""}`,
-						"aria-pressed": !keep,
-						onClick: () => setKeep(false),
-						children: ["Switch to ", Z.short]
-					})]
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "sd-num",
-					"aria-live": "polite",
+					className: "sd-vs",
 					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "mk-num",
-							style: {
-								color: keep ? "#f0936b" : "#5cc48e",
-								fontSize: "3rem"
-							},
-							children: [shown, " lb"]
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DrinkSide, {
+							id: "sd-now",
+							kind: "now",
+							label: "1. Pick a drink",
+							items: SUGARY,
+							sel: S,
+							onSel: pick
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "sd-arrow",
+							"aria-hidden": "true",
+							children: "→"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DrinkSide, {
+							id: "sd-swap",
+							kind: "swap",
+							label: "2. Zero-calorie swap",
+							items: ZERO,
+							sel: Z,
+							onSel: setZid
+						})
+					]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "sd-diff",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "sd-step",
+							style: { textAlign: "center" },
+							children: "3. The difference"
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 							className: "sd-cal",
 							children: [
-								keep ? "Extra calories" : "Calories cut",
-								" ",
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("b", { children: diff.toLocaleString() }),
+								" calories a day ",
 								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
 									className: "mk-small",
 									children: [
@@ -668,9 +669,7 @@ function SodaCard() {
 										S.kcal,
 										" − ",
 										Z.kcal,
-										" = ",
-										diff,
-										" a day)"
+										")"
 									]
 								})
 							]
@@ -684,21 +683,29 @@ function SodaCard() {
 								["Year", 365]
 							].map(([n, dd]) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "sd-cell",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("b", {
-									style: { color: keep ? "#f0936b" : "#5cc48e" },
-									children: [diff ? sign : "", (dd * diff).toLocaleString()]
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: n })]
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("b", { children: (dd * diff).toLocaleString() }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: n })]
 							}, n))
+						})
+					]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "sd-out",
+					"aria-live": "polite",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "sd-o keep",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: ["Keep ", S.short] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("b", { children: [keepTxt, " lb"] })]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "mk-small",
-							style: { marginTop: ".3rem" },
+							className: "sd-o swap",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: ["Switch to ", Z.short] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("b", { children: [swapTxt, " lb"] })]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "sd-when mk-small",
 							children: [
-								diff ? sign : "",
-								(Math.round(d) * diff).toLocaleString(),
-								" cal by ",
-								timeLabel(i).toLowerCase(),
-								" · month = 30 days · weight change is an estimate"
+								"Estimated weight change after ",
+								when,
+								" · example person, not a prediction · includes metabolic adaptation"
 							]
 						})
 					]
@@ -707,7 +714,7 @@ function SodaCard() {
 					className: "sd-graph",
 					viewBox: `0 0 ${G.w} ${G.h}`,
 					role: "img",
-					"aria-label": `Line graph: estimated weight change about ${shown} pounds after ${timeLabel(i)}`,
+					"aria-label": `Line graph after ${when}: keeping ${S.short} about ${keepTxt} pounds, switching to ${Z.short} about ${swapTxt} pounds`,
 					children: [
 						yt.map((v) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("g", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("line", {
 							x1: G.l,
@@ -746,38 +753,53 @@ function SodaCard() {
 							strokeDasharray: "6 6",
 							strokeWidth: 1.5
 						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("text", {
-							x: G.w - G.r,
-							y: gy(0) + (keep ? 18 : -8),
-							textAnchor: "end",
-							className: "sd-base",
-							children: "2,000-calorie day, nothing else changes"
-						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("polyline", {
-							points: pts.join(" "),
+							points: line(g, 1, tg),
 							fill: "none",
-							stroke: col,
+							stroke: GAIN,
 							strokeWidth: 4,
 							strokeLinecap: "round",
-							strokeLinejoin: "round",
-							style: { transition: "stroke .4s" }
+							strokeLinejoin: "round"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("polyline", {
+							points: line(l, -1, tl),
+							fill: "none",
+							stroke: LOSS,
+							strokeWidth: 4,
+							strokeLinecap: "round",
+							strokeLinejoin: "round"
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("circle", {
 							cx: lx,
-							cy: ly,
+							cy: gy(tg),
 							r: 7,
-							fill: col,
+							fill: GAIN,
 							stroke: "#0b1320",
-							strokeWidth: 3,
-							style: { transition: "fill .4s" }
+							strokeWidth: 3
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("circle", {
+							cx: lx,
+							cy: gy(-tl),
+							r: 7,
+							fill: LOSS,
+							stroke: "#0b1320",
+							strokeWidth: 3
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("text", {
 							x: anchor === "end" ? lx - 12 : lx + 12,
-							y: ly + (lb >= 0 ? -10 : 22),
+							y: gy(tg) - 10,
 							textAnchor: anchor,
 							className: "sd-pt",
-							fill: col,
-							children: [shown, " lb"]
+							fill: GAIN,
+							children: [keepTxt, " lb"]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("text", {
+							x: anchor === "end" ? lx - 12 : lx + 12,
+							y: gy(-tl) + 22,
+							textAnchor: anchor,
+							className: "sd-pt",
+							fill: LOSS,
+							children: [swapTxt, " lb"]
 						})
 					]
 				}),
@@ -841,142 +863,632 @@ function SodaCard() {
 		})
 	] });
 }
+var F = {
+	flakes: {
+		name: "Frosted flakes cereal, 1½ cups",
+		g: 62,
+		fdc: 172990,
+		per: [
+			389,
+			4.25,
+			.87,
+			90.2,
+			1.2
+		]
+	},
+	milk: {
+		name: "2% milk, 1 cup",
+		g: 244,
+		fdc: 171267,
+		per: [
+			50,
+			3.3,
+			1.98,
+			4.8,
+			0
+		]
+	},
+	eggs: {
+		name: "3 large eggs, scrambled",
+		g: 183,
+		fdc: 172187,
+		per: [
+			149,
+			9.99,
+			10.98,
+			1.61,
+			0
+		]
+	},
+	bagel: {
+		name: "Plain bagel, medium",
+		g: 105,
+		fdc: 174899,
+		per: [
+			264,
+			10.56,
+			1.32,
+			52.38,
+			1.6
+		]
+	},
+	cream: {
+		name: "Cream cheese, 2 tbsp",
+		g: 29,
+		fdc: 173418,
+		per: [
+			350,
+			6.15,
+			34.44,
+			5.52,
+			0
+		]
+	},
+	greek: {
+		name: "Plain nonfat Greek yogurt, 6 oz",
+		g: 170,
+		fdc: 2705424,
+		per: [
+			59,
+			10.3,
+			.37,
+			3.64,
+			0
+		]
+	},
+	blue: {
+		name: "Blueberries, ½ cup",
+		g: 74,
+		fdc: 171711,
+		per: [
+			57,
+			.74,
+			.33,
+			14.49,
+			2.4
+		]
+	},
+	muffin: {
+		name: "Blueberry muffin, large",
+		g: 139,
+		fdc: 172765,
+		per: [
+			375,
+			4.49,
+			16.07,
+			53,
+			1.1
+		]
+	},
+	cottage1: {
+		name: "2% cottage cheese, 1 cup",
+		g: 226,
+		fdc: 172182,
+		per: [
+			81,
+			10.45,
+			2.27,
+			4.76,
+			0
+		]
+	},
+	mac: {
+		name: "Macaroni and cheese, 1 cup",
+		g: 230,
+		fdc: 2708811,
+		per: [
+			223,
+			8.68,
+			10.5,
+			23.1,
+			1.2
+		]
+	},
+	chicken: {
+		name: "Roasted chicken breast, 1 cup diced",
+		g: 140,
+		fdc: 171477,
+		per: [
+			165,
+			31.02,
+			3.57,
+			0,
+			0
+		]
+	},
+	romaine: {
+		name: "Romaine, 2 cups (no dressing)",
+		g: 94,
+		fdc: 169247,
+		per: [
+			17,
+			1.23,
+			.3,
+			3.29,
+			2.1
+		]
+	},
+	burger: {
+		name: "Fast-food cheeseburger",
+		g: 127,
+		fdc: 170691,
+		per: [
+			270,
+			13.49,
+			12.9,
+			25.46,
+			1.9
+		]
+	},
+	fries: {
+		name: "French fries, 1 regular order",
+		g: 110,
+		fdc: 2709461,
+		per: [
+			312,
+			3.43,
+			14.7,
+			41.4,
+			3.8
+		]
+	},
+	tuna: {
+		name: "Tuna in water, 1 can drained",
+		g: 113,
+		fdc: 171986,
+		per: [
+			116,
+			25.51,
+			.82,
+			0,
+			0
+		]
+	},
+	cottageH: {
+		name: "2% cottage cheese, ½ cup",
+		g: 113,
+		fdc: 172182,
+		per: [
+			81,
+			10.45,
+			2.27,
+			4.76,
+			0
+		]
+	},
+	grilled: {
+		name: "Grilled cheese sandwich",
+		g: 116,
+		fdc: 2705804,
+		per: [
+			368,
+			13.4,
+			23.3,
+			26.4,
+			1.2
+		]
+	},
+	turkey: {
+		name: "Sliced turkey breast, 4 oz",
+		g: 113,
+		fdc: 172941,
+		per: [
+			106,
+			14.81,
+			3.77,
+			2.2,
+			0
+		]
+	},
+	pizza: {
+		name: "3 slices, medium restaurant pizza",
+		g: 264,
+		fdc: 2708640,
+		per: [
+			282,
+			11.7,
+			11.9,
+			32,
+			2.3
+		]
+	},
+	sirloin: {
+		name: "Lean top sirloin, 6 oz cooked",
+		g: 170,
+		fdc: 168635,
+		per: [
+			188,
+			30.29,
+			6.55,
+			0,
+			0
+		]
+	},
+	broccoli: {
+		name: "Broccoli, 1 cup, boiled",
+		g: 156,
+		fdc: 169967,
+		per: [
+			35,
+			2.38,
+			.41,
+			7.18,
+			3.3
+		]
+	},
+	rice: {
+		name: "Fried rice, 2 cups",
+		g: 332,
+		fdc: 2708951,
+		per: [
+			174,
+			3.84,
+			3.19,
+			32.5,
+			1.1
+		]
+	},
+	shrimp: {
+		name: "Cooked shrimp, 6 oz",
+		g: 170,
+		fdc: 175180,
+		per: [
+			99,
+			23.98,
+			.28,
+			.2,
+			0
+		]
+	},
+	veg: {
+		name: "Mixed vegetables, 1 cup",
+		g: 182,
+		fdc: 170472,
+		per: [
+			65,
+			2.86,
+			.15,
+			13.09,
+			4.4
+		]
+	},
+	burrito: {
+		name: "2 bean-and-cheese burritos (frozen)",
+		g: 258,
+		fdc: 173336,
+		per: [
+			221,
+			7.07,
+			6.3,
+			34.01,
+			3.4
+		]
+	},
+	salmon: {
+		name: "Salmon, 6 oz cooked",
+		g: 170,
+		fdc: 175168,
+		per: [
+			206,
+			22.1,
+			12.35,
+			0,
+			0
+		]
+	},
+	beans: {
+		name: "Green beans, 1 cup",
+		g: 125,
+		fdc: 169141,
+		per: [
+			35,
+			1.89,
+			.28,
+			7.88,
+			3.2
+		]
+	}
+};
+var MEALS = [
+	{
+		id: "breakfast",
+		label: "Breakfast",
+		pairs: [
+			{
+				id: "cereal",
+				label: "Cereal → eggs",
+				lo: {
+					title: "Frosted flakes and milk",
+					items: [F.flakes, F.milk]
+				},
+				hi: {
+					title: "Scrambled eggs",
+					items: [F.eggs]
+				}
+			},
+			{
+				id: "bagel",
+				label: "Bagel → Greek yogurt",
+				lo: {
+					title: "Bagel and cream cheese",
+					items: [F.bagel, F.cream]
+				},
+				hi: {
+					title: "Greek yogurt and berries",
+					items: [F.greek, F.blue]
+				}
+			},
+			{
+				id: "muffin",
+				label: "Muffin → cottage cheese",
+				lo: {
+					title: "Blueberry muffin",
+					items: [F.muffin]
+				},
+				hi: {
+					title: "Cottage cheese and berries",
+					items: [F.cottage1, F.blue]
+				}
+			}
+		]
+	},
+	{
+		id: "lunch",
+		label: "Lunch",
+		pairs: [
+			{
+				id: "mac",
+				label: "Mac and cheese → chicken salad",
+				lo: {
+					title: "Mac and cheese",
+					items: [F.mac]
+				},
+				hi: {
+					title: "Chicken and greens",
+					items: [F.chicken, F.romaine]
+				}
+			},
+			{
+				id: "burger",
+				label: "Burger and fries → tuna plate",
+				lo: {
+					title: "Cheeseburger and fries",
+					items: [F.burger, F.fries]
+				},
+				hi: {
+					title: "Tuna, greens and cottage cheese",
+					items: [
+						F.tuna,
+						F.romaine,
+						F.cottageH
+					]
+				}
+			},
+			{
+				id: "grilled",
+				label: "Grilled cheese → turkey plate",
+				lo: {
+					title: "Grilled cheese",
+					items: [F.grilled]
+				},
+				hi: {
+					title: "Turkey and cottage cheese",
+					items: [F.turkey, F.cottageH]
+				}
+			}
+		]
+	},
+	{
+		id: "dinner",
+		label: "Dinner",
+		pairs: [
+			{
+				id: "pizza",
+				label: "Pizza → steak",
+				lo: {
+					title: "Pepperoni pizza",
+					items: [F.pizza]
+				},
+				hi: {
+					title: "Steak and broccoli",
+					items: [F.sirloin, F.broccoli]
+				}
+			},
+			{
+				id: "rice",
+				label: "Fried rice → shrimp",
+				lo: {
+					title: "Fried rice",
+					items: [F.rice]
+				},
+				hi: {
+					title: "Shrimp and vegetables",
+					items: [F.shrimp, F.veg]
+				}
+			},
+			{
+				id: "burrito",
+				label: "Burritos → salmon",
+				lo: {
+					title: "Bean-and-cheese burritos",
+					items: [F.burrito]
+				},
+				hi: {
+					title: "Salmon and green beans",
+					items: [F.salmon, F.beans]
+				}
+			}
+		]
+	}
+];
+var tot = (items) => {
+	const s = [
+		0,
+		0,
+		0,
+		0,
+		0
+	];
+	for (const f of items) f.per.forEach((v, j) => s[j] += v * f.g / 100);
+	const [kcal, p, fat, carb, fib] = s;
+	return {
+		kcal: Math.round(kcal),
+		p: Math.round(p)
+	};
+};
+function MealSide({ kind, step, title, items, note, children }) {
+	const t = tot(items);
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: `sd-side ${kind}`,
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "sd-step",
+				children: step
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				style: {
+					fontWeight: 600,
+					fontSize: "1.05rem"
+				},
+				children: title
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("ul", {
+				className: "pm-items",
+				children: items.map((f) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: f.name }, f.name))
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "pm-stats",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("b", { children: t.kcal }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "calories" })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("b", { children: [t.p, " g"] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "protein" })] })]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "mk-small",
+				children: note
+			}),
+			children
+		]
+	});
+}
 function ProteinCard() {
-	const [i, setI] = (0, import_react.useState)(0);
-	const c = useTween(i * 150), lb = useTween(PROT_LB[i]);
+	const [mid, setMid] = (0, import_react.useState)("breakfast");
+	const [pid, setPid] = (0, import_react.useState)("cereal");
+	const M = MEALS.find((m) => m.id === mid);
+	const P = M.pairs.find((x) => x.id === pid) ?? M.pairs[0];
+	const a = tot(P.lo.items), b = tot(P.hi.items);
+	const dk = b.kcal - a.kcal, dp = b.p - a.p;
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
 			className: "mk-h2",
-			children: "One small swap: lower-protein → higher-protein day"
+			children: "Choose protein at every meal"
 		}),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 			className: "mk-sub",
-			children: "Protein tends to help people feel full longer, so many end up eating a bit less without trying. Say someone switches to higher-protein meals and eats about 150 fewer calories a day on their own. Slide forward to see about how much they could lose."
+			children: "Everyday plates that are high in calories and low in protein tend to leave people hungry sooner. A protein-first swap tends to keep people full on fewer calories. Pick a meal, then a swap."
 		}),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-			className: "mk-card",
+			className: "mk-card sd-card",
 			children: [
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TimeSlider, {
-					id: "mkp",
-					value: i,
-					onChange: setI,
-					describedBy: "mkpnote"
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+					className: "pm-tabs",
+					role: "group",
+					"aria-label": "Pick a meal",
+					children: MEALS.map((m) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+						type: "button",
+						className: "pm-tab",
+						"aria-pressed": m.id === mid,
+						onClick: () => {
+							setMid(m.id);
+							setPid(m.pairs[0].id);
+						},
+						children: m.label
+					}, m.id))
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+					className: "pm-chips",
+					role: "group",
+					"aria-label": `${M.label} swaps`,
+					children: M.pairs.map((x) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+						type: "button",
+						className: "pm-chip",
+						"aria-pressed": x.id === P.id,
+						onClick: () => setPid(x.id),
+						children: x.label
+					}, x.id))
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "mk-paths",
+					className: "sd-vs",
 					"aria-live": "polite",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "mk-path",
-						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", { children: "🥯 Stay lower-protein" }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-								className: "mk-small",
-								style: { marginTop: ".6rem" },
-								children: "Fullness"
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-								className: "mk-meter",
-								role: "img",
-								"aria-label": "Fullness: lower",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("i", { style: {
-									width: "40%",
-									background: "#d4a056"
-								} })
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-								className: "mk-small",
-								children: "Tends to get hungry sooner"
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-								className: "mk-barbox",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-									className: "mk-bar",
-									style: {
-										background: "#d4a056",
-										height: "4px"
-									}
-								})
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-								className: "mk-num",
-								children: "0 lb"
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-								className: "mk-small",
-								children: "no change in weight"
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MealSide, {
+							kind: "now",
+							step: "High-calorie, low-protein",
+							title: P.lo.title,
+							items: P.lo.items,
+							note: "Tends to leave people hungry sooner"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "sd-arrow",
+							"aria-hidden": "true",
+							children: "→"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MealSide, {
+							kind: "swap",
+							step: "Protein-first swap",
+							title: P.hi.title,
+							items: P.hi.items,
+							note: "Tends to keep people full longer",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "pm-diff",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+									className: "sd-step",
+									children: "What the swap changes"
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "sd-out",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "sd-o swap",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Protein" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("b", { children: [
+											dp >= 0 ? "+" : "−",
+											Math.abs(dp),
+											" g"
+										] })]
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: `sd-o ${dk <= 0 ? "swap" : "keep"}`,
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Calories" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("b", { children: [dk > 0 ? "+" : dk < 0 ? "−" : "", Math.abs(dk)] })]
+									})]
+								})]
 							})
-						]
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "mk-path mk-win",
-						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", { children: "🍳 Switch to higher-protein" }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-								className: "mk-small",
-								style: { marginTop: ".6rem" },
-								children: "Fullness"
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-								className: "mk-meter",
-								role: "img",
-								"aria-label": "Fullness: higher",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("i", { style: {
-									width: "80%",
-									background: LOSS
-								} })
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-								className: "mk-small",
-								children: "Tends to feel full longer"
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-								className: "mk-barbox",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-									className: "mk-bar",
-									style: {
-										background: LOSS,
-										height: barH(lb)
-									}
-								})
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "mk-num mk-loss",
-								children: [lb < .05 ? "0" : `−${fmtLb(lb)}`, " lb"]
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "mk-small",
-								children: [
-									"could lose about ",
-									fmtLb(lb),
-									" lb · about ",
-									Math.round(c).toLocaleString(),
-									" fewer calories eaten so far"
-								]
-							}),
-							ADAPT_NOTE
-						]
-					})]
+						})
+					]
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
-					id: "mkpnote",
+					id: "pmnote",
 					className: "mk-small",
 					style: { marginTop: "1rem" },
 					children: [
-						"Rough illustration only, not a prediction. In one study, people who raised protein from about 15% to 30% of their calories ate about 441 fewer calories a day on their own.",
+						"Research shows people tend to eat less on their own when more of their calories come from protein: in one study, going from about 15% to 30% protein, people ate about 441 fewer calories a day.",
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("sup", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
 							href: "#fn1",
 							"aria-label": "Footnote 5",
 							children: "5"
 						}) }),
-						" To be careful, this uses a much smaller 150 calories a day, run through the simulator's energy-balance model with metabolic adaptation, so the loss slows over time. Results vary from person to person. Not medical advice."
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("sup", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+							href: "#fn2",
+							"aria-label": "Footnote 6",
+							children: "6"
+						}) }),
+						" Results vary. Education only, not medical advice."
 					]
 				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
 					className: "mk-small",
 					style: {
-						fontSize: ".78rem",
-						opacity: .85
+						fontSize: ".72rem",
+						opacity: .75
 					},
-					children: EXAMPLE_NOTE
+					children: [
+						"Nutrients: USDA FoodData Central, per item: ",
+						[...P.lo.items, ...P.hi.items].map((f) => `${f.name} (${f.g} g, FDC ${f.fdc})`).join("; "),
+						". Brands, recipes and portions vary."
+					]
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
 					id: "fn1",
@@ -986,9 +1498,22 @@ function ProteinCard() {
 						opacity: .8
 					},
 					children: [
-						"5. Weigelt DS, et al. A high-protein diet induces sustained reductions in appetite, ad libitum caloric intake, and body weight. ",
+						"5. Weigle DS, et al. A high-protein diet induces sustained reductions in appetite, ad libitum caloric intake, and body weight despite compensatory changes in diurnal plasma leptin and ghrelin concentrations. ",
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("i", { children: "Am J Clin Nutr." }),
 						" 2005;82(1):41–48."
+					]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+					id: "fn2",
+					className: "mk-small",
+					style: {
+						fontSize: ".75rem",
+						opacity: .8
+					},
+					children: [
+						"6. Simpson SJ, Raubenheimer D. Obesity: the protein leverage hypothesis. ",
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("i", { children: "Obes Rev." }),
+						" 2005;6(2):133–142."
 					]
 				})
 			]
