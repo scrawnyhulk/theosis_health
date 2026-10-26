@@ -144,7 +144,7 @@
 .ll-chips{display:flex;flex-wrap:wrap;gap:.4rem;margin:.5rem 0}
 .ll-chips button{min-height:2.6rem;padding:0 .8rem;border-radius:999px;border:0;background:transparent;color:var(--muted,#8e9aab);box-shadow:0 0 0 1px var(--border-strong,rgba(231,237,245,.22))}
 .ll-chips button[data-lv="2"]{background:#2a7ae0;color:#fff;box-shadow:none}.ll-chips button[data-lv="1"]{background:rgba(42,122,224,.3);color:#fff;box-shadow:none}
-.ll-more{margin-top:1rem}.ll-more summary{cursor:pointer;min-height:2.6rem;display:flex;align-items:center;color:var(--accent-ink,#5c9cf0)}
+.ll-more{margin-top:1rem}.ll-morep{border:1px solid var(--border-strong,rgba(231,237,245,.22));border-radius:12px;padding:.7rem}.ll-moreh{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-bottom:.3rem}
 #ll-proj-note[hidden]{display:none!important}
 #lift-list.ll-off{opacity:.45;pointer-events:none}
 .ll-proj{display:flex;gap:.7rem;align-items:center}.ll-proj b{color:#cfe0ff}
@@ -186,10 +186,10 @@ ${e.sets.map((x, j) => `<span class="n">${j + 1}</span><input inputmode="numeric
     // history
     const past = sortedPast();
     h += `<h4 class="ll-h4">History</h4>${past.length ? past.slice(0, 30).map((p) => `<div class="ll-day"><div><b>${esc(nice(p.date))}</b><small>${esc(sumTxt(p))} · ${esc(p.ex.map((e) => e.name).join(", ").slice(0, 60))}</small></div><div style="display:flex;gap:.4rem"><button type="button" class="ll-btn sm" data-edit="${p.date}">Edit</button><button type="button" class="ll-btn sm dng" data-delday="${p.id}" aria-label="Delete ${esc(nice(p.date))}">Delete</button></div></div>`).join("") : `<p class="ll-sub">No workouts yet.</p>`}</div>`;
-    h += `<details class="ll-more"><summary>Settings, backup and delete</summary>
+    h += `<div class="ll-more">${ui.more ? `<div class="ll-morep"><div class="ll-moreh"><b>Settings, backup and delete</b><button type="button" class="ll-btn sm" id="ll-moreclose" aria-label="Close settings">✕ Close</button></div>
 <div class="ll-row"><span>Effort scale:</span><button type="button" class="ll-btn sm${sc === "rir" ? " pri" : ""}" data-scale="rir">Reps left</button><button type="button" class="ll-btn sm${sc === "rpe" ? " pri" : ""}" data-scale="rpe">RPE (1–10)</button></div>
-<div class="ll-row"><button type="button" class="ll-btn sm" id="ll-export">Save a backup file</button><label class="ll-btn sm" style="display:inline-flex;align-items:center">Load a backup file<input type="file" id="ll-import" accept="application/json,.json" hidden></label><button type="button" class="ll-btn sm dng" id="ll-wipe">Delete my log</button></div>
-<p class="ll-sub">Your log stays on this device only. Nothing is uploaded.</p></details>`;
+<div class="ll-row"><button type="button" class="ll-btn sm" id="ll-export">Download backup (to restore later)</button><button type="button" class="ll-btn sm" id="ll-csv">Download spreadsheet (to read)</button><label class="ll-btn sm" style="display:inline-flex;align-items:center">Restore from backup<input type="file" id="ll-import" accept="application/json,.json" hidden></label><button type="button" class="ll-btn sm dng" id="ll-wipe">Delete my log</button></div>
+<p class="ll-sub">Your log stays on this device only. Nothing is uploaded. The backup file can be loaded back in; the spreadsheet opens in Excel or Google Sheets for reading.</p></div>` : `<button type="button" class="ll-btn" id="ll-moreopen" aria-expanded="false">⚙ Settings, backup and delete</button>`}</div>`;
     return h;
   }
   function render() {
@@ -198,7 +198,7 @@ ${e.sets.map((x, j) => `<span class="n">${j + 1}</span><input inputmode="numeric
     if (!PRO_PREVIEW) { if (el) el.remove(); return; }
     if (!el) { el = document.createElement("div"); el.id = "liftlog"; el.className = "adv-only"; box.appendChild(el); bind(el); }
     // typing a set value only refreshes the totals: never rebuild the set rows under someone's thumb
-    const s0 = sessFor(ui.date || today()), sig = JSON.stringify([ui.date, ui.q, ui.custom, LOG.on, LOG.scale, unit(), LOG.sessions.map((s) => [s.id, s.date, s.ex.map((e) => e.id + ":" + e.sets.length)]), s0 && s0.id]);
+    const s0 = sessFor(ui.date || today()), sig = JSON.stringify([ui.more, ui.date, ui.q, ui.custom, LOG.on, LOG.scale, unit(), LOG.sessions.map((s) => [s.id, s.date, s.ex.map((e) => e.id + ":" + e.sets.length)]), s0 && s0.id]);
     if (sig === ui.sig && el.firstChild) { const tmp = document.createElement("div"); tmp.innerHTML = html();
       for (const id of ["ll-top", "ll-stats"]) { const a = el.querySelector("#" + id), b = tmp.querySelector("#" + id); if (a && b) a.replaceWith(b); }
     } else { ui.sig = sig;
@@ -237,7 +237,13 @@ ${e.sets.map((x, j) => `<span class="n">${j + 1}</span><input inputmode="numeric
       if (ds.edit) { ui.date = ds.edit; render(); el.scrollIntoView({ block: "start", behavior: "smooth" }); return; }
       if (ds.delday) { const p = LOG.sessions.find((x) => x.id === ds.delday); if (p && confirm(`Delete the workout from ${nice(p.date)}?`)) { LOG.sessions = LOG.sessions.filter((x) => x !== p); changed(); } return; }
       if (t.id === "ll-copy") { return copyFrom(sortedPast().find((p) => p.date !== ui.date)); }
+      if (t.id === "ll-moreopen") { ui.more = true; render(); const c = document.getElementById("ll-moreclose"); if (c) c.focus(); return; }
+      if (t.id === "ll-moreclose") { ui.more = false; render(); const o = document.getElementById("ll-moreopen"); if (o) o.focus(); return; }
       if (ds.scale) { LOG.scale = ds.scale; return changed(); }
+      if (t.id === "ll-csv") { const q = (v) => { v = v == null ? "" : String(v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+        const rows = [["Date", "Exercise", "Set", "Reps", "Weight", "Unit", "Reps left", "RPE"]];
+        LOG.sessions.slice().sort((a, b) => (a.date < b.date ? -1 : 1)).forEach((p) => p.ex.forEach((e) => e.sets.forEach((x, j) => rows.push([p.date, e.name, j + 1, x.reps, x.w, x.unit, x.rir, x.rpe]))));
+        const b = new Blob(["\ufeff" + rows.map((r) => r.map(q).join(",")).join("\r\n")], { type: "text/csv" }), a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = `lifting-log-${today()}.csv`; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); return; }
       if (t.id === "ll-export") { const b = new Blob([JSON.stringify(LOG, null, 1)], { type: "application/json" }), a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = `lifting-log-${today()}.json`; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); return; }
       if (t.id === "ll-wipe") { if (confirm("Delete your whole lifting log from this device? This can't be undone.")) { LOG = blank(); try { localStorage.removeItem(KEY); } catch (e) { /* */ } render(); if (window.BodyPlanApp) window.BodyPlanApp.update(); } return; }
     });
