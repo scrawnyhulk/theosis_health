@@ -1,3 +1,4 @@
+import type React from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { ArrowRight, Clock, FlaskConical, Footprints } from "lucide-react";
@@ -260,26 +261,51 @@ function SodaCard() {
 // Per 100 g, from USDA FoodData Central (fdc.nal.usda.gov), checked Oct 25, 2026.
 // kcal, protein, fat, carbohydrate, fiber (g).
 type Food = { name: string; g: number; fdc: number; per: [number, number, number, number, number] };
-type Meal = { id: string; label: string; lo: { title: string; items: Food[] }; hi: { title: string; items: Food[] } };
+type Plate = { title: string; items: Food[] };
+type Pair = { id: string; label: string; lo: Plate; hi: Plate };
+type Meal = { id: string; label: string; pairs: Pair[] };
+const F = {
+  flakes: { name: "Frosted flakes cereal, 1½ cups", g: 62, fdc: 172990, per: [389, 4.25, 0.87, 90.2, 1.2] },
+  milk: { name: "2% milk, 1 cup", g: 244, fdc: 171267, per: [50, 3.3, 1.98, 4.8, 0] },
+  eggs: { name: "3 large eggs, scrambled", g: 183, fdc: 172187, per: [149, 9.99, 10.98, 1.61, 0] },
+  bagel: { name: "Plain bagel, medium", g: 105, fdc: 174899, per: [264, 10.56, 1.32, 52.38, 1.6] },
+  cream: { name: "Cream cheese, 2 tbsp", g: 29, fdc: 173418, per: [350, 6.15, 34.44, 5.52, 0] },
+  greek: { name: "Plain nonfat Greek yogurt, 6 oz", g: 170, fdc: 2705424, per: [59, 10.3, 0.37, 3.64, 0] },
+  blue: { name: "Blueberries, ½ cup", g: 74, fdc: 171711, per: [57, 0.74, 0.33, 14.49, 2.4] },
+  muffin: { name: "Blueberry muffin, large", g: 139, fdc: 172765, per: [375, 4.49, 16.07, 53.0, 1.1] },
+  cottage1: { name: "2% cottage cheese, 1 cup", g: 226, fdc: 172182, per: [81, 10.45, 2.27, 4.76, 0] },
+  mac: { name: "Macaroni and cheese, 1 cup", g: 230, fdc: 2708811, per: [223, 8.68, 10.5, 23.1, 1.2] },
+  chicken: { name: "Roasted chicken breast, 1 cup diced", g: 140, fdc: 171477, per: [165, 31.02, 3.57, 0, 0] },
+  romaine: { name: "Romaine, 2 cups (no dressing)", g: 94, fdc: 169247, per: [17, 1.23, 0.3, 3.29, 2.1] },
+  burger: { name: "Fast-food cheeseburger", g: 127, fdc: 170691, per: [270, 13.49, 12.9, 25.46, 1.9] },
+  fries: { name: "French fries, 1 regular order", g: 110, fdc: 2709461, per: [312, 3.43, 14.7, 41.4, 3.8] },
+  tuna: { name: "Tuna in water, 1 can drained", g: 113, fdc: 171986, per: [116, 25.51, 0.82, 0, 0] },
+  cottageH: { name: "2% cottage cheese, ½ cup", g: 113, fdc: 172182, per: [81, 10.45, 2.27, 4.76, 0] },
+  grilled: { name: "Grilled cheese sandwich", g: 116, fdc: 2705804, per: [368, 13.4, 23.3, 26.4, 1.2] },
+  turkey: { name: "Sliced turkey breast, 4 oz", g: 113, fdc: 172941, per: [106, 14.81, 3.77, 2.2, 0] },
+  pizza: { name: "3 slices, medium restaurant pizza", g: 264, fdc: 2708640, per: [282, 11.7, 11.9, 32.0, 2.3] },
+  sirloin: { name: "Lean top sirloin, 6 oz cooked", g: 170, fdc: 168635, per: [188, 30.29, 6.55, 0, 0] },
+  broccoli: { name: "Broccoli, 1 cup, boiled", g: 156, fdc: 169967, per: [35, 2.38, 0.41, 7.18, 3.3] },
+  rice: { name: "Fried rice, 2 cups", g: 332, fdc: 2708951, per: [174, 3.84, 3.19, 32.5, 1.1] },
+  shrimp: { name: "Cooked shrimp, 6 oz", g: 170, fdc: 175180, per: [99, 23.98, 0.28, 0.2, 0] },
+  veg: { name: "Mixed vegetables, 1 cup", g: 182, fdc: 170472, per: [65, 2.86, 0.15, 13.09, 4.4] },
+  burrito: { name: "2 bean-and-cheese burritos (frozen)", g: 258, fdc: 173336, per: [221, 7.07, 6.3, 34.01, 3.4] },
+  salmon: { name: "Salmon, 6 oz cooked", g: 170, fdc: 175168, per: [206, 22.1, 12.35, 0, 0] },
+  beans: { name: "Green beans, 1 cup", g: 125, fdc: 169141, per: [35, 1.89, 0.28, 7.88, 3.2] },
+} satisfies Record<string, Food>;
 const MEALS: Meal[] = [
-  { id: "breakfast", label: "Breakfast: cereal vs eggs",
-    lo: { title: "Frosted flakes and milk", items: [
-      { name: "Frosted flakes cereal, 1½ cups", g: 62, fdc: 172990, per: [389, 4.25, 0.87, 90.2, 1.2] },
-      { name: "2% milk, 1 cup", g: 244, fdc: 171267, per: [50, 3.3, 1.98, 4.8, 0] }] },
-    hi: { title: "Scrambled eggs", items: [
-      { name: "3 large eggs, scrambled", g: 183, fdc: 172187, per: [149, 9.99, 10.98, 1.61, 0] }] } },
-  { id: "lunch", label: "Lunch: mac and cheese vs chicken salad",
-    lo: { title: "Mac and cheese", items: [
-      { name: "Macaroni and cheese, 1 cup", g: 230, fdc: 2708811, per: [223, 8.68, 10.5, 23.1, 1.2] }] },
-    hi: { title: "Chicken and greens", items: [
-      { name: "Roasted chicken breast, 1 cup diced", g: 140, fdc: 171477, per: [165, 31.02, 3.57, 0, 0] },
-      { name: "Romaine, 2 cups (no dressing)", g: 94, fdc: 169247, per: [17, 1.23, 0.3, 3.29, 2.1] }] } },
-  { id: "dinner", label: "Dinner: pizza vs steak and broccoli",
-    lo: { title: "Pepperoni pizza", items: [
-      { name: "3 slices, medium restaurant pizza", g: 264, fdc: 2708640, per: [282, 11.7, 11.9, 32.0, 2.3] }] },
-    hi: { title: "Steak and broccoli", items: [
-      { name: "Lean top sirloin, 6 oz cooked", g: 170, fdc: 168635, per: [188, 30.29, 6.55, 0, 0] },
-      { name: "Broccoli, 1 cup, boiled", g: 156, fdc: 169967, per: [35, 2.38, 0.41, 7.18, 3.3] }] } },
+  { id: "breakfast", label: "Breakfast", pairs: [
+    { id: "cereal", label: "Cereal → eggs", lo: { title: "Frosted flakes and milk", items: [F.flakes, F.milk] }, hi: { title: "Scrambled eggs", items: [F.eggs] } },
+    { id: "bagel", label: "Bagel → Greek yogurt", lo: { title: "Bagel and cream cheese", items: [F.bagel, F.cream] }, hi: { title: "Greek yogurt and berries", items: [F.greek, F.blue] } },
+    { id: "muffin", label: "Muffin → cottage cheese", lo: { title: "Blueberry muffin", items: [F.muffin] }, hi: { title: "Cottage cheese and berries", items: [F.cottage1, F.blue] } }] },
+  { id: "lunch", label: "Lunch", pairs: [
+    { id: "mac", label: "Mac and cheese → chicken salad", lo: { title: "Mac and cheese", items: [F.mac] }, hi: { title: "Chicken and greens", items: [F.chicken, F.romaine] } },
+    { id: "burger", label: "Burger and fries → tuna plate", lo: { title: "Cheeseburger and fries", items: [F.burger, F.fries] }, hi: { title: "Tuna, greens and cottage cheese", items: [F.tuna, F.romaine, F.cottageH] } },
+    { id: "grilled", label: "Grilled cheese → turkey plate", lo: { title: "Grilled cheese", items: [F.grilled] }, hi: { title: "Turkey and cottage cheese", items: [F.turkey, F.cottageH] } }] },
+  { id: "dinner", label: "Dinner", pairs: [
+    { id: "pizza", label: "Pizza → steak", lo: { title: "Pepperoni pizza", items: [F.pizza] }, hi: { title: "Steak and broccoli", items: [F.sirloin, F.broccoli] } },
+    { id: "rice", label: "Fried rice → shrimp", lo: { title: "Fried rice", items: [F.rice] }, hi: { title: "Shrimp and vegetables", items: [F.shrimp, F.veg] } },
+    { id: "burrito", label: "Burritos → salmon", lo: { title: "Bean-and-cheese burritos", items: [F.burrito] }, hi: { title: "Salmon and green beans", items: [F.salmon, F.beans] } }] },
 ];
 const tot = (items: Food[]) => {
   const s = [0, 0, 0, 0, 0];
@@ -289,50 +315,56 @@ const tot = (items: Food[]) => {
   return { kcal: Math.round(kcal), p: Math.round(p) };
 };
 
-function MealSide({ kind, step, title, items, note }: { kind: "now" | "swap"; step: string; title: string; items: Food[]; note: string }) {
+function MealSide({ kind, step, title, items, note, children }: { kind: "now" | "swap"; step: string; title: string; items: Food[]; note: string; children?: React.ReactNode }) {
   const t = tot(items);
   return (
     <div className={`sd-side ${kind}`}>
       <div className="sd-step">{step}</div>
       <div style={{ fontWeight: 600, fontSize: "1.05rem" }}>{title}</div>
-      <ul className="pm-items">{items.map((f) => <li key={f.fdc}>{f.name}</li>)}</ul>
+      <ul className="pm-items">{items.map((f) => <li key={f.name}>{f.name}</li>)}</ul>
       <div className="pm-stats">
         <div><b>{t.kcal}</b><span>calories</span></div>
         <div><b>{t.p} g</b><span>protein</span></div>
       </div>
       <div className="mk-small">{note}</div>
+      {children}
     </div>
   );
 }
 
 function ProteinCard() {
   const [mid, setMid] = useState("breakfast");
+  const [pid, setPid] = useState("cereal");
   const M = MEALS.find((m) => m.id === mid)!;
-  const a = tot(M.lo.items), b = tot(M.hi.items);
+  const P = M.pairs.find((x) => x.id === pid) ?? M.pairs[0];
+  const a = tot(P.lo.items), b = tot(P.hi.items);
   const dk = b.kcal - a.kcal, dp = b.p - a.p;
   return (
     <>
       <h2 className="mk-h2">Choose protein at every meal</h2>
-      <p className="mk-sub">High-calorie, low-protein plates tend to leave people hungry sooner. Protein-first plates tend to keep people full on fewer calories. Pick a meal to compare.</p>
+      <p className="mk-sub">Everyday plates that are high in calories and low in protein tend to leave people hungry sooner. A protein-first swap tends to keep people full on fewer calories. Pick a meal, then a swap.</p>
       <div className="mk-card sd-card">
-        <label htmlFor="pm-meal" className="sd-step" style={{ display: "block" }}>Pick a meal</label>
-        <div className="sd-selwrap" style={{ maxWidth: "26rem", margin: ".4rem 0 1rem" }}>
-          <select id="pm-meal" className="sd-select" value={mid} onChange={(e) => setMid(e.target.value)}>
-            {MEALS.map((m) => <option key={m.id} value={m.id}>{m.label}</option>)}
-          </select>
+        <div className="pm-tabs" role="group" aria-label="Pick a meal">
+          {MEALS.map((m) => <button key={m.id} type="button" className="pm-tab" aria-pressed={m.id === mid} onClick={() => { setMid(m.id); setPid(m.pairs[0].id); }}>{m.label}</button>)}
+        </div>
+        <div className="pm-chips" role="group" aria-label={`${M.label} swaps`}>
+          {M.pairs.map((x) => <button key={x.id} type="button" className="pm-chip" aria-pressed={x.id === P.id} onClick={() => setPid(x.id)}>{x.label}</button>)}
         </div>
         <div className="sd-vs" aria-live="polite">
-          <MealSide kind="now" step="High-calorie, low-protein" title={M.lo.title} items={M.lo.items} note="Tends to leave people hungry sooner" />
+          <MealSide kind="now" step="High-calorie, low-protein" title={P.lo.title} items={P.lo.items} note="Tends to leave people hungry sooner" />
           <div className="sd-arrow" aria-hidden="true">→</div>
-          <MealSide kind="swap" step="Protein-first" title={M.hi.title} items={M.hi.items} note="Tends to stay full longer" />
-        </div>
-        <div className="sd-out">
-          <div className="sd-o swap"><span>More protein</span><b>{dp >= 0 ? "+" : "−"}{Math.abs(dp)} g</b></div>
-          <div className={`sd-o ${dk <= 0 ? "swap" : "keep"}`}><span>Calories</span><b>{dk > 0 ? "+" : dk < 0 ? "−" : ""}{Math.abs(dk)}</b></div>
-          <div className="sd-when mk-small">For this one meal</div>
+          <MealSide kind="swap" step="Protein-first swap" title={P.hi.title} items={P.hi.items} note="Tends to keep people full longer">
+            <div className="pm-diff">
+              <div className="sd-step">What the swap changes</div>
+              <div className="sd-out">
+                <div className="sd-o swap"><span>Protein</span><b>{dp >= 0 ? "+" : "−"}{Math.abs(dp)} g</b></div>
+                <div className={`sd-o ${dk <= 0 ? "swap" : "keep"}`}><span>Calories</span><b>{dk > 0 ? "+" : dk < 0 ? "−" : ""}{Math.abs(dk)}</b></div>
+              </div>
+            </div>
+          </MealSide>
         </div>
         <p id="pmnote" className="mk-small" style={{ marginTop: "1rem" }}>Research shows people tend to eat less on their own when more of their calories come from protein: in one study, going from about 15% to 30% protein, people ate about 441 fewer calories a day.<sup><a href="#fn1" aria-label="Footnote 5">5</a></sup><sup><a href="#fn2" aria-label="Footnote 6">6</a></sup> Results vary. Education only, not medical advice.</p>
-        <p className="mk-small" style={{ fontSize: ".72rem", opacity: 0.75 }}>Nutrients: USDA FoodData Central, per item: {[...M.lo.items, ...M.hi.items].map((f) => `${f.name} (${f.g} g, FDC ${f.fdc})`).join("; ")}. Brands, recipes and portions vary.</p>
+        <p className="mk-small" style={{ fontSize: ".72rem", opacity: 0.75 }}>Nutrients: USDA FoodData Central, per item: {[...P.lo.items, ...P.hi.items].map((f) => `${f.name} (${f.g} g, FDC ${f.fdc})`).join("; ")}. Brands, recipes and portions vary.</p>
         <p id="fn1" className="mk-small" style={{ fontSize: ".75rem", opacity: 0.8 }}>5. Weigle DS, et al. A high-protein diet induces sustained reductions in appetite, ad libitum caloric intake, and body weight despite compensatory changes in diurnal plasma leptin and ghrelin concentrations. <i>Am J Clin Nutr.</i> 2005;82(1):41–48.</p>
         <p id="fn2" className="mk-small" style={{ fontSize: ".75rem", opacity: 0.8 }}>6. Simpson SJ, Raubenheimer D. Obesity: the protein leverage hypothesis. <i>Obes Rev.</i> 2005;6(2):133–142.</p>
       </div>

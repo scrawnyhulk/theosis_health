@@ -539,8 +539,19 @@ html { overflow-x: clip; }
 
 /* Protein meal comparison */
 .pm-items{margin:0;padding-left:1.1rem;font-size:.85rem;color:var(--color-muted)}
-.pm-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;margin-top:auto}
+.pm-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;margin-top:.2rem}
 .pm-stats div{border:1px solid var(--color-border);padding:.35rem .2rem;text-align:center}
 .pm-stats b{display:block;font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;line-height:1.1}
 .pm-stats span{font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--color-muted)}
 .sd-side.now .pm-stats b{color:#f0936b}.sd-side.swap .pm-stats b{color:#5cc48e}
+.pm-diff{margin-top:.8rem;padding-top:.7rem;border-top:1px solid rgba(255,255,255,.1)}
+.pm-diff .sd-out{margin-top:.4rem;grid-template-columns:1fr 1fr}
+.pm-diff .sd-o b{font-size:1.4rem}
+.pm-tabs{display:flex;gap:0;border:1px solid var(--color-border);width:max-content;max-width:100%;margin-bottom:.75rem}
+.pm-tab{padding:.55rem 1.1rem;font-weight:600;font-size:.9rem;background:transparent;color:var(--color-muted);border:0;border-right:1px solid var(--color-border);cursor:pointer}
+.pm-tab:last-child{border-right:0}
+.pm-tab[aria-pressed="true"]{background:#2f7de1;color:#fff}
+.pm-chips{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:1rem}
+.pm-chip{padding:.4rem .8rem;font-size:.82rem;border:1px solid var(--color-border);border-radius:999px;background:rgba(255,255,255,.03);color:inherit;cursor:pointer}
+.pm-chip[aria-pressed="true"]{border-color:#3d9a6a;background:rgba(61,154,106,.15);color:#fff}
+.pm-tab:focus-visible,.pm-chip:focus-visible{outline:2px solid #5aa2ff;outline-offset:2px}

@@ -4,9 +4,9 @@ import { n as require_react } from "../_libs/@radix-ui/react-compose-refs+[...].
 import { b as Link } from "../_libs/@tanstack/react-router+[...].mjs";
 import { i as require_jsx_runtime } from "../_libs/@radix-ui/react-label+[...].mjs";
 import { T as ArrowRight, b as Clock, g as FlaskConical, h as Footprints } from "../_libs/lucide-react.mjs";
-import { a as extraLbByDay, i as SODA_PERSON, o as lostLbByDay, s as maintenance } from "./router-C6RH_tH_.mjs";
+import { a as extraLbByDay, i as SODA_PERSON, o as lostLbByDay, s as maintenance } from "./router-B4qXx36q.mjs";
 import { a as SiteShell, i as NavPlaque, r as NavIcon } from "./site-shell-RWexaFBk.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/routes-pzxPfM8Z.js
+//#region node_modules/.nitro/vite/services/ssr/assets/routes-D6c-BMuo.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 /** Swap this slug to feature a different existing Health Hack. Text is pulled from src/lib/hacks.ts, not written here. */
@@ -863,141 +863,462 @@ function SodaCard() {
 		})
 	] });
 }
+var F = {
+	flakes: {
+		name: "Frosted flakes cereal, 1½ cups",
+		g: 62,
+		fdc: 172990,
+		per: [
+			389,
+			4.25,
+			.87,
+			90.2,
+			1.2
+		]
+	},
+	milk: {
+		name: "2% milk, 1 cup",
+		g: 244,
+		fdc: 171267,
+		per: [
+			50,
+			3.3,
+			1.98,
+			4.8,
+			0
+		]
+	},
+	eggs: {
+		name: "3 large eggs, scrambled",
+		g: 183,
+		fdc: 172187,
+		per: [
+			149,
+			9.99,
+			10.98,
+			1.61,
+			0
+		]
+	},
+	bagel: {
+		name: "Plain bagel, medium",
+		g: 105,
+		fdc: 174899,
+		per: [
+			264,
+			10.56,
+			1.32,
+			52.38,
+			1.6
+		]
+	},
+	cream: {
+		name: "Cream cheese, 2 tbsp",
+		g: 29,
+		fdc: 173418,
+		per: [
+			350,
+			6.15,
+			34.44,
+			5.52,
+			0
+		]
+	},
+	greek: {
+		name: "Plain nonfat Greek yogurt, 6 oz",
+		g: 170,
+		fdc: 2705424,
+		per: [
+			59,
+			10.3,
+			.37,
+			3.64,
+			0
+		]
+	},
+	blue: {
+		name: "Blueberries, ½ cup",
+		g: 74,
+		fdc: 171711,
+		per: [
+			57,
+			.74,
+			.33,
+			14.49,
+			2.4
+		]
+	},
+	muffin: {
+		name: "Blueberry muffin, large",
+		g: 139,
+		fdc: 172765,
+		per: [
+			375,
+			4.49,
+			16.07,
+			53,
+			1.1
+		]
+	},
+	cottage1: {
+		name: "2% cottage cheese, 1 cup",
+		g: 226,
+		fdc: 172182,
+		per: [
+			81,
+			10.45,
+			2.27,
+			4.76,
+			0
+		]
+	},
+	mac: {
+		name: "Macaroni and cheese, 1 cup",
+		g: 230,
+		fdc: 2708811,
+		per: [
+			223,
+			8.68,
+			10.5,
+			23.1,
+			1.2
+		]
+	},
+	chicken: {
+		name: "Roasted chicken breast, 1 cup diced",
+		g: 140,
+		fdc: 171477,
+		per: [
+			165,
+			31.02,
+			3.57,
+			0,
+			0
+		]
+	},
+	romaine: {
+		name: "Romaine, 2 cups (no dressing)",
+		g: 94,
+		fdc: 169247,
+		per: [
+			17,
+			1.23,
+			.3,
+			3.29,
+			2.1
+		]
+	},
+	burger: {
+		name: "Fast-food cheeseburger",
+		g: 127,
+		fdc: 170691,
+		per: [
+			270,
+			13.49,
+			12.9,
+			25.46,
+			1.9
+		]
+	},
+	fries: {
+		name: "French fries, 1 regular order",
+		g: 110,
+		fdc: 2709461,
+		per: [
+			312,
+			3.43,
+			14.7,
+			41.4,
+			3.8
+		]
+	},
+	tuna: {
+		name: "Tuna in water, 1 can drained",
+		g: 113,
+		fdc: 171986,
+		per: [
+			116,
+			25.51,
+			.82,
+			0,
+			0
+		]
+	},
+	cottageH: {
+		name: "2% cottage cheese, ½ cup",
+		g: 113,
+		fdc: 172182,
+		per: [
+			81,
+			10.45,
+			2.27,
+			4.76,
+			0
+		]
+	},
+	grilled: {
+		name: "Grilled cheese sandwich",
+		g: 116,
+		fdc: 2705804,
+		per: [
+			368,
+			13.4,
+			23.3,
+			26.4,
+			1.2
+		]
+	},
+	turkey: {
+		name: "Sliced turkey breast, 4 oz",
+		g: 113,
+		fdc: 172941,
+		per: [
+			106,
+			14.81,
+			3.77,
+			2.2,
+			0
+		]
+	},
+	pizza: {
+		name: "3 slices, medium restaurant pizza",
+		g: 264,
+		fdc: 2708640,
+		per: [
+			282,
+			11.7,
+			11.9,
+			32,
+			2.3
+		]
+	},
+	sirloin: {
+		name: "Lean top sirloin, 6 oz cooked",
+		g: 170,
+		fdc: 168635,
+		per: [
+			188,
+			30.29,
+			6.55,
+			0,
+			0
+		]
+	},
+	broccoli: {
+		name: "Broccoli, 1 cup, boiled",
+		g: 156,
+		fdc: 169967,
+		per: [
+			35,
+			2.38,
+			.41,
+			7.18,
+			3.3
+		]
+	},
+	rice: {
+		name: "Fried rice, 2 cups",
+		g: 332,
+		fdc: 2708951,
+		per: [
+			174,
+			3.84,
+			3.19,
+			32.5,
+			1.1
+		]
+	},
+	shrimp: {
+		name: "Cooked shrimp, 6 oz",
+		g: 170,
+		fdc: 175180,
+		per: [
+			99,
+			23.98,
+			.28,
+			.2,
+			0
+		]
+	},
+	veg: {
+		name: "Mixed vegetables, 1 cup",
+		g: 182,
+		fdc: 170472,
+		per: [
+			65,
+			2.86,
+			.15,
+			13.09,
+			4.4
+		]
+	},
+	burrito: {
+		name: "2 bean-and-cheese burritos (frozen)",
+		g: 258,
+		fdc: 173336,
+		per: [
+			221,
+			7.07,
+			6.3,
+			34.01,
+			3.4
+		]
+	},
+	salmon: {
+		name: "Salmon, 6 oz cooked",
+		g: 170,
+		fdc: 175168,
+		per: [
+			206,
+			22.1,
+			12.35,
+			0,
+			0
+		]
+	},
+	beans: {
+		name: "Green beans, 1 cup",
+		g: 125,
+		fdc: 169141,
+		per: [
+			35,
+			1.89,
+			.28,
+			7.88,
+			3.2
+		]
+	}
+};
 var MEALS = [
 	{
 		id: "breakfast",
-		label: "Breakfast: cereal vs eggs",
-		lo: {
-			title: "Frosted flakes and milk",
-			items: [{
-				name: "Frosted flakes cereal, 1½ cups",
-				g: 62,
-				fdc: 172990,
-				per: [
-					389,
-					4.25,
-					.87,
-					90.2,
-					1.2
-				]
-			}, {
-				name: "2% milk, 1 cup",
-				g: 244,
-				fdc: 171267,
-				per: [
-					50,
-					3.3,
-					1.98,
-					4.8,
-					0
-				]
-			}]
-		},
-		hi: {
-			title: "Scrambled eggs",
-			items: [{
-				name: "3 large eggs, scrambled",
-				g: 183,
-				fdc: 172187,
-				per: [
-					149,
-					9.99,
-					10.98,
-					1.61,
-					0
-				]
-			}]
-		}
+		label: "Breakfast",
+		pairs: [
+			{
+				id: "cereal",
+				label: "Cereal → eggs",
+				lo: {
+					title: "Frosted flakes and milk",
+					items: [F.flakes, F.milk]
+				},
+				hi: {
+					title: "Scrambled eggs",
+					items: [F.eggs]
+				}
+			},
+			{
+				id: "bagel",
+				label: "Bagel → Greek yogurt",
+				lo: {
+					title: "Bagel and cream cheese",
+					items: [F.bagel, F.cream]
+				},
+				hi: {
+					title: "Greek yogurt and berries",
+					items: [F.greek, F.blue]
+				}
+			},
+			{
+				id: "muffin",
+				label: "Muffin → cottage cheese",
+				lo: {
+					title: "Blueberry muffin",
+					items: [F.muffin]
+				},
+				hi: {
+					title: "Cottage cheese and berries",
+					items: [F.cottage1, F.blue]
+				}
+			}
+		]
 	},
 	{
 		id: "lunch",
-		label: "Lunch: mac and cheese vs chicken salad",
-		lo: {
-			title: "Mac and cheese",
-			items: [{
-				name: "Macaroni and cheese, 1 cup",
-				g: 230,
-				fdc: 2708811,
-				per: [
-					223,
-					8.68,
-					10.5,
-					23.1,
-					1.2
-				]
-			}]
-		},
-		hi: {
-			title: "Chicken and greens",
-			items: [{
-				name: "Roasted chicken breast, 1 cup diced",
-				g: 140,
-				fdc: 171477,
-				per: [
-					165,
-					31.02,
-					3.57,
-					0,
-					0
-				]
-			}, {
-				name: "Romaine, 2 cups (no dressing)",
-				g: 94,
-				fdc: 169247,
-				per: [
-					17,
-					1.23,
-					.3,
-					3.29,
-					2.1
-				]
-			}]
-		}
+		label: "Lunch",
+		pairs: [
+			{
+				id: "mac",
+				label: "Mac and cheese → chicken salad",
+				lo: {
+					title: "Mac and cheese",
+					items: [F.mac]
+				},
+				hi: {
+					title: "Chicken and greens",
+					items: [F.chicken, F.romaine]
+				}
+			},
+			{
+				id: "burger",
+				label: "Burger and fries → tuna plate",
+				lo: {
+					title: "Cheeseburger and fries",
+					items: [F.burger, F.fries]
+				},
+				hi: {
+					title: "Tuna, greens and cottage cheese",
+					items: [
+						F.tuna,
+						F.romaine,
+						F.cottageH
+					]
+				}
+			},
+			{
+				id: "grilled",
+				label: "Grilled cheese → turkey plate",
+				lo: {
+					title: "Grilled cheese",
+					items: [F.grilled]
+				},
+				hi: {
+					title: "Turkey and cottage cheese",
+					items: [F.turkey, F.cottageH]
+				}
+			}
+		]
 	},
 	{
 		id: "dinner",
-		label: "Dinner: pizza vs steak and broccoli",
-		lo: {
-			title: "Pepperoni pizza",
-			items: [{
-				name: "3 slices, medium restaurant pizza",
-				g: 264,
-				fdc: 2708640,
-				per: [
-					282,
-					11.7,
-					11.9,
-					32,
-					2.3
-				]
-			}]
-		},
-		hi: {
-			title: "Steak and broccoli",
-			items: [{
-				name: "Lean top sirloin, 6 oz cooked",
-				g: 170,
-				fdc: 168635,
-				per: [
-					188,
-					30.29,
-					6.55,
-					0,
-					0
-				]
-			}, {
-				name: "Broccoli, 1 cup, boiled",
-				g: 156,
-				fdc: 169967,
-				per: [
-					35,
-					2.38,
-					.41,
-					7.18,
-					3.3
-				]
-			}]
-		}
+		label: "Dinner",
+		pairs: [
+			{
+				id: "pizza",
+				label: "Pizza → steak",
+				lo: {
+					title: "Pepperoni pizza",
+					items: [F.pizza]
+				},
+				hi: {
+					title: "Steak and broccoli",
+					items: [F.sirloin, F.broccoli]
+				}
+			},
+			{
+				id: "rice",
+				label: "Fried rice → shrimp",
+				lo: {
+					title: "Fried rice",
+					items: [F.rice]
+				},
+				hi: {
+					title: "Shrimp and vegetables",
+					items: [F.shrimp, F.veg]
+				}
+			},
+			{
+				id: "burrito",
+				label: "Burritos → salmon",
+				lo: {
+					title: "Bean-and-cheese burritos",
+					items: [F.burrito]
+				},
+				hi: {
+					title: "Salmon and green beans",
+					items: [F.salmon, F.beans]
+				}
+			}
+		]
 	}
 ];
 var tot = (items) => {
@@ -1015,7 +1336,7 @@ var tot = (items) => {
 		p: Math.round(p)
 	};
 };
-function MealSide({ kind, step, title, items, note }) {
+function MealSide({ kind, step, title, items, note, children }) {
 	const t = tot(items);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: `sd-side ${kind}`,
@@ -1033,7 +1354,7 @@ function MealSide({ kind, step, title, items, note }) {
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("ul", {
 				className: "pm-items",
-				children: items.map((f) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: f.name }, f.fdc))
+				children: items.map((f) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: f.name }, f.name))
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "pm-stats",
@@ -1042,14 +1363,17 @@ function MealSide({ kind, step, title, items, note }) {
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 				className: "mk-small",
 				children: note
-			})
+			}),
+			children
 		]
 	});
 }
 function ProteinCard() {
 	const [mid, setMid] = (0, import_react.useState)("breakfast");
+	const [pid, setPid] = (0, import_react.useState)("cereal");
 	const M = MEALS.find((m) => m.id === mid);
-	const a = tot(M.lo.items), b = tot(M.hi.items);
+	const P = M.pairs.find((x) => x.id === pid) ?? M.pairs[0];
+	const a = tot(P.lo.items), b = tot(P.hi.items);
 	const dk = b.kcal - a.kcal, dp = b.p - a.p;
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
@@ -1058,33 +1382,37 @@ function ProteinCard() {
 		}),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 			className: "mk-sub",
-			children: "High-calorie, low-protein plates tend to leave people hungry sooner. Protein-first plates tend to keep people full on fewer calories. Pick a meal to compare."
+			children: "Everyday plates that are high in calories and low in protein tend to leave people hungry sooner. A protein-first swap tends to keep people full on fewer calories. Pick a meal, then a swap."
 		}),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 			className: "mk-card sd-card",
 			children: [
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
-					htmlFor: "pm-meal",
-					className: "sd-step",
-					style: { display: "block" },
-					children: "Pick a meal"
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+					className: "pm-tabs",
+					role: "group",
+					"aria-label": "Pick a meal",
+					children: MEALS.map((m) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+						type: "button",
+						className: "pm-tab",
+						"aria-pressed": m.id === mid,
+						onClick: () => {
+							setMid(m.id);
+							setPid(m.pairs[0].id);
+						},
+						children: m.label
+					}, m.id))
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-					className: "sd-selwrap",
-					style: {
-						maxWidth: "26rem",
-						margin: ".4rem 0 1rem"
-					},
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("select", {
-						id: "pm-meal",
-						className: "sd-select",
-						value: mid,
-						onChange: (e) => setMid(e.target.value),
-						children: MEALS.map((m) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", {
-							value: m.id,
-							children: m.label
-						}, m.id))
-					})
+					className: "pm-chips",
+					role: "group",
+					"aria-label": `${M.label} swaps`,
+					children: M.pairs.map((x) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+						type: "button",
+						className: "pm-chip",
+						"aria-pressed": x.id === P.id,
+						onClick: () => setPid(x.id),
+						children: x.label
+					}, x.id))
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "sd-vs",
@@ -1093,8 +1421,8 @@ function ProteinCard() {
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MealSide, {
 							kind: "now",
 							step: "High-calorie, low-protein",
-							title: M.lo.title,
-							items: M.lo.items,
+							title: P.lo.title,
+							items: P.lo.items,
 							note: "Tends to leave people hungry sooner"
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
@@ -1104,31 +1432,30 @@ function ProteinCard() {
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(MealSide, {
 							kind: "swap",
-							step: "Protein-first",
-							title: M.hi.title,
-							items: M.hi.items,
-							note: "Tends to stay full longer"
-						})
-					]
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "sd-out",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "sd-o swap",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "More protein" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("b", { children: [
-								dp >= 0 ? "+" : "−",
-								Math.abs(dp),
-								" g"
-							] })]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: `sd-o ${dk <= 0 ? "swap" : "keep"}`,
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Calories" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("b", { children: [dk > 0 ? "+" : dk < 0 ? "−" : "", Math.abs(dk)] })]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "sd-when mk-small",
-							children: "For this one meal"
+							step: "Protein-first swap",
+							title: P.hi.title,
+							items: P.hi.items,
+							note: "Tends to keep people full longer",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "pm-diff",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+									className: "sd-step",
+									children: "What the swap changes"
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "sd-out",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: "sd-o swap",
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Protein" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("b", { children: [
+											dp >= 0 ? "+" : "−",
+											Math.abs(dp),
+											" g"
+										] })]
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+										className: `sd-o ${dk <= 0 ? "swap" : "keep"}`,
+										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Calories" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("b", { children: [dk > 0 ? "+" : dk < 0 ? "−" : "", Math.abs(dk)] })]
+									})]
+								})]
+							})
 						})
 					]
 				}),
@@ -1159,7 +1486,7 @@ function ProteinCard() {
 					},
 					children: [
 						"Nutrients: USDA FoodData Central, per item: ",
-						[...M.lo.items, ...M.hi.items].map((f) => `${f.name} (${f.g} g, FDC ${f.fdc})`).join("; "),
+						[...P.lo.items, ...P.hi.items].map((f) => `${f.name} (${f.g} g, FDC ${f.fdc})`).join("; "),
 						". Brands, recipes and portions vary."
 					]
 				}),
