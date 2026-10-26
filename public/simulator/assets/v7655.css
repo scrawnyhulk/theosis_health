@@ -8,7 +8,7 @@
 .f3d-sl{display:flex;justify-content:space-between;font-weight:600;font-size:.85rem;margin-top:.3rem}#f3d-range{width:100%}
 .f3d-ro{display:flex;justify-content:space-between;font-size:.9rem;padding:.3rem 0;border-bottom:1px solid var(--border)}
 .f3d-btns{display:flex;flex-wrap:wrap;gap:.5rem;margin:.6rem 0}.f3d-lbl{font-weight:700;color:#f2c14e;margin:.3rem 0}#f3d-ctimg{width:100%;border-radius:8px;background:#000}
-#sum-aside{max-height:calc(100vh - 6rem);overflow:auto}#sum-pft{margin-bottom:1rem;padding-bottom:.8rem;border-bottom:1px solid var(--border)}
+#sum-aside{max-height:none;overflow:visible}#sum-pft{margin-bottom:1rem;padding-bottom:.8rem;border-bottom:1px solid var(--border)}
 /* v7.6.61: wider desktop sidebar so the 3D window is usable; the live figure stays visible next to it (responds to height, weight, waist) */
 @media(min-width:64rem){.wiz-layout{grid-template-columns:minmax(0,1fr) clamp(22rem,34vw,30rem)}}
 /* v7.6.55: Health snapshot */
@@ -113,3 +113,4 @@ body .fq-item:hover{border-color:#79b4f6}
 /* v7.6.80: Half & half view (Advanced) */
 .f3d-halfnote{margin:.4rem 0;padding:.4rem .6rem;border-left:3px solid #79b4f6;background:rgba(121,180,246,.1);border-radius:6px}
 .f3d-sw button[data-f3dv="half"][aria-pressed="true"]{background:#2a5a8e;color:#fff}
+@media(min-width:64rem){.wiz-layout .summary,#sum-aside{position:static!important;top:auto;max-height:none!important;overflow:visible!important}}
