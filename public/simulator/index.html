@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Theosis Metabolic Simulator | Theosis Health</title>
-<link rel="manifest" href="manifest.webmanifest?v=7698">
+<link rel="manifest" href="manifest.webmanifest?v=7699">
 <meta name="application-name" content="Simulator">
 <meta name="apple-mobile-web-app-title" content="Simulator">
 <link rel="apple-touch-icon" href="icons/icon-180.png">
 <meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes">
-<script src="assets/pwa.js?v=7698" defer></script>
+<script src="assets/pwa.js?v=7699" defer></script>
 <meta name="description" content="See where your habits could lead. The Theosis Metabolic Simulator: a guided, evidence-based body composition and metabolic health simulator from Theosis Health, founded by Nick Holwey, PA-C. It's built on Alpert's limit on how fast fat can be lost without losing muscle.">
 <meta name="theme-color" content="#080d14">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23080d14'/%3E%3Cpath fill='%23143a7c' stroke='%23cfd6e0' stroke-width='1.5' d='M16 3.5 26 7.2v9.2c0 5.4-4.2 9.8-10 11.1C10.2 26.2 6 21.8 6 16.4V7.2Z'/%3E%3Cpath fill='none' stroke='%23e7edf5' stroke-linecap='round' stroke-width='2.2' d='M16 9.2v12.2M11.8 13.6h8.4'/%3E%3C/svg%3E">
@@ -1549,6 +1549,7 @@ body{background-color:var(--bg);background-image:var(--app-bg-image);background-
 /* polish-1023: source number buttons get a 32px invisible tap area (looks unchanged) */
 .fn::before{content:"";position:absolute;left:50%;top:50%;width:max(100%,32px);height:max(100%,32px);transform:translate(-50%,-50%)}
 </style>
+<style>.startover-bar{position:sticky;top:60px;z-index:30;display:flex;justify-content:flex-end;pointer-events:none;margin:0 0 6px}.startover-btn{pointer-events:auto;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;border-radius:999px;border:2px solid #f0b070;background:#2a1a08;color:#ffd9a8;font:600 16px/1 system-ui,sans-serif;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.45)}.startover-btn:hover,.startover-btn:focus-visible{background:#f0b070;color:#1a1005;outline:none}</style>
 </head>
 <body>
 <!-- v7.6.69: charcoal/slate app background (grain texture removed) + simulation-trend hero -->
@@ -1795,6 +1796,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')set(false)})
 
   <!-- ================= WIZARD ================= -->
   <section id="wizard" class="wiz" hidden aria-label="Simulator">
+  <div class="startover-bar"><button type="button" id="btn-startover" class="startover-btn" title="Go back to the first screen and pick a different path"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>Start over</button></div>
     <p class="prog-mobile" id="prog-mobile"></p>
     <div class="mode-row"><div class="mode-sw" role="radiogroup" aria-label="Detail level">
       <button type="button" role="radio" data-uimode="simple" aria-checked="true">Simple</button><button type="button" role="radio" data-uimode="advanced" aria-checked="false">Advanced</button></div>
@@ -9359,6 +9361,7 @@ function bind() {
       case "actual-toggle": S.food.actualOn = !S.food.actualOn; if (!S.food.actualOn) { S.food.psmf = false; S.food.mealSrc = "rec"; } setSwitch(t, S.food.actualOn); fillInputs(); update(); return;
       case "planner-toggle": S.move.plannerOn = !S.move.plannerOn; if (S.move.plannerOn && S.move.planner.every((d) => !d.lift && !d.cardio)) seedPlanner(); setSwitch(t, S.move.plannerOn); update(); return;
       case "btn-print": if (!proGate("pdf", "#recap")) return; if (aiPlanWanted()) { try { await aiPlanForPrint(); } catch (e) { /* the AI section is optional */ } } buildPrint(); window.print(); return;
+      case "btn-startover": { if (typeof hab === "object" && hab) hab.stay = null; S.goal.touched = false; S.food.actualOn = false; S.food.psmf = false; S.maxStep = 1; go(0); return; }
       case "btn-restart": { const keepUnits = S.units; S = defaults(); S.units = keepUnits; photo = null; aiState = { adult: false, consent: false, busy: false, result: null, error: null, day: null }; fs.sel = null; $("#fs-q").value = ""; $("#fs-results").innerHTML = ""; $("#fs-status").textContent = ""; invalid.clear(); renderPhoto(); try { localStorage.removeItem(CONFIG.STORAGE_KEY); } catch (e) { /* ignore */ } fillInputs(); go(0); return; }
       case "ai-go": {
         const AB = aiBase(); if (!(aiState.adult && aiState.consent) || !AB.img) return;
