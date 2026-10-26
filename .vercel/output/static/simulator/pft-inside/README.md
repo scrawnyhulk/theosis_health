@@ -1,6 +1,6 @@
 # Personal fat threshold: how type 2 diabetes develops (V31)
 
-Theosis Medical · Health Hacks · Nick Holwey, PA-C
+Theosis Health · Health Hacks · Nick Holwey, PA-C
 
 This is a rebuild of `personal-fat-threshold-v20-ct-fuel-fixed.html` as a
 small static site. The concept, the three-panel workbench (CT view, figure
@@ -43,7 +43,7 @@ drop), or embed it in a page:
         style="width:100%;height:100dvh;min-height:720px;border:0" loading="lazy" allowfullscreen></iframe>
 ```
 
-When it is served from theosismedical.com at `/minutes/create-diabetic/`,
+When it is embedded on a same-origin Theosis page at `/minutes/create-diabetic/`,
 `/minutes/how-type-2-diabetes-develops/` or
 `/minutes/personal-fat-threshold/`, the same-origin frame sizing from v20
 still applies.

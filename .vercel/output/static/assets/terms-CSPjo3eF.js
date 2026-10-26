@@ -4,7 +4,7 @@ import{c as e}from"./useSelector-B0K6Mfa1.js";import{t}from"./site-shell-CPfoCMY
 <h2 id="1-education-only-not-medical-advice">1. Education only, not medical advice</h2>
 <ul>
 <li>The Service gives <strong>general health and wellness education</strong>. It is <strong>not medical advice, diagnosis, or treatment</strong>, and it doesn't replace a doctor, physician assistant, nurse practitioner, or other licensed professional who knows you.</li>
-<li>Using the Service, emailing us, or reading content by our founder <strong>does not create a provider–patient relationship</strong> with Theosis Health, our founder, or Theosis Medical LLC (a separate company).</li>
+<li>Using the Service, emailing us, or reading content by our founder <strong>does not create a provider–patient relationship</strong> with Theosis Health or our founder.</li>
 <li>"PFT" on this site means <strong>Personal Fat Threshold</strong>, an educational concept. It is not a pulmonary function test or any other medical test.</li>
 <li>Simulator outputs and projections are <strong>estimates</strong>, not predictions of your results. The simulator is a free <strong>beta version</strong> and may change or contain errors. See our <a href="/disclaimer">Medical Disclaimer</a>.</li>
 <li><strong>If you think you have a medical emergency, call 911 now.</strong> Talk to your own clinician before changing diet, exercise, or medications.</li>

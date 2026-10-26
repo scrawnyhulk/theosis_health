@@ -6,7 +6,7 @@ These Terms are an agreement between you and **Theosis Health LLC**, an Illinois
 
 ## 1. Education only, not medical advice
 - The Service gives **general health and wellness education**. It is **not medical advice, diagnosis, or treatment**, and it doesn't replace a doctor, physician assistant, nurse practitioner, or other licensed professional who knows you.
-- Using the Service, emailing us, or reading content by our founder **does not create a provider–patient relationship** with Theosis Health, our founder, or Theosis Medical LLC (a separate company).
+- Using the Service, emailing us, or reading content by our founder **does not create a provider–patient relationship** with Theosis Health or our founder.
 - "PFT" on this site means **Personal Fat Threshold**, an educational concept. It is not a pulmonary function test or any other medical test.
 - Simulator outputs and projections are **estimates**, not predictions of your results. The simulator is a free **beta version** and may change or contain errors. See our [Medical Disclaimer](/disclaimer).
 - **If you think you have a medical emergency, call 911 now.** Talk to your own clinician before changing diet, exercise, or medications.

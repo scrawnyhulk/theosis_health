@@ -1,4 +1,4 @@
-/* Personal fat threshold: how type 2 diabetes develops. Theosis Medical (Nick Holwey, PA-C).
+/* Personal fat threshold: how type 2 diabetes develops. Theosis Health.
    V21 engine: adapted from personal-fat-threshold-v20. Teaching model only; not a prediction. */
 (function(){
   "use strict";
@@ -1265,7 +1265,7 @@
   let modelHostWindow=null;
   try{
     if(window.frameElement&&window.parent.location.origin===location.origin&&
-       /(^|\.)theosismedical\.com$/.test(location.hostname)&&
+       /(^|\.)theosishealth\.com$/.test(location.hostname)&&
        /^\/minutes\/(create-diabetic|how-type-2-diabetes-develops|personal-fat-threshold)\/?$/.test(window.parent.location.pathname)){
       modelHostFrame=window.frameElement;
       modelHostWindow=window.parent;

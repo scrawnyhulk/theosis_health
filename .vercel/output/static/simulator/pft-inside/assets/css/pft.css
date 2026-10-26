@@ -470,7 +470,7 @@ h1{font-size:clamp(20px,2vw,27px);line-height:1.2}
 .human-3d-stage[data-renderer="2d"]>.human{top:0;height:100%;max-height:100%}
 
 /* ==========================================================================
-   V21 layer: Theosis Medical styling, mobile dock, story mode, threshold signs.
+   V21 layer: Theosis styling, mobile dock, story mode, threshold signs.
    Everything above this line is the original v20 stylesheet (9–10px text
    raised to 11px). Everything below overrides it.
    ========================================================================== */
@@ -489,7 +489,7 @@ a{color:var(--accent-hi)}a:hover{color:var(--ink)}
 .skip{position:absolute;left:1rem;top:-4rem;background:#1f63c0;color:#f4f8ff;padding:.5rem 1rem;z-index:60;border-radius:8px;text-decoration:none}
 .skip:focus{top:1rem}
 
-/* Header lockup, matching theosismedical.com */
+/* Header lockup */
 .site-header{position:sticky;top:0;z-index:40;border-bottom:1px solid var(--border);background:rgba(11,13,17,.80);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 .site-header .in{max-width:1600px;margin:0 auto;height:4rem;display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding:0 16px}
 .lockup-link{display:inline-flex}.lockup{height:3rem;width:auto;display:block}

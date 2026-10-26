@@ -45,8 +45,8 @@ import{c as e}from"./useSelector-B0K6Mfa1.js";import{t}from"./site-shell-CPfoCMY
 <p>The Service is for adults <strong>18+</strong>. We don't knowingly collect information from anyone under 18. If you believe a minor sent us information, email us and we'll delete it.</p>
 <h2 id="9-security">9. Security</h2>
 <p>We use HTTPS encryption, keep data on your device where possible, hash IP addresses, apply rate limits, and limit who can access our systems. No system is perfectly secure. Protect your device, because your saved inputs live there.</p>
-<h2 id="10-theosis-medical-is-separate">10. Theosis Medical is separate</h2>
-<p>Theosis Medical LLC (theosismedical.com) is a separate clinical company with its own privacy practices. Don't send patient or clinical information to theosishealth.com or any @theosishealth.com address.</p>
+<h2 id="10-no-clinical-information">10. No clinical information</h2>
+<p>Theosis Health does not provide clinical care. Don't send patient or clinical information to theosishealth.com or any @theosishealth.com address.</p>
 <h2 id="11-changes">11. Changes</h2>
 <p>We'll post updates here with a new date. For material changes, especially to how we use health or biometric data, we'll give notice and ask for consent where required.</p>
 <h2 id="12-contact">12. Contact</h2>

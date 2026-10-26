@@ -31,7 +31,7 @@ import { cn } from "@/lib/utils";
 
 export function SiteHeader() {
   const close = () => {};
-  // Home page shows the big hero logo instead, so the header drops its logo there (different feel from theosismedical.com).
+  // Home page shows the big hero logo instead, so the header drops its logo there .
   const path = useRouterState({ select: (s) => s.location.pathname });
   const isHome = path === "/";
   return (

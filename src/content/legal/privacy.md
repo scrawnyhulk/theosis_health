@@ -64,8 +64,8 @@ The Service is for adults **18+**. We don't knowingly collect information from a
 ## 9. Security
 We use HTTPS encryption, keep data on your device where possible, hash IP addresses, apply rate limits, and limit who can access our systems. No system is perfectly secure. Protect your device, because your saved inputs live there.
 
-## 10. Theosis Medical is separate
-Theosis Medical LLC (theosismedical.com) is a separate clinical company with its own privacy practices. Don't send patient or clinical information to theosishealth.com or any @theosishealth.com address.
+## 10. No clinical information
+Theosis Health does not provide clinical care. Don't send patient or clinical information to theosishealth.com or any @theosishealth.com address.
 
 ## 11. Changes
 We'll post updates here with a new date. For material changes, especially to how we use health or biometric data, we'll give notice and ask for consent where required.
