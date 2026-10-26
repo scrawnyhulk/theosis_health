@@ -1032,11 +1032,20 @@
         gs.traverse(o=>{if(!o.isMesh)return;const P=o.geometry.attributes.position,n=P.count,mid=new Float32Array(n),bel=new Float32Array(n),dB=new Float32Array(n*3),dS=new Float32Array(n*3),dM=new Float32Array(n*3);
           o.updateMatrixWorld(true);const Li=o.matrixWorld.clone().setPosition(0,0,0).invert(),W3=new T.Vector3();
           for(let i=0;i<n;i++){V.fromBufferAttribute(P,i).applyMatrix4(o.matrixWorld);const q=near(V.x,V.y,V.z);if(q>=0){mid[i]=pts[q][3];bel[i]=pts[q][4]}
-            const s2=snear(V.x,V.y,V.z);if(s2>=0){const e=SG.arr[s2];[[dB,3],[dS,6],[dM,9]].forEach(([D,o3])=>{W3.set(e[o3],e[o3+1],e[o3+2]).applyMatrix4(Li);D[i*3]=W3.x;D[i*3+1]=W3.y;D[i*3+2]=W3.z})}}
+            /* day1026c: no more nearest-skin-vertex copy (that pulled thigh/hip fat deltas onto lateral-leg muscle and made per-vertex
+               ridges on the abs). Skin deltas are Gaussian-averaged over ~6 cm, masked to the front/side abdominal wall only (arms, legs,
+               glutes, chest = 0), and capped, so the wall widens smoothly instead of stretching the six-pack into a potbelly.
+               day1026c: Muscle-view bulge is driven by VISCERAL fat (omU.uVisc, same driver as Inside abdomen): visceral sits behind the wall and pushes it out; subcutaneous/belly fat sits outside the muscle, so it barely moves it. */
+            const hh=sb.max.y-sb.min.y,t=(V.y-sb.min.y)/hh,cx=(sb.min.x+sb.max.x)/2,cz=(sb.min.z+sb.max.z)/2,ax=Math.abs(V.x-cx);
+            const ss=(a,b,x)=>{x=Math.min(1,Math.max(0,(x-a)/(b-a)));return x*x*(3-2*x)};
+            const wm=ss(.50,.555,t)*(1-ss(.635,.69,t))*(1-ss(.085,.135,ax))*ss(cz-.04,cz+.03,V.z);
+            if(wm>.001){const a=Math.floor(V.x/H),b=Math.floor(V.y/H),c=Math.floor(V.z/H),acc=[0,0,0,0,0,0,0,0,0];let ws=0;
+              for(let i=-3;i<=3;i++)for(let j=-3;j<=3;j++)for(let l=-3;l<=3;l++){const L=SG.G.get((a+i)+","+(b+j)+","+(c+l));if(L)for(const q of L){const p=SG.arr[q],dd=(p[0]-V.x)**2+(p[1]-V.y)**2+(p[2]-V.z)**2;if(dd>.0036)continue;const w=Math.exp(-dd/.0008);ws+=w;for(let u=0;u<9;u++)acc[u]+=w*p[3+u]}}
+              if(ws>0)[[dB,0],[dS,3],[dM,6]].forEach(([D,o3])=>{W3.set(acc[o3]/ws,acc[o3+1]/ws,acc[o3+2]/ws);W3.y*=.25;const m=W3.length(),cap=.045;if(m>cap)W3.multiplyScalar(cap/m);W3.multiplyScalar(wm).applyMatrix4(Li);D[i*3]=W3.x;D[i*3+1]=W3.y;D[i*3+2]=W3.z})}}
           o.geometry.setAttribute("aMid",new T.BufferAttribute(mid,1));o.geometry.setAttribute("aGB",new T.BufferAttribute(bel,1));
           o.geometry.setAttribute("aDB",new T.BufferAttribute(dB,3));o.geometry.setAttribute("aDS",new T.BufferAttribute(dS,3));o.geometry.setAttribute("aDM",new T.BufferAttribute(dM,3));
-          const mt=o.material;mt.onBeforeCompile=sh=>{sh.uniforms.uMG=muscleU.uMG;sh.uniforms.uMGk={get value(){return muscleU.uMGk.value/k}};sh.uniforms.uFB=fatU.uBelly;sh.uniforms.uFS=fatU.uSubq;sh.uniforms.uFM=fatU.uMass;
-            sh.vertexShader=sh.vertexShader.replace("#include <common>","#include <common>\nattribute float aMid;attribute float aGB;uniform float uMG[48];uniform float uMGk;attribute vec3 aDB;attribute vec3 aDS;attribute vec3 aDM;uniform float uFB,uFS,uFM;").replace("#include <begin_vertex>","#include <begin_vertex>\n{int mi0=int(aMid+.5);float g0=(mi0>0&&mi0<48)?uMG[mi0]:0.;transformed+=normalize(objectNormal)*(g0*aGB*uMGk)+aDB*(.62*uFB)+aDS*(.12*uFS)+aDM*(.3*uFM);}")};
+          const mt=o.material;mt.onBeforeCompile=sh=>{sh.uniforms.uMG=muscleU.uMG;sh.uniforms.uMGk={get value(){return muscleU.uMGk.value/k}};sh.uniforms.uFB=fatU.uBelly;sh.uniforms.uFS=fatU.uSubq;sh.uniforms.uFM=fatU.uMass;sh.uniforms.uFV=omU.uVisc;
+            sh.vertexShader=sh.vertexShader.replace("#include <common>","#include <common>\nattribute float aMid;attribute float aGB;uniform float uMG[48];uniform float uMGk;attribute vec3 aDB;attribute vec3 aDS;attribute vec3 aDM;uniform float uFB,uFS,uFM,uFV;").replace("#include <begin_vertex>","#include <begin_vertex>\n{int mi0=int(aMid+.5);float g0=(mi0>0&&mi0<48)?uMG[mi0]:0.;transformed+=normalize(objectNormal)*(g0*aGB*uMGk)+aDB*(.55*uFV+.06*uFB)+aDS*(.02*uFS)+aDM*(.08*uFM);}")};
           mt.customProgramCacheKey=()=>"g3dgrow";o.userData.role="g3d";o.castShadow=o.receiveShadow=true;o.frustumCulled=false;meshes.push(o);(byRole.g3d=byRole.g3d||[]).push(o)});
         (rootRef||scene).attach(gs);g3dOn=true;/* day1026: under the body root so height/frame scale applies */window.__pftG3D=1;applyMode();kick()}catch(e){console.warn("g3d fit",e)}},undefined,e=>console.warn("g3d load",e));
     }
