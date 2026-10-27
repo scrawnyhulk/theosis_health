@@ -234,7 +234,7 @@ function SodaCard() {
             <div id="st-a" className="st-tag">Story A · Adding a drink</div>
             <ol className="st-steps">
               <li>A person’s weight is steady. They eat about {SODA_MAINT_SHOWN.toLocaleString()} calories a day, enough to maintain.</li>
-              <li>They add one {S.name.toLowerCase()} a day and eats the same otherwise: <b>+{S.kcal} cal a day</b>.</li>
+              <li>They add one {S.name.toLowerCase()} a day and eat the same otherwise: <b>+{S.kcal} cal a day</b>.</li>
             </ol>
             <div className="st-out"><span>After {when}</span><b>{keepTxt} lb</b><em>The extra calories tend to add up to weight gain.</em></div>
           </section>
@@ -247,7 +247,7 @@ function SodaCard() {
                 <span className="sd-selwrap st-inline"><select id="sd-swap" className="sd-select" value={Z.id} onChange={(e) => setZid(e.target.value)}>
                   {ZERO.map((x) => <option key={x.id} value={x.id}>{x.name} ({x.kcal} cal)</option>)}
                 </select></span>{" "}
-                and doesn’t replace those calories: <b>−{diff} cal a day</b>.
+                and don’t replace those calories: <b>−{diff} cal a day</b>.
               </li>
             </ol>
             <div className="st-out"><span>After {when}</span><b>{swapTxt} lb</b><em>The swap doesn’t burn fat. Removing those calories creates a deficit, which tends to lead to weight loss.</em></div>

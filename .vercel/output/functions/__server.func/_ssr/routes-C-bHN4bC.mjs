@@ -5,7 +5,7 @@ import { b as Link } from "../_libs/@tanstack/react-router+[...].mjs";
 import { i as require_jsx_runtime } from "../_libs/@radix-ui/react-label+[...].mjs";
 import { T as ArrowRight, b as Clock, g as FlaskConical, h as Footprints } from "../_libs/lucide-react.mjs";
 import { a as SiteShell, i as NavPlaque, r as NavIcon } from "./site-shell-RWexaFBk.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/routes-C7o1BHjv.js
+//#region node_modules/.nitro/vite/services/ssr/assets/routes-C-bHN4bC.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 /** Swap this slug to feature a different existing Health Hack. Text is pulled from src/lib/hacks.ts, not written here. */
@@ -183,6 +183,7 @@ function lostLbByDay(cut, days = 365, P = EXAMPLE) {
 	return out;
 }
 var SODA_MAINT = Math.round(maintenance(SODA_PERSON) / 10) * 10;
+var SODA_MAINT_SHOWN = Math.round(SODA_MAINT / 100) * 100;
 var tools = [
 	{
 		href: "/simulator/",
@@ -583,7 +584,7 @@ var ZERO = [
 		src: "Brewed coffee, 12 fl oz (USDA FDC 171890)"
 	}
 ];
-var SODA_SR = `Example: a ${SODA_PERSON.age}-year-old, 5'5", ${SODA_PERSON.weightLb}-lb woman with about ${SODA_PERSON.bodyFatPct}% body fat who is lightly active, so she needs about ${(Math.round(maintenance(SODA_PERSON) / 10) * 10).toLocaleString()} calories a day.`;
+var SODA_SR = `Example: a ${SODA_PERSON.age}-year-old, 5'5", ${SODA_PERSON.weightLb}-lb person with about ${SODA_PERSON.bodyFatPct}% body fat who is lightly active, so they need about ${SODA_MAINT_SHOWN.toLocaleString()} calories a day.`;
 var curveCache = /* @__PURE__ */ new Map();
 var curve = (diff, gain) => {
 	const key = `${gain ? "g" : "l"}${diff}`;
@@ -697,13 +698,13 @@ function SodaCard() {
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("ol", {
 								className: "st-steps",
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
-									"Her weight is steady. She eats about ",
-									SODA_MAINT.toLocaleString(),
+									"A person’s weight is steady. They eat about ",
+									SODA_MAINT_SHOWN.toLocaleString(),
 									" calories a day, enough to maintain."
 								] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
-									"She adds one ",
+									"They add one ",
 									S.name.toLowerCase(),
-									" a day and eats the same otherwise: ",
+									" a day and eat the same otherwise: ",
 									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("b", { children: [
 										"+",
 										S.kcal,
@@ -733,13 +734,13 @@ function SodaCard() {
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("ol", {
 								className: "st-steps",
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
-									"Her weight is stuck, steady while drinking one ",
+									"Their weight is stuck, steady while they drink one ",
 									S.name.toLowerCase(),
 									" a day."
 								] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
 									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
 										htmlFor: "sd-swap",
-										children: "She switches to"
+										children: "They switch to"
 									}),
 									" ",
 									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
@@ -761,7 +762,7 @@ function SodaCard() {
 										})
 									}),
 									" ",
-									"and doesn’t replace those calories: ",
+									"and don’t replace those calories: ",
 									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("b", { children: [
 										"−",
 										diff,
