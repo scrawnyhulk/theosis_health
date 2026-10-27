@@ -9,7 +9,7 @@
   try{if(localStorage.getItem("pft-2d-legacy")==="1")legacy=true;if(/[?&]legacy2d=0/.test(q))legacy=false}catch(e){}
   var stage=document.getElementById("pft3d-stage"),range=document.getElementById("fat-range");
   if(legacy||!stage||!range)return;
-  var V="7739",BASE="assets/img/figure-g3d/",X=[0,10,20,30,40,50,60,70,80,90,100]; /* day 1026: 11 stops, all stacked + preloaded, opacity-only crossfade (no src swaps = no skips) */
+  var V="7740",BASE="assets/img/figure-g3d/",X=[0,10,20,30,40,50,60,70,80,90,100]; /* day 1026: 11 stops, all stacked + preloaded, opacity-only crossfade (no src swaps = no skips) */
   var mode="fat";try{mode=localStorage.getItem("pft-2d-g3d-mode")==="cut"?"cut":"fat"}catch(e){}
   var wrap=document.createElement("div");wrap.className="pft2d-g3d";wrap.setAttribute("role","img");
   wrap.setAttribute("aria-label","Front-view teaching illustration of how fat is stored as the slider moves, illustrating typical patterns");
