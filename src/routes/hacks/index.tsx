@@ -93,6 +93,13 @@ function HacksHub() {
             {hacksIntro.paragraphs.map((p) => (
               <p key={p.slice(0, 32)}>{p}</p>
             ))}
+            <p>
+              {hacksIntro.curator.before}
+              <a href={hacksIntro.curator.href} className="font-medium text-accent underline hover:text-fg">
+                {hacksIntro.curator.linkText}
+              </a>
+              {hacksIntro.curator.after}
+            </p>
           </div>
           <p className="mt-6 max-w-3xl text-sm text-muted">{hacksIntro.disclaimer}</p>
           <p className="mt-6 text-lg">

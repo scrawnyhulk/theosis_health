@@ -1,4 +1,4 @@
-import{c as e}from"./useSelector-B0K6Mfa1.js";import{t}from"./site-shell-CPfoCMYH.js";var n=`<h1 id="medical-disclaimer-theosis-health">Medical Disclaimer — Theosis Health</h1>
+import{c as e}from"./useSelector-B0K6Mfa1.js";import{t}from"./site-shell-kFh0fZYh.js";var n=`<h1 id="medical-disclaimer-theosis-health">Medical Disclaimer — Theosis Health</h1>
 <p><strong>Effective date:</strong> October 22, 2026 · <strong>Last updated:</strong> October 22, 2026</p>
 <blockquote><strong>Emergency? Call 911</strong> (or your local emergency number) or go to the nearest emergency department. Don't use this site or wait for an email reply.</blockquote>
 <h2 id="education-only">Education only</h2>
