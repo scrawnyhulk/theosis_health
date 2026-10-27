@@ -31,7 +31,7 @@
 
   const GLSL_COMMON=`
   varying vec3 vPos;
-  uniform float uCut; uniform float uHalf; uniform float uTime;
+  uniform float uCut; uniform float uHalf; uniform float uTime; uniform vec4 uBS;
   float pftHash(vec3 p){p=fract(p*.3183099+.1);p*=17.;return fract(p.x*p.y*p.z*(p.x+p.y+p.z));}
   float pftNoise(vec3 x){vec3 i=floor(x),f=fract(x);f=f*f*(3.-2.*f);
     return mix(mix(mix(pftHash(i),pftHash(i+vec3(1,0,0)),f.x),mix(pftHash(i+vec3(0,1,0)),pftHash(i+vec3(1,1,0)),f.x),f.y),
@@ -42,16 +42,17 @@
       vec3 o=vec3(pftHash(i+g),pftHash(i+g+19.1),pftHash(i+g+47.3));vec3 r=g+o-f;float d=dot(r,r);
       if(d<d1){d2=d1;d1=d;}else if(d<d2){d2=d;}}
     return vec2(sqrt(d1),sqrt(d2));}
-  float pftAbd(vec3 p,float front){float ax=pow(abs((p.x+.005)/.13),2.6);float ay=pow(abs((p.y-1.05)/.2),2.6);
+  float pftAbd(vec3 p,float front){/* day1026c: window lives in body space (root sx/sy scale) and narrows for a lean waist */p=vec3(p.x/uBS.x,(p.y-uBS.z)/uBS.y,p.z/uBS.x);float ax=pow(abs((p.x+.005)/(.13*uBS.w)),2.6);float ay=pow(abs((p.y-1.05)/(.2*(.5+.5*uBS.w))),2.6);
     return (1.-smoothstep(.9,1.,ax+ay))*smoothstep(front-.01,front+.01,p.z);}
   `;
   const GLSL_BUMP=`vec3 pftBump(vec3 n,float h,float s){vec3 dpx=dFdx(-vViewPosition),dpy=dFdy(-vViewPosition);float dhx=dFdx(h),dhy=dFdy(h);
     vec3 r1=cross(dpy,n),r2=cross(n,dpx);float det=dot(dpx,r1);vec3 g=sign(det)*(dhx*r1+dhy*r2);return normalize(abs(det)*n-s*g);}
   `;
+  const PFT_BS={value:new T.Vector4(1,1,0,1)};
   function patch(mat,key,o){
     mat.userData.uniforms=o.uniforms;
     mat.onBeforeCompile=function(sh){
-      Object.assign(sh.uniforms,o.uniforms);
+      Object.assign(sh.uniforms,o.uniforms);sh.uniforms.uBS=PFT_BS;
       sh.vertexShader="varying vec3 vPos;\n"+(o.vdecl||"")+sh.vertexShader.replace("#include <project_vertex>",(o.vpre||"")+"#include <project_vertex>\nvPos=(modelMatrix*vec4(transformed,1.0)).xyz;\n"+(o.vmain||""));
       let f=sh.fragmentShader.replace("#include <common>","#include <common>\n"+GLSL_COMMON+(o.fdecl||""));
       f=f.replace("void main() {",GLSL_BUMP+"\nfloat pftDome=1.;\nvoid main() {");f=f.replace("#include <lights_fragment_end>","#include <lights_fragment_end>\nreflectedLight.directDiffuse*=pftDome;reflectedLight.indirectDiffuse*=pftDome;"); /* r25o: form-shading multiplier applied after the warm re-hue pass, which would otherwise cancel brightness changes */
@@ -336,7 +337,7 @@
       meshes.forEach(m=>{const d=m.morphTargetDictionary,inf=m.morphTargetInfluences;if(!d)return;
         if("subq" in d)inf[d.subq]=bz(st.subq+bias.subq,1.25);if("mass" in d)inf[d.mass]=bz(st.mass+bias.mass,1.1);if("belly" in d)inf[d.belly]=bz(st.belly+bias.belly,1.25);if("visc" in d){const w=bz(st.visc+bias.visc,1);inf[d.visc]=(m.userData.role==="omentum"||m.userData.role==="mesentery")?envCap(m,w):w;}if("hyper" in d)inf[d.hyper]=st.hyper;});
       const B=bias;fatU.uSubq.value=bz(st.subq+B.subq,1.25);fatU.uMass.value=bz(st.mass+B.mass,1.1);fatU.uBelly.value=bz(st.belly+B.belly,1.25);fatU.uHyper.value=st.hyper;
-      liverU.uLiver.value=bz(st.liver+B.liver,1);liverU.uGlyL.value=glyOn?st.glyL:0;muscleU.uGly.value=glyOn&&mode!=="muscle"?st.gly:0;pancU.uPanc.value=bz(st.pancreas+B.pancreas,1);omU.uVisc.value=bz(st.visc+B.visc,1);if(rootRef){rootRef.scale.set(B.sx*B.sy,B.sy,B.sx*B.sy);/* day1026b: height scales the body proportionally (a taller person is not a vertically stretched one); sx = BMI build on top */rootRef.position.y=1.05*(1-B.sy);}
+      liverU.uLiver.value=bz(st.liver+B.liver,1);liverU.uGlyL.value=glyOn?st.glyL:0;muscleU.uGly.value=glyOn&&mode!=="muscle"?st.gly:0;pancU.uPanc.value=bz(st.pancreas+B.pancreas,1);omU.uVisc.value=bz(st.visc+B.visc,1);if(rootRef){rootRef.scale.set(B.sx*B.sy,B.sy,B.sx*B.sy);/* day1026b: height scales the body proportionally (a taller person is not a vertically stretched one); sx = BMI build on top */rootRef.position.y=1.05*(1-B.sy);}{const xz=rootRef?B.sx*B.sy:1,sy=rootRef?B.sy:1,lean=Math.min(1,Math.max(0,(bz(st.subq+B.subq,1.25)+bz(st.belly+B.belly,1.25))/1.1)),w=window.__PFT_CUTW===0?1:.8+.2*lean*(2-lean);PFT_BS.value.set(xz,sy,rootRef?rootRef.position.y:0,w)}
       if(M.heart)M.heart.emissiveIntensity=.45;
     }
     const v3=new T.Vector3();
@@ -440,7 +441,7 @@
           break}
       opts.onPick&&opts.onPick(name);
     }
-    function inWindow(p){const ax=Math.pow(Math.abs((p.x+.005)/.13),2.6),ay=Math.pow(Math.abs((p.y-1.05)/.2),2.6);return ax+ay<.95&&p.z>.025}
+    function inWindow(p){const b=PFT_BS.value,x=p.x/b.x,y=(p.y-b.z)/b.y,z=p.z/b.x;const ax=Math.pow(Math.abs((x+.005)/(.13*b.w)),2.6),ay=Math.pow(Math.abs((y-1.05)/(.2*(.5+.5*b.w))),2.6);return ax+ay<.95&&z>.025}
 
     // ---------- v7.6.67 anatomy pass (original procedural geometry; reference: standard anatomy texts, no traced images) ----------
     function v67Anatomy(root){

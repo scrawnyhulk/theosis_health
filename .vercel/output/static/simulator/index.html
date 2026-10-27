@@ -6254,8 +6254,8 @@ function pftSizeT(sex, bf, wh, wide) { const lo = wide ? (sex === "f" ? 18 : 10)
 function pftFigOuter(row) { const P = S.profile; if (!row) return null; const bf = row.bf != null ? row.bf : 100 * row.fatKg / Math.max(1, row.weightKg);
   let wc = null; try { wc = waistAt(row.fatKg, row.leanKg); } catch (e) { wc = null; }
   const wh = wc > 0 && P.heightCm > 0 ? Math.min(0.9, wc / P.heightCm) : null, z = pftSizeT(P.sex, bf, wh, true);
-  const e = z; /* v7.6.90: straight line (was ease-out 1-(1-z)^2, which flattened big bodies so 38% -> 33% barely changed); z itself is still capped */
-  const o = { subq: +(0.05 + 1.0 * e).toFixed(3), mass: +(0.75 * e).toFixed(3), belly: +(0.95 * e).toFixed(3) };
+  const e = z, zb = pftSizeT(P.sex, bf, null, true); /* day1026c (Nick): chin/face and whole-body soft tissue (subq, mass) follow body fat % only; waist drives the midsection (belly) and visceral */ /* v7.6.90: straight line (was ease-out 1-(1-z)^2, which flattened big bodies so 38% -> 33% barely changed); z itself is still capped */
+  const o = { subq: +(0.05 + 1.0 * zb).toFixed(3), mass: +(0.75 * zb).toFixed(3), belly: +(0.95 * Math.min(1, 0.35 * zb + 0.65 * e)).toFixed(3) };
   try { const v = pftFigInner(row, z, wh); if (v) { o.visc = v.visc; o.liver = v.liver; } } catch (x) { /* depot model unavailable: figure keeps its default inner fat */ }
   return o; }
 /* day1026 fat-scaling (Nick): the Inside-abdomen fat (omentum, mesentery, fat along the bowel) and the liver tint follow this point of the plan,
@@ -8524,7 +8524,7 @@ function renderSnapshot() { if (typeof window.renderSnapshotNow === "function") 
 function a1cCardHtml() { if (typeof window.a1cCardHtmlNow === "function") return window.a1cCardHtmlNow(); lazyLoad("assets/a1c-log.js?v=7655").then(() => { if (V.open && V.view === "home") renderViews(); }, () => {}); return `<div class="v-card a1-card" id="a1-card"><h2>A1c log</h2><p class="hint">Loading…</p></div>`; }
 window.BodyPlanFig3D = window.BodyPlanFig3D || { state: { on: false, failed: false, where: null } };
 function f3dMount() { if (window.__NO_PFT_FIG) return; if (typeof window.f3dMountNow === "function") return window.f3dMountNow(); if (!R || R.blocked) return;
-  lazyLoad("assets/fig3d-pft.js?v=7735").then(() => window.f3dMountNow(), () => { window.BodyPlanFig3D.state.failed = true; const h = document.getElementById("sum-pft"); if (h && !h.innerHTML) { h.hidden = false; h.innerHTML = `<figure class="f3d-fbfig"><img src="assets/f3d-ct-fallback.webp" alt="Example cross-section through the middle of the model" width="720" height="560"><figcaption>Example cross-section. The 3D model can't load on this device.</figcaption></figure>`; } }); }
+  lazyLoad("assets/fig3d-pft.js?v=7736").then(() => window.f3dMountNow(), () => { window.BodyPlanFig3D.state.failed = true; const h = document.getElementById("sum-pft"); if (h && !h.innerHTML) { h.hidden = false; h.innerHTML = `<figure class="f3d-fbfig"><img src="assets/f3d-ct-fallback.webp" alt="Example cross-section through the middle of the model" width="720" height="560"><figcaption>Example cross-section. The 3D model can't load on this device.</figcaption></figure>`; } }); }
 function printRegional(s, e) { const k = changeKind(s, e), c = FD.change(depotsAt(s.fatKg), depotsAt(e.fatKg)), m = muscleSplit(S.profile.sex, e.leanKg - s.leanKg);
   const fat = `around the organs ${fWd(c.vat.kg)} (${fPct(c.vat.pct)}), under the skin ${fWd(c.sub.kg)} (${fPct(c.sub.pct)})`, mus = `upper body ${fWd(m.up)}, legs &amp; glutes ${fWd(m.lo)}`;
   return `<p class="small"><b>${{ loss: "Where fat comes off first", gain: "Where muscle builds, and where fat would add", recomp: "Where you lose fat and gain muscle", hold: "Where things shift" }[k]} (estimate):</b> ${k === "gain" ? `lean (mostly muscle): ${mus}; fat: ${fat}.` : k === "recomp" ? `fat: ${fat}; lean (mostly muscle): ${mus}.` : `fat ${fat}.`}</p>`; }
