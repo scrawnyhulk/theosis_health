@@ -143,14 +143,14 @@
         diffuseColor.a=min(.96,.42+.24*smoothstep(.0,.3,vW.r+vW.g*.6)+.5*smoothstep(.05,.8,th))*uFatOp;if(diffuseColor.a<.01)discard;`,
       normal:"normal=pftBump(normal,pftNoise(vPos*38.)+.35*pftNoise(vPos*110.),.0016);"});
     const muscleU={uSel:U(0),...shared,uGly:U(0),uMG:{value:new Array(48).fill(0)},uMGk:U(1),uMView:U(0)}; /* v7.6.78: per-muscle growth (index = muscle id), local-unit scale, muscle-only view */
-    M.muscle=patch(new T.MeshStandardMaterial({color:0x7d1d17,roughness:.55,metalness:0}),"muscle27",{
+    M.muscle=patch(new T.MeshStandardMaterial({color:0x7d1d17,roughness:.55,metalness:0}),"muscle28",{
       uniforms:muscleU,vdecl:"attribute vec3 color;\nattribute float aBelly;\nattribute float aFib;attribute float aEdge;attribute float aTd;varying float vTd;varying float vBel;\nuniform float uMG[48];uniform float uMGk;\nvarying float vMid;varying float vGrow;varying float vFib;varying float vEdge;\n",vpre:"{int mi0=int(floor(color.r*64.+.5));float g0=(mi0>0&&mi0<48)?uMG[mi0]:0.;vGrow=g0;transformed+=normalize(objectNormal)*g0*aBelly*uMGk;}\n",vmain:"vMid=color.r;vFib=aFib;vEdge=aEdge;vTd=aTd;vBel=aBelly;\n",fdecl:"uniform float uGly,uSel,uMView;\nvarying float vMid;varying float vGrow;varying float vFib;varying float vEdge;varying float vTd;varying float vBel;\n",discard:"if(uCut>.5&&pftAbd(vPos,.03)>.5)discard;if(uCut>.5&&uHalf<.5&&vPos.y>1.47)discard; ",
       color:`float fib,fib2;if(vEdge>=0.){float fq=vFib*1500.+pftNoise(vPos*70.)*3.;float fa=1.-smoothstep(.4,1.2,fwidth(fq));fib=mix(.6,.5+.5*sin(fq),fa);fib2=mix(.85,.75+.25*sin(fq*2.7+1.3),fa);}else{fib=sin(vPos.x*1400.+pftNoise(vPos*vec3(60.,8.,60.))*9.)*.5+.5;fib2=sin(vPos.z*1400.+pftNoise(vPos*vec3(60.,8.,60.)+7.)*9.)*.5+.5;}
         float s=fib*fib2;diffuseColor.rgb*=mix(.62,1.12,s);
         float mid=vMid*64.;float mi=floor(mid+.5);float mt=abs(mi-27.)<.5?26.:mi;float hv=fract(sin(mt*12.9898+.7)*43758.5453); /* r25n: pec abdominal part shares the pec tone (no mid-chest colour step) */diffuseColor.rgb*=mi>.5?(vEdge>=0.?(.86+.24*hv):(.74+.46*hv)):1.;
         float seam=vEdge>=0.?(1.-smoothstep(.7,1.5,vEdge))*.7:clamp(fwidth(mid)*3.5,0.,1.);if(vEdge>=0.)diffuseColor.rgb*=mix(.55,1.,smoothstep(.8,3.2,vEdge)); /* r25m: smooth border lines + soft groove shading beside them */diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.93,.86,.78),(uMView>.5?.24:.55)*seam); // pale fascia line between muscles (softer in the muscle-only view)
-        if(abs(mi-45.)<.5){float td=clamp(vTd,0.,1.);float ph=vFib*7200.+pftNoise(vPos*vec3(40.,220.,40.))*2.4;float st=.5+.5*sin(ph);float st2=.5+.5*sin(ph*2.2+1.3);vec3 ten=mix(vec3(.74,.66,.56),vec3(.98,.95,.90),st*.7+st2*.3);ten*=mix(.78,1.08,st);diffuseColor.rgb=mix(diffuseColor.rgb,ten,smoothstep(.2,.92,td));} /* SCM sternal insertion: pale fibrous cord (strands along the tendon), not a flat colour fade */
-        if(abs(mi-46.)<.5&&vPos.y>1.36&&vPos.y<1.55&&abs(vPos.x)<.055&&vPos.z>.025&&vPos.z<.078)diffuseColor.rgb=mix(diffuseColor.rgb*.82,vec3(.50,.20,.18),.48); /* deeper strap seen in the SCM fossa, not the bare neck surface */
+        if(abs(mi-45.)<.5){float td=clamp(vTd,0.,1.);diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.91,.85,.76),smoothstep(.06,.5,td)*.62);float ph=vFib*18500.+pftNoise(vPos*vec3(90.,460.,90.))*1.4;float st=pow(clamp(.5+.5*sin(ph),0.,1.),1.45);float st2=.5+.5*sin(ph*2.1+.7);vec3 ten=mix(vec3(.55,.48,.40),vec3(.98,.96,.91),st*.58+st2*.42);ten*=mix(.72,1.05,st);diffuseColor.rgb=mix(diffuseColor.rgb,ten,smoothstep(.15,.78,td));} /* SCM sternal tendon: pale fascicles on a flat ribbon */
+        if(abs(mi-46.)<.5&&vPos.y>1.35&&vPos.y<1.56&&abs(vPos.x)<.07&&vPos.z>.015&&vPos.z<.085){vec3 deep=mix(vec3(.46,.17,.15),vec3(.68,.28,.22),smoothstep(.25,.82,vBel));diffuseColor.rgb=mix(diffuseColor.rgb*.9,deep,.64);diffuseColor.rgb*=mix(.82,1.08,.5+.5*sin(vFib*2600.));} /* infrahyoid floor in the lesser supraclavicular fossa */
         if(uMView>.5&&vEdge>=0.){float mi2=floor(vMid*64.+.5);float lum=dot(diffuseColor.rgb,vec3(.3,.59,.11));diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.80,.28,.17)*(.55+1.15*lum),.62);{float l2=dot(diffuseColor.rgb,vec3(.3,.59,.11));diffuseColor.rgb=max(vec3(0.),mix(vec3(l2),diffuseColor.rgb,1.4))*vec3(1.04,.94,.9);}float limb=(mi2>3.5&&mi2<25.5)?1.:0.;if(vPos.z>.03&&vPos.y>1.26&&vPos.y<1.43&&((mi2>25.5&&mi2<27.5)||(mi2>.5&&mi2<1.5))){float sx=abs(vPos.x),xd=.150+(1.405-vPos.y)*.42;float gm=1.;float gd=max(smoothstep(.0012,.0048,abs(sx-xd)),max(1.-smoothstep(1.285,1.305,vPos.y),step(.178,sx)));float gc=max(smoothstep(.0012,.0045,abs(vPos.y-(1.372-.34*(sx-.02)))),max(max(step(xd-.004,sx),step(sx,.022)),step(mi2,1.5)));diffuseColor.rgb*=mix(.6,1.,gm)*mix(.6,1.,gd)*mix(.55,1.,gc);} /* r25n: deltopectoral and clavicular/sternal head grooves */
         if(vPos.z>.03&&vPos.y>1.25&&vPos.y<1.405){float sx=abs(vPos.x),w=.0062+.0045*smoothstep(1.355,1.395,vPos.y)-.003*smoothstep(1.285,1.25,vPos.y);float pl=1.-smoothstep(w-.0015,w+.0008,sx);diffuseColor.rgb=mix(diffuseColor.rgb*mix(.62,1.,smoothstep(.0,.004,sx-w)),vec3(.84,.78,.66),pl*.8);} /* r25n: pale sternal plate, pectoral fibres attach to its lateral edges */
         if(vPos.z>.03&&vPos.y>1.2&&vPos.y<1.36){float sx=abs(vPos.x);float yb=1.248+.62*max(0.,sx-.025)+.004*sin(sx*90.);float d=vPos.y-yb;float m=smoothstep(.012,.03,sx)*(1.-smoothstep(.15,.175,sx));float u=-d;diffuseColor.rgb*=1.-.36*m*smoothstep(0.,.003,u)*(1.-smoothstep(.004,.014,u));diffuseColor.rgb*=1.+.07*m*step(0.,d)*(1.-smoothstep(0.,.02,d));} /* r25n: rounded lower pec edge - soft undercut shadow below, light rim above */
@@ -160,7 +160,7 @@
         if(uMView>.5){float cav=clamp(length(fwidth(normalize(vNormal)))*4.,0.,1.);diffuseColor.rgb*=1.-.3*cav;diffuseColor.rgb=mix(diffuseColor.rgb,diffuseColor.rgb*vec3(1.08,.9,.88),.5);diffuseColor.rgb*=1.+.10*smoothstep(0.,.012,vGrow);} // v7.6.78: Netter-style depth: darker creases between bellies, slightly fuller red where muscle grew
         if(uSel>.5&&abs(mi-uSel)<.5)diffuseColor.rgb=mix(diffuseColor.rgb,vec3(1.,.72,.36),.42);diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.55,.33,.28),pftNoise(vPos*16.)*.18);
         float gr=smoothstep(.64,.74,pftNoise(vPos*230.));diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.15,.62,.55),uGly*.12);diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.5,1.,.9),min(.55,uGly*.6*gr)); // V32g: lighter glycogen speckle so muscle borders stay readable`,
-      normal:`normal=pftBump(normal,fib*fib2,.0006);if(abs(vMid*64.-45.)<.5)normal=pftBump(normal,sin(vFib*7200.),.0014*clamp(vTd,0.,1.));`,light:"if(uMView>.5&&vEdge>=0.)reflectedLight.indirectDiffuse+=diffuseColor.rgb*.08;"});
+      normal:`normal=pftBump(normal,fib*fib2,.0006);if(abs(vMid*64.-45.)<.5)normal=pftBump(normal,sin(vFib*18500.),.0024*clamp(vTd,0.,1.));if(abs(vMid*64.-46.)<.5)normal=pftBump(normal,sin(vFib*2600.),.0012);`,light:"if(uMView>.5&&vEdge>=0.)reflectedLight.indirectDiffuse+=diffuseColor.rgb*.08;"});
     M.nail=new T.MeshStandardMaterial({color:0xc99a8c,roughness:.42,metalness:0});
     const boneU={...shared,uBMV:U(0)};M.bone=patch(new T.MeshStandardMaterial({color:0xcfc4ae,roughness:.62}),"bone",{uniforms:boneU,fdecl:"uniform float uBMV;\n",discard:"if(uCut>.5&&pftAbd(vPos,.03)>.5)discard;if(uCut>.5&&uHalf<.5&&vPos.y>1.47)discard; if(uBMV>.5&&((vPos.z<-.02&&abs(vPos.x)<.035&&vPos.y>1.05&&vPos.y<1.52)||vPos.y>1.47))discard; /* r25n: Muscle view - spinous processes sit under the trapezius/erector origins; the clavicles stay as a pale shelf */"});
     const organ=(c,r,extra)=>new T.MeshPhysicalMaterial(Object.assign({color:c,roughness:Math.min(.8,r+.2),clearcoat:.06,clearcoatRoughness:.6,specularIntensity:.35,sheen:.12,sheenColor:new T.Color(0xffc0b0)},extra||{}));
@@ -905,9 +905,9 @@
       return 1}
     // v7.6.78: per-vertex "belly" weight for muscle growth: 1 in the middle of each muscle, tapering to 0 at its ends
     // (along the muscle's longest axis), so growing muscles swell like real muscle bellies instead of puffing up evenly.
-    // SCM (id 45): one diagonal belly from the mastoid, a thin fibrous sternal cord onto
-    // the manubrium, and a flat clavicular sheet seated on the superior clavicle.
-    // Two deeper straps (id 46) show in the triangular opening. The old sheet is sunk.
+    // SCM (id 45): one diagonal belly from the mastoid, a flat pale sternal tendon
+    // onto the manubrium, and a clavicular sheet on a slightly flattened clavicle.
+    // An infrahyoid sheet with a few straps fills the triangular opening.
     // Grab3D stays Muscle view. window.__PFT_SCM=0 restores the baked sheet.
     function scmStraps(m,W,id){
       const g=m.geometry,P=g.attributes.position,n=P.count;
@@ -932,52 +932,57 @@
       const skinZ=(x,y)=>{let z=-1;const a=Math.floor(x/.012),b=Math.floor(y/.012);for(let p=-1;p<=1;p++)for(let q=-1;q<=1;q++){const o=SZ.get((a+p)+","+(b+q));if(o!==undefined&&o>z)z=o}return z<0?null:z};
       const clavTop=x=>{const ax=Math.abs(x),S=[[.03,1.386,.078],[.04,1.399,.080],[.05,1.400,.080],[.06,1.402,.074],[.07,1.402,.067],[.08,1.404,.063],[.09,1.403,.060],[.10,1.404,.045]];
         if(ax<=S[0][0])return S[0];if(ax>=S[S.length-1][0])return S[S.length-1];let i=0;while(i<S.length-2&&ax>S[i+1][0])i++;const t=(ax-S[i][0])/(S[i+1][0]-S[i][0]);return [ax,S[i][1]+(S[i+1][1]-S[i][1])*t,S[i][2]+(S[i+1][2]-S[i][2])*t]};
+      const clavCap=x=>{const t=clavTop(x);return [t[0],t[1]-.0055,t[2]]};
+      (function scmClavicle(){const bones=byRole.bone||[];
+        for(const b of bones){if(!b.geometry||b.userData.clavFlat)continue;b.userData.clavFlat=1;b.updateMatrixWorld(true);
+          const P=b.geometry.attributes.position,inv=b.matrixWorld.clone().invert(),v=new T.Vector3();
+          for(let i=0;i<P.count;i++){v.fromBufferAttribute(P,i).applyMatrix4(b.matrixWorld);const ax=Math.abs(v.x);
+            if(ax<.028||ax>.108||v.y<1.33||v.y>1.425||v.z<.005||v.z>.12)continue;
+            const top=clavTop(ax),cap=top[1]-.0055,dome=v.y-(top[1]-.016);if(dome<=0)continue;
+            const k=Math.min(1,dome/.016),k2=k*k*(3-2*k);v.y+=(cap-v.y)*k2*.85;v.z+=(top[2]-v.z)*k2*.28;
+            v.applyMatrix4(inv);P.setXYZ(i,v.x,v.y,v.z)}
+          P.needsUpdate=true;b.geometry.computeVertexNormals()}})();
       const belly=[[.066,1.592,.010],[.056,1.548,.030],[.046,1.502,.046],[.036,1.462,.056]];
-      const stern=[[.034,1.460,.062],[.026,1.438,.074],[.020,1.418,.082],[.015,1.404,.083]];
-      const cord=[[.016,1.412,.082],[.013,1.396,.080],[.011,1.384,.078],[.010,1.372,.074]];
+      const stern=[[.034,1.460,.062],[.026,1.442,.072],[.020,1.424,.078],[.016,1.412,.080]];
+      const tendon=[[.017,1.424,.078],[.014,1.408,.080],[.012,1.396,.079],[.011,1.386,.077]];
       const clav=[[.038,1.458,.048],[.046,1.434,.058],[.052,1.418,.068],[.058,1.406,.076]];
-      const floorA=[[.021,1.492,.050],[.023,1.456,.054],[.025,1.424,.056],[.024,1.400,.054]];
-      const floorB=[[.032,1.468,.044],[.034,1.436,.048],[.034,1.412,.050],[.032,1.398,.048]];
       const wB=u=>.014+.006*Math.sin(Math.min(1,u)*Math.PI),tB=u=>.008+.003*Math.sin(Math.min(1,u)*Math.PI);
-      const wS=u=>.011*(1-u)+.0034*u,tS=u=>.007*(1-u)+.0032*u;
+      const wS=u=>.011*(1-u)+.0048*u,tS=u=>.0065*(1-u)+.0016*u;
+      const wT=u=>.0044*(1-u)+.0076*u,tT=()=>.00115;
       const wC=u=>.014*(1-u)+.046*u,tC=u=>.0028*(1-u)+.0016*u;
       const pos=[],col=[],fib=[],edg=[],bel=[],td=[],idx=[];
       const sample=(poly,n)=>{const d=[0];for(let i=1;i<poly.length;i++)d.push(d[i-1]+Math.hypot(poly[i][0]-poly[i-1][0],poly[i][1]-poly[i-1][1],poly[i][2]-poly[i-1][2]));const L=d[d.length-1]||1,out=[];
         for(let k=0;k<n;k++){const t=L*(n===1?0:k/(n-1));let i=0;while(i<d.length-2&&d[i+1]<t)i++;const u=(t-d[i])/Math.max(1e-6,d[i+1]-d[i]);out.push([poly[i][0]+(poly[i+1][0]-poly[i][0])*u,poly[i][1]+(poly[i+1][1]-poly[i][1])*u,poly[i][2]+(poly[i+1][2]-poly[i][2])*u])}return out};
       const frameAt=(C,i)=>{let tx,ty,tz;if(i===0){tx=C[1][0]-C[0][0];ty=C[1][1]-C[0][1];tz=C[1][2]-C[0][2]}else if(i===C.length-1){tx=C[i][0]-C[i-1][0];ty=C[i][1]-C[i-1][1];tz=C[i][2]-C[i-1][2]}else{tx=C[i+1][0]-C[i-1][0];ty=C[i+1][1]-C[i-1][1];tz=C[i+1][2]-C[i-1][2]}
         let tl=Math.hypot(tx,ty,tz)||1;tx/=tl;ty/=tl;tz/=tl;return [tx,ty,tz]};
-      const addTube=(poly,wf,tf,side,kind)=>{const NR=26,NA=kind==="c"?12:8,C=sample(poly.map(p=>[p[0]*side,p[1],p[2]]),NR),base=pos.length/3,flat=kind==="c";
+      const addTube=(poly,wf,tf,side,kind)=>{const ribbon=kind==="t",flat=kind==="c",NR=ribbon?18:26,NA=ribbon?9:flat?12:8,C=sample(poly.map(p=>[p[0]*side,p[1],p[2]]),NR),base=pos.length/3;
         for(let i=0;i<NR;i++){const u=i/(NR-1);const [tx,ty,tz]=frameAt(C,i);
           let ox,oy,oz,bx,by,bz;
-          if(flat){bx=side;by=.04;bz=0;let bd=bx*tx+by*ty+bz*tz;bx-=bd*tx;by-=bd*ty;bz-=bd*tz;let bl=Math.hypot(bx,by,bz)||1;bx/=bl;by/=bl;bz/=bl;
-            ox=0;oy=.06;oz=1;let od=ox*tx+oy*ty+oz*tz;ox-=od*tx;oy-=od*ty;oz-=od*tz;let ol=Math.hypot(ox,oy,oz)||1;ox/=ol;oy/=ol;oz/=ol;
+          if(flat||ribbon){bx=side;by=ribbon?.02:.04;bz=ribbon?-.02:0;let bd=bx*tx+by*ty+bz*tz;bx-=bd*tx;by-=bd*ty;bz-=bd*tz;let bl=Math.hypot(bx,by,bz)||1;bx/=bl;by/=bl;bz/=bl;
+            ox=0;oy=ribbon?.08:.06;oz=1;let od=ox*tx+oy*ty+oz*tz;ox-=od*tx;oy-=od*ty;oz-=od*tz;let ol=Math.hypot(ox,oy,oz)||1;ox/=ol;oy/=ol;oz/=ol;
             const bd2=bx*ox+by*oy+bz*oz;bx-=bd2*ox;by-=bd2*oy;bz-=bd2*oz;bl=Math.hypot(bx,by,bz)||1;bx/=bl;by/=bl;bz/=bl}
           else{ox=C[i][0];oy=0;oz=C[i][2];let od=ox*tx+oy*ty+oz*tz;ox-=od*tx;oy-=od*ty;oz-=od*tz;let ol=Math.hypot(ox,oy,oz);if(ol<1e-5){ox=side;oy=0;oz=.5;ol=Math.hypot(ox,oy,oz)}ox/=ol;oy/=ol;oz/=ol;
             ox*=1;oy+=.05;oz+=.4;od=ox*tx+oy*ty+oz*tz;ox-=od*tx;oy-=od*ty;oz-=od*tz;ol=Math.hypot(ox,oy,oz)||1;ox/=ol;oy/=ol;oz/=ol;
             bx=ty*oz-tz*oy;by=tz*ox-tx*oz;bz=tx*oy-ty*ox;const bl=Math.hypot(bx,by,bz)||1;bx/=bl;by/=bl;bz/=bl}
           const hw=wf(u)/2,ht=tf(u),seat=flat?Math.min(1,Math.max(0,(u-.46)/.42)):0;
           for(let k=0;k<NA;k++){const a=-1+2*k/(NA-1);
-            const lift=flat?(1-a*a)*.4+.5:Math.sqrt(Math.max(0,1-a*a));
-            const out=flat?ht*lift:ht*(kind==="s"&&u>.45?.55+.45*lift:.22+.78*lift);
-            let px=C[i][0]+bx*a*hw+ox*out,py=C[i][1]+by*a*hw+oy*out,pz=C[i][2]+bz*a*hw+oz*out;
-            if(seat>0){const top=clavTop(px);py=py*(1-seat)+(top[1]+.0011)*seat;pz=pz*(1-seat)+(top[2]+.0018)*seat}
-            if(!(flat&&u>.52)){const zm=skinZ(px,py);if(zm&&pz>zm-.0022){const back=Math.min(.005,pz-(zm-.0022));px-=ox*back;py-=oy*back;pz-=oz*back}}
-            pos.push(px,py,pz);col.push(45/64,0,0);fib.push(a*hw);
-            const rim=k===0||k===NA-1,tuck=kind!=="b"&&u<.14;edg.push(tuck||!rim?3.2:.4);
-            bel.push(kind==="b"?Math.sin(Math.min(1,u)*Math.PI):Math.sin(Math.min(1,.25+u*.5)*Math.PI)*(flat?.35:1));
-            const tu=kind==="s"?Math.min(1,Math.max(0,(u-.5)/.5)):0;td.push(tu*tu*(3-2*tu))}}
+            const lift=flat||ribbon?(1-a*a)*.35+.62:Math.sqrt(Math.max(0,1-a*a));
+            const thick=flat||ribbon?ht*lift:ht*(kind==="s"&&u>.35?.62+.38*lift:.22+.78*lift);
+            let px=C[i][0]+bx*a*hw+ox*(ribbon?thick-ht*.45:thick),py=C[i][1]+by*a*hw+oy*(ribbon?thick-ht*.45:thick),pz=C[i][2]+bz*a*hw+oz*(ribbon?thick-ht*.45:thick);
+            if(seat>0){const cap=clavCap(px);py=py*(1-seat)+(cap[1]+.001)*seat;pz=pz*(1-seat)+(cap[2]+.0012)*seat}
+            if(ribbon&&u>.7){const s=Math.min(1,(u-.7)/.26);py=py*(1-s)+1.384*s;pz=pz*(1-s)+.078*s}
+            if(!(flat&&u>.52)&&!(ribbon&&u>.4)){const zm=skinZ(px,py);if(zm&&pz>zm-.0022){const back=Math.min(.005,pz-(zm-.0022));px-=ox*back;py-=oy*back;pz-=oz*back}}
+            pos.push(px,py,pz);col.push(45/64,0,0);fib.push(a*(ribbon?hw*2.2:hw));
+            const rim=k===0||k===NA-1,tuck=kind!=="b"&&kind!=="t"&&u<.14;edg.push(tuck||!rim?3.2:.4);
+            bel.push(kind==="b"?Math.sin(Math.min(1,u)*Math.PI):Math.sin(Math.min(1,.25+u*.5)*Math.PI)*(flat?.35:ribbon?.2:1));
+            const tu=kind==="t"?.62+.38*u:kind==="s"?Math.min(1,Math.max(0,(u-.32)/.68)):0;td.push(kind==="t"?tu:tu*tu*(3-2*tu))}}
         for(let i=0;i<NR-1;i++)for(let k=0;k<NA-1;k++){const a=base+i*NA+k,b=a+1,c=a+NA,d=c+1;idx.push(a,b,c,b,d,c)}};
-      const addLoop=(poly,radF,side,mid)=>{const NR=16,NA=10,C=sample(poly.map(p=>[p[0]*side,p[1],p[2]]),NR),base=pos.length/3;
-        for(let i=0;i<NR;i++){const u=i/(NR-1);const [tx,ty,tz]=frameAt(C,i);
-          let ox=side*.15,oy=.05,oz=1,od=ox*tx+oy*ty+oz*tz;ox-=od*tx;oy-=od*ty;oz-=od*tz;let ol=Math.hypot(ox,oy,oz)||1;ox/=ol;oy/=ol;oz/=ol;
-          let bx=ty*oz-tz*oy,by=tz*ox-tx*oz,bz=tx*oy-ty*ox,bl=Math.hypot(bx,by,bz)||1;bx/=bl;by/=bl;bz/=bl;
-          const rad=radF(u);
-          for(let k=0;k<NA;k++){const ang=k/NA*Math.PI*2,cs=Math.cos(ang),sn=Math.sin(ang);
-            const px=C[i][0]+(bx*cs+ox*sn)*rad,py=C[i][1]+(by*cs+oy*sn)*rad,pz=C[i][2]+(bz*cs+oz*sn)*rad;
-            pos.push(px,py,pz);col.push(mid/64,0,0);fib.push(cs*rad);edg.push(3.2);
-            bel.push(mid===45?.12:.35);td.push(mid===45?.78+.22*u:0)}}
-        for(let i=0;i<NR-1;i++)for(let k=0;k<NA;k++){const a=base+i*NA+k,b=base+i*NA+(k+1)%NA,c=a+NA,d=base+(i+1)*NA+(k+1)%NA;idx.push(a,b,c,b,d,c)}};
-      for(const side of [1,-1]){addTube(belly,wB,tB,side,"b");addTube(stern,wS,tS,side,"s");addLoop(cord,u=>.00155*(1-u)+.00125*u,side,45);addTube(clav,wC,tC,side,"c");addLoop(floorA,()=>.00155,side,46);addLoop(floorB,()=>.00125,side,46)}
+      const addFloor=side=>{const NY=11,NX=8,base=pos.length/3,y0=1.466,y1=1.398;
+        for(let i=0;i<NY;i++){const u=i/(NY-1),y=y0+(y1-y0)*u,xMed=.020*(1-u)+.015*u,xLat=.034*(1-u)+.041*u,z0=.047*(1-u)+.052*u;
+          for(let k=0;k<NX;k++){const a=k/(NX-1);let ridge=0;for(const r of [.16,.46,.74])ridge=Math.max(ridge,Math.max(0,1-Math.abs(a-r)/.1));
+            pos.push((xMed+(xLat-xMed)*a)*side,y+.0005*ridge,z0-.005*a+.0018*ridge);col.push(46/64,0,0);fib.push((a-.5)*.014);edg.push(3.2);bel.push(.22+.62*ridge);td.push(0)}}
+        for(let i=0;i<NY-1;i++)for(let k=0;k<NX-1;k++){const a=base+i*NX+k,b=a+1,c=a+NX,d=c+1;if(side>0)idx.push(a,c,b,c,d,b);else idx.push(a,b,c,b,d,c)}};
+      for(const side of [1,-1]){addTube(belly,wB,tB,side,"b");addTube(stern,wS,tS,side,"s");addTube(tendon,wT,tT,side,"t");addTube(clav,wC,tC,side,"c");addFloor(side)}
       const geo=new T.BufferGeometry(),inv=m.matrixWorld.clone().invert(),vv=new T.Vector3();
       for(let i=0;i<pos.length;i+=3){vv.set(pos[i],pos[i+1],pos[i+2]).applyMatrix4(inv);pos[i]=vv.x;pos[i+1]=vv.y;pos[i+2]=vv.z}
       geo.setAttribute("position",new T.Float32BufferAttribute(pos,3));
