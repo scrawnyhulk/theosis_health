@@ -42,13 +42,21 @@
       vec3 o=vec3(pftHash(i+g),pftHash(i+g+19.1),pftHash(i+g+47.3));vec3 r=g+o-f;float d=dot(r,r);
       if(d<d1){d2=d1;d1=d;}else if(d<d2){d2=d;}}
     return vec2(sqrt(d1),sqrt(d2));}
-  float pftAbd(vec3 p,float front){/* day1026c: window lives in body space (root sx/sy scale) and narrows for a lean waist */p=vec3(p.x/uBS.x,(p.y-uBS.z)/uBS.y,p.z/uBS.x);float ax=pow(abs((p.x+.005)/(.13*uBS.w)),2.6);float ay=pow(abs((p.y-1.05)/(.2*(.5+.5*uBS.w))),2.6);
+  float pftAbd(vec3 p,float front){/* day1026c: window lives in body space (root sx/sy scale) and narrows for a lean waist. Scales are guarded: a 0 component used to produce Inf and a blank cutaway. */float sx=max(abs(uBS.x),1e-4);float sy=max(abs(uBS.y),1e-4);float ww=max(uBS.w,1e-4);p=vec3(p.x/sx,(p.y-uBS.z)/sy,p.z/sx);float ax=pow(abs((p.x+.005)/(.13*ww)),2.6);float ay=pow(abs((p.y-1.05)/(.2*(.5+.5*ww))),2.6);
     return (1.-smoothstep(.9,1.,ax+ay))*smoothstep(front-.01,front+.01,p.z);}
   `;
   const GLSL_BUMP=`vec3 pftBump(vec3 n,float h,float s){vec3 dpx=dFdx(-vViewPosition),dpy=dFdy(-vViewPosition);float dhx=dFdx(h),dhy=dFdy(h);
     vec3 r1=cross(dpy,n),r2=cross(n,dpx);float det=dot(dpx,r1);vec3 g=sign(det)*(dhx*r1+dhy*r2);return normalize(abs(det)*n-s*g);}
   `;
-  const PFT_BS={value:new T.Vector4(1,1,0,1)};
+  // The shared Three build did not export Vector4. `new T.Vector4` threw while this file was
+  // evaluating, so Anatomy3D never registered and the atlas retry spun the main thread forever.
+  function pftV4(x,y,z,w){
+    if(typeof T.Vector4==="function")return new T.Vector4(x,y,z,w);
+    const v={x:x,y:y,z:z,w:w,isVector4:true};
+    v.set=function(a,b,c,d){this.x=a;this.y=b;this.z=c;this.w=d;return this;};
+    return v;
+  }
+  const PFT_BS={value:pftV4(1,1,0,1)};
   function patch(mat,key,o){
     mat.userData.uniforms=o.uniforms;
     mat.onBeforeCompile=function(sh){
@@ -322,7 +330,7 @@
       const inv=new MX().copy(rootRef.matrixWorld).invert(),v=new T.Vector3(),cell=.015,key=(x,y)=>Math.round(x/cell)+","+Math.round(y/cell);
       const morphs=(m,names)=>{const g=m.geometry,d=m.morphTargetDictionary||{},ma=g.morphAttributes.position||[];return names.map(n=>n in d?ma[d[n]]:null)};
       const sm=new MX().multiplyMatrices(inv,sk.matrixWorld),sp=sk.geometry.attributes.position,[mb,ms,mm]=morphs(sk,["belly","subq","mass"]),rel=sk.geometry.morphTargetsRelative,grid=new Map();
-      const P=new T.Vector3(),Q=new T.Vector3(),D3=(a,i,base)=>{if(!a)return 0;Q.fromBufferAttribute(a,i);if(!rel)Q.sub(base);Q.applyMatrix4(sm).sub(new T.Vector3().setFromMatrixPosition(sm));return Q.z};
+      const P=new T.Vector3(),Q=new T.Vector3(),origin=new T.Vector3().setFromMatrixPosition(sm),D3=(a,i,base)=>{if(!a)return 0;Q.fromBufferAttribute(a,i);if(!rel)Q.sub(base);Q.applyMatrix4(sm).sub(origin);return Q.z};
       const nrm=new T.Vector3();for(let i=0;i<sp.count;i++){P.fromBufferAttribute(sp,i);const base=P.clone();P.applyMatrix4(sm);if(P.y<.6||P.y>1.4||Math.abs(P.x)>.22)continue;
         const k=key(P.x,P.y),e={z:P.z,b:D3(mb,i,base),s:D3(ms,i,base),m:D3(mm,i,base)},o=grid.get(k);if(!o||e.z>o.z)grid.set(k,e)}
       ["omentum","mesentery"].forEach(r=>(byRole[r]||[]).forEach(m=>{const d=m.morphTargetDictionary;if(!d||!("visc" in d)||m.userData.g3d)return;const g=m.geometry,pp=g.attributes.position,mv=g.morphAttributes.position[d.visc],rl=g.morphTargetsRelative;
@@ -337,7 +345,7 @@
       meshes.forEach(m=>{const d=m.morphTargetDictionary,inf=m.morphTargetInfluences;if(!d)return;
         if("subq" in d)inf[d.subq]=bz(st.subq+bias.subq,1.25);if("mass" in d)inf[d.mass]=bz(st.mass+bias.mass,1.1);if("belly" in d)inf[d.belly]=bz(st.belly+bias.belly,1.25);if("visc" in d){const w=bz(st.visc+bias.visc,1);inf[d.visc]=(m.userData.role==="omentum"||m.userData.role==="mesentery")?envCap(m,w):w;}if("hyper" in d)inf[d.hyper]=st.hyper;});
       const B=bias;fatU.uSubq.value=bz(st.subq+B.subq,1.25);fatU.uMass.value=bz(st.mass+B.mass,1.1);fatU.uBelly.value=bz(st.belly+B.belly,1.25);fatU.uHyper.value=st.hyper;
-      liverU.uLiver.value=bz(st.liver+B.liver,1);liverU.uGlyL.value=glyOn?st.glyL:0;muscleU.uGly.value=glyOn&&mode!=="muscle"?st.gly:0;pancU.uPanc.value=bz(st.pancreas+B.pancreas,1);omU.uVisc.value=bz(st.visc+B.visc,1);if(rootRef){rootRef.scale.set(B.sx*B.sy,B.sy,B.sx*B.sy);/* day1026b: height scales the body proportionally (a taller person is not a vertically stretched one); sx = BMI build on top */rootRef.position.y=1.05*(1-B.sy);}{const xz=rootRef?B.sx*B.sy:1,sy=rootRef?B.sy:1,lean=Math.min(1,Math.max(0,(bz(st.subq+B.subq,1.25)+bz(st.belly+B.belly,1.25))/1.1)),w=window.__PFT_CUTW===0?1:.8+.2*lean*(2-lean);PFT_BS.value.set(xz,sy,rootRef?rootRef.position.y:0,w)}
+      liverU.uLiver.value=bz(st.liver+B.liver,1);liverU.uGlyL.value=glyOn?st.glyL:0;muscleU.uGly.value=glyOn&&mode!=="muscle"?st.gly:0;pancU.uPanc.value=bz(st.pancreas+B.pancreas,1);omU.uVisc.value=bz(st.visc+B.visc,1);if(rootRef){const nzs=v=>Math.abs(v)>1e-4?v:(v<0?-1e-4:1e-4);rootRef.scale.set(nzs(B.sx*B.sy),nzs(B.sy),nzs(B.sx*B.sy));/* day1026b: height scales the body proportionally (a taller person is not a vertically stretched one); sx = BMI build on top */rootRef.position.y=1.05*(1-B.sy);}{const nz=v=>Math.abs(v)>1e-4?v:(v<0?-1e-4:1e-4);const xz=nz(rootRef?B.sx*B.sy:1),sy=nz(rootRef?B.sy:1),lean=Math.min(1,Math.max(0,(bz(st.subq+B.subq,1.25)+bz(st.belly+B.belly,1.25))/1.1));let w=window.__PFT_CUTW===0?1:.8+.2*lean*(2-lean);if(!(w>1e-4))w=1e-4;PFT_BS.value.set(xz,sy,rootRef?rootRef.position.y:0,w)}
       if(M.heart)M.heart.emissiveIntensity=.45;
     }
     const v3=new T.Vector3();
@@ -441,7 +449,7 @@
           break}
       opts.onPick&&opts.onPick(name);
     }
-    function inWindow(p){const b=PFT_BS.value,x=p.x/b.x,y=(p.y-b.z)/b.y,z=p.z/b.x;const ax=Math.pow(Math.abs((x+.005)/(.13*b.w)),2.6),ay=Math.pow(Math.abs((y-1.05)/(.2*(.5+.5*b.w))),2.6);return ax+ay<.95&&z>.025}
+    function inWindow(p){const b=PFT_BS.value,sx=Math.max(Math.abs(b.x),1e-4),sy=Math.max(Math.abs(b.y),1e-4),w=Math.max(b.w,1e-4),x=p.x/sx,y=(p.y-b.z)/sy,z=p.z/sx;const ax=Math.pow(Math.abs((x+.005)/(.13*w)),2.6),ay=Math.pow(Math.abs((y-1.05)/(.2*(.5+.5*w))),2.6);return ax+ay<.95&&z>.025}
 
     // ---------- v7.6.67 anatomy pass (original procedural geometry; reference: standard anatomy texts, no traced images) ----------
     function v67Anatomy(root){
@@ -629,10 +637,10 @@
       const box=ms=>{const b=new T.Box3();ms.forEach(m=>{m.updateMatrixWorld(true);b.union(new T.Box3().setFromBufferAttribute(m.geometry.attributes.position).applyMatrix4(m.matrixWorld))});return b};
       const swap=(m,key,mode)=>{const o=H.organs[key];if(!o||!m||!m.geometry)return;const ma=m.geometry.morphAttributes;if(ma&&Object.keys(ma).length)return;
         const b=box([m]);let qp,ix,ao;
-         if(o.v){const D=T.MeshoptDecoder,v=new Uint16Array(o.n*4),i32=new Uint32Array(o.t*3);D.decodeVertexBuffer(new Uint8Array(v.buffer),o.n,8,new Uint8Array(dec(o.v)));D.decodeIndexBuffer(new Uint8Array(i32.buffer),o.t*3,4,new Uint8Array(dec(o.ix))); /* v74: meshopt-compressed (xyz + cavity shade packed in 4 x uint16) */
+         if(o.v){const D=T.MeshoptDecoder;if(!D||typeof D.decodeVertexBuffer!=="function")return;let v,i32;try{v=new Uint16Array(o.n*4);i32=new Uint32Array(o.t*3);D.decodeVertexBuffer(new Uint8Array(v.buffer),o.n,8,new Uint8Array(dec(o.v)));D.decodeIndexBuffer(new Uint8Array(i32.buffer),o.t*3,4,new Uint8Array(dec(o.ix)));}catch(e){console.warn("hra meshopt",key,e);return} /* v74: meshopt-compressed (xyz + cavity shade packed in 4 x uint16). Caller awaits MeshoptDecoder.ready; a sync decode before wasm init throws instead of hanging. */
            qp=new Uint16Array(o.n*3);ao=new Uint8Array(o.n);for(let q=0;q<o.n;q++){qp[q*3]=v[q*4];qp[q*3+1]=v[q*4+1];qp[q*3+2]=v[q*4+2];ao[q]=v[q*4+3]}ix=o.n<65536?new Uint16Array(i32):i32}
          else{qp=new Uint16Array(dec(o.p));ix=o.n<65536?new Uint16Array(dec(o.i)):new Uint32Array(dec(o.i));ao=new Uint8Array(dec(o.ao))}
-        const sz=[0,1,2].map(a=>o.max[a]-o.min[a]),tz=[0,1,2].map(a=>b.max.getComponent(a)-b.min.getComponent(a));let sc=[0,1,2].map(a=>tz[a]/sz[a]),off=[0,1,2].map(a=>b.min.getComponent(a));
+        const sz=[0,1,2].map(a=>o.max[a]-o.min[a]),tz=[0,1,2].map(a=>b.max.getComponent(a)-b.min.getComponent(a));let sc=[0,1,2].map(a=>tz[a]/(sz[a]||1e-6)),off=[0,1,2].map(a=>b.min.getComponent(a));
         if(mode==="uni"){const u=Math.sqrt(sc[0]*sc[2]);sc=[u,u,u];off=[b.min.x+(tz[0]-sz[0]*u)/2,b.max.y-sz[1]*u,b.min.z+(tz[2]-sz[2]*u)/2]}
         if(mode==="soft"){const g=Math.cbrt(sc[0]*sc[1]*sc[2]);sc=sc.map(v=>Math.sqrt(v*g));off=[0,1,2].map(a=>b.min.getComponent(a)+(tz[a]-sz[a]*sc[a])/2)}
         const pos=new Float32Array(o.n*3),occ=new Float32Array(o.n),col=new Float32Array(o.n*3);
@@ -998,10 +1006,13 @@
         }
         if(role==="omentum"||role==="mesentery"||role==="lung"||role==="diaphragm")o.renderOrder=2;
       });
-      try{v67Anatomy(root)}catch(e){console.warn("anatomy pass",e)}try{root.userData.hra=v69HRA(root)}catch(e){console.warn("anatomy pass v69",e)}try{v70Stomach()}catch(e){console.warn("anatomy pass v70",e)}try{v73LiverDiaph()}catch(e){console.warn("anatomy pass v73",e)}try{musclePrep()}catch(e){console.warn("muscle prep",e)}rootRef=root;scene.add(root);ready=true;if(/pftdebug/.test(location.hash))window.__pft3d={scene,meshes,T,renderer,camera};applyMode();applyState();resize();kick();
+      rootRef=root;scene.add(root);ready=true;window.__pftReadyAt=performance.now();if(/pftdebug/.test(location.hash))window.__pft3d={scene,meshes,T,renderer,camera};applyMode();applyState();resize();kick();
       opts.onReady&&opts.onReady();syncNav(false);
-      try{g3dLoad(root)}catch(e){console.warn("g3d",e)}
-      try{g3dOrgans()}catch(e){console.warn("g3d organs",e)}
+      // Base skin/muscle/bone is interactive now. Organ rebuilds, HRA meshopt decode, pec clamp
+      // and Grab3D fitting stay off this turn so the spinner can clear and the tab can paint.
+      const heavy=[["anatomy pass",()=>v67Anatomy(root)],["anatomy pass v69",()=>{root.userData.hra=v69HRA(root)}],["anatomy pass v70",()=>v70Stomach()],["anatomy pass v73",()=>v73LiverDiaph()],["muscle prep",()=>musclePrep()],["g3d",()=>{try{g3dLoad(root)}catch(e){console.warn("g3d",e)}try{g3dOrgans()}catch(e){console.warn("g3d organs",e)}}]];
+      const runHeavy=()=>{if(!heavy.length){applyMode();applyState();kick();window.__pftPassDone=performance.now();return}const job=heavy.shift();setTimeout(()=>{const t=performance.now();try{job[1]()}catch(e){console.warn(job[0],e)}(window.__pftPass=window.__pftPass||[]).push([job[0],Math.round(performance.now()-t)]);applyMode();kick();runHeavy()},0)};
+      hraP.then(()=>whenMeshopt().then(runHeavy,runHeavy));
     }
     // r26 (R12, day 1025): Muscle-view base mesh = Grab3D "Human Muscles" (CC0 1.0). Fitted to our figure (feet, height,
     // centre) with a 1 mm forward offset. Growth is kept: each Grab3D vertex inherits the muscle id + belly weight of the
@@ -1010,45 +1021,63 @@
     let g3dOn=false;
     function g3dLoad(root){
       if(window.__PFT_G3D===0||!url)return;const gu=models.g3dMuscles||url.replace(/[^\/]*$/,"grab3d-human-muscles.glb");
-      new T.GLTFLoader().load(gu,g=>{try{
+      const ld=new T.GLTFLoader();if(T.MeshoptDecoder)ld.setMeshoptDecoder(T.MeshoptDecoder);
+      const start=()=>ld.load(gu,g=>{try{
         const ms=byRole.muscle||[],sk=byRole.skin&&byRole.skin[0];if(!ms.length||!sk)return;
         const bb=new T.Box3();ms.forEach(m=>{m.updateMatrixWorld(true);bb.expandByObject(m)});const sb=new T.Box3().setFromObject(sk);
         const gs=g.scene;gs.updateMatrixWorld(true);const gb=new T.Box3().setFromObject(gs);
-        const k=(bb.max.y-bb.min.y)/(gb.max.y-gb.min.y);gs.scale.multiplyScalar(k);gs.updateMatrixWorld(true);gb.setFromObject(gs);
+        const gh=gb.max.y-gb.min.y||1,k=(bb.max.y-bb.min.y)/gh;gs.scale.multiplyScalar(k);gs.updateMatrixWorld(true);gb.setFromObject(gs);
         gs.position.set(((bb.min.x+bb.max.x)-(gb.min.x+gb.max.x))/2,bb.min.y-gb.min.y,((bb.min.z+bb.max.z)-(gb.min.z+gb.max.z))/2+.001);gs.updateMatrixWorld(true);
-        // nearest procedural-muscle vertex (world space, 2 cm hash grid) -> muscle id + belly weight
+        // nearest procedural-muscle vertex (world space, 2 cm hash grid) -> muscle id + belly weight.
+        // Built and queried in ~12 ms slices: the Grab3D mesh is ~170k vertices and a single pass froze the tab.
         const H=.02,grid=new Map(),pts=[],V=new T.Vector3();
-        ms.forEach(m=>{const P=m.geometry.attributes.position,C=m.geometry.attributes.color,B=m.geometry.attributes.aBelly;if(!C)return;for(let i=0;i<P.count;i++){V.fromBufferAttribute(P,i).applyMatrix4(m.matrixWorld);const j=pts.length;pts.push([V.x,V.y,V.z,Math.round(C.getX(i)*64),B?B.getX(i):1]);const key=Math.floor(V.x/H)+","+Math.floor(V.y/H)+","+Math.floor(V.z/H);(grid.get(key)||grid.set(key,[]).get(key)).push(j)}});
+        const mJobs=ms.filter(m=>m.geometry&&m.geometry.attributes.position&&m.geometry.attributes.color);
+        let mji=0,mvi=0;
+        const SG=window.__g3dSkinGrid||(window.__g3dSkinGrid=(()=>{const gsk=sk.geometry,sp=gsk.attributes.position,d=sk.morphTargetDictionary||{},ma=gsk.morphAttributes.position||[],rel=gsk.morphTargetsRelative;
+          const tg=["belly","subq","mass"].map(n=>n in d?ma[d[n]]:null);sk.updateMatrixWorld(true);const L=sk.matrixWorld.clone().setPosition(0,0,0),G=new Map(),arr=[],A=new T.Vector3(),Bq=new T.Vector3();
+          for(let i=0;i<sp.count;i++){A.fromBufferAttribute(sp,i);const base=A.clone();A.applyMatrix4(sk.matrixWorld);const e=[A.x,A.y,A.z];
+            tg.forEach(t=>{if(!t){e.push(0,0,0);return}Bq.fromBufferAttribute(t,i);if(!rel)Bq.sub(base);Bq.applyMatrix4(L);e.push(Bq.x,Bq.y,Bq.z)});
+            const j=arr.length;arr.push(e);const key=Math.floor(A.x/H)+","+Math.floor(A.y/H)+","+Math.floor(A.z/H);(G.get(key)||G.set(key,[]).get(key)).push(j)}
+          return {G,arr}})());
         const near=(x,y,z)=>{const a=Math.floor(x/H),b=Math.floor(y/H),c=Math.floor(z/H);let best=-1,bd=1e9;for(let r=1;r<=3&&best<0;r++)for(let i=-r;i<=r;i++)for(let j=-r;j<=r;j++)for(let l=-r;l<=r;l++){const L=grid.get((a+i)+","+(b+j)+","+(c+l));if(L)for(const q of L){const p=pts[q],d=(p[0]-x)**2+(p[1]-y)**2+(p[2]-z)**2;if(d<bd){bd=d;best=q}}}return best};
-        /* day1026b: waist/belly follow the SKIN's own belly/subq/mass morph targets (nearest skin vertex, 2 cm grid), not a hand-made
-             Gaussian push. Muscles get a damped share (abdominal wall rides out on visceral growth; fat sits outside them), and only where the
-             skin itself moves, so arms/hands at waist height and pecs no longer inflate. */
-          const SG=window.__g3dSkinGrid||(window.__g3dSkinGrid=(()=>{const g=sk.geometry,sp=g.attributes.position,d=sk.morphTargetDictionary||{},ma=g.morphAttributes.position||[],rel=g.morphTargetsRelative;
-            const tg=["belly","subq","mass"].map(n=>n in d?ma[d[n]]:null);sk.updateMatrixWorld(true);const L=sk.matrixWorld.clone().setPosition(0,0,0),G=new Map(),arr=[],A=new T.Vector3(),Bq=new T.Vector3();
-            for(let i=0;i<sp.count;i++){A.fromBufferAttribute(sp,i);const base=A.clone();A.applyMatrix4(sk.matrixWorld);const e=[A.x,A.y,A.z];
-              tg.forEach(t=>{if(!t){e.push(0,0,0);return}Bq.fromBufferAttribute(t,i);if(!rel)Bq.sub(base);Bq.applyMatrix4(L);e.push(Bq.x,Bq.y,Bq.z)});
-              const j=arr.length;arr.push(e);const key=Math.floor(A.x/H)+","+Math.floor(A.y/H)+","+Math.floor(A.z/H);(G.get(key)||G.set(key,[]).get(key)).push(j)}
-            return {G,arr}})());
-          const snear=(x,y,z)=>{const a=Math.floor(x/H),b=Math.floor(y/H),c=Math.floor(z/H);let best=-1,bd=1e9;for(let r=1;r<=3&&best<0;r++)for(let i=-r;i<=r;i++)for(let j=-r;j<=r;j++)for(let l=-r;l<=r;l++){const L=SG.G.get((a+i)+","+(b+j)+","+(c+l));if(L)for(const q of L){const p=SG.arr[q],dd=(p[0]-x)**2+(p[1]-y)**2+(p[2]-z)**2;if(dd<bd){bd=dd;best=q}}}return best};
-        gs.traverse(o=>{if(!o.isMesh)return;const P=o.geometry.attributes.position,n=P.count,mid=new Float32Array(n),bel=new Float32Array(n),dB=new Float32Array(n*3),dS=new Float32Array(n*3),dM=new Float32Array(n*3);
-          o.updateMatrixWorld(true);const Li=o.matrixWorld.clone().setPosition(0,0,0).invert(),W3=new T.Vector3();
-          for(let i=0;i<n;i++){V.fromBufferAttribute(P,i).applyMatrix4(o.matrixWorld);const q=near(V.x,V.y,V.z);if(q>=0){mid[i]=pts[q][3];bel[i]=pts[q][4]}
-            /* day1026c: no more nearest-skin-vertex copy (that pulled thigh/hip fat deltas onto lateral-leg muscle and made per-vertex
-               ridges on the abs). Skin deltas are Gaussian-averaged over ~6 cm, masked to the front/side abdominal wall only (arms, legs,
-               glutes, chest = 0), and capped, so the wall widens smoothly instead of stretching the six-pack into a potbelly.
-               day1026c: Muscle-view bulge is driven by VISCERAL fat (omU.uVisc, same driver as Inside abdomen): visceral sits behind the wall and pushes it out; subcutaneous/belly fat sits outside the muscle, so it barely moves it. */
-            const hh=sb.max.y-sb.min.y,t=(V.y-sb.min.y)/hh,cx=(sb.min.x+sb.max.x)/2,cz=(sb.min.z+sb.max.z)/2,ax=Math.abs(V.x-cx);
-            const ss=(a,b,x)=>{x=Math.min(1,Math.max(0,(x-a)/(b-a)));return x*x*(3-2*x)};
-            const wm=ss(.50,.555,t)*(1-ss(.635,.69,t))*(1-ss(.085,.135,ax))*ss(cz-.04,cz+.03,V.z);
-            if(wm>.001){const a=Math.floor(V.x/H),b=Math.floor(V.y/H),c=Math.floor(V.z/H),acc=[0,0,0,0,0,0,0,0,0];let ws=0;
-              for(let i=-3;i<=3;i++)for(let j=-3;j<=3;j++)for(let l=-3;l<=3;l++){const L=SG.G.get((a+i)+","+(b+j)+","+(c+l));if(L)for(const q of L){const p=SG.arr[q],dd=(p[0]-V.x)**2+(p[1]-V.y)**2+(p[2]-V.z)**2;if(dd>.0036)continue;const w=Math.exp(-dd/.0008);ws+=w;for(let u=0;u<9;u++)acc[u]+=w*p[3+u]}}
-              if(ws>0)[[dB,0],[dS,3],[dM,6]].forEach(([D,o3])=>{W3.set(acc[o3]/ws,acc[o3+1]/ws,acc[o3+2]/ws);W3.y*=.25;const m=W3.length(),cap=.045;if(m>cap)W3.multiplyScalar(cap/m);W3.multiplyScalar(wm).applyMatrix4(Li);D[i*3]=W3.x;D[i*3+1]=W3.y;D[i*3+2]=W3.z})}}
-          o.geometry.setAttribute("aMid",new T.BufferAttribute(mid,1));o.geometry.setAttribute("aGB",new T.BufferAttribute(bel,1));
-          o.geometry.setAttribute("aDB",new T.BufferAttribute(dB,3));o.geometry.setAttribute("aDS",new T.BufferAttribute(dS,3));o.geometry.setAttribute("aDM",new T.BufferAttribute(dM,3));
-          const mt=o.material;mt.onBeforeCompile=sh=>{sh.uniforms.uMG=muscleU.uMG;sh.uniforms.uMGk={get value(){return muscleU.uMGk.value/k}};sh.uniforms.uFB=fatU.uBelly;sh.uniforms.uFS=fatU.uSubq;sh.uniforms.uFM=fatU.uMass;sh.uniforms.uFV=omU.uVisc;
-            sh.vertexShader=sh.vertexShader.replace("#include <common>","#include <common>\nattribute float aMid;attribute float aGB;uniform float uMG[48];uniform float uMGk;attribute vec3 aDB;attribute vec3 aDS;attribute vec3 aDM;uniform float uFB,uFS,uFM,uFV;").replace("#include <begin_vertex>","#include <begin_vertex>\n{int mi0=int(aMid+.5);float g0=(mi0>0&&mi0<48)?uMG[mi0]:0.;transformed+=normalize(objectNormal)*(g0*aGB*uMGk)+aDB*(.55*uFV+.06*uFB)+aDS*(.02*uFS)+aDM*(.08*uFM);}")};
-          mt.customProgramCacheKey=()=>"g3dgrow";o.userData.role="g3d";o.castShadow=o.receiveShadow=true;o.frustumCulled=false;meshes.push(o);(byRole.g3d=byRole.g3d||[]).push(o)});
-        (rootRef||scene).attach(gs);g3dOn=true;/* day1026: under the body root so height/frame scale applies */window.__pftG3D=1;applyMode();kick()}catch(e){console.warn("g3d fit",e)}},undefined,e=>console.warn("g3d load",e));
+        const targets=[];gs.traverse(o=>{if(o.isMesh)targets.push(o)});
+        let ti=0,cur=null;
+        const slice=()=>{
+          const t0=performance.now();
+          while(mji<mJobs.length&&performance.now()-t0<12){
+            const m=mJobs[mji],P=m.geometry.attributes.position,C=m.geometry.attributes.color,B=m.geometry.attributes.aBelly,n=P.count;
+            while(mvi<n&&performance.now()-t0<12){const i=mvi++;V.fromBufferAttribute(P,i).applyMatrix4(m.matrixWorld);const j=pts.length;pts.push([V.x,V.y,V.z,Math.round(C.getX(i)*64),B?B.getX(i):1]);const key=Math.floor(V.x/H)+","+Math.floor(V.y/H)+","+Math.floor(V.z/H);(grid.get(key)||grid.set(key,[]).get(key)).push(j)}
+            if(mvi>=n){mji++;mvi=0}
+          }
+          if(mji<mJobs.length){setTimeout(slice,0);return}
+          while(ti<targets.length&&performance.now()-t0<12){
+            const o=targets[ti];
+            if(!cur){const P=o.geometry.attributes.position,n=P.count;o.updateMatrixWorld(true);cur={o,P,n,i:0,mid:new Float32Array(n),bel:new Float32Array(n),dB:new Float32Array(n*3),dS:new Float32Array(n*3),dM:new Float32Array(n*3),Li:o.matrixWorld.clone().setPosition(0,0,0).invert(),W3:new T.Vector3()}}
+            const P=cur.P,n=cur.n,mid=cur.mid,bel=cur.bel,dB=cur.dB,dS=cur.dS,dM=cur.dM,Li=cur.Li,W3=cur.W3;
+            while(cur.i<n&&performance.now()-t0<12){const i=cur.i++;
+              V.fromBufferAttribute(P,i).applyMatrix4(o.matrixWorld);const q=near(V.x,V.y,V.z);if(q>=0){mid[i]=pts[q][3];bel[i]=pts[q][4]}
+              const hh=sb.max.y-sb.min.y||1,t=(V.y-sb.min.y)/hh,cx=(sb.min.x+sb.max.x)/2,cz=(sb.min.z+sb.max.z)/2,ax=Math.abs(V.x-cx);
+              const ss=(a,b,x)=>{x=Math.min(1,Math.max(0,(x-a)/(b-a)));return x*x*(3-2*x)};
+              const wm=ss(.50,.555,t)*(1-ss(.635,.69,t))*(1-ss(.085,.135,ax))*ss(cz-.04,cz+.03,V.z);
+              if(wm>.001){const a=Math.floor(V.x/H),b=Math.floor(V.y/H),c=Math.floor(V.z/H),acc=[0,0,0,0,0,0,0,0,0];let ws=0;
+                for(let ii=-3;ii<=3;ii++)for(let j=-3;j<=3;j++)for(let l=-3;l<=3;l++){const cell=SG.G.get((a+ii)+","+(b+j)+","+(c+l));if(cell)for(const qq of cell){const p=SG.arr[qq],dd=(p[0]-V.x)**2+(p[1]-V.y)**2+(p[2]-V.z)**2;if(dd>.0036)continue;const w=Math.exp(-dd/.0008);ws+=w;for(let u=0;u<9;u++)acc[u]+=w*p[3+u]}}
+                if(ws>0)[[dB,0],[dS,3],[dM,6]].forEach(([D,o3])=>{W3.set(acc[o3]/ws,acc[o3+1]/ws,acc[o3+2]/ws);W3.y*=.25;const m=W3.length(),cap=.045;if(m>cap)W3.multiplyScalar(cap/m);W3.multiplyScalar(wm).applyMatrix4(Li);D[i*3]=W3.x;D[i*3+1]=W3.y;D[i*3+2]=W3.z})}
+            }
+            if(cur.i>=n){
+              o.geometry.setAttribute("aMid",new T.BufferAttribute(mid,1));o.geometry.setAttribute("aGB",new T.BufferAttribute(bel,1));
+              o.geometry.setAttribute("aDB",new T.BufferAttribute(dB,3));o.geometry.setAttribute("aDS",new T.BufferAttribute(dS,3));o.geometry.setAttribute("aDM",new T.BufferAttribute(dM,3));
+              const mt=o.material;mt.onBeforeCompile=sh=>{sh.uniforms.uMG=muscleU.uMG;sh.uniforms.uMGk={get value(){return muscleU.uMGk.value/k}};sh.uniforms.uFB=fatU.uBelly;sh.uniforms.uFS=fatU.uSubq;sh.uniforms.uFM=fatU.uMass;sh.uniforms.uFV=omU.uVisc;
+                sh.vertexShader=sh.vertexShader.replace("#include <common>","#include <common>\nattribute float aMid;attribute float aGB;uniform float uMG[48];uniform float uMGk;attribute vec3 aDB;attribute vec3 aDS;attribute vec3 aDM;uniform float uFB,uFS,uFM,uFV;").replace("#include <begin_vertex>","#include <begin_vertex>\n{int mi0=int(aMid+.5);float g0=(mi0>0&&mi0<48)?uMG[mi0]:0.;transformed+=normalize(objectNormal)*(g0*aGB*uMGk)+aDB*(.55*uFV+.06*uFB)+aDS*(.02*uFS)+aDM*(.08*uFM);}")};
+              mt.customProgramCacheKey=()=>"g3dgrow";o.userData.role="g3d";o.castShadow=o.receiveShadow=true;o.frustumCulled=false;meshes.push(o);(byRole.g3d=byRole.g3d||[]).push(o);
+              cur=null;ti++;
+            }
+          }
+          if(ti<targets.length){setTimeout(slice,0);return}
+          (rootRef||scene).attach(gs);g3dOn=true;/* day1026: under the body root so height/frame scale applies */window.__pftG3D=1;applyMode();kick();
+        };
+        setTimeout(slice,0);
+      }catch(e){console.warn("g3d fit",e)}},undefined,e=>console.warn("g3d load",e));
+      whenMeshopt().then(start,start);
     }
     // r27 (day 1025): Grab3D CC0 1.0 organ models (heart, lungs, liver, stomach, kidneys) replace the procedural/HRA organ
     // shapes in every inside view (Half & half, Inside, and the simulator's embedded inside view, which loads this same file).
@@ -1060,7 +1089,7 @@
       const L={heart:"g3d-human-heart-cutaway.glb",lung:"g3d-human-lungs.glb",liver:"g3d-human-liver.glb",stomach:"g3d-human-stomach.glb",kidney:"g3d-human-kidney.glb"};
       const ld=new T.GLTFLoader();ld.setMeshoptDecoder&&T.MeshoptDecoder&&ld.setMeshoptDecoder(T.MeshoptDecoder);
       const fit=(gs,box,mirror,sh)=>{if(sh){const c0=box.getCenter(new T.Vector3());box=box.clone().translate(c0.clone().negate());box.min.multiplyScalar(sh);box.max.multiplyScalar(sh);box.translate(c0)}gs.updateMatrixWorld(true);const gb=new T.Box3().setFromObject(gs),ge=gb.getSize(new T.Vector3()),te=box.getSize(new T.Vector3());
-        const k=[te.x/ge.x,te.y/ge.y,te.z/ge.z],u=Math.cbrt(k[0]*k[1]*k[2]);gs.scale.set(...k.map(x=>Math.max(u*.8,Math.min(u*1.2,x))));if(mirror)gs.scale.x*=-1;gs.updateMatrixWorld(true);
+        const k=[te.x/(ge.x||1e-6),te.y/(ge.y||1e-6),te.z/(ge.z||1e-6)],u=Math.cbrt(Math.abs(k[0]*k[1]*k[2]))||1;gs.scale.set(...k.map(x=>Math.max(u*.8,Math.min(u*1.2,x))));if(mirror)gs.scale.x*=-1;gs.updateMatrixWorld(true);
         gb.setFromObject(gs);const c=box.getCenter(new T.Vector3()),gc=gb.getCenter(new T.Vector3());gs.position.add(c.sub(gc));gs.updateMatrixWorld(true)};
       const adopt=(gs,role,old)=>{gs.traverse(o=>{if(!o.isMesh)return;o.userData.role=role;o.userData.g3d=1;if(role==="heart")o.userData.hra=1;o.frustumCulled=false;o.castShadow=false;o.receiveShadow=true;
           if(role==="liver")o.material=M.liver;else if(role==="lung"){o.material=M.lung;o.renderOrder=2}else{const mt=o.material;if(mt)mt.roughness=Math.min(.6,mt.roughness==null?.5:mt.roughness)}
@@ -1080,11 +1109,15 @@
         el.onerror=()=>rej(new Error("Could not load "+el.src));document.head.appendChild(el)})
       .then(()=>{const b=atob(window.PFT_ANATOMY_GLB_B64),u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u.buffer});
     }
+    function whenMeshopt(){const D=T.MeshoptDecoder;if(D&&D.ready&&typeof D.ready.then==="function")return Promise.resolve(D.ready).then(()=>{},()=>{});return Promise.resolve()}
     const fail=err=>{opts.onError&&opts.onError(err)};
     const parse=buf=>{try{loader.parse(buf,"",g=>{loadSource="embedded";onGLTF(g)},fail)}catch(e){fail(e)}};
     const hraP=new Promise(res=>{if(window.PFT_HRA||!url)return res();const el=document.createElement("script");el.src=(models.hraOrgans||url.replace(/[^\/]*$/,"hra-organs.js"))+"?v=7674";el.async=true;el.onload=el.onerror=()=>res();document.head.appendChild(el)});
-    if(location.protocol==="file:"||!url)Promise.all([loadEmbedded(),hraP]).then(([b])=>parse(b),fail);
-    else loader.load(url,g=>{loadSource="glb";hraP.then(()=>onGLTF(g))},undefined,err=>{Promise.all([loadEmbedded(),hraP]).then(([b])=>parse(b),()=>fail(err))});
+    // Meshopt wasm must be instantiated before GLTFLoader (or the HRA path) decodes EXT_meshopt_compression.
+    whenMeshopt().then(()=>{
+      if(location.protocol==="file:"||!url)Promise.all([loadEmbedded(),hraP]).then(([b])=>parse(b),fail);
+      else loader.load(url,g=>{loadSource="glb";onGLTF(g)},undefined,err=>{Promise.all([loadEmbedded(),hraP]).then(([b])=>parse(b),()=>fail(err))});
+    },fail);
 
     const api={
       framing:"full",
