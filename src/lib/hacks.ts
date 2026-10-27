@@ -91,8 +91,18 @@ export const hacksIntro = {
     "Through the years I have unfortunately figured out I am indeed human, and all the nutrition knowledge in the world doesn’t stop McDonald’s fries and a Big Mac with extra special sauce from becoming a must-have after a 12-hour shift. I’ve been lean, I’ve been dad bod, I’ve been somewhere in between saying “I’ll start back up tomorrow” while downing a cream-filled Krispy Kreme delight. Life is hard and I’m in it with you all. Still, it’s because of this that I know how important it is to find a way to make healthfulness sustainable in a hectic life.",
     "I have trial-and-errored a lot of this over the years. I steal what works and discard what does not. I have fallen off the wagon many a time myself — busy shifts, hotels, kids, the whole Tuesday.",
     "What survived is the minimum effective dose: a short list of moves that cut through the noise of nutrition science so you can navigate daily life and still move toward being healthier. Not a 12-week program. Not a personality. How I eat, most days.",
-    "I did not invent these. I have stolen a lot of them from people smarter than me that I love to follow and learn from. I consider myself a curator of evidence-based nutritional truth more than an author — and it all still follows the data as it comes. I use them on myself. Do them at least 80% of the time. The other 20% is what keeps you sane — so this never has to be a “diet.”",
   ],
+  curator: {
+    before:
+      "I did not invent most of these. I have gathered a lot of them from people smarter than me that I love to follow and learn from. I consider myself a curator of evidence-based nutritional truth more than an author — although I did try my hand at creating the ",
+    linkText: "Theosis Metabolic Simulator",
+    href: "/simulator/",
+    mid: " (and the ",
+    link2Text: "Personal Fat Threshold model",
+    href2: "/simulator/pft-inside/",
+    after:
+      " inside it). It all still follows the data as it comes. I use them on myself. Do them at least 80% of the time. The other 20% is what keeps you sane — so this never has to be a “diet.”",
+  },
   disclaimer:
     "General education, not a personal treatment plan. If you have a medical condition — kidneys, pregnancy, disordered eating, anything your clinician is already following — talk with them before you overhaul how you eat.",
 } as const;

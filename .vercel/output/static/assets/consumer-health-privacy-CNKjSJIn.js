@@ -1,4 +1,4 @@
-import{c as e}from"./useSelector-B0K6Mfa1.js";import{t}from"./site-shell-CPfoCMYH.js";var n=`<h1 id="consumer-health-data-privacy-policy-theosis-health">Consumer Health Data Privacy Policy — Theosis Health</h1>
+import{c as e}from"./useSelector-B0K6Mfa1.js";import{t}from"./site-shell-DpImAvtF.js";var n=`<h1 id="consumer-health-data-privacy-policy-theosis-health">Consumer Health Data Privacy Policy — Theosis Health</h1>
 <p><strong>Effective date:</strong> October 22, 2026 · <strong>Last updated:</strong> October 22, 2026</p>
 <p>This policy is for residents of Washington, Nevada, and other states with consumer health data laws. Theosis Health LLC, 4026 Bristol Dr., Danville, IL 61834, support@theosishealth.com.</p>
 <ul>
