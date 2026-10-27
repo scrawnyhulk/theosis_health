@@ -1034,17 +1034,22 @@
   // V21: nothing 3D is downloaded until the reader taps 3D.
   let atlasScripts=null;
   function loadScript(src){return new Promise((resolve,reject)=>{const el=document.createElement("script");el.src=src;el.async=true;el.onload=resolve;el.onerror=()=>reject(new Error("Could not load "+src));document.head.appendChild(el)})}
+  let atlasBooted=false;
   function loadAtlasScripts(){
     const cfg=window.PFT_CONFIG||{};
     if(!atlasScripts)atlasScripts=(window.AnatomyThree?Promise.resolve():loadScript(cfg.threeScript||"assets/vendor/three-anatomy.min.js"))
-      .then(()=>window.Anatomy3D?null:loadScript(cfg.anatomyScript||"assets/js/anatomy-pft.js"));
+      .then(()=>window.Anatomy3D?null:loadScript(cfg.anatomyScript||"assets/js/anatomy-pft.js"))
+      .then(()=>{atlasBooted=true;});
     return atlasScripts;
   }
   function initializeAtlas(){
     if(pft3d){if(pendingAtlas)pft3d.update(pendingAtlas);return;}
     if(!window.Anatomy3D||!window.AnatomyThree){
+      // Scripts already ran but Anatomy3D is missing (the runtime threw while loading).
+      // Retrying the settled promise schedules initializeAtlas forever and freezes the tab.
+      if(atlasBooted){graphicsError(new Error("3D anatomy runtime failed to start"));return;}
       $("pft3d-status").textContent="Loading 3D…";
-      loadAtlasScripts().then(()=>{if(stage3d.dataset.renderer==='3d')initializeAtlas()}).catch(error=>{atlasScripts=null;graphicsError(error)});
+      loadAtlasScripts().then(()=>{if(stage3d.dataset.renderer==='3d')initializeAtlas()}).catch(error=>{atlasScripts=null;atlasBooted=false;graphicsError(error)});
       return;
     }
     try{
