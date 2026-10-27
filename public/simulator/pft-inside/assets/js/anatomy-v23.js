@@ -895,61 +895,76 @@
       return 1}
     // v7.6.78: per-vertex "belly" weight for muscle growth: 1 in the middle of each muscle, tapering to 0 at its ends
     // (along the muscle's longest axis), so growing muscles swell like real muscle bellies instead of puffing up evenly.
-    // SCM (id 45): the baked muscle painted one short wide sheet across the base of the neck, fused into the
-    // trapezius and stopping below the mastoid. Reseat it as two straps per side — one belly from the mastoid,
-    // splitting above the clavicle into a sternal head and a clavicular head with a triangular gap between them.
-    // The course is seated on this figure's neck (a few millimetres under the surface, then crowned), so it is
-    // not a byte copy of the Grab3D mesh. Grab3D stays the Muscle-view surface; these ids are what it inherits.
+    // SCM (id 45): the baked muscle was one short wide sheet across the base of the neck.
+    // One diagonal belly runs from the mastoid and splits low into a narrow sternal tendon
+    // (anterior, onto the manubrium) and a wider, flatter clavicular band, with a triangular
+    // gap between the heads. The old sheet is sunk and relabelled; the straps are a new
+    // surface built for this figure. Grab3D stays the Muscle-view mesh.
     // window.__PFT_SCM=0 restores the baked sheet.
     function scmStraps(m,W,id){
-      const g=m.geometry,P=g.attributes.position,n=P.count,Hc=.01,SZ=new Map();
-      for(let i=0;i<n;i++){const x=W[i*3],y=W[i*3+1],z=W[i*3+2];if(y<1.32||y>1.66||z<-.01)continue;const k=Math.floor(x/Hc)+","+Math.floor(y/Hc);const o=SZ.get(k);if(o===undefined||z>o)SZ.set(k,z)}
-      const surf=(x,y)=>{const a=Math.floor(x/Hc),b=Math.floor(y/Hc);let z=-1e9;for(let p=-1;p<=1;p++)for(let q=-1;q<=1;q++){const o=SZ.get((a+p)+","+(b+q));if(o!==undefined&&o>z)z=o}return z<-1?null:z};
-      let skinZ=null;const skin=byRole.skin&&byRole.skin[0];
-      if(skin){skin.updateMatrixWorld(true);const SP=skin.geometry.attributes.position,SK=new Map(),u=new T.Vector3();
-        for(let i=0;i<SP.count;i++){u.fromBufferAttribute(SP,i).applyMatrix4(skin.matrixWorld);if(u.y<1.32||u.y>1.66||u.z<0)continue;const k=Math.floor(u.x/Hc)+","+Math.floor(u.y/Hc);const o=SK.get(k);if(o===undefined||u.z>o)SK.set(k,u.z)}
-        skinZ=(x,y)=>{const a=Math.floor(x/Hc),b=Math.floor(y/Hc);let z=-1e9;for(let p=-1;p<=1;p++)for(let q=-1;q<=1;q++){const o=SK.get((a+p)+","+(b+q));if(o!==undefined&&o>z)z=o}return z<-1?null:z}}
+      const g=m.geometry,P=g.attributes.position,n=P.count;
       const sm=(a,b,x)=>{const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t)};
-      const SPLIT=.46,NS=36;
-      const chain=side=>{const pts=[];for(let i=0;i<=NS;i++){const t=i/NS,y=1.572+(1.386-1.572)*t,u=t<SPLIT?t/SPLIT:(t-SPLIT)/(1-SPLIT);
-        const xMas=.060,xFuse=.038,xSt=.012,xCl=.050;let xs,xc;
-        if(t<SPLIT){xs=xc=side*(xMas+(xFuse-xMas)*u)}else{xs=side*(xFuse+(xSt-xFuse)*u);xc=side*(xFuse+(xCl-xFuse)*u)}
-        const zOf=x=>{const s=surf(x,y);return (s==null?.05:s)-.0035};pts.push({t,y,xs,xc,zs:zOf(xs),zc:zOf(xc),split:t>=SPLIT})}return pts};
-      const Rch=chain(1),Lch=chain(-1);
-      const near=(pts,x,y,z,which)=>{let bd=1e9,bi=0;for(let i=0;i<pts.length;i++){const p=pts[i],px=which==="c"?p.xc:p.xs,pz=which==="c"?p.zc:p.zs,d=(px-x)**2+(p.y-y)**2+(pz-z)**2;if(d<bd){bd=d;bi=i}}
-        const p=pts[bi],i0=Math.max(0,bi-1),i1=Math.min(pts.length-1,bi+1);
-        const ax=which==="c"?pts[i0].xc:pts[i0].xs,ay=pts[i0].y,az=which==="c"?pts[i0].zc:pts[i0].zs;
-        const bx=which==="c"?pts[i1].xc:pts[i1].xs,by=pts[i1].y,bz=which==="c"?pts[i1].zc:pts[i1].zs;
-        let tx=bx-ax,ty=by-ay,tz=bz-az;const tl=Math.hypot(tx,ty,tz)||1;tx/=tl;ty/=tl;tz/=tl;
-        const side=p.xs<0?-1:1;let ox=side*.22,oy=.04,oz=1;const od=ox*tx+oy*ty+oz*tz;ox-=od*tx;oy-=od*ty;oz-=od*tz;const ol=Math.hypot(ox,oy,oz)||1;ox/=ol;oy/=ol;oz/=ol;
-        let bxv=ty*oz-tz*oy,byv=tz*ox-tx*oz,bzv=tx*oy-ty*ox;const bl=Math.hypot(bxv,byv,bzv)||1;bxv/=bl;byv/=bl;bzv/=bl;
-        const cx=which==="c"?p.xc:p.xs,cz=which==="c"?p.zc:p.zs,dx=x-cx,dy=y-p.y,dz=z-cz;
-        return {t:p.t,split:p.split,u:dx*bxv+dy*byv+dz*bzv,v:dx*ox+dy*oy+dz*oz,ox,oy,oz,xs:p.xs,xc:p.xc}};
-      const touched=new Uint8Array(n);
-      for(let i=0;i<n;i++){let x=W[i*3],y=W[i*3+1],z=W[i*3+2];
-        if(y<1.35||y>1.62||Math.abs(x)>.12||Math.abs(x)<.002){if(id[i]===45)id[i]=Math.abs(x)>.085?37:(y<1.40&&z>.045?26:37);continue}
-        const srf=surf(x,y);if(srf!=null&&z<srf-.02){if(id[i]===45)id[i]=37;continue}
-        const pts=x>=0?Rch:Lch,S=near(pts,x,y,z,"s"),Cc=near(pts,x,y,z,"c"),t=Math.min(S.t,Cc.t);
-        const hwF=.0135,htF=.0105,hwH=.0076,htH=.0072;let lift=0,use=null,on=false;
-        if(!S.split){const hw=hwF*(.72+.28*Math.sin(Math.min(1,t/SPLIT)*Math.PI)),radial=1-(S.u/hw)**2;
-          if(radial>0){const crown=htF*Math.sqrt(radial)*sm(.04,.18,t)*(.55+.45*Math.sin(Math.min(1,t/SPLIT)*Math.PI));if(S.v<crown){lift=crown-S.v;use=S;on=true}}}
-        else{const uSplit=sm(SPLIT,SPLIT+.08,t),hw=hwF+(hwH-hwF)*uSplit,ht=htF+(htH-htF)*uSplit,htE=ht*(1-.45*sm(.78,.98,t));
-          for(const Q of [S,Cc]){const radial=1-(Q.u/hw)**2;if(radial<=0)continue;const crown=htE*Math.sqrt(radial);if(Q.v<crown){const Lft=crown-Q.v;if(Lft>lift){lift=Lft;use=Q;on=true}}}
-          const medial=Math.min(Math.abs(S.xs),Math.abs(S.xc)),lateral=Math.max(Math.abs(S.xs),Math.abs(S.xc)),ax=Math.abs(x);
-          const inner0=medial+hw*.72,inner1=lateral-hw*.72;
-          if(inner1>inner0+.004&&ax>inner0&&ax<inner1&&t>.55&&t<.96&&z>.02){const gdep=.0052*sm(.55,.7,t)*(1-sm(.9,.98,t)),k=Math.min(1,Math.min(ax-inner0,inner1-ax)/.004);
-            W[i*3+2]-=gdep*k;z=W[i*3+2];if(id[i]===45||id[i]===0)id[i]=46;on=false;lift=0;touched[i]=1}}
-        if(on&&lift>.0004&&use){let nz=lift;if(skinZ){const lim=skinZ(x,y);if(lim!=null){const room=lim-.0016-z;if(room<nz)nz=Math.max(0,room)}}
-          if(nz>.0003){W[i*3]+=use.ox*nz;W[i*3+1]+=use.oy*nz;W[i*3+2]+=use.oz*nz;touched[i]=1}id[i]=45}
-        else if(!on&&(id[i]===45||id[i]===0)){if(Math.abs(x)<.022&&z>.035&&y<1.52&&y>1.40)id[i]=46;else if(id[i]===45)id[i]=Math.abs(x)>.07||z<.02?37:46}
-        if(S.split&&t>.5&&t<.94){const lat=Math.abs(Cc.xc),ax=Math.abs(x),hw=.009;if(ax>lat+hw*.85&&ax<lat+hw+.008&&z>.01){const k=1-sm(lat+hw*.9,lat+hw+.008,ax);W[i*3+2]-=.0028*k*sm(.5,.65,t);touched[i]=1;if(id[i]===45)id[i]=37}}}
-      const ix=g.index.array,nbr=new Map(),add=(a,b)=>{if(!touched[a]&&!touched[b])return;let s=nbr.get(a);if(!s)nbr.set(a,s=[]);s.push(b)};
-      for(let t=0;t<ix.length;t+=3){const a=ix[t],b=ix[t+1],c=ix[t+2];add(a,b);add(b,a);add(b,c);add(c,b);add(c,a);add(a,c)}
-      const relax=k=>{const N=new Float32Array(W);for(let i=0;i<n;i++){N[i*3]=W[i*3];N[i*3+1]=W[i*3+1];N[i*3+2]=W[i*3+2];const nb=nbr.get(i);if(!nb||!touched[i])continue;let x=0,y=0,z=0;for(const j of nb){x+=W[j*3];y+=W[j*3+1];z+=W[j*3+2]}N[i*3]=W[i*3]+k*(x/nb.length-W[i*3]);N[i*3+1]=W[i*3+1]+k*(y/nb.length-W[i*3+1]);N[i*3+2]=W[i*3+2]+k*(z/nb.length-W[i*3+2])}W.set(N)};
-      for(let it=0;it<4;it++){relax(.5);relax(-.5)}
+      const stY=[1.468,1.422,1.386,1.360],stX=[.042,.027,.017,.012],clX=[.043,.046,.050,.052];
+      const xAt=(ys,xs,y)=>{let i=0;while(i<ys.length-2&&y<ys[i+1])i++;const u=(ys[i]-y)/Math.max(1e-4,ys[i]-ys[i+1]);return xs[i]+(xs[i+1]-xs[i])*Math.min(1,Math.max(0,u))};
+      for(let i=0;i<n;i++){const x=W[i*3],y=W[i*3+1],z=W[i*3+2],ax=Math.abs(x);
+        if(id[i]===45){if(y<1.53&&y>1.35&&ax<.095&&z>.015)W[i*3+2]-=.005;id[i]=ax>.08||z<.02?37:(y<1.395&&z>.045&&ax<.085?26:46)}
+        if(y<=1.46&&y>=1.36&&ax>.012&&ax<.08&&z>.015){const xs=xAt(stY,stX,y),xc=xAt(stY,clX,y);
+          if(ax>xs+.006&&ax<xc-.005){const mid=Math.min(1,Math.min(ax-(xs+.006),(xc-.005)-ax)/.008),along=sm(1.455,1.385,y);W[i*3+2]-=.012*mid*along}}}
       const inv=m.matrixWorld.clone().invert(),v=new T.Vector3();
       for(let i=0;i<n;i++){v.set(W[i*3],W[i*3+1],W[i*3+2]).applyMatrix4(inv);P.setXYZ(i,v.x,v.y,v.z)}
       P.needsUpdate=true;g.computeVertexNormals();
+      if(m.userData.scmBuilt)return;m.userData.scmBuilt=1;scmMesh(m);
+    }
+    function scmMesh(m){
+      const skin=byRole.skin&&byRole.skin[0],SR=new Map(),SZ=new Map();
+      if(skin){skin.updateMatrixWorld(true);const SP=skin.geometry.attributes.position,u=new T.Vector3();
+        for(let i=0;i<SP.count;i++){u.fromBufferAttribute(SP,i).applyMatrix4(skin.matrixWorld);if(u.y<1.30||u.y>1.68)continue;
+          const rad=Math.hypot(u.x,u.z),ang=Math.atan2(u.x,u.z),k=Math.floor(u.y/.012)+","+Math.floor(ang/.14);
+          const o=SR.get(k);if(o===undefined||rad>o)SR.set(k,rad);
+          if(u.z>0){const kz=Math.floor(u.x/.012)+","+Math.floor(u.y/.012),oz=SZ.get(kz);if(oz===undefined||u.z>oz)SZ.set(kz,u.z)}}}
+      const nearMax=(map,a,b)=>{let r=-1;for(let p=-1;p<=1;p++)for(let q=-1;q<=1;q++){const o=map.get((a+p)+","+(b+q));if(o!==undefined&&o>r)r=o}return r<0?null:r};
+      const skinRad=(y,ang)=>nearMax(SR,Math.floor(y/.012),Math.floor(ang/.14));
+      const skinZ=(x,y)=>nearMax(SZ,Math.floor(x/.012),Math.floor(y/.012));
+      const belly=[[.067,1.598,.008],[.058,1.552,.028],[.049,1.508,.044],[.042,1.468,.056]];
+      const stern=[[.041,1.468,.060],[.027,1.422,.074],[.017,1.386,.084],[.012,1.360,.089]];
+      const clav=[[.043,1.466,.050],[.046,1.432,.054],[.050,1.406,.050],[.052,1.388,.046]];
+      const wB=u=>.012+.008*Math.sin(Math.min(1,u)*Math.PI),tB=u=>.007+.004*Math.sin(Math.min(1,u)*Math.PI);
+      const wS=u=>.011*(1-u)+.005*u,tS=u=>.0075*(1-u)+.0032*u;
+      const wC=u=>.013*(1-u)+.022*u,tC=u=>.006*(1-u)+.0036*u;
+      const pos=[],col=[],fib=[],edg=[],bel=[],td=[],idx=[];
+      const sample=(poly,n)=>{const d=[0];for(let i=1;i<poly.length;i++)d.push(d[i-1]+Math.hypot(poly[i][0]-poly[i-1][0],poly[i][1]-poly[i-1][1],poly[i][2]-poly[i-1][2]));const L=d[d.length-1]||1,out=[];
+        for(let k=0;k<n;k++){const t=L*(n===1?0:k/(n-1));let i=0;while(i<d.length-2&&d[i+1]<t)i++;const u=(t-d[i])/Math.max(1e-6,d[i+1]-d[i]);out.push([poly[i][0]+(poly[i+1][0]-poly[i][0])*u,poly[i][1]+(poly[i+1][1]-poly[i][1])*u,poly[i][2]+(poly[i+1][2]-poly[i][2])*u])}return out};
+      const addTube=(poly,wf,tf,side,kind)=>{const NR=28,NA=9,C=sample(poly.map(p=>[p[0]*side,p[1],p[2]]),NR),base=pos.length/3;
+        for(let i=0;i<NR;i++){const u=i/(NR-1);
+          let tx,ty,tz;if(i===0){tx=C[1][0]-C[0][0];ty=C[1][1]-C[0][1];tz=C[1][2]-C[0][2]}else if(i===NR-1){tx=C[i][0]-C[i-1][0];ty=C[i][1]-C[i-1][1];tz=C[i][2]-C[i-1][2]}else{tx=C[i+1][0]-C[i-1][0];ty=C[i+1][1]-C[i-1][1];tz=C[i+1][2]-C[i-1][2]}
+          let tl=Math.hypot(tx,ty,tz)||1;tx/=tl;ty/=tl;tz/=tl;
+          let ox=C[i][0],oy=0,oz=C[i][2],od=ox*tx+oy*ty+oz*tz;ox-=od*tx;oy-=od*ty;oz-=od*tz;let ol=Math.hypot(ox,oy,oz);if(ol<1e-5){ox=side;oy=0;oz=.4;ol=Math.hypot(ox,oy,oz)}ox/=ol;oy/=ol;oz/=ol;
+          ox*=1;oy+=.04;oz+=.42;od=ox*tx+oy*ty+oz*tz;ox-=od*tx;oy-=od*ty;oz-=od*tz;ol=Math.hypot(ox,oy,oz)||1;ox/=ol;oy/=ol;oz/=ol;
+          let bx=ty*oz-tz*oy,by=tz*ox-tx*oz,bz=tx*oy-ty*ox,bl=Math.hypot(bx,by,bz)||1;bx/=bl;by/=bl;bz/=bl;
+          const hw=wf(u)/2,ht=tf(u);
+          for(let k=0;k<NA;k++){const a=-1+2*k/(NA-1),lift=Math.sqrt(Math.max(0,1-a*a)),out=ht*(.18+.82*lift)-ht*.12*a*a;
+            let px=C[i][0]+bx*a*hw+ox*out,py=C[i][1]+by*a*hw+oy*out,pz=C[i][2]+bz*a*hw+oz*out;
+            const rad=Math.hypot(px,pz),ang=Math.atan2(px,pz),lim=skinRad(py,ang);if(lim&&rad>lim-.0018){const s=(lim-.0018)/Math.max(1e-4,rad);px*=s;pz*=s}
+            const zm=skinZ(px,py);if(zm&&pz>zm-.0016)pz=zm-.0016;
+            pos.push(px,py,pz);col.push(45/64,0,0);fib.push(a*hw);
+            const rim=k===0||k===NA-1,tuck=kind!=="b"&&u<.16;edg.push(tuck||!rim?3.2:.35);
+            bel.push(Math.sin(Math.min(1,(kind==="b"?u:.3+u*.55))*Math.PI));td.push(kind==="s"&&u>.7?(u-.7)/.3*.9:0)}}
+        for(let i=0;i<NR-1;i++)for(let k=0;k<NA-1;k++){const a=base+i*NA+k,b=a+1,c=a+NA,d=c+1;idx.push(a,b,c,b,d,c)}}
+      for(const side of [1,-1]){addTube(belly,wB,tB,side,"b");addTube(stern,wS,tS,side,"s");addTube(clav,wC,tC,side,"c")}
+      const geo=new T.BufferGeometry(),inv=m.matrixWorld.clone().invert(),vv=new T.Vector3();
+      for(let i=0;i<pos.length;i+=3){vv.set(pos[i],pos[i+1],pos[i+2]).applyMatrix4(inv);pos[i]=vv.x;pos[i+1]=vv.y;pos[i+2]=vv.z}
+      geo.setAttribute("position",new T.Float32BufferAttribute(pos,3));
+      geo.setAttribute("color",new T.Float32BufferAttribute(col,3));
+      geo.setAttribute("aFib",new T.BufferAttribute(new Float32Array(fib),1));
+      geo.setAttribute("aEdge",new T.BufferAttribute(new Float32Array(edg),1));
+      geo.setAttribute("aBelly",new T.BufferAttribute(new Float32Array(bel),1));
+      geo.setAttribute("aTd",new T.BufferAttribute(new Float32Array(td),1));
+      geo.setIndex(idx);geo.computeVertexNormals();geo.computeBoundingSphere();
+      const mat=M.muscle.clone();mat.onBeforeCompile=M.muscle.onBeforeCompile;const ck=M.muscle.customProgramCacheKey;mat.customProgramCacheKey=()=>ck.call(M.muscle)+"|scm";
+      const strap=new T.Mesh(geo,mat);strap.name="Sternocleidomastoid";strap.userData.role="muscle";strap.userData.scm=1;
+      strap.position.copy(m.position);strap.quaternion.copy(m.quaternion);strap.scale.copy(m.scale);
+      strap.frustumCulled=false;strap.castShadow=true;strap.receiveShadow=true;
+      m.parent.add(strap);meshes.push(strap);(byRole.muscle=byRole.muscle||[]).push(strap);
     }
     function musclePrep(){
       // r25m (day 1025, original procedural code): Muscle-view accuracy pass on the shared figure. Runs once, before aBelly.
