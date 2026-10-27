@@ -4,9 +4,8 @@ import { n as require_react } from "../_libs/@radix-ui/react-compose-refs+[...].
 import { b as Link } from "../_libs/@tanstack/react-router+[...].mjs";
 import { i as require_jsx_runtime } from "../_libs/@radix-ui/react-label+[...].mjs";
 import { T as ArrowRight, b as Clock, g as FlaskConical, h as Footprints } from "../_libs/lucide-react.mjs";
-import { a as extraLbByDay, i as SODA_PERSON, o as lostLbByDay, s as maintenance } from "./router-DjD0ZPZn.mjs";
 import { a as SiteShell, i as NavPlaque, r as NavIcon } from "./site-shell-RWexaFBk.mjs";
-//#region ../th-nav/node_modules/.nitro/vite/services/ssr/assets/routes-BWSTawj_.js
+//#region node_modules/.nitro/vite/services/ssr/assets/routes-kzi9KDtc.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 /** Swap this slug to feature a different existing Health Hack. Text is pulled from src/lib/hacks.ts, not written here. */
@@ -113,7 +112,78 @@ function HomeFeatures() {
 		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(HackOfTheWeek, {})]
 	});
 }
-Math.round(maintenance(SODA_PERSON) / 10) * 10;
+var LB = 2.2046226218;
+var RHO_F = 4250 * LB;
+var RHO_L = 1800;
+var TEF_BETA = .1;
+var AT_BETA_UP = .2;
+var AT_UP_MAXEXCESS = 1e3;
+var AT_TAU = 14;
+var AT_CAP = .25;
+var EXAMPLE = {
+	sex: "m",
+	age: 40,
+	heightCm: 175.3,
+	weightLb: 180,
+	bodyFatPct: 25,
+	lightActivityKcal: 250
+};
+/** Example person for the soda card: maintenance about 2,000 kcal/day. */
+var SODA_PERSON = {
+	sex: "f",
+	age: 40,
+	heightCm: 165.1,
+	weightLb: 170,
+	bodyFatPct: 35,
+	lightActivityKcal: 250
+};
+var bmrP = (P, kg) => 10 * kg + 6.25 * P.heightCm - 5 * P.age + (P.sex === "m" ? 5 : -161);
+var tdeeP = (P, kg) => bmrP(P, kg) * 1.2 + P.lightActivityKcal;
+/** Maintenance calories at starting weight. */
+var maintenance = (P) => tdeeP(P, P.weightLb / LB);
+/** Extra pounds vs staying at maintenance, for each day 0..365, when eating `surplus` kcal/day more. */
+function extraLbByDay(surplus, days = 365, P = EXAMPLE) {
+	const tdee = (kg) => tdeeP(P, kg);
+	const w0 = P.weightLb / LB;
+	let F = w0 * P.bodyFatPct / 100, L = w0 - F, adapt = 0;
+	const ei0 = tdee(w0), intake = ei0 + surplus;
+	const out = [0];
+	for (let d = 0; d < days; d++) {
+		const t = tdee(F + L);
+		const target = -Math.min(AT_CAP * t, AT_BETA_UP * Math.min(intake - ei0, AT_UP_MAXEXCESS));
+		adapt += (target - adapt) / AT_TAU;
+		const E = intake - (t - adapt - TEF_BETA * (ei0 - intake));
+		const pm = 10.4 / (10.4 + F);
+		const dF = E / (RHO_F + RHO_L * pm / (1 - pm));
+		F += dF;
+		L += dF * pm / (1 - pm);
+		out.push((F + L - w0) * LB);
+	}
+	return out;
+}
+var AT_BETA = .14;
+/** Pounds lost vs staying at maintenance, for each day 0..365, when eating `cut` kcal/day less. Includes metabolic adaptation. */
+function lostLbByDay(cut, days = 365, P = EXAMPLE) {
+	const tdee = (kg) => tdeeP(P, kg);
+	const w0 = P.weightLb / LB;
+	let F = w0 * P.bodyFatPct / 100, L = w0 - F, adapt = 0;
+	const ei0 = tdee(w0), intake = ei0 - cut;
+	const out = [0];
+	for (let d = 0; d < days; d++) {
+		const t = tdee(F + L);
+		const target = Math.min(AT_CAP * t, AT_BETA * Math.max(0, t - intake));
+		adapt += (target - adapt) / AT_TAU;
+		const E = intake - (t - adapt - TEF_BETA * (ei0 - intake));
+		const pm = 10.4 / (10.4 + F);
+		const dF = E / (RHO_F + RHO_L * pm / (1 - pm));
+		F += dF;
+		L += dF * pm / (1 - pm);
+		out.push((w0 - F - L) * LB);
+	}
+	return out;
+}
+var SODA_MAINT = Math.round(maintenance(SODA_PERSON) / 10) * 10;
+var SODA_MAINT_SHOWN = Math.round(SODA_MAINT / 100) * 100;
 var tools = [
 	{
 		href: "/simulator/",
@@ -514,7 +584,7 @@ var ZERO = [
 		src: "Brewed coffee, 12 fl oz (USDA FDC 171890)"
 	}
 ];
-var SODA_SR = `Example: a ${SODA_PERSON.age}-year-old, 5'5", ${SODA_PERSON.weightLb}-lb woman with about ${SODA_PERSON.bodyFatPct}% body fat who is lightly active, so she needs about ${(Math.round(maintenance(SODA_PERSON) / 10) * 10).toLocaleString()} calories a day.`;
+var SODA_SR = `Example: a ${SODA_PERSON.age}-year-old, 5'5", ${SODA_PERSON.weightLb}-lb person with about ${SODA_PERSON.bodyFatPct}% body fat who is lightly active, so they need about ${SODA_MAINT_SHOWN.toLocaleString()} calories a day.`;
 var curveCache = /* @__PURE__ */ new Map();
 var curve = (diff, gain) => {
 	const key = `${gain ? "g" : "l"}${diff}`;
@@ -537,44 +607,6 @@ var PAIR = {
 	energy: "zeroenergy",
 	sweettea: "unsweet"
 };
-function DrinkSide({ id, kind, label, items, sel, onSel }) {
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: `sd-side ${kind}`,
-		children: [
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
-				htmlFor: id,
-				className: "sd-step",
-				children: label
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-				className: "sd-selwrap",
-				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("select", {
-					id,
-					className: "sd-select",
-					value: sel.id,
-					onChange: (e) => onSel(e.target.value),
-					children: items.map((x) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("option", {
-						value: x.id,
-						children: [
-							x.name,
-							" (",
-							x.kcal,
-							" cal)"
-						]
-					}, x.id))
-				})
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "sd-kcal",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("b", { children: sel.kcal }), " cal a day"]
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-				className: "sd-src",
-				children: sel.src
-			})
-		]
-	});
-}
 function SodaCard() {
 	const [i, setI] = (0, import_react.useState)(365);
 	const [sid, setSid] = (0, import_react.useState)("can");
@@ -588,7 +620,7 @@ function SodaCard() {
 	};
 	const diff = Math.max(0, S.kcal - Z.kcal);
 	const d = useTween(i);
-	const g = curve(diff, true), l = curve(diff, false);
+	const g = curve(S.kcal, true), l = curve(diff, false);
 	const yMax = useTween(Math.max(4, Math.ceil(Math.max(g[365], l[365]) * 1.15 / 4) * 4), 450);
 	const tg = useTween(at(g, i), 450), tl = useTween(at(l, i), 450);
 	const gx = (x) => G.l + x / 365 * (G.w - G.l - G.r);
@@ -614,107 +646,162 @@ function SodaCard() {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
 			className: "mk-h2",
-			children: "What one daily drink can add up to"
+			children: "One daily drink, two stories"
 		}),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 			className: "mk-sub",
-			children: "Pick a drink. It’s paired with a zero-calorie swap (change it if you like), and the result shows how far apart the two paths could get for an example person, if nothing else changes."
+			children: "Same example person, same drink. What tends to happen depends on what changes."
 		}),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 			className: "mk-card sd-card",
 			children: [
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "sd-vs",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DrinkSide, {
-							id: "sd-now",
-							kind: "now",
-							label: "1. Pick a drink",
-							items: SUGARY,
-							sel: S,
-							onSel: pick
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "sd-arrow",
-							"aria-hidden": "true",
-							children: "→"
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DrinkSide, {
-							id: "sd-swap",
-							kind: "swap",
-							label: "2. Zero-calorie swap",
-							items: ZERO,
-							sel: Z,
-							onSel: setZid
-						})
-					]
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
+					htmlFor: "sd-now",
+					className: "sd-step",
+					style: { display: "block" },
+					children: "The drink"
 				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "sd-diff",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "sd-step",
-							style: { textAlign: "center" },
-							children: "3. The difference"
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "sd-cal",
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+					className: "sd-selwrap",
+					style: {
+						maxWidth: "26rem",
+						margin: ".4rem 0 1rem"
+					},
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("select", {
+						id: "sd-now",
+						className: "sd-select",
+						value: S.id,
+						onChange: (e) => pick(e.target.value),
+						children: SUGARY.map((x) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("option", {
+							value: x.id,
 							children: [
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("b", { children: diff.toLocaleString() }),
-								" calories a day ",
-								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-									className: "mk-small",
-									children: [
-										"(",
-										S.kcal,
-										" − ",
-										Z.kcal,
-										")"
-									]
-								})
+								x.name,
+								" (",
+								x.kcal,
+								" cal)"
 							]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-							className: "sd-row",
-							children: [
-								["Day", 1],
-								["Week", 7],
-								["Month", 30],
-								["Year", 365]
-							].map(([n, dd]) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "sd-cell",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("b", { children: (dd * diff).toLocaleString() }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: n })]
-							}, n))
-						})
-					]
+						}, x.id))
+					})
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "sd-out",
+					className: "st-grid",
 					"aria-live": "polite",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", {
+						className: "st-card keep",
+						"aria-labelledby": "st-a",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+								id: "st-a",
+								className: "st-tag",
+								children: "Story A · Adding a drink"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("ol", {
+								className: "st-steps",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
+									"A person’s weight is steady. They eat about ",
+									SODA_MAINT_SHOWN.toLocaleString(),
+									" calories a day, enough to maintain."
+								] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
+									"They add one ",
+									S.name.toLowerCase(),
+									" a day and eat the same otherwise: ",
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("b", { children: [
+										"+",
+										S.kcal,
+										" cal a day"
+									] }),
+									"."
+								] })]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "st-out",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: ["After ", when] }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("b", { children: [keepTxt, " lb"] }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("em", { children: "The extra calories tend to add up to weight gain." })
+								]
+							})
+						]
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", {
+						className: "st-card swap",
+						"aria-labelledby": "st-b",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+								id: "st-b",
+								className: "st-tag",
+								children: "Story B · Switching a drink"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("ol", {
+								className: "st-steps",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
+									"Their weight is stuck, steady while they drink one ",
+									S.name.toLowerCase(),
+									" a day."
+								] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", { children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
+										htmlFor: "sd-swap",
+										children: "They switch to"
+									}),
+									" ",
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+										className: "sd-selwrap st-inline",
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("select", {
+											id: "sd-swap",
+											className: "sd-select",
+											value: Z.id,
+											onChange: (e) => setZid(e.target.value),
+											children: ZERO.map((x) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("option", {
+												value: x.id,
+												children: [
+													x.name,
+													" (",
+													x.kcal,
+													" cal)"
+												]
+											}, x.id))
+										})
+									}),
+									" ",
+									"and don’t replace those calories: ",
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("b", { children: [
+										"−",
+										diff,
+										" cal a day"
+									] }),
+									"."
+								] })]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "st-out",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: ["After ", when] }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("b", { children: [swapTxt, " lb"] }),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("em", { children: "The swap doesn’t burn fat. Removing those calories creates a deficit, which tends to lead to weight loss." })
+								]
+							})
+						]
+					})]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "st-legend mk-small",
 					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "sd-o keep",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: ["Keep ", S.short] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("b", { children: [keepTxt, " lb"] })]
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "k",
+							children: "●"
 						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "sd-o swap",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: ["Switch to ", Z.short] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("b", { children: [swapTxt, " lb"] })]
+						" Story A: add it ",
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "s",
+							children: "●"
 						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "sd-when mk-small",
-							children: [
-								"Estimated weight change after ",
-								when,
-								" · example person, not a prediction · includes metabolic adaptation"
-							]
-						})
+						" Story B: switch it"
 					]
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("svg", {
 					className: "sd-graph",
 					viewBox: `0 0 ${G.w} ${G.h}`,
 					role: "img",
-					"aria-label": `Line graph after ${when}: keeping ${S.short} about ${keepTxt} pounds, switching to ${Z.short} about ${swapTxt} pounds`,
+					"aria-label": `Line graph after ${when}: Story A, adding ${S.short}, about ${keepTxt} pounds; Story B, switching to ${Z.short}, about ${swapTxt} pounds`,
 					children: [
 						yt.map((v) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("g", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("line", {
 							x1: G.l,
@@ -791,7 +878,11 @@ function SodaCard() {
 							textAnchor: anchor,
 							className: "sd-pt",
 							fill: GAIN,
-							children: [keepTxt, " lb"]
+							children: [
+								"A ",
+								keepTxt,
+								" lb"
+							]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("text", {
 							x: anchor === "end" ? lx - 12 : lx + 12,
@@ -799,7 +890,11 @@ function SodaCard() {
 							textAnchor: anchor,
 							className: "sd-pt",
 							fill: LOSS,
-							children: [swapTxt, " lb"]
+							children: [
+								"B ",
+								swapTxt,
+								" lb"
+							]
 						})
 					]
 				}),
@@ -813,7 +908,7 @@ function SodaCard() {
 					id: "mknote",
 					className: "mk-small",
 					style: { marginTop: "1rem" },
-					children: "Rough educational estimate only. The math uses the calorie difference between the two drinks, every day. The pounds come from the simulator's energy-balance model, which includes metabolic adaptation, so both lines slow over time instead of adding up in a straight line. Real-life results vary from person to person. Not medical advice. Method based on Hall KD et al., Lancet 2011;378:826–837, which found the old 3,500-calories-per-pound rule overestimates long-term change."
+					children: "Rough educational estimate for an example person, not a prediction. Story A uses the drink’s calories on top of maintenance; Story B uses the calories removed by the swap, every day, with everything else the same. The pounds come from the simulator's energy-balance model, which includes metabolic adaptation, so both lines slow over time instead of adding up in a straight line. Real-life results vary from person to person. Not medical advice. Method based on Hall KD et al., Lancet 2011;378:826–837, which found the old 3,500-calories-per-pound rule overestimates long-term change."
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
 					className: "mk-small",

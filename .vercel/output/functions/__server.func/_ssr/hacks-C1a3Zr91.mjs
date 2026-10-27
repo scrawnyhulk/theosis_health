@@ -5,7 +5,7 @@ import { b as Link } from "../_libs/@tanstack/react-router+[...].mjs";
 import { i as require_jsx_runtime } from "../_libs/@radix-ui/react-label+[...].mjs";
 import { T as ArrowRight, i as X } from "../_libs/lucide-react.mjs";
 import { a as SiteShell, o as cn, t as Button } from "./site-shell-RWexaFBk.mjs";
-//#region ../th-nav/node_modules/.nitro/vite/services/ssr/assets/hacks-C1a3Zr91.js
+//#region node_modules/.nitro/vite/services/ssr/assets/hacks-C1a3Zr91.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var KEY = "theosis-hacks-tldr-gate-v2";

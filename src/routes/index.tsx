@@ -7,6 +7,8 @@ import { HomeFeatures } from "@/components/site/hack-of-week";
 import { SODA_PERSON, extraLbByDay, lostLbByDay, maintenance } from "@/lib/swap-model";
 
 const SODA_MAINT = Math.round(maintenance(SODA_PERSON) / 10) * 10;
+// Rounded for display only (about 2,000); the model math still uses the exact maintenance.
+const SODA_MAINT_SHOWN = Math.round(SODA_MAINT / 100) * 100;
 
 export const Route = createFileRoute("/")({ component: Home });
 
@@ -160,7 +162,7 @@ const ZERO: Drink[] = [
   { id: "zeroenergy", name: "Zero-cal energy drink", short: "a zero-cal energy drink", kcal: 10, src: "Monster Zero Ultra, 16 fl oz (monsterenergy.com)" },
   { id: "coffee", name: "Black coffee", short: "black coffee", kcal: 4, src: "Brewed coffee, 12 fl oz (USDA FDC 171890)" },
 ];
-const SODA_SR = `Example: a ${SODA_PERSON.age}-year-old, 5'5", ${SODA_PERSON.weightLb}-lb woman with about ${SODA_PERSON.bodyFatPct}% body fat who is lightly active, so she needs about ${(Math.round(maintenance(SODA_PERSON) / 10) * 10).toLocaleString()} calories a day.`;
+const SODA_SR = `Example: a ${SODA_PERSON.age}-year-old, 5'5", ${SODA_PERSON.weightLb}-lb person with about ${SODA_PERSON.bodyFatPct}% body fat who is lightly active, so they need about ${SODA_MAINT_SHOWN.toLocaleString()} calories a day.`;
 const curveCache = new Map<string, number[]>();
 const curve = (diff: number, gain: boolean) => {
   const key = `${gain ? "g" : "l"}${diff}`;
@@ -198,7 +200,8 @@ function SodaCard() {
   const pick = (id: string) => { setSid(id); setZid(PAIR[id] ?? "water"); };
   const diff = Math.max(0, S.kcal - Z.kcal);
   const d = useTween(i);
-  const g = curve(diff, true), l = curve(diff, false);
+  // Story A adds the whole drink on top of maintenance; Story B removes (drink − swap) from a steady weight.
+  const g = curve(S.kcal, true), l = curve(diff, false);
   const yMax = useTween(Math.max(4, Math.ceil((Math.max(g[365], l[365]) * 1.15) / 4) * 4), 450);
   const tg = useTween(at(g, i), 450), tl = useTween(at(l, i), 450);
   const gx = (x: number) => G.l + (x / 365) * (G.w - G.l - G.r);
@@ -217,25 +220,41 @@ function SodaCard() {
   const when = timeLabel(i).toLowerCase();
   return (
     <>
-      <h2 className="mk-h2">What one daily drink can add up to</h2>
-      <p className="mk-sub">Pick a drink. It’s paired with a zero-calorie swap (change it if you like), and the result shows how far apart the two paths could get for an example person, if nothing else changes.</p>
+      <h2 className="mk-h2">One daily drink, two stories</h2>
+      <p className="mk-sub">Same example person, same drink. What tends to happen depends on what changes.</p>
       <div className="mk-card sd-card">
-        <div className="sd-vs">
-          <DrinkSide id="sd-now" kind="now" label="1. Pick a drink" items={SUGARY} sel={S} onSel={pick} />
-          <div className="sd-arrow" aria-hidden="true">→</div>
-          <DrinkSide id="sd-swap" kind="swap" label="2. Zero-calorie swap" items={ZERO} sel={Z} onSel={setZid} />
+        <label htmlFor="sd-now" className="sd-step" style={{ display: "block" }}>The drink</label>
+        <div className="sd-selwrap" style={{ maxWidth: "26rem", margin: ".4rem 0 1rem" }}>
+          <select id="sd-now" className="sd-select" value={S.id} onChange={(e) => pick(e.target.value)}>
+            {SUGARY.map((x) => <option key={x.id} value={x.id}>{x.name} ({x.kcal} cal)</option>)}
+          </select>
         </div>
-        <div className="sd-diff">
-          <div className="sd-step" style={{ textAlign: "center" }}>3. The difference</div>
-          <div className="sd-cal"><b>{diff.toLocaleString()}</b> calories a day <span className="mk-small">({S.kcal} − {Z.kcal})</span></div>
-          <div className="sd-row">{([["Day", 1], ["Week", 7], ["Month", 30], ["Year", 365]] as const).map(([n, dd]) => <div key={n} className="sd-cell"><b>{(dd * diff).toLocaleString()}</b><span>{n}</span></div>)}</div>
+        <div className="st-grid" aria-live="polite">
+          <section className="st-card keep" aria-labelledby="st-a">
+            <div id="st-a" className="st-tag">Story A · Adding a drink</div>
+            <ol className="st-steps">
+              <li>A person’s weight is steady. They eat about {SODA_MAINT_SHOWN.toLocaleString()} calories a day, enough to maintain.</li>
+              <li>They add one {S.name.toLowerCase()} a day and eat the same otherwise: <b>+{S.kcal} cal a day</b>.</li>
+            </ol>
+            <div className="st-out"><span>After {when}</span><b>{keepTxt} lb</b><em>The extra calories tend to add up to weight gain.</em></div>
+          </section>
+          <section className="st-card swap" aria-labelledby="st-b">
+            <div id="st-b" className="st-tag">Story B · Switching a drink</div>
+            <ol className="st-steps">
+              <li>Their weight is stuck, steady while they drink one {S.name.toLowerCase()} a day.</li>
+              <li>
+                <label htmlFor="sd-swap">They switch to</label>{" "}
+                <span className="sd-selwrap st-inline"><select id="sd-swap" className="sd-select" value={Z.id} onChange={(e) => setZid(e.target.value)}>
+                  {ZERO.map((x) => <option key={x.id} value={x.id}>{x.name} ({x.kcal} cal)</option>)}
+                </select></span>{" "}
+                and don’t replace those calories: <b>−{diff} cal a day</b>.
+              </li>
+            </ol>
+            <div className="st-out"><span>After {when}</span><b>{swapTxt} lb</b><em>The swap doesn’t burn fat. Removing those calories creates a deficit, which tends to lead to weight loss.</em></div>
+          </section>
         </div>
-        <div className="sd-out" aria-live="polite">
-          <div className="sd-o keep"><span>Keep {S.short}</span><b>{keepTxt} lb</b></div>
-          <div className="sd-o swap"><span>Switch to {Z.short}</span><b>{swapTxt} lb</b></div>
-          <div className="sd-when mk-small">Estimated weight change after {when} · example person, not a prediction · includes metabolic adaptation</div>
-        </div>
-        <svg className="sd-graph" viewBox={`0 0 ${G.w} ${G.h}`} role="img" aria-label={`Line graph after ${when}: keeping ${S.short} about ${keepTxt} pounds, switching to ${Z.short} about ${swapTxt} pounds`}>
+        <div className="st-legend mk-small"><span className="k">●</span> Story A: add it <span className="s">●</span> Story B: switch it</div>
+        <svg className="sd-graph" viewBox={`0 0 ${G.w} ${G.h}`} role="img" aria-label={`Line graph after ${when}: Story A, adding ${S.short}, about ${keepTxt} pounds; Story B, switching to ${Z.short}, about ${swapTxt} pounds`}>
           {yt.map((v) => <g key={v}><line x1={G.l} x2={G.w - G.r} y1={gy(v)} y2={gy(v)} stroke="#ffffff14" /><text x={G.l - 8} y={gy(v) + 4} textAnchor="end" className="sd-ax">{v > 0 ? `+${v}` : v}</text></g>)}
           {TICKS.filter(([t]) => !narrow || t !== 30).map(([t, lab]) => <text key={t} x={gx(t)} y={G.h - 10} textAnchor={t === 0 ? "start" : t === 365 ? "end" : "middle"} className="sd-ax">{lab}</text>)}
           <text x={12} y={G.t + (G.h - G.t - G.b) / 2} className="sd-ax" transform={`rotate(-90 12 ${G.t + (G.h - G.t - G.b) / 2})`} textAnchor="middle">lb</text>
@@ -244,11 +263,11 @@ function SodaCard() {
           <polyline points={line(l, -1, tl)} fill="none" stroke={LOSS} strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" />
           <circle cx={lx} cy={gy(tg)} r={7} fill={GAIN} stroke="#0b1320" strokeWidth={3} />
           <circle cx={lx} cy={gy(-tl)} r={7} fill={LOSS} stroke="#0b1320" strokeWidth={3} />
-          <text x={anchor === "end" ? lx - 12 : lx + 12} y={gy(tg) - 10} textAnchor={anchor} className="sd-pt" fill={GAIN}>{keepTxt} lb</text>
-          <text x={anchor === "end" ? lx - 12 : lx + 12} y={gy(-tl) + 22} textAnchor={anchor} className="sd-pt" fill={LOSS}>{swapTxt} lb</text>
+          <text x={anchor === "end" ? lx - 12 : lx + 12} y={gy(tg) - 10} textAnchor={anchor} className="sd-pt" fill={GAIN}>A {keepTxt} lb</text>
+          <text x={anchor === "end" ? lx - 12 : lx + 12} y={gy(-tl) + 22} textAnchor={anchor} className="sd-pt" fill={LOSS}>B {swapTxt} lb</text>
         </svg>
         <TimeSlider id="mkr" value={i} onChange={setI} describedBy="mknote" />
-        <p id="mknote" className="mk-small" style={{ marginTop: "1rem" }}>Rough educational estimate only. The math uses the calorie difference between the two drinks, every day. The pounds come from the simulator's energy-balance model, which includes metabolic adaptation, so both lines slow over time instead of adding up in a straight line. Real-life results vary from person to person. Not medical advice. Method based on Hall KD et al., Lancet 2011;378:826–837, which found the old 3,500-calories-per-pound rule overestimates long-term change.</p>
+        <p id="mknote" className="mk-small" style={{ marginTop: "1rem" }}>Rough educational estimate for an example person, not a prediction. Story A uses the drink’s calories on top of maintenance; Story B uses the calories removed by the swap, every day, with everything else the same. The pounds come from the simulator's energy-balance model, which includes metabolic adaptation, so both lines slow over time instead of adding up in a straight line. Real-life results vary from person to person. Not medical advice. Method based on Hall KD et al., Lancet 2011;378:826–837, which found the old 3,500-calories-per-pound rule overestimates long-term change.</p>
         <p className="mk-small" style={{ fontSize: ".78rem", opacity: 0.85 }}>{SODA_SR} Individual numbers will differ. Try the simulator to see your own.</p>
         <p className="mk-small" style={{ fontSize: ".72rem", opacity: 0.75 }}>Calories used: {S.name}, {S.kcal} ({S.src}); {Z.name}, {Z.kcal} ({Z.src}). Fountain drinks with ice usually have a bit less.</p>
       </div>

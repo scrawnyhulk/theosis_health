@@ -1,4 +1,4 @@
-//#region ../th-nav/node_modules/.nitro/vite/services/ssr/assets/hacks-BTF2hTRc.js
+//#region node_modules/.nitro/vite/services/ssr/assets/hacks-BTF2hTRc.js
 var site = {
 	name: "Theosis Health",
 	title: "Theosis Health",

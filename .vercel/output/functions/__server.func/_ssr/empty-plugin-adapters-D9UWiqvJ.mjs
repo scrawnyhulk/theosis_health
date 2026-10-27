@@ -1,4 +1,4 @@
-//#region ../th-nav/node_modules/.nitro/vite/services/ssr/assets/empty-plugin-adapters-DGfB9ikM.js
+//#region node_modules/.nitro/vite/services/ssr/assets/empty-plugin-adapters-D9UWiqvJ.js
 var pluginSerializationAdapters = [];
 var hasPluginAdapters = false;
 //#endregion

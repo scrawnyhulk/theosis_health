@@ -2,7 +2,7 @@ globalThis.__nitro_main__ = import.meta.url;
 import { i as toEventHandler, n as HTTPError, o as NodeResponse, r as defineLazyEventHandler, t as H3Core } from "./_libs/h3+rou3+srvx.mjs";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-//#region ../th-nav/node_modules/nitro/dist/runtime/internal/route-rules.mjs
+//#region node_modules/nitro/dist/runtime/internal/route-rules.mjs
 var headers = ((m) => function headersRouteRule(event) {
 	for (const [key, value] of Object.entries(m.options || {})) event.res.headers.set(key, value);
 });
@@ -494,11 +494,11 @@ var findRouteRules = /* @__PURE__ */ (() => {
 		return r;
 	};
 })();
-var _lazy_rm3d2R = defineLazyEventHandler(() => import("./_chunks/ssr-renderer.mjs"));
+var _lazy_YvbiNP = defineLazyEventHandler(() => import("./_chunks/ssr-renderer.mjs"));
 var findRoute = /* @__PURE__ */ (() => {
 	const data = {
 		route: "/**",
-		handler: _lazy_rm3d2R
+		handler: _lazy_YvbiNP
 	};
 	return ((_m, p) => {
 		return {
@@ -509,7 +509,7 @@ var findRoute = /* @__PURE__ */ (() => {
 })();
 var globalMiddleware = [toEventHandler(grokPwaMiddleware)].filter(Boolean);
 //#endregion
-//#region ../th-nav/node_modules/nitro/dist/runtime/internal/error/prod.mjs
+//#region node_modules/nitro/dist/runtime/internal/error/prod.mjs
 var errorHandler = (error, event) => {
 	const res = defaultHandler(error, event);
 	return new NodeResponse(typeof res.body === "string" ? res.body : JSON.stringify(res.body, null, 2), res);
@@ -600,7 +600,7 @@ function createH3App(config) {
 	return h3App;
 }
 //#endregion
-//#region ../th-nav/node_modules/nitro/dist/runtime/internal/app.mjs
+//#region node_modules/nitro/dist/runtime/internal/app.mjs
 var APP_ID = "default";
 function useNitroApp() {
 	let instance = useNitroApp._instance;
@@ -648,7 +648,7 @@ function getRouteRules(method, pathname) {
 	};
 }
 //#endregion
-//#region ../th-nav/node_modules/nitro/dist/presets/vercel/runtime/isr.mjs
+//#region node_modules/nitro/dist/presets/vercel/runtime/isr.mjs
 var ISR_URL_PARAM = "__isr_route";
 function isrRouteRewrite(reqUrl, xNowRouteMatches) {
 	if (xNowRouteMatches) {
@@ -667,7 +667,7 @@ function isrRouteRewrite(reqUrl, xNowRouteMatches) {
 	}
 }
 //#endregion
-//#region ../th-nav/node_modules/nitro/dist/presets/vercel/runtime/vercel.web.mjs
+//#region node_modules/nitro/dist/presets/vercel/runtime/vercel.web.mjs
 var nitroApp = useNitroApp();
 var vercel_web_default = { async fetch(req, context) {
 	const isrURL = isrRouteRewrite(req.url, req.headers.get("x-now-route-matches"));

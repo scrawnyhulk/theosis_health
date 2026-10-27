@@ -6,7 +6,7 @@ import { i as require_jsx_runtime, n as require_react_dom, r as Slot } from "../
 import { C as ChevronDown, D as Activity, _ as Flame, d as Mail, f as Lightbulb, i as X, l as PersonStanding, m as Fuel, p as Gauge, r as Zap, s as Search, u as MessageCircle, w as Calculator } from "../_libs/lucide-react.mjs";
 import { n as clsx, t as cva } from "../_libs/class-variance-authority+clsx.mjs";
 import { t as twMerge } from "../_libs/tailwind-merge.mjs";
-//#region ../th-nav/node_modules/.nitro/vite/services/ssr/assets/site-shell-RWexaFBk.js
+//#region node_modules/.nitro/vite/services/ssr/assets/site-shell-RWexaFBk.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var import_react_dom = /* @__PURE__ */ __toESM(require_react_dom());
