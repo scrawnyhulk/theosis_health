@@ -98,6 +98,10 @@ function HacksHub() {
               <a href={hacksIntro.curator.href} className="font-medium text-accent underline hover:text-fg">
                 {hacksIntro.curator.linkText}
               </a>
+              {hacksIntro.curator.mid}
+              <a href={hacksIntro.curator.href2} className="font-medium text-accent underline hover:text-fg">
+                {hacksIntro.curator.link2Text}
+              </a>
               {hacksIntro.curator.after}
             </p>
           </div>

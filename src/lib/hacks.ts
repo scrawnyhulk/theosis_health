@@ -97,8 +97,11 @@ export const hacksIntro = {
       "I did not invent most of these. I have gathered a lot of them from people smarter than me that I love to follow and learn from. I consider myself a curator of evidence-based nutritional truth more than an author — although I did try my hand at creating the ",
     linkText: "Theosis Metabolic Simulator",
     href: "/simulator/",
+    mid: " (and the ",
+    link2Text: "Personal Fat Threshold model",
+    href2: "/simulator/pft-inside/",
     after:
-      " (and the Personal Fat Threshold model inside it). It all still follows the data as it comes. I use them on myself. Do them at least 80% of the time. The other 20% is what keeps you sane — so this never has to be a “diet.”",
+      " inside it). It all still follows the data as it comes. I use them on myself. Do them at least 80% of the time. The other 20% is what keeps you sane — so this never has to be a “diet.”",
   },
   disclaimer:
     "General education, not a personal treatment plan. If you have a medical condition — kidneys, pregnancy, disordered eating, anything your clinician is already following — talk with them before you overhaul how you eat.",

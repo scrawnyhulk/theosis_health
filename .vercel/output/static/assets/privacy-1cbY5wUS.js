@@ -1,4 +1,4 @@
-import{c as e}from"./useSelector-B0K6Mfa1.js";import{t}from"./site-shell-kFh0fZYh.js";var n=`<h1 id="privacy-policy-theosis-health">Privacy Policy — Theosis Health</h1>
+import{c as e}from"./useSelector-B0K6Mfa1.js";import{t}from"./site-shell-DpImAvtF.js";var n=`<h1 id="privacy-policy-theosis-health">Privacy Policy — Theosis Health</h1>
 <p><strong>Effective date:</strong> October 22, 2026 · <strong>Last updated:</strong> October 22, 2026</p>
 <p>Theosis Health LLC ("we," "us"), 4026 Bristol Dr., Danville, IL 61834, runs theosishealth.com and its tools (the "Service"). This policy explains what we collect, why, who processes it, how long we keep it, and your choices. Contact: <strong>support@theosishealth.com</strong>.</p>
 <p><strong>The short version</strong></p>

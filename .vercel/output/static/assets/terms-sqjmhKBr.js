@@ -1,4 +1,4 @@
-import{c as e}from"./useSelector-B0K6Mfa1.js";import{t}from"./site-shell-kFh0fZYh.js";var n=`<h1 id="terms-of-use-theosis-health">Terms of Use — Theosis Health</h1>
+import{c as e}from"./useSelector-B0K6Mfa1.js";import{t}from"./site-shell-DpImAvtF.js";var n=`<h1 id="terms-of-use-theosis-health">Terms of Use — Theosis Health</h1>
 <p><strong>Effective date:</strong> October 22, 2026 · <strong>Last updated:</strong> October 22, 2026</p>
 <p>These Terms are an agreement between you and <strong>Theosis Health LLC</strong>, an Illinois limited liability company ("Theosis Health," "we," "us"), 4026 Bristol Dr., Danville, IL 61834, support@theosishealth.com. They cover theosishealth.com, the Health Hacks, the health simulator, the Personal Fat Threshold (PFT) model, the fat-burn calculator, and any related tools (the "Service"). By using the Service you agree to these Terms. If you don't agree, please don't use it.</p>
 <h2 id="1-education-only-not-medical-advice">1. Education only, not medical advice</h2>
