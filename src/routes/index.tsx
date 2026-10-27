@@ -7,6 +7,8 @@ import { HomeFeatures } from "@/components/site/hack-of-week";
 import { SODA_PERSON, extraLbByDay, lostLbByDay, maintenance } from "@/lib/swap-model";
 
 const SODA_MAINT = Math.round(maintenance(SODA_PERSON) / 10) * 10;
+// Rounded for display only (about 2,000); the model math still uses the exact maintenance.
+const SODA_MAINT_SHOWN = Math.round(SODA_MAINT / 100) * 100;
 
 export const Route = createFileRoute("/")({ component: Home });
 
@@ -160,7 +162,7 @@ const ZERO: Drink[] = [
   { id: "zeroenergy", name: "Zero-cal energy drink", short: "a zero-cal energy drink", kcal: 10, src: "Monster Zero Ultra, 16 fl oz (monsterenergy.com)" },
   { id: "coffee", name: "Black coffee", short: "black coffee", kcal: 4, src: "Brewed coffee, 12 fl oz (USDA FDC 171890)" },
 ];
-const SODA_SR = `Example: a ${SODA_PERSON.age}-year-old, 5'5", ${SODA_PERSON.weightLb}-lb woman with about ${SODA_PERSON.bodyFatPct}% body fat who is lightly active, so she needs about ${(Math.round(maintenance(SODA_PERSON) / 10) * 10).toLocaleString()} calories a day.`;
+const SODA_SR = `Example: a ${SODA_PERSON.age}-year-old, 5'5", ${SODA_PERSON.weightLb}-lb person with about ${SODA_PERSON.bodyFatPct}% body fat who is lightly active, so they need about ${SODA_MAINT_SHOWN.toLocaleString()} calories a day.`;
 const curveCache = new Map<string, number[]>();
 const curve = (diff: number, gain: boolean) => {
   const key = `${gain ? "g" : "l"}${diff}`;
@@ -231,17 +233,17 @@ function SodaCard() {
           <section className="st-card keep" aria-labelledby="st-a">
             <div id="st-a" className="st-tag">Story A · Adding a drink</div>
             <ol className="st-steps">
-              <li>Her weight is steady. She eats about {SODA_MAINT.toLocaleString()} calories a day, enough to maintain.</li>
-              <li>She adds one {S.name.toLowerCase()} a day and eats the same otherwise: <b>+{S.kcal} cal a day</b>.</li>
+              <li>A person’s weight is steady. They eat about {SODA_MAINT_SHOWN.toLocaleString()} calories a day, enough to maintain.</li>
+              <li>They add one {S.name.toLowerCase()} a day and eats the same otherwise: <b>+{S.kcal} cal a day</b>.</li>
             </ol>
             <div className="st-out"><span>After {when}</span><b>{keepTxt} lb</b><em>The extra calories tend to add up to weight gain.</em></div>
           </section>
           <section className="st-card swap" aria-labelledby="st-b">
             <div id="st-b" className="st-tag">Story B · Switching a drink</div>
             <ol className="st-steps">
-              <li>Her weight is stuck, steady while drinking one {S.name.toLowerCase()} a day.</li>
+              <li>Their weight is stuck, steady while they drink one {S.name.toLowerCase()} a day.</li>
               <li>
-                <label htmlFor="sd-swap">She switches to</label>{" "}
+                <label htmlFor="sd-swap">They switch to</label>{" "}
                 <span className="sd-selwrap st-inline"><select id="sd-swap" className="sd-select" value={Z.id} onChange={(e) => setZid(e.target.value)}>
                   {ZERO.map((x) => <option key={x.id} value={x.id}>{x.name} ({x.kcal} cal)</option>)}
                 </select></span>{" "}
