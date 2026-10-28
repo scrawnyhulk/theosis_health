@@ -842,6 +842,50 @@
           const tg=new T.BufferGeometry();tg.setAttribute("position",new T.Float32BufferAttribute(tp,3));tg.setIndex(ti);{const A=tg.attributes.position;for(let i=0;i<A.count;i++){v.fromBufferAttribute(A,i);m.worldToLocal(v);A.setXYZ(i,v.x,v.y,v.z)}tg.computeVertexNormals();tg.computeBoundingSphere()}
           for(const nmA in g.attributes)if(!tg.attributes[nmA]){const A=g.attributes[nmA];tg.setAttribute(nmA,new T.Float32BufferAttribute(new Float32Array(tg.attributes.position.count*A.itemSize).fill(nmA==="color"?1:0),A.itemSize))}
           const tm=new T.Mesh(tg,m.material);tm.name="Deep pelvic arteries";tm.userData.role="vessel";tm.userData.v68=true;tm.frustumCulled=false;m.parent.add(tm);tm.position.copy(m.position);tm.quaternion.copy(m.quaternion);tm.scale.copy(m.scale);meshes.push(tm);(byRole.vessel=byRole.vessel||[]).push(tm)}}}catch(e){console.warn("r30 pelvic arteries",e)}
+      // r31 (day 1028, original procedural code): the abdominal aorta of the reference arterial tree is a coarse, lumpy tube
+      // with two small see-through holes and a boxy collar just above the iliac split. Its centre line and radius are refitted
+      // from the surface normals (P - N*r, median per 1 cm slice, smoothed), the trunk wall between the diaphragm and the split
+      // is removed (branch roots kept: their normals are not radial) and one smooth round tapered tube is put in its place.
+      // Appended to the r30 deep-pelvic tube mesh (same material) so there is no extra draw call. window.__PFT_R31AO=0 = off.
+      try{const m=window.__PFT_R31AO===0?null:nm("mesh_20");if(m&&m.geometry.index&&m.geometry.attributes.normal){m.updateMatrixWorld(true);const g=m.geometry,Pa=g.attributes.position,Na=g.attributes.normal,n=Pa.count,ix=g.index.array,v=new T.Vector3(),nn=new T.Vector3();
+        const YT=window.__PFT_R31YT||1.245,YB=window.__PFT_R31YB||.984,RL=[[1.27,.017,-.010],[1.13,.011,.008],[1.0,.013,.017],[.94,.015,.014]];
+        const rough=y=>{for(let k=0;k<RL.length-1;k++){const a=RL[k],b=RL[k+1];if(y<=a[0]&&y>=b[0]){const t=(a[0]-y)/(a[0]-b[0]);return [a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t]}}const e=y>RL[0][0]?RL[0]:RL[RL.length-1];return [e[1],e[2]]};
+        const W=new Float32Array(n*3),NW=new Float32Array(n*3);for(let i=0;i<n;i++){v.fromBufferAttribute(Pa,i).applyMatrix4(m.matrixWorld);W[i*3]=v.x;W[i*3+1]=v.y;W[i*3+2]=v.z;nn.fromBufferAttribute(Na,i).transformDirection(m.matrixWorld);NW[i*3]=nn.x;NW[i*3+1]=nn.y;NW[i*3+2]=nn.z}
+        const med=a=>{a.sort((x,y)=>x-y);return a[a.length>>1]},K=Math.round((YT-YB)/.01),cen=[];
+        for(let k=0;k<=K;k++){const yk=YB+k*(YT-YB)/K,rg=rough(yk),cx=[],cz=[],rs=[];for(let i=0;i<n;i++){const y=W[i*3+1];if(Math.abs(y-yk)>.008||Math.abs(NW[i*3+1])>.5)continue;const x=W[i*3],z=W[i*3+2];if(Math.hypot(x-rg[0],z-rg[1])>.03)continue;const ex=x-NW[i*3]*.011,ez=z-NW[i*3+2]*.011;if(Math.hypot(ex-rg[0],ez-rg[1])>.008)continue;cx.push(ex);cz.push(ez);rs.push([x,z])}
+          if(cx.length<4){cen.push(null);continue}const X=med(cx),Z=med(cz);cen.push([X,Z,med(rs.map(p=>Math.hypot(p[0]-X,p[1]-Z)))])}
+        // the lowest slices see the collar + iliac origins: hold the centre line straight below 1.0 (use the slices above it)
+        for(let k=0;k<=K;k++){const yk=YB+k*(YT-YB)/K;if(yk<1.0||!cen[k]){let j=k;while(j<=K&&(!cen[j]||YB+j*(YT-YB)/K<1.0))j++;if(j<=K)cen[k]=[cen[j][0],cen[j][1],cen[j][2]]}}
+        if(cen.every(Boolean)){let C=cen;for(let r=0;r<3;r++)C=C.map((c,k)=>k==0||k==K?c:[.25*C[k-1][0]+.5*c[0]+.25*C[k+1][0],.25*C[k-1][1]+.5*c[1]+.25*C[k+1][1],c[2]]);
+          let Rr=C.map(c=>Math.min(.0122,Math.max(.0092,c[2])));for(let r=0;r<6;r++)Rr=Rr.map((x,k)=>k==0||k==K?x:.25*Rr[k-1]+.5*x+.25*Rr[k+1]);
+          // the vessel material cuts away anything in front of z = .03 inside the window: keep the whole tube behind it (the old trunk
+          // poked through there, which is where its see-through holes came from)
+          C=C.map((c,k)=>[c[0],Math.min(c[1],.0272-Rr[k]*1.04),c[2]]);for(let r=0;r<2;r++)C=C.map((c,k)=>k==0||k==K?c:[c[0],Math.min(c[1],.25*C[k-1][1]+.5*c[1]+.25*C[k+1][1]),c[2]]);
+          const at=y=>{const f=Math.max(0,Math.min(K-1e-6,(y-YB)/(YT-YB)*K)),k=Math.floor(f),u=f-k,a=C[k],b=C[k+1];return [a[0]+(b[0]-a[0])*u,a[1]+(b[1]-a[1])*u,Rr[k]+(Rr[k+1]-Rr[k])*u]};
+          const dead=new Uint8Array(n),near=new Uint8Array(n);for(let i=0;i<n;i++){const y=W[i*3+1];if(y<YB||y>YT)continue;const c=at(y),dx=W[i*3]-c[0],dz=W[i*3+2]-c[1],d=Math.hypot(dx,dz);if(d>1.6*c[2])continue;near[i]=1;const nr=(NW[i*3]*dx+NW[i*3+2]*dz)/(d||1);if(d<1.12*c[2]||nr>.7)dead[i]=1}
+          // the reference wall is made of long slivers, so triangles are judged as a whole: inside the new tube, or a wall-like
+          // (radial face normal) triangle hugging the old trunk, or mostly dead vertices -> removed
+          const keep=[];let killed=0,e1=new T.Vector3(),e2=new T.Vector3();for(let t=0;t<ix.length;t+=3){const a=ix[t],b=ix[t+1],c=ix[t+2],nd=dead[a]+dead[b]+dead[c];
+            const gx=(W[a*3]+W[b*3]+W[c*3])/3,gy=(W[a*3+1]+W[b*3+1]+W[c*3+1])/3,gz=(W[a*3+2]+W[b*3+2]+W[c*3+2])/3;let kill=nd===3||(nd===2&&near[a]&&near[b]&&near[c]);
+            if(!kill&&gy>=YB&&gy<=YT&&(nd||near[a]||near[b]||near[c])){const q=at(gy),dx=gx-q[0],dz=gz-q[1],d=Math.hypot(dx,dz)||1;e1.set(W[b*3]-W[a*3],W[b*3+1]-W[a*3+1],W[b*3+2]-W[a*3+2]);e2.set(W[c*3]-W[a*3],W[c*3+1]-W[a*3+1],W[c*3+2]-W[a*3+2]);e1.cross(e2).normalize();
+              const fr=Math.abs(e1.x*dx+e1.z*dz)/d;if(d<1.15*q[2]||(d<1.9*q[2]&&fr>.55))kill=true}
+            if(!kill&&(near[a]||near[b]||near[c])){const ya=W[a*3+1],yb=W[b*3+1],yc=W[c*3+1];if(Math.min(ya,yb,yc)<YB-.002&&Math.max(ya,yb,yc)>=YB-.002){const q=at(YB),L=(i,j)=>Math.hypot(W[i*3]-W[j*3],W[i*3+1]-W[j*3+1],W[i*3+2]-W[j*3+2]);if(Math.max(L(a,b),L(b,c),L(c,a))>.9*q[2])kill=true}} // long shards from the iliac origins up into the old collar
+            if(kill){killed++;continue}keep.push(a,b,c)}
+          // what is left of the old wall near the trunk (branch roots, sliver ends) is pulled radially onto / just inside the new
+          // tube surface, so branches meet the tube without gaps and no shards stick out
+          {const kv=new Set(keep);for(const i of kv){const y=W[i*3+1];if(y<YB-.002||y>YT)continue;const c=at(y),dx=W[i*3]-c[0],dz=W[i*3+2]-c[1],d=Math.hypot(dx,dz);if(d>1.6*c[2]||d<1e-6)continue;
+            const td=Math.min(d,.98*c[2]*1.04)+(d>c[2]*1.04?0:0),f=Math.max(0,Math.min(1,(1.6*c[2]-d)/(.25*c[2]))),nd2=d+(td-d)*f;if(nd2===d)continue;v.set(c[0]+dx/d*nd2,y,c[1]+dz/d*nd2);m.worldToLocal(v);Pa.setXYZ(i,v.x,v.y,v.z)}Pa.needsUpdate=true;g.computeBoundingSphere()}
+          // new trunk tube: open at the top (runs 6 mm into the kept upper aorta), rounded at the split so it sits inside the iliac origins
+          const NR=18,y0=YT+.006,y1=YB-.007,cap=.011,tp=[],ti=[],ys=[];for(let y=y0;y>y1+cap;y-=.0095)ys.push(y);for(let k=0;k<=7;k++)ys.push(y1+cap*(1-Math.sin(k/7*Math.PI/2)));const NS=ys.length-1;
+          for(let a=0;a<=NS;a++){const y=ys[a],c=at(Math.min(YT,y)),cl=at(Math.min(YT,y+.004)),cu=at(Math.min(YT,y-.004));const tg=new T.Vector3(cl[0]-cu[0],.008,cl[1]-cu[1]).normalize(),Nf=new T.Vector3(1,0,0).addScaledVector(tg,-tg.x).normalize(),Bf=new T.Vector3().crossVectors(tg,Nf);
+            const u=Math.max(0,Math.min(1,(y-y1)/cap)),rr=c[2]*1.04*Math.sqrt(Math.max(0,1-(1-u)*(1-u)));for(let j=0;j<=NR;j++){const th=j/NR*Math.PI*2,co=Math.cos(th),si=Math.sin(th);v.set(c[0]+(Nf.x*co+Bf.x*si)*rr,y+(Nf.y*co+Bf.y*si)*rr,c[1]+(Nf.z*co+Bf.z*si)*rr);m.worldToLocal(v);tp.push(v.x,v.y,v.z)}}
+          for(let a=0;a<NS;a++)for(let j=0;j<NR;j++){const A=a*(NR+1)+j,B=A+NR+1;ti.push(A,B,A+1,B,B+1,A+1)}
+          g.setIndex(keep);let tm=nm("Deep pelvic arteries");
+          if(tm&&tm.geometry.index){const og=tm.geometry,oc=og.attributes.position.count,ng=new T.BufferGeometry();for(const k in og.attributes){const A=og.attributes[k],s=A.itemSize,arr=new Float32Array((oc+tp.length/3)*s);arr.set(A.array.subarray(0,oc*s));if(k==="position")arr.set(tp,oc*s);else if(k==="color")arr.fill(1,oc*s);ng.setAttribute(k,new T.Float32BufferAttribute(arr,s))}
+            ng.setIndex([...og.index.array,...ti.map(i=>i+oc)]);ng.computeVertexNormals();ng.computeBoundingSphere();og.dispose();tm.geometry=ng}
+          else{const tg=new T.BufferGeometry();tg.setAttribute("position",new T.Float32BufferAttribute(tp,3));tg.setIndex(ti);for(const k in g.attributes)if(!tg.attributes[k]){const A=g.attributes[k];tg.setAttribute(k,new T.Float32BufferAttribute(new Float32Array(tp.length/3*A.itemSize).fill(k==="color"?1:0),A.itemSize))}tg.computeVertexNormals();tg.computeBoundingSphere();
+            tm=new T.Mesh(tg,m.material);tm.name="Abdominal aorta";tm.userData.role="vessel";tm.userData.v68=true;tm.frustumCulled=false;m.parent.add(tm);tm.position.copy(m.position);tm.quaternion.copy(m.quaternion);tm.scale.copy(m.scale);meshes.push(tm);(byRole.vessel=byRole.vessel||[]).push(tm)}
+          window.__pftR31=[killed,ti.length/3];if(window.__PFT_R31DBG){const kv=new Set(keep);window.__pftR31dbg=[...kv].filter(i=>near[i]).map(i=>{const c=at(W[i*3+1]),dx=W[i*3]-c[0],dz=W[i*3+2]-c[1],d=Math.hypot(dx,dz);return [+W[i*3+1].toFixed(3),+(d/c[2]).toFixed(2),+((NW[i*3]*dx+NW[i*3+2]*dz)/d).toFixed(2),Math.round(Math.atan2(dz,dx)*57.3),+NW[i*3+1].toFixed(2)]})}}}}catch(e){console.warn("r31 aorta",e)}
       }
       return n}
     // v70: original procedural stomach (swept tube): fundus, body, greater/lesser curvature, antrum and a narrow pylorus that
