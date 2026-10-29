@@ -18,6 +18,8 @@ writeFileSync("public/fat-burn-calculator/site-header.css", readFileSync(`${out}
 }
 const f = "public/fat-burn-calculator/index.html";
 let page = readFileSync(f, "utf8");
+// This header already includes the phone Pages icon row. The page script must
+// not append a second .th-tabs nav or those icons show twice on a phone.
 const tpl = `<!--SITE-HEADER-->\n<template id="th-site-header"><link rel="stylesheet" href="/fat-burn-calculator/site-header.css">${header}</template>\n<!--/SITE-HEADER-->`;
 page = page.replace(/<!--SITE-HEADER-->[\s\S]*?<!--\/SITE-HEADER-->/, tpl);
 writeFileSync(f, page);
