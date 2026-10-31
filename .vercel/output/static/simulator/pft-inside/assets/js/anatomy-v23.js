@@ -1218,6 +1218,61 @@
       }catch(e){console.warn("g3d fit",e)}},undefined,e=>console.warn("g3d load",e));
       whenMeshopt().then(start,start);
     }
+    // r34: the Grab3D stomach was fitted to the procedural stomach's full box, and that box
+    // reaches up through the left costal margin (the esophagus stub is part of it) and down
+    // through the transverse colon. Scale the fitted stomach about the duodenal cap so the
+    // fundus sits under the left ribs, then drop colon / small-bowel vertices that still
+    // cross the greater curvature to just below it. Window.__PFT_STSEAT=0 restores the old fit.
+    // No extra triangles. Teaching stomach translucency in anatomy-pft.js is unchanged.
+    function seatStomach(gs){
+      const sm=meshes.find(m=>m.userData.g3d&&m.userData.role==="stomach"&&m.parent===gs)||gs;
+      if(!sm.geometry)return;
+      const duo=meshes.find(m=>m.name==="Duodenum");
+      const anchor=new T.Vector3(-.02,1.12,.04),tmp=new T.Vector3();
+      if(duo&&duo.geometry){duo.updateMatrixWorld(true);const P=duo.geometry.attributes.position;let best=-9;
+        for(let i=0;i<P.count;i++){tmp.fromBufferAttribute(P,i).applyMatrix4(duo.matrixWorld);if(tmp.y>best){best=tmp.y;anchor.copy(tmp)}}}
+      const sc=.72;
+      gs.updateMatrixWorld(true);
+      if(gs.parent){const parentInv=gs.parent.matrixWorld.clone().invert(),old=gs.matrixWorld.clone();
+        const M=gs.matrixWorld.clone().makeTranslation(anchor.x,anchor.y,anchor.z).multiply(gs.matrixWorld.clone().makeScale(sc,sc,sc)).multiply(gs.matrixWorld.clone().makeTranslation(-anchor.x,-anchor.y,-anchor.z)).multiply(old);
+        parentInv.multiply(M);parentInv.decompose(gs.position,gs.quaternion,gs.scale);gs.updateMatrixWorld(true)}
+      sm.updateMatrixWorld(true);
+      const P=sm.geometry.attributes.position,Nn=sm.geometry.attributes.normal,nm=sm.matrixWorld.clone().invert().transpose();
+      const H=.012,grid=new Map(),pts=[],v=new T.Vector3(),nr=new T.Vector3(),STEP=6;
+      for(let i=0;i<P.count;i+=STEP){v.fromBufferAttribute(P,i).applyMatrix4(sm.matrixWorld);
+        if(Nn)nr.fromBufferAttribute(Nn,i).transformDirection(nm);else nr.set(0,1,0);
+        const j=pts.length;pts.push([v.x,v.y,v.z,nr.x,nr.y,nr.z]);
+        const k=Math.floor(v.x/H)+","+Math.floor(v.y/H)+","+Math.floor(v.z/H);(grid.get(k)||grid.set(k,[]).get(k)).push(j)}
+      const sb=new T.Box3().setFromObject(sm),NX=28,gcY=new Float32Array(NX).fill(99),span=Math.max(1e-6,sb.max.x-sb.min.x);
+      for(let i=0;i<P.count;i+=2){v.fromBufferAttribute(P,i).applyMatrix4(sm.matrixWorld);const t=(v.x-sb.min.x)/span;if(t<0||t>1)continue;const b=Math.min(NX-1,t*NX|0);if(v.y<gcY[b])gcY[b]=v.y}
+      for(let i=0;i<NX;i++)if(gcY[i]>90){let a=i,c=i;while(a>=0&&gcY[a]>90)a--;while(c<NX&&gcY[c]>90)c++;const ya=a>=0?gcY[a]:(c<NX?gcY[c]:sb.min.y),yc=c<NX?gcY[c]:ya;gcY[i]=ya+(yc-ya)*(a>=0&&c<NX?(i-a)/(c-a):0)}
+      const nearest=(x,y,z,lim)=>{const a=Math.floor(x/H),b=Math.floor(y/H),c=Math.floor(z/H),r=Math.ceil(lim/H);let best=lim*lim,bi=-1;
+        for(let i=-r;i<=r;i++)for(let j=-r;j<=r;j++)for(let k=-r;k<=r;k++){const cell=grid.get((a+i)+","+(b+j)+","+(c+k));if(!cell)continue;for(const q of cell){const p=pts[q],d=(p[0]-x)**2+(p[1]-y)**2+(p[2]-z)**2;if(d<best){best=d;bi=q}}}
+        if(bi<0)return null;const p=pts[bi];return {signed:(x-p[0])*p[3]+(y-p[1])*p[4]+(z-p[2])*p[5],n:p.slice(3)}};
+      const spread=(cur,ix,count,hops,smooths)=>{
+        for(let h=0;h<hops;h++){const nxt=new Float32Array(cur);for(let t=0;t<ix.length;t+=3){const ids=[ix[t],ix[t+1],ix[t+2]];let src=ids[0],m2=0;for(const id of ids){const l=cur[id*3]**2+cur[id*3+1]**2+cur[id*3+2]**2;if(l>m2){m2=l;src=id}}if(m2<=0)continue;for(const id of ids){const l=nxt[id*3]**2+nxt[id*3+1]**2+nxt[id*3+2]**2;if(m2>l){nxt[id*3]=cur[src*3];nxt[id*3+1]=cur[src*3+1];nxt[id*3+2]=cur[src*3+2]}}}cur=nxt}
+        for(let it=0;it<smooths;it++){const sum=new Float32Array(cur.length),cnt=new Uint16Array(count);for(let t=0;t<ix.length;t+=3){const ids=[ix[t],ix[t+1],ix[t+2]];for(const i of ids)for(const j of ids){if(i===j)continue;sum[i*3]+=cur[j*3];sum[i*3+1]+=cur[j*3+1];sum[i*3+2]+=cur[j*3+2];cnt[i]++}}
+          const nxt=new Float32Array(cur.length);for(let i=0;i<count;i++){if(!cnt[i]){nxt[i*3]=cur[i*3];nxt[i*3+1]=cur[i*3+1];nxt[i*3+2]=cur[i*3+2];continue}nxt[i*3]=cur[i*3]*.55+sum[i*3]/cnt[i]*.45;nxt[i*3+1]=cur[i*3+1]*.55+sum[i*3+1]/cnt[i]*.45;nxt[i*3+2]=cur[i*3+2]*.55+sum[i*3+2]/cnt[i]*.45}cur=nxt}
+        return cur};
+      const applyDisp=(mesh,disp)=>{const pos=mesh.geometry.attributes.position;mesh.updateMatrixWorld(true);let n=0;
+        for(let i=0;i<pos.count;i++){const l=Math.abs(disp[i*3])+Math.abs(disp[i*3+1])+Math.abs(disp[i*3+2]);if(l<1e-6)continue;v.fromBufferAttribute(pos,i).applyMatrix4(mesh.matrixWorld);v.x+=disp[i*3];v.y+=disp[i*3+1];v.z+=disp[i*3+2];mesh.worldToLocal(v);pos.setXYZ(i,v.x,v.y,v.z);n++}
+        pos.needsUpdate=true;mesh.geometry.computeVertexNormals();mesh.geometry.computeBoundingSphere();return n};
+      let draped=0;
+      meshes.filter(m=>(m.name==="Colon"||m.name==="Small intestine")&&m.geometry&&m.geometry.index).forEach(mesh=>{
+        const g=mesh.geometry,pos=g.attributes.position,disp=new Float32Array(pos.count*3);mesh.updateMatrixWorld(true);
+        for(let i=0;i<pos.count;i++){v.fromBufferAttribute(pos,i).applyMatrix4(mesh.matrixWorld);if(v.x<sb.min.x+.006||v.x>sb.max.x-.004||v.z<sb.min.z-.005)continue;
+          const b=Math.min(NX-1,Math.max(0,((v.x-sb.min.x)/span)*NX|0)),target=gcY[b]-.022;if(!(v.y>target))continue;disp[i*3+1]=Math.max(-.04,target-v.y)}
+        draped+=applyDisp(mesh,spread(disp,g.index.array,pos.count,5,2))});
+      const MARGIN=.008;let cleared=0;
+      meshes.filter(m=>m.geometry&&m.geometry.index&&(m.userData.role==="colon"||m.userData.role==="intestine")).forEach(mesh=>{
+        const g=mesh.geometry,pos=g.attributes.position,lock=mesh.name==="Duodenum",disp=new Float32Array(pos.count*3);mesh.updateMatrixWorld(true);
+        for(let i=0;i<pos.count;i++){v.fromBufferAttribute(pos,i).applyMatrix4(mesh.matrixWorld);
+          if(v.y<sb.min.y-.02||v.y>sb.max.y+.02||v.x<sb.min.x-.025||v.x>sb.max.x+.025||v.z<sb.min.z-.02||v.z>sb.max.z+.025)continue;
+          let w=1;if(lock){const d=v.distanceTo(anchor),t=Math.min(1,Math.max(0,(d-.018)/.028));w=t*t*(3-2*t);if(w<=0)continue}
+          const hit=nearest(v.x,v.y,v.z,.02);if(!hit||hit.signed>=MARGIN)continue;const push=(MARGIN-hit.signed)*w;disp[i*3]=hit.n[0]*push;disp[i*3+1]=hit.n[1]*push;disp[i*3+2]=hit.n[2]*push}
+        cleared+=applyDisp(mesh,spread(disp,g.index.array,pos.count,6,2))});
+      window.__pftStomachSeat={scale:sc,anchor:anchor.toArray(),draped,cleared};
+    }
     // r27 (day 1025): Grab3D CC0 1.0 organ models (heart, lungs, liver, stomach, kidneys) replace the procedural/HRA organ
     // shapes in every inside view (Half & half, Inside, and the simulator's embedded inside view, which loads this same file).
     // Each is fitted to the bounding box of the organ it replaces (per-axis scale held within +/-20% of uniform), so positions
@@ -1237,7 +1292,7 @@
       Object.keys(L).forEach(role=>{const old=(byRole[role]||[]).filter(m=>!m.userData.g3d&&m.userData.role===role);if(!old.length)return;
         ld.load(base+L[role]+v,g=>{try{
           if(role==="kidney"&&old.length>1){old.forEach((m,i)=>{const gs=i?g.scene.clone(true):g.scene;const b=boxOf([m]);fit(gs,b,b.getCenter(new T.Vector3()).x<0,.96);adopt(gs,role,[m])})}
-          else{if(window.__PFT_G3DROT!==0)g.scene.rotation.y=Math.PI; /* Grab3D organs are authored facing -z; turn them to face forward so the liver sits on the patient's right */fit(g.scene,boxOf(old),false,role==="lung"?.86:.96);adopt(g.scene,role,old)}
+          else{if(window.__PFT_G3DROT!==0)g.scene.rotation.y=Math.PI; /* Grab3D organs are authored facing -z; turn them to face forward so the liver sits on the patient's right */fit(g.scene,boxOf(old),false,role==="lung"?.86:.96);adopt(g.scene,role,old);if(role==="stomach"&&window.__PFT_STSEAT!==0){try{seatStomach(g.scene)}catch(e){console.warn("stomach seat",e)}}}
           window.__pftG3DO=(window.__pftG3DO||0)+1;applyMode();kick()}catch(e){console.warn("g3d organ "+role,e)}},undefined,e=>console.warn("g3d organ load "+role,e))});
     }
     // file:// pages cannot fetch the .glb (browsers block local XHR/fetch), so the same model also ships as a
