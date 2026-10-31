@@ -790,6 +790,20 @@
             color:"{float reach=.18+.8*min(1.,uVisc*1.25);float fz=(1.-smoothstep(reach-.25,reach,vFt.x))*min(1.,uVisc*1.8);vec2 c=pftCell(vPos*150.);float lob=smoothstep(.02,.2,c.y-c.x);float dm=1.-smoothstep(.0,.8,c.x);vec2 c2=pftCell(vPos*380.);float sub=smoothstep(.02,.14,c2.y-c2.x);vec3 fat=mix(vec3(.86,.60,.20),vec3(1.,.82,.40),dm*.6+.4*pftNoise(vPos*40.))*mix(.88,1.,sub)*mix(.74,1.,dm);vec3 sep=vec3(.80,.50,.32);diffuseColor.rgb=mix(diffuseColor.rgb,mix(sep,fat,lob),fz*.92);diffuseColor.a=mix(diffuseColor.a,max(diffuseColor.a,.82*mix(.75,1.,lob)),fz);pftDome=mix(1.,.78+.3*dm,fz);}",
             normal:"normal=pftBump(normal,pftCell(vPos*150.).x*-1.*min(1.,uVisc*1.6),.0022);"}));
           const fm=new T.Mesh(g,mat);fm.name="Mesentery fan";fm.userData.role="mesentery";fm.userData.v68=true;fm.frustumCulled=false;fm.renderOrder=2;fm.receiveShadow=false;const hp=m.parent;hp.updateMatrixWorld(true);{const A=g.attributes.position;for(let i=0;i<A.count;i++){v.fromBufferAttribute(A,i);hp.worldToLocal(v);A.setXYZ(i,v.x,v.y,v.z)}g.computeVertexNormals();g.computeBoundingSphere()}hp.add(fm);meshes.push(fm);(byRole.mesentery=byRole.mesentery||[]).push(fm)}}}catch(e){console.warn("r25 mesentery fan",e)}
+      // r33 (day 1030, original procedural code): the reference mesentery sheet behind the loops (mesh_15, shares the visceral-fat
+      // material) is a crumpled fan of long thin blades; between the loops it read as grey glassy shards. The welded sheet is
+      // relaxed in place (Laplacian then a shrink-back Taubin pass; rim vertices only slide along the rim so the outline stays
+      // put), which folds the blades into soft ruffles. Same triangles, same draw call. window.__PFT_R33MS=0 = off.
+      try{const m=window.__PFT_R33MS===0?null:nm("mesh_15");if(m&&m.geometry.index&&!m.userData.r33){m.userData.r33=1;const g=m.geometry,Pa=g.attributes.position,n=Pa.count,ix=g.index.array;
+        const P=new Float32Array(n*3);for(let i=0;i<n;i++){P[i*3]=Pa.getX(i);P[i*3+1]=Pa.getY(i);P[i*3+2]=Pa.getZ(i)}const bb0=new T.Box3().setFromArray(P);const wm=new Map(),id=new Int32Array(n);for(let i=0;i<n;i++){const k=Math.round(P[i*3]/1e-4)+","+Math.round(P[i*3+1]/1e-4)+","+Math.round(P[i*3+2]/1e-4);let q=wm.get(k);if(q===undefined){q=i;wm.set(k,i)}id[i]=q}
+        const E=new Map();for(let t=0;t<ix.length;t+=3)for(let e=0;e<3;e++){const a=id[ix[t+e]],b=id[ix[t+(e+1)%3]];if(a===b)continue;const k=a<b?a*n+b:b*n+a;E.set(k,(E.get(k)||0)+1)}
+        const nb=Array.from({length:n},()=>[]),bn=Array.from({length:n},()=>[]),rim=new Uint8Array(n);for(const [k,c] of E){const a=Math.floor(k/n),b=k%n;nb[a].push(b);nb[b].push(a);if(c===1){bn[a].push(b);bn[b].push(a);rim[a]=rim[b]=1}}
+        const IT=window.__PFT_R33MSK==null?14:window.__PFT_R33MSK,step=(lam)=>{const D=new Float32Array(n*3);for(let i=0;i<n;i++){if(id[i]!==i)continue;const L=rim[i]?bn[i]:nb[i];if(!L.length)continue;let x=0,y=0,z=0;for(const j of L){x+=P[j*3];y+=P[j*3+1];z+=P[j*3+2]}const w=rim[i]?lam*.6:lam;D[i*3]=w*(x/L.length-P[i*3]);D[i*3+1]=w*(y/L.length-P[i*3+1]);D[i*3+2]=w*(z/L.length-P[i*3+2])}for(let i=0;i<D.length;i++)P[i]+=D[i]};
+        for(let it=0;it<IT;it++)step(.5);for(let it=0;it<6;it++)step(it%2?-.53:.5);
+        const N=new Float32Array(n*3);for(let t=0;t<ix.length;t+=3){const a=id[ix[t]],b=id[ix[t+1]],c=id[ix[t+2]];const ux=P[b*3]-P[a*3],uy=P[b*3+1]-P[a*3+1],uz=P[b*3+2]-P[a*3+2],wx=P[c*3]-P[a*3],wy=P[c*3+1]-P[a*3+1],wz=P[c*3+2]-P[a*3+2];const nx=uy*wz-uz*wy,ny=uz*wx-ux*wz,nz=ux*wy-uy*wx;for(const q of [a,b,c]){N[q*3]+=nx;N[q*3+1]+=ny;N[q*3+2]+=nz}}
+        const Na=new Float32Array(n*3);for(let i=0;i<n;i++){const q=id[i],l=Math.hypot(N[q*3],N[q*3+1],N[q*3+2])||1;Na[i*3]=N[q*3]/l;Na[i*3+1]=N[q*3+1]/l;Na[i*3+2]=N[q*3+2]/l}
+        const Pf=new Float32Array(n*3);for(let i=0;i<n;i++){const q=id[i];Pf[i*3]=P[q*3];Pf[i*3+1]=P[q*3+1];Pf[i*3+2]=P[q*3+2]}g.setAttribute("position",new T.Float32BufferAttribute(Pf,3)); /* the source attribute is Uint16 (quantized, scaled by the node): keep the relaxed sub-unit positions as floats */
+        g.setAttribute("normal",new T.Float32BufferAttribute(Na,3));g.computeBoundingBox();g.computeBoundingSphere();window.__pftR33=[n,IT,bb0,g.boundingBox]}}catch(e){console.warn("r33 mesentery",e)}
       // (b) the reference arterial tree has a few square-section stubs at the top of the stomach (left gastric /
       // oesophageal branches). Each one is replaced by a round, tapered tube fitted to its centre line (same material).
       try{const m=nm("mesh_20"),q=new T.Vector3();if(m&&m.geometry.index){m.updateMatrixWorld(true);const g=m.geometry,Pa=g.attributes.position,n=Pa.count,ix=g.index.array;
@@ -827,9 +841,12 @@
         const kill=new Set(),tp=[],ti=[];
         const tube=(pts,r0,r1)=>{for(let r2=0;r2<2;r2++)pts=pts.map((p,k)=>k==0||k==pts.length-1?p:p.clone().multiplyScalar(.5).addScaledVector(pts[k-1],.25).addScaledVector(pts[k+1],.25));
           const cr=(t)=>{const L=pts.length-1,x=Math.min(L-1e-6,t*L),k=Math.floor(x),u=x-k,p0=pts[Math.max(0,k-1)],p1=pts[k],p2=pts[k+1],p3=pts[Math.min(L,k+2)];return p1.clone().multiplyScalar(2).addScaledVector(p2.clone().sub(p0),u).addScaledVector(p0.clone().multiplyScalar(2).addScaledVector(p1,-5).addScaledVector(p2,4).sub(p3),u*u).addScaledVector(p1.clone().multiplyScalar(3).sub(p0).addScaledVector(p2,-3).add(p3),u*u*u).multiplyScalar(.5)};
-          const NS=12,NR=10,b0=tp.length/3;let Nf=null;for(let a=0;a<=NS;a++){const s=a/NS,c0=cr(s),tg=cr(Math.min(1,s+.02)).sub(cr(Math.max(0,s-.02))).normalize();if(!Nf){Nf=new T.Vector3(0,1,0);if(Math.abs(Nf.dot(tg))>.9)Nf.set(1,0,0)}Nf.addScaledVector(tg,-Nf.dot(tg)).normalize();const Bf=new T.Vector3().crossVectors(tg,Nf);
-            const rr=(r0+(r1-r0)*s)*Math.sqrt(Math.max(0,Math.min(1,(1-s)/.06)));for(let j=0;j<=NR;j++){const th=j/NR*Math.PI*2;tp.push(c0.x+(Nf.x*Math.cos(th)+Bf.x*Math.sin(th))*rr,c0.y+(Nf.y*Math.cos(th)+Bf.y*Math.sin(th))*rr,c0.z+(Nf.z*Math.cos(th)+Bf.z*Math.sin(th))*rr)}}
-          for(let a=0;a<NS;a++)for(let j=0;j<NR;j++){const A=b0+a*(NR+1)+j,B=A+NR+1;ti.push(A,B,A+1,B,B+1,A+1)}};
+          /* r33: the tubes tapered to a needle point over the last segment (sharp red spikes low in the Inside window); with
+             window.__PFT_R33TIP!==0 the tube keeps its end radius and closes with a 3-ring rounded dome instead (+60 tris a tube) */
+          const DOME=window.__PFT_R33TIP!==0?3:0,NS=12,NR=10,b0=tp.length/3;let Nf=null;for(let a=0;a<=NS+DOME;a++){const s=Math.min(1,a/NS),c0=cr(s),tg=cr(Math.min(1,s+.02)).sub(cr(Math.max(0,s-.02))).normalize();if(!Nf){Nf=new T.Vector3(0,1,0);if(Math.abs(Nf.dot(tg))>.9)Nf.set(1,0,0)}Nf.addScaledVector(tg,-Nf.dot(tg)).normalize();const Bf=new T.Vector3().crossVectors(tg,Nf);
+            let rr=(r0+(r1-r0)*s)*(DOME?1:Math.sqrt(Math.max(0,Math.min(1,(1-s)/.06))));if(a>NS){const ph=(a-NS)/DOME*Math.PI/2;c0.addScaledVector(tg,r1*Math.sin(ph));rr=r1*Math.cos(ph)*(a===NS+DOME?0:1)}
+            for(let j=0;j<=NR;j++){const th=j/NR*Math.PI*2;tp.push(c0.x+(Nf.x*Math.cos(th)+Bf.x*Math.sin(th))*rr,c0.y+(Nf.y*Math.cos(th)+Bf.y*Math.sin(th))*rr,c0.z+(Nf.z*Math.cos(th)+Bf.z*Math.sin(th))*rr)}}
+          for(let a=0;a<NS+DOME;a++)for(let j=0;j<NR;j++){const A=b0+a*(NR+1)+j,B=A+NR+1;ti.push(A,B,A+1,B,B+1,A+1)}};
         for(const [r,c] of C){if(!(c.u.size>40&&c.u.size<260&&c.mn[1]>.85&&c.mx[1]<.975&&c.mn[2]<-.055&&c.mx[2]<.012&&c.mn[0]>-.07&&c.mx[0]<.07))continue;
           const vs=[...c.u],P=i=>new T.Vector3(W[i*3],W[i*3+1],W[i*3+2]);let zmax=-9;vs.forEach(i=>{zmax=Math.max(zmax,W[i*3+2])});
           const root=new T.Vector3();let rn=0;vs.forEach(i=>{if(W[i*3+2]>zmax-.006){root.add(P(i));rn++}});root.multiplyScalar(1/rn);
@@ -908,7 +925,7 @@
         const loopsOf=(ix2)=>{const E=new Map();for(let t=0;t<ix2.length;t+=3)for(let e=0;e<3;e++){const a=id[ix2[t+e]],b=id[ix2[t+(e+1)%3]];if(a===b)continue;const k=a<b?a*n+b:b*n+a;E.set(k,(E.get(k)||0)+1)}
           const adj=new Map();for(const [k,c] of E){if(c!==1)continue;const a=Math.floor(k/n),b=k%n;(adj.get(a)||adj.set(a,[]).get(a)).push(b);(adj.get(b)||adj.set(b,[]).get(b)).push(a)}
           const seen=new Set(),out=[];for(const s0 of adj.keys()){if(seen.has(s0))continue;const st=[s0],Lp=[];seen.add(s0);while(st.length){const x=st.pop();Lp.push(x);for(const y of adj.get(x))if(!seen.has(y)){seen.add(y);st.push(y)}}
-            const c=new T.Vector3();Lp.forEach(i=>{c.x+=W[i*3];c.y+=W[i*3+1];c.z+=W[i*3+2]});c.multiplyScalar(1/Lp.length);out.push({c,n:Lp.length})}return out};
+            const c=new T.Vector3();Lp.forEach(i=>{c.x+=W[i*3];c.y+=W[i*3+1];c.z+=W[i*3+2]});c.multiplyScalar(1/Lp.length);out.push({c,n:Lp.length,Lp})}return out};
         const loops=loopsOf(keep);
         // principal direction of the wall within 2.5 cm of an open end, pointing out of the opening, and the wall radius around it
         const axis=(c)=>{const pts=[];for(let i=0;i<n;i++){if(id[i]!==i)continue;const dx=W[i*3]-c.x,dy=W[i*3+1]-c.y,dz=W[i*3+2]-c.z;if(dx*dx+dy*dy+dz*dz<.025*.025)pts.push([dx,dy,dz])}
@@ -922,12 +939,16 @@
         for(const s of [1,-1]){const A=loops.filter(l=>l.c.x*s>.04&&l.c.x*s<.08&&l.c.y>.912&&l.c.y<.945&&l.n>10).sort((a,b)=>b.n-a.n)[0],B=band(s,.852,.866,.085,.112,0,.03),Bd=band(s,.79,.83,.075,.13,-.01,.05);
           if(!A||B.length<6||Bd.length<4){keep.push(...rib[s]);continue}
           const ta=axis(A.c);if(ta.y>0){const rd=ta.rad;ta.negate();ta.rad=rd}const c1=cen(B),d1=cen(Bd).sub(c1).normalize();const r0=Math.min(.0085,Math.max(.004,ta.rad))*1.05,r1=Math.min(.0085,Math.max(.0035,c1.r||ta.rad))*1.05;
-          const c0=A.c.clone().addScaledVector(ta,-.006),D=c0.distanceTo(c1);
+          const R33=window.__PFT_R33IL!==0,c0=A.c.clone().addScaledVector(ta,R33?-.009:-.006),D=c0.distanceTo(c1);
+          /* r33: the open iliac end is cut obliquely, so where its rim stood wider than the bridge tube a white slit showed (looking into
+             the culled inside of the old wall). The bridge now starts 3 mm deeper and flares to cover the widest rim point, so the old rim sits
+             inside it (no new triangles) */
+          let rimR=0;if(R33){for(const i of A.Lp){const dx=W[i*3]-A.c.x,dy=W[i*3+1]-A.c.y,dz=W[i*3+2]-A.c.z,t=dx*ta.x+dy*ta.y+dz*ta.z;rimR=Math.max(rimR,Math.hypot(dx-ta.x*t,dy-ta.y*t,dz-ta.z*t))}rimR=Math.min(rimR,.013)}
           if(D<.04||D>.13||ta.y>0||d1.y>-.5){keep.push(...rib[s]);continue}
           const ZB=window.__PFT_R32ZB==null?.009:window.__PFT_R32ZB;const m0=ta.clone().multiplyScalar(D*.9),m1=d1.clone().multiplyScalar(D*.9);
           const H=u=>{const u2=u*u,u3=u2*u;return c0.clone().multiplyScalar(2*u3-3*u2+1).addScaledVector(m0,u3-2*u2+u).addScaledVector(c1,-2*u3+3*u2).addScaledVector(m1,u3-u2).add(new T.Vector3(0,0,-ZB*Math.sin(Math.PI*u)))};
           const b0=tp.length/3;let Nf=null;for(let a=0;a<=NS;a++){const u=a/NS,p=H(u),tg=H(Math.min(1,u+.01)).sub(H(Math.max(0,u-.01))).normalize();if(!Nf){Nf=new T.Vector3(0,0,1);if(Math.abs(Nf.dot(tg))>.9)Nf.set(1,0,0)}Nf.addScaledVector(tg,-Nf.dot(tg)).normalize();const Bf=new T.Vector3().crossVectors(tg,Nf);
-            const rr=r0+(r1-r0)*(u*u*(3-2*u));for(let j=0;j<=NR;j++){const th=j/NR*Math.PI*2;v.set(p.x+(Nf.x*Math.cos(th)+Bf.x*Math.sin(th))*rr,p.y+(Nf.y*Math.cos(th)+Bf.y*Math.sin(th))*rr,p.z+(Nf.z*Math.cos(th)+Bf.z*Math.sin(th))*rr);m.worldToLocal(v);tp.push(v.x,v.y,v.z)}}
+            const rr=r0+(r1-r0)*(u*u*(3-2*u))+(R33?Math.max(0,rimR*1.04-r0)*(1-Math.min(1,u/.22))**2:0);for(let j=0;j<=NR;j++){const th=j/NR*Math.PI*2;v.set(p.x+(Nf.x*Math.cos(th)+Bf.x*Math.sin(th))*rr,p.y+(Nf.y*Math.cos(th)+Bf.y*Math.sin(th))*rr,p.z+(Nf.z*Math.cos(th)+Bf.z*Math.sin(th))*rr);m.worldToLocal(v);tp.push(v.x,v.y,v.z)}}
           for(let a=0;a<NS;a++)for(let j=0;j<NR;j++){const Q=b0+a*(NR+1)+j,R=Q+NR+1;ti.push(Q,Q+1,R,R,Q+1,R+1)}made++}
         g.setIndex(keep);let tm=nm("Deep pelvic arteries");
         if(ti.length&&tm&&tm.geometry.index){const og=tm.geometry,oc=og.attributes.position.count,ng=new T.BufferGeometry();for(const k in og.attributes){const A=og.attributes[k],s=A.itemSize,arr=new Float32Array((oc+tp.length/3)*s);arr.set(A.array.subarray(0,oc*s));if(k==="position")arr.set(tp,oc*s);else if(k==="color")arr.fill(1,oc*s);ng.setAttribute(k,new T.Float32BufferAttribute(arr,s))}

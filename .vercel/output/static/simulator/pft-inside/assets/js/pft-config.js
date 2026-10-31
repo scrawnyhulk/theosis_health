@@ -23,6 +23,6 @@ window.PFT_CONFIG = {
     heart: null,
     adipose: null
   },
-  threeScript: "assets/vendor/three-anatomy.min.js?v=7740",
-  anatomyScript: "assets/js/anatomy-v23.js?v=7740"
+  threeScript: "assets/vendor/three-anatomy.min.js?v=7741",
+  anatomyScript: "assets/js/anatomy-v23.js?v=7741"
 };
