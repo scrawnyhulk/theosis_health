@@ -933,6 +933,13 @@ export const nerdTopics = [
     imageAlt:
       "Infographic: nonnutritive sweeteners are a sweet signal with almost no fuel. Metabolic passports for aspartame, sucralose, stevia, monk fruit and others. Little or no glucose or insulin rise when consumed alone. Approved use is considered safe at established intake limits.",
     imageCredit: "Sweet signal. Almost no fuel. Educational only.",
+    extraImages: [
+      {
+        src: "/images/nerd-sweeteners-evidence.png",
+        alt: "Infographic: Artificial Sweeteners — What the Evidence Actually Shows. Bottom line: approved sweeteners considered safe within intake limits (FDA, EFSA, WHO/JECFA). Observational headlines are not the same as causation; controlled trials usually show less sugar, fewer calories when replacing sugary drinks, and no big glucose hit. Practical takeaway: a useful tool when replacing added sugar, not a free pass.",
+        credit: "What the evidence actually shows. Educational only.",
+      },
+    ],
     videoId: "HmXDu897fic",
     videoTitle: "Artificial Sweeteners are Toxic?",
     videoCredit: "Dr. Layne Norton · Biolayne",
