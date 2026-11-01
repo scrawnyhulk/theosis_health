@@ -126,13 +126,22 @@ function HackPage() {
         <div className="mt-8 space-y-5 text-lg leading-relaxed text-muted">
           {hack.slug === "dont-drink-calories" ? (
             <>
-              {hack.paragraphs.slice(0, 2).map((p) => (
-                <NerdParagraph key={p.slice(0, 36)} text={p} />
+              {hack.paragraphs.map((p) => (
+                <p key={p.slice(0, 36)}>
+                  {p.split(/\[\[fn(\d)\]\]/).map((part, i) =>
+                    i % 2 === 1 ? (
+                      <sup key={i}><a href={`#df${part}`} aria-label={`Footnote ${part}`}>{part}</a></sup>
+                    ) : (
+                      part
+                    ),
+                  )}
+                </p>
               ))}
-              <FakeSugarLink />
-              {hack.paragraphs.slice(2).map((p) => (
-                <NerdParagraph key={p.slice(0, 36)} text={p} />
-              ))}
+              <ol className="mk-fn">
+                <li id="df1">DiMeglio &amp; Mattes, <i>Int J Obes</i> 2000;24:794–800</li>
+                <li id="df2">Calcaterra et al., <i>Nutrients</i> 2023;15:702</li>
+                <li id="df3">Malik et al., <i>Diabetes Care</i> 2010;33:2477–2483</li>
+              </ol>
             </>
           ) : (
             hack.paragraphs.map((p) => <NerdParagraph key={p.slice(0, 36)} text={p} />)
@@ -640,17 +649,3 @@ function WhyEnergyLink() {
   );
 }
 
-function FakeSugarLink() {
-  return (
-    <p>
-      <Link
-        to="/hacks/$slug"
-        params={{ slug: "helpful-videos" }}
-        hash="fake-sugar"
-        className="font-medium text-accent hover:text-fg"
-      >
-        But it’s fake sugar — bad?
-      </Link>
-    </p>
-  );
-}

@@ -149,12 +149,11 @@ paragraphs: [
     slug: "dont-drink-calories",
     n: "03",
     title: "Don't Drink Calories",
-    lede: "If it has calories and you can sip it, skip it. Hunger does not count a drink as a meal.",
+    lede: "The calories nobody counts are often the ones that move the needle the most.",
 paragraphs: [
-      "Research suggests liquid calories may not fill people up the way food does, so someone can drink 400 calories and still be hungry for a full dinner (DiMeglio & Mattes, Int J Obes 2000;24:794–800). That is why this is near the top of the list.",
-      "Water. Sparkling water. Black coffee. Unsweetened tea. Diet soda. Zero-calorie flavored drinks. That is the drink list.",
-      "We do not fear fake sweeteners as of the data to date. The human trial data does not support the internet panic. The scary headlines usually come from petri dishes and mega-doses, not from people drinking Diet Coke. [[sweeteners]]",
-      "Juice is basically fruit with most of the useful parts removed. Regular soda is pretty much dessert. The sweet coffee drink is often a milkshake in a paper cup. Sports drinks are mostly for people actually sweating through a long session — not for sitting at a desk.",
+      "A person can knock back a few hundred liquid calories between meals and barely register that they ate. Research suggests drinks tend not to register as “food” the way a plate does, so hunger barely budges.[[fn1]] That gap is how thousands of calories a week slip in without anyone feeling like they had dessert.",
+      "Kids are in the same stream. Reviews link sugar-sweetened drinks with excess weight and worse metabolic markers in young people.[[fn2]] In adults, higher intake of those drinks tracks with about a 26% higher type 2 diabetes risk when comparing roughly 1–2 servings a day with almost none.[[fn3]] Early habits plus a quiet calorie surplus is a rough way to hand the next generation a head start toward the same disease.",
+      "This is low-hanging fruit. Swap even one caloric drink a day for a zero-calorie option and, across a year, that is often tens of thousands of calories — pounds of fat that never had to stick. Water, diet soda, black coffee, unsweetened tea, sparkling water: same ritual, different math. The rest of the diet can stay imperfect; this one swap still matters.",
     ],
   },
   {
