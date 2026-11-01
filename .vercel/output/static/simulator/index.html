@@ -8094,7 +8094,7 @@ function renderHero() {
   $("#proj-hero").innerHTML = heroHtml();
 }
 function renderProjection() {
-  if (!R || R.blocked) { $("#proj-hero").innerHTML = `<p class="blocked">${(R && R.blocked ? R.blocked : ["Complete the earlier steps."]).map(esc).join("<br>")}</p><button type="button" class="btn btn-ghost mt1" data-goto="2">Go to Goal</button>`;
+  if (!R || R.blocked) { $("#proj-hero").innerHTML = `<p class="blocked">${(R && R.blocked ? R.blocked : ["Complete the earlier steps."]).map(esc).join("<br>")}</p><button type="button" class="btn btn-ghost mt1" data-goto="2" data-replan="1">Go to Goal</button>`;
     ["#cta", "#chart-wrap", "#table", "#next-steps", "#recap", "#ai-body", "#proj-chips"].forEach((s) => ($(s).innerHTML = "")); $("#health-ctx").hidden = true; return; }
   renderHero();
   renderRegional(); renderPftCard(); renderStory(); renderBulkCmp(); renderExpect(); renderWeekly(); renderExpert(); renderHealthCtx(); renderProjChips();
@@ -8413,13 +8413,19 @@ function renderHabitsFood() {   // weekly average helper on the Food step
 function renderHabitsAll() { renderHabitsFood(); if (S.step === 2) renderHabitsRead(); if (S.step === 5) renderHabitsPath(); $$(".step").forEach((s) => { const k = +s.dataset.step, e = $(".eyebrow", s); if (e && /^Step \d of 5$/.test(e.textContent)) e.textContent = `Step ${stepPos(k)} of 5`; });
   const h = $("#h-goal"); if (h) h.textContent = S.mode === "habits" ? "What your habits point toward" : "Goal";
   const gl = $("#goal-lead"); if (gl && S.mode === "habits") gl.textContent = "This is what your current habits look like, and the goal they are compared with."; }
+/* Leaving the habits projection to pick a goal. After this, the goal screen continues like Plan my goal: goal → exercise → food → projection. */
+function leaveHabitsForPlan() {
+  if (S.mode !== "habits") return false;
+  S.mode = "plan"; S.food.actualOn = false; S.food.psmf = false; hab.stay = null;
+  return true;
+}
 function habClick(t) {
   const b = t.closest && t.closest("[data-hab]"); if (!b) return false; const a = b.dataset.hab;
   if (a === "confirm" && hab.cls) { S.goal.type = hab.cls.goalType; S.goal.touched = true; fillInputs(); update(); }
   else if (a === "adjust") { const t2 = $("#goal-opts"); if (t2) { t2.scrollIntoView({ block: "center" }); const f = t2.querySelector("input:checked") || t2.querySelector("input"); f && f.focus(); } }
   else if (a === "stay") { hab.stay = "stay"; if (hab.cls) { S.goal.type = hab.cls.goalType; S.goal.touched = true; fillInputs(); update(); } go(5); setTimeout(() => { const p = $("#hab-path"); p && p.scrollIntoView({ block: "start" }); }, 30); }
   else if (a === "see") { go(5); setTimeout(() => { const p = $("#hab-path"); p && p.scrollIntoView({ block: "start" }); }, 30); }
-  else if (a === "plan") { S.mode = "plan"; S.food.actualOn = false; S.food.psmf = false; hab.stay = null; go(2); }
+  else if (a === "plan") { leaveHabitsForPlan(); go(2); }
   return true;
 }
 function habWeekly(el) {   // Food step: weekly total -> daily average
@@ -8484,7 +8490,7 @@ const GOAL_LABEL = (t) => (E.GOALS && E.GOALS[t] ? E.GOALS[t].label : t);
 function fitAction(t) {
   const a = t.dataset.fit;
   if (a === "psmf-ok") { S.food.psmfNote = false; update(); return true; }
-  if (a === "goal") { S.goal.type = t.dataset.fitGoal; S.goal.touched = true; if (typeof ensureTargets === "function") ensureTargets(); closeFitDlg(); update(); return true; }
+  if (a === "goal") { const fromHabits = S.mode === "habits"; S.goal.type = t.dataset.fitGoal; S.goal.touched = true; if (typeof ensureTargets === "function") ensureTargets(); closeFitDlg(); if (fromHabits && leaveHabitsForPlan()) { pendingGo = null; go(2); return true; } update(); return true; }
   if (a === "kcal") { S.food.actualKcal = +t.dataset.fitKcal; S.food.actualOn = true; S.food.psmf = false; closeFitDlg(); fillInputs(); update(); return true; }
   return false; }
 function closeFitDlg() { const d = document.getElementById("dlg-fit"); if (d && d.open) d.close(); }
@@ -9303,7 +9309,7 @@ function bind() {
     if (t.dataset.f3zoom) { if (F3.rt && F3.rt.closeUp) F3.rt.closeUp(t.dataset.f3zoom, !zoomOn(t.dataset.f3zoom)); return; }
     if (t.dataset.f3tone != null) return setFigLook(null, +t.dataset.f3tone);
     if (t.dataset.f3top) { S.fig.top = !S.fig.top; $$("[data-f3top]").forEach((b) => b.setAttribute("aria-pressed", String(!S.fig.top))); return setFigLook(null, null); }
-    if (t.dataset.goto) { const k = +t.dataset.goto; if (S.step === 1 && k > 1) { const mp = medProblem(); if (mp) { $("#nav-note").textContent = mp; renderHealthCard(true); return; } } if (k <= S.maxStep || k <= S.step) { if (!gateGo(k)) go(k); } return; }
+    if (t.dataset.goto) { const k = +t.dataset.goto; if (t.dataset.replan) leaveHabitsForPlan(); if (S.step === 1 && k > 1) { const mp = medProblem(); if (mp) { $("#nav-note").textContent = mp; renderHealthCard(true); return; } } if (k <= S.maxStep || k <= S.step) { if (!gateGo(k)) go(k); } return; }
     if (t.dataset.win) { S.goal.window = +t.dataset.win; fillInputs(); update(); return; }
     if (t.dataset.steps) { S.move.steps = +t.dataset.steps; fillInputs(); update(); return; }
     if (t.dataset.usewk) { S.goal.deadline = +t.dataset.usewk; fillInputs(); update(); return; }
