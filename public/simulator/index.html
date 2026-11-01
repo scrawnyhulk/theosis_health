@@ -4122,6 +4122,24 @@ function allergensOf(meals) { const tags = []; for (const m of meals) for (const
   const order = ["milk", "egg", "fish", "shellfish", "tree nuts", "peanuts", "soy", "wheat"]; tags.sort((a, b) => order.indexOf(a) - order.indexOf(b));
   if (!tags.length) return "None of the nine major allergens in these foods."; const s = listAnd(tags); return s[0].toUpperCase() + s.slice(1) + "."; }
 const TEMPLATES = Object.keys(STYLES).flatMap((st) => Object.keys(DIETS).map((dt) => ({ id: st, diet: dt, key: `${st}-${dt}`, name: STYLES[st].name, tag: STYLES[st].tag, meals: T[`${st}-${dt}`], allergens: allergensOf(T[`${st}-${dt}`]) })));
+/* Which meals the example day uses. Portions grow so the day's calories still fit in the meals that remain. */
+const MEAL_PATTERNS = {
+  all: { label: "I eat several meals", note: "Breakfast, lunch, dinner, and a snack." },
+  "skip-breakfast": { label: "I skip breakfast", note: "No breakfast in these examples. Lunch, dinner, and a snack add up to the day's calories.", drop: { Breakfast: 1 } },
+  "skip-lunch": { label: "I skip lunch", note: "No lunch in these examples. Breakfast, dinner, and a snack add up to the day's calories.", drop: { Lunch: 1 } },
+  omad: { label: "One meal a day", note: "These examples put the whole day's calories in one meal. Portions are larger because this is the only meal.", keep: "Dinner" },
+};
+const mealPatternOf = (id) => (MEAL_PATTERNS[id] ? id : "all");
+function shapeTemplate(tp, pattern) {
+  const id = mealPatternOf(pattern), p = MEAL_PATTERNS[id];
+  if (id === "all") return tp;
+  let meals = tp.meals.filter((m) => (p.keep ? m.name === p.keep : !p.drop[m.name]));
+  if (!meals.length) meals = [tp.meals[tp.meals.length - 1]];
+  const grow = tp.meals.length / meals.length;
+  meals = meals.map((m) => M(p.keep ? "Your one meal" : m.name, m.title, m.items.map((it) => (grow > 1.01 && it.max > 0 ? { ...it, max: Math.max(it.max, Math.round((it.max * grow) / it.step) * it.step) } : it))));
+  const extra = p.keep ? "All the day's calories in one meal" : (p.drop.Breakfast ? "No breakfast" : "No lunch");
+  return Object.assign({}, tp, { meals, tag: `${tp.tag} · ${extra}`, allergens: allergensOf(meals) });
+}
 // Macro targets for a diet type from the day's calories and protein target (and, for Balanced, the recommendation's own split when it fits).
 function dietTargets(t, diet) { const d = DIETS[diet] || DIETS.balanced, k = t.kcal, cl = (v, a, b) => Math.max(a, Math.min(b, v));
   const p = t.protein > 0 ? Math.round(t.protein) : Math.round(cl(0.25 * k / 4, d.p[0] * k / 4, d.p[1] * k / 4));   // v7.6.33: a given protein target is never clamped to the diet type's share range; the diet type shapes carbs and fat only
@@ -4211,23 +4229,25 @@ const SLOTS = ["Breakfast", "Lunch", "Dinner", "Snack", "Any"];
 const numOrNull = (v) => (v === null || v === undefined || v === "" || !Number.isFinite(+v) || +v < 0 ? null : +v);
 function favUsable(f) { return !!f && typeof f.name === "string" && f.name.trim() !== "" && numOrNull(f.kcal) !== null && +f.kcal > 0 && numOrNull(f.protein) !== null; }
 function favTag(f) { return f.source === "hack" ? (f.verified ? (f.verifiedScope === "all" ? "Fast food hack · verified vs restaurant page" : "Fast food hack · verified (calories, protein)") : "Fast food hack · approximate") : f.source === "user" ? "Your numbers" : "Database"; }
-function buildFavDay(target, diet, favs, baseStyle) {
+function buildFavDay(target, diet, favs, baseStyle, pattern) {
   if (!DIETS[diet]) diet = "balanced";
   const t0 = { kcal: +target.kcal || 0, protein: Math.max(0, +target.protein || 0), carbs: Math.max(0, +target.carbs || 0), fat: Math.max(0, +target.fat || 0), psmf: !!target.psmf };
   const message = guard(t0); if (message) return { message };
   const all = (favs || []).slice(0, 8), usable = all.filter(favUsable), skipped = all.filter((f) => !favUsable(f)).map((f) => f.name);
   if (!usable.length) return { message: "", empty: true, skipped };
-  const base = TEMPLATES.find((x) => x.diet === diet && x.id === (STYLES[baseStyle] ? baseStyle : "everyday")) || TEMPLATES.find((x) => x.diet === diet);
-  const FD = Object.assign({}, FOODS), where = [[], [], [], []], names = ["Breakfast", "Lunch", "Dinner", "Snack"];
+  const base0 = TEMPLATES.find((x) => x.diet === diet && x.id === (STYLES[baseStyle] ? baseStyle : "everyday")) || TEMPLATES.find((x) => x.diet === diet);
+  const base = shapeTemplate(base0, pattern), names = base.meals.map((m) => m.name), pat = MEAL_PATTERNS[mealPatternOf(pattern)];
+  const FD = Object.assign({}, FOODS), where = names.map(() => []);
   usable.forEach((f, i) => { const id = "fav" + i; FD[id] = { name: f.name, amount: 1, unit: f.portion || "serving", fixed: true, fav: f.source, tag: favTag(f), src: f.source, kcal: +f.kcal, protein: +f.protein,
       carbs: numOrNull(f.carbs) === null ? 0 : +f.carbs, fat: numOrNull(f.fat) === null ? 0 : +f.fat, fiber: numOrNull(f.fiber), unknownCF: numOrNull(f.carbs) === null || numOrNull(f.fat) === null };
-    let mi = names.indexOf(f.slot); if (mi < 0) { const c = where.map((w) => w.length); mi = (+f.kcal <= 250 ? [3, 1, 2, 0] : [2, 1, 0, 3]).reduce((b, k) => (c[k] < c[b] ? k : b)); } where[mi].push({ id, f }); });
+    let slot = f.slot; if (pat.keep) slot = names[0]; else if (pat.drop && pat.drop[slot]) slot = names.includes("Dinner") ? "Dinner" : names[0];
+    let mi = names.indexOf(slot); if (mi < 0) { const c = where.map((w) => w.length); const pref = (+f.kcal <= 250 ? ["Snack", "Breakfast", "Lunch", "Dinner"] : ["Dinner", "Lunch", "Breakfast", "Snack"]).map((n) => names.indexOf(n)).filter((k) => k >= 0); mi = pref.reduce((b, k) => (c[k] < c[b] ? k : b), pref[0] || 0); } where[mi].push({ id, f }); });
   const addon = diet === "balanced" || diet === "lowcarb" || diet === "highprotein" || diet === "lowfat" ? "whey" : "whey";
   const vegan = /vegan/.test(baseStyle || "");
   const meals = base.meals.map((m, mi) => { const favRows = where[mi].map(({ id, f }) => ({ ...row(id, 1, f.mode === "fits" ? 0 : 1, Math.min(4, Math.max(1, +f.max || 2)), +f.step === 0.5 ? 0.5 : 1), fav: true }));
     const flex = m.items.map((it) => ({ ...it, min: where[mi].length ? (it.min > 0 && /greens|vegetables|broccoli|beans|cauli/.test(it.id) ? it.min : 0) : it.min, base: where[mi].length ? it.base * 0.6 : it.base }));
-    if (mi === 3 && !flex.some((it) => it.id === (vegan ? "peaprotein" : addon))) flex.push(row(vegan ? "peaprotein" : addon, 0, 0, 3, 0.5));
-    if (mi === 1 && !flex.some((it) => it.id === "chicken" || it.id === "tofu" || it.id === "tuna" || it.id === "seitan" || it.id === "lentils") && where[mi].length) flex.push(row(vegan ? "tofu" : "chicken", 0, 0, 10, vegan ? 0.5 : 1));
+    if (mi === base.meals.length - 1 && !flex.some((it) => it.id === (vegan ? "peaprotein" : addon))) flex.push(row(vegan ? "peaprotein" : addon, 0, 0, 3, 0.5));
+    if (where[mi].length && !flex.some((it) => it.id === "chicken" || it.id === "tofu" || it.id === "tuna" || it.id === "seitan" || it.id === "lentils" || it.id === "salmon" || it.id === "beef" || it.id === "whey" || it.id === "peaprotein")) flex.push(row(vegan ? "tofu" : "chicken", 0, 0, 10, vegan ? 0.5 : 1));
     return M(m.name, where[mi].length ? "Your favorite" + (where[mi].length > 1 ? "s: " : ": ") + where[mi].map((x) => x.f.name).join(" & ") : m.title, [...favRows, ...flex]); });
   const tp = { id: "favorites", key: "favorites-" + diet, diet, name: "Your favorites", tag: "Built around foods you like", meals, allergens: "" };
   const day = buildDay(tp, t0, FD);
@@ -4245,13 +4265,14 @@ function buildFavDay(target, diet, favs, baseStyle) {
   day.unknownCF = [...new Set(day.meals.flatMap((m) => m.foods.filter((f) => f.unknownCF).map((f) => f.name)))];
   return day;
 }
-function buildDays(target, diet = "balanced", favs, baseStyle) {
+function buildDays(target, diet = "balanced", favs, baseStyle, pattern) {
   if (!DIETS[diet]) diet = "balanced";
+  pattern = mealPatternOf(pattern);
   const t = { kcal: +target.kcal || 0, protein: Math.max(0, +target.protein || 0), carbs: Math.max(0, +target.carbs || 0), fat: Math.max(0, +target.fat || 0), psmf: !!target.psmf };
   const message = guard(t);
-  const days = message ? [] : TEMPLATES.filter((tp) => tp.diet === diet).map((tp) => buildDay(tp, t));
-  let favNone = false; if (!message && favs && favs.length) { const fd = buildFavDay(t, diet, favs, baseStyle); if (fd && fd.empty) favNone = fd; else if (fd && !fd.message) days.push(fd); }
-  return { target: t, diet, message, days, favNone };
+  const days = message ? [] : TEMPLATES.filter((tp) => tp.diet === diet).map((tp) => buildDay(shapeTemplate(tp, pattern), t));
+  let favNone = false; if (!message && favs && favs.length) { const fd = buildFavDay(t, diet, favs, baseStyle, pattern); if (fd && fd.empty) favNone = fd; else if (fd && !fd.message) days.push(fd); }
+  return { target: t, diet, pattern, message, days, favNone };
 }
 // Shown with the Gluten-free style (and in the recap / PDF).
 const GF_NOTE = "Anyone with celiac disease or gluten sensitivity should check every label for gluten and cross-contamination, including oats (buy only oats labeled gluten-free), protein powders, sauces and seasonings.";
@@ -4268,7 +4289,7 @@ const PE_CUTS = [["green", "2 or more"], ["yellow", "1 to 2"], ["orange", "0.5 t
 const PE_WORDS = { green: "Great choice", yellow: "Good", orange: "Okay", red: "Less filling per calorie" };
 function peOfFoods(foods) { if (!foods || !foods.length || foods.some((x) => x.unknownCF)) return null; const allFib = foods.every((x) => numOrNull(x.fiber) !== null);
   const t = foods.reduce((s, x) => ({ p: s.p + x.protein, c: s.c + x.carbs, f: s.f + x.fat, fb: s.fb + (numOrNull(x.fiber) || 0) }), { p: 0, c: 0, f: 0, fb: 0 }); return peInfo(t.p, t.c, t.f, allFib ? t.fb : null); }
-const api = { PE_WORDS, PE_PREF, peInfo, peRatio, peTone, peText, peOfFoods, PE_CUTS, GF_NOTE, buildFavDay, favUsable, favTag, SLOTS, buildDays, dietTargets, FOODS, TEMPLATES, DIETS, STYLES };
+const api = { PE_WORDS, PE_PREF, peInfo, peRatio, peTone, peText, peOfFoods, PE_CUTS, GF_NOTE, buildFavDay, favUsable, favTag, SLOTS, buildDays, dietTargets, FOODS, TEMPLATES, DIETS, STYLES, MEAL_PATTERNS, mealPatternOf };
 if (typeof module !== "undefined" && module.exports) module.exports = api;
 root.SampleDays = api;
 })(typeof window !== "undefined" ? window : globalThis);
@@ -5497,7 +5518,7 @@ const defaults = () => ({
   goal: { type: "steady", targetBf: null, targetWeightKg: null, deadline: null, window: 12, pace: 0.6, touched: false, gainMode: "lean", gainTargetKg: null, bfCeiling: null, exactW: null, exactBf: null, exactBy: null, exactLead: null },
   move: { steps: 7500, preset: "none", noLift: false, noCardio: false, presetBefore: null, cardioMin: 0, cardio: [{ type: "cycling", effort: "moderate", by: "effort" }], experience: "beginner", plannerOn: false, planner: DAYS.map(() => ({ lift: 0, cardio: 0 })), adv: { style: "mixed", sets: 10, rir: "2-3" },
     lifts: [{ type: "hypertrophy", effort: "moderate", min: 60, days: 3 }], groups: {} },
-  food: { proteinRef: "goal", actualOn: false, actualKcal: null, actualProtein: "moderate", actualProteinG: null, actualCarbsG: null, actualFatG: null, actualProteinEst: true, style: "balanced", dietBreakEvery: 0, bmrEq: "mifflin", psmf: false, mealDay: "everyday", favBase: "everyday", mealDiet: "balanced", mealSrc: "rec", mealUsed: null, mealMacros: null, log: [], logUsed: false, logDone: false, psmfNoteOff: null, avgUsed: null,
+  food: { proteinRef: "goal", actualOn: false, actualKcal: null, actualProtein: "moderate", actualProteinG: null, actualCarbsG: null, actualFatG: null, actualProteinEst: true, style: "balanced", dietBreakEvery: 0, bmrEq: "mifflin", psmf: false, mealDay: "everyday", favBase: "everyday", mealDiet: "balanced", mealPattern: "all", mealSrc: "rec", mealUsed: null, mealMacros: null, log: [], logUsed: false, logDone: false, psmfNoteOff: null, avgUsed: null,
     rmr: null, tdeeKnown: null, refeedDays: 0, yourMacros: { on: false, unit: "pct", p: 30, c: 40, f: 30 } },
 });
 function merge(base, extra) { if (!extra || typeof extra !== "object") return base; for (const k of Object.keys(base)) { if (!(k in extra)) continue;
@@ -6868,8 +6889,8 @@ function renderMeals() {
     if (hb) { box.innerHTML = ""; mealsCache = { key: "", built: null }; return; } }
   favBuild();
   if (!R || R.blocked || !window.SampleDays) { box.innerHTML = ""; return; }
-  const t = mealsTarget(), diet = window.SampleDays.DIETS[S.food.mealDiet] ? S.food.mealDiet : "balanced", favs = favList(), base = S.food.favBase || "everyday", key = JSON.stringify(t) + diet + JSON.stringify(favs) + base;
-  if (key !== mealsCache.key) { mealsCache = { key, built: window.SampleDays.buildDays(t, diet, favs, base) }; }
+  const t = mealsTarget(), diet = window.SampleDays.DIETS[S.food.mealDiet] ? S.food.mealDiet : "balanced", favs = favList(), base = S.food.favBase || "everyday", pattern = window.SampleDays.mealPatternOf(S.food.mealPattern), key = JSON.stringify(t) + diet + JSON.stringify(favs) + base + pattern;
+  if (key !== mealsCache.key) { mealsCache = { key, built: window.SampleDays.buildDays(t, diet, favs, base, pattern) }; }
   const built = mealsCache.built;
   const src = fixedOn() ? `<div class="chips" role="group" aria-label="Calories for meal ideas"><button type="button" class="chip" data-meal-src="rec" aria-pressed="${S.food.mealSrc !== "used"}">My target calories</button><button type="button" class="chip" data-meal-src="used" aria-pressed="${S.food.mealSrc === "used"}">${S.food.psmf ? "PSMF" : "What I eat"}</button></div>` : "";
   const head = `<p class="hint" style="margin-top:0">${esc(/target$/i.test(t.label) ? t.label : t.label + " target")}: <strong>${fK(t.kcal)} kcal</strong>${t.protein ? ` · <strong>${fK(t.protein)} g protein</strong>` : ""} a day. Portions use rounded generic foods, so brands and cooking change the totals.</p>`;
@@ -6878,10 +6899,11 @@ function renderMeals() {
   const gap = day.kcalDiff, pg = day.proteinDiff;
   const inUse = S.food.actualOn && !S.food.psmf && S.food.mealUsed === day.key && Math.abs(S.food.actualKcal - Math.round(day.totals.kcal / 10) * 10) < 1;
   box.innerHTML = `${src}${head}
+  <div class="meal-pick"><span class="label">How you eat</span><div class="chips" role="group" aria-label="Which meals you eat">${Object.entries(window.SampleDays.MEAL_PATTERNS).map(([k, d]) => `<button type="button" class="chip" data-meal-pattern="${k}" aria-pressed="${k === pattern}">${esc(d.label)}</button>`).join("")}</div><p class="hint">${esc(window.SampleDays.MEAL_PATTERNS[pattern].note)} The day's calories stay the same. These are meal ideas, not a nutrition prescription.</p></div>
   <div class="meal-pick"><span class="label">Diet type</span><div class="chips" role="group" aria-label="Diet type">${Object.entries(window.SampleDays.DIETS).map(([k, d]) => `<button type="button" class="chip" data-meal-diet="${k}" aria-pressed="${k === diet}">${esc(d.name)}</button>`).join("")}</div></div>
   <div class="meal-pick"><span class="label">Style</span><div class="chips" role="group" aria-label="Style">${built.days.map((d) => `<button type="button" class="chip" data-meal="${d.id}" aria-pressed="${d.id === day.id}">${esc(d.name)} <small class="muted">· ${esc(d.tag)}</small></button>`).join("")}</div></div>
   <p class="hint meal-diet-note">${esc(window.SampleDays.DIETS[diet].note)} Targets for this day: P ${fK(day.target.protein)} g · C ${fK(day.target.carbs)} g · F ${fK(day.target.fat)} g.</p>
-  <div class="meal-grid">${day.meals.map((m) => `<article class="meal"><header><span class="eyebrow">${m.name}</span><small>${fK(m.totals.kcal)} kcal · ${fK(m.totals.protein)} g protein</small><small class="pe-row">${peBadge(window.SampleDays.peOfFoods(m.foods), "Carbs or fat are not listed for a food in this meal, so P:E isn't rated. Nothing is guessed.")}</small></header><h3>${esc(m.title)}</h3><ul>${m.foods.map((f) => `<li><span>${esc(f.name)}${f.tag ? ` <span class="ftag ${f.src === "hack" ? (/verified/.test(f.tag) ? "ok" : "ap") : f.src === "user" ? "us" : "db"}">${esc(f.tag)}</span>` : ""}</span><b>${esc(f.portion)}</b></li>`).join("")}</ul><button type="button" class="link-btn sm-save" data-meal-save="${day.meals.indexOf(m)}">Save this meal</button></article>`).join("")}</div>
+  <div class="meal-grid">${day.meals.filter((m) => m.foods && m.foods.length).map((m) => `<article class="meal"><header><span class="eyebrow">${m.name}</span><small>${fK(m.totals.kcal)} kcal · ${fK(m.totals.protein)} g protein</small><small class="pe-row">${peBadge(window.SampleDays.peOfFoods(m.foods), "Carbs or fat are not listed for a food in this meal, so P:E isn't rated. Nothing is guessed.")}</small></header><h3>${esc(m.title)}</h3><ul>${m.foods.map((f) => `<li><span>${esc(f.name)}${f.tag ? ` <span class="ftag ${f.src === "hack" ? (/verified/.test(f.tag) ? "ok" : "ap") : f.src === "user" ? "us" : "db"}">${esc(f.tag)}</span>` : ""}</span><b>${esc(f.portion)}</b></li>`).join("")}</ul><button type="button" class="link-btn sm-save" data-meal-save="${day.meals.indexOf(m)}">Save this meal</button></article>`).join("")}</div>
   <div id="saved-meals"></div>
   <table class="tbl meal-vs" id="meal-vs" aria-label="This day's totals vs your targets"><caption>This day vs your targets</caption><thead><tr><th></th><th>This day</th><th>Target</th><th>Difference</th></tr></thead><tbody>
     ${[["Calories", "kcal", ""], ["Protein", "protein", " g"], ["Carbs", "carbs", " g"], ["Fat", "fat", " g"]].map(([n, k, u]) => { const v = Math.round(day.totals[k]), tg = Math.round(day.target[k]), d = v - tg, ok = k === "kcal" ? Math.abs(d) <= 0.02 * tg : k === "protein" ? d >= -Math.max(8, 0.09 * tg) && d <= Math.max(18, 0.13 * tg) : Math.abs(d) * (k === "fat" ? 9 : 4) <= 0.15 * day.target.kcal;
@@ -8094,7 +8116,7 @@ function renderHero() {
   $("#proj-hero").innerHTML = heroHtml();
 }
 function renderProjection() {
-  if (!R || R.blocked) { $("#proj-hero").innerHTML = `<p class="blocked">${(R && R.blocked ? R.blocked : ["Complete the earlier steps."]).map(esc).join("<br>")}</p><button type="button" class="btn btn-ghost mt1" data-goto="2">Go to Goal</button>`;
+  if (!R || R.blocked) { $("#proj-hero").innerHTML = `<p class="blocked">${(R && R.blocked ? R.blocked : ["Complete the earlier steps."]).map(esc).join("<br>")}</p><button type="button" class="btn btn-ghost mt1" data-goto="2" data-replan="1">Go to Goal</button>`;
     ["#cta", "#chart-wrap", "#table", "#next-steps", "#recap", "#ai-body", "#proj-chips"].forEach((s) => ($(s).innerHTML = "")); $("#health-ctx").hidden = true; return; }
   renderHero();
   renderRegional(); renderPftCard(); renderStory(); renderBulkCmp(); renderExpect(); renderWeekly(); renderExpert(); renderHealthCtx(); renderProjChips();
@@ -8413,13 +8435,19 @@ function renderHabitsFood() {   // weekly average helper on the Food step
 function renderHabitsAll() { renderHabitsFood(); if (S.step === 2) renderHabitsRead(); if (S.step === 5) renderHabitsPath(); $$(".step").forEach((s) => { const k = +s.dataset.step, e = $(".eyebrow", s); if (e && /^Step \d of 5$/.test(e.textContent)) e.textContent = `Step ${stepPos(k)} of 5`; });
   const h = $("#h-goal"); if (h) h.textContent = S.mode === "habits" ? "What your habits point toward" : "Goal";
   const gl = $("#goal-lead"); if (gl && S.mode === "habits") gl.textContent = "This is what your current habits look like, and the goal they are compared with."; }
+/* Leaving the habits projection to pick a goal. After this, the goal screen continues like Plan my goal: goal → exercise → food → projection. */
+function leaveHabitsForPlan() {
+  if (S.mode !== "habits") return false;
+  S.mode = "plan"; S.food.actualOn = false; S.food.psmf = false; hab.stay = null;
+  return true;
+}
 function habClick(t) {
   const b = t.closest && t.closest("[data-hab]"); if (!b) return false; const a = b.dataset.hab;
   if (a === "confirm" && hab.cls) { S.goal.type = hab.cls.goalType; S.goal.touched = true; fillInputs(); update(); }
   else if (a === "adjust") { const t2 = $("#goal-opts"); if (t2) { t2.scrollIntoView({ block: "center" }); const f = t2.querySelector("input:checked") || t2.querySelector("input"); f && f.focus(); } }
   else if (a === "stay") { hab.stay = "stay"; if (hab.cls) { S.goal.type = hab.cls.goalType; S.goal.touched = true; fillInputs(); update(); } go(5); setTimeout(() => { const p = $("#hab-path"); p && p.scrollIntoView({ block: "start" }); }, 30); }
   else if (a === "see") { go(5); setTimeout(() => { const p = $("#hab-path"); p && p.scrollIntoView({ block: "start" }); }, 30); }
-  else if (a === "plan") { S.mode = "plan"; S.food.actualOn = false; S.food.psmf = false; hab.stay = null; go(2); }
+  else if (a === "plan") { leaveHabitsForPlan(); go(2); }
   return true;
 }
 function habWeekly(el) {   // Food step: weekly total -> daily average
@@ -8484,7 +8512,7 @@ const GOAL_LABEL = (t) => (E.GOALS && E.GOALS[t] ? E.GOALS[t].label : t);
 function fitAction(t) {
   const a = t.dataset.fit;
   if (a === "psmf-ok") { S.food.psmfNote = false; update(); return true; }
-  if (a === "goal") { S.goal.type = t.dataset.fitGoal; S.goal.touched = true; if (typeof ensureTargets === "function") ensureTargets(); closeFitDlg(); update(); return true; }
+  if (a === "goal") { const fromHabits = S.mode === "habits"; S.goal.type = t.dataset.fitGoal; S.goal.touched = true; if (typeof ensureTargets === "function") ensureTargets(); closeFitDlg(); if (fromHabits && leaveHabitsForPlan()) { pendingGo = null; go(2); return true; } update(); return true; }
   if (a === "kcal") { S.food.actualKcal = +t.dataset.fitKcal; S.food.actualOn = true; S.food.psmf = false; closeFitDlg(); fillInputs(); update(); return true; }
   return false; }
 function closeFitDlg() { const d = document.getElementById("dlg-fit"); if (d && d.open) d.close(); }
@@ -9303,7 +9331,7 @@ function bind() {
     if (t.dataset.f3zoom) { if (F3.rt && F3.rt.closeUp) F3.rt.closeUp(t.dataset.f3zoom, !zoomOn(t.dataset.f3zoom)); return; }
     if (t.dataset.f3tone != null) return setFigLook(null, +t.dataset.f3tone);
     if (t.dataset.f3top) { S.fig.top = !S.fig.top; $$("[data-f3top]").forEach((b) => b.setAttribute("aria-pressed", String(!S.fig.top))); return setFigLook(null, null); }
-    if (t.dataset.goto) { const k = +t.dataset.goto; if (S.step === 1 && k > 1) { const mp = medProblem(); if (mp) { $("#nav-note").textContent = mp; renderHealthCard(true); return; } } if (k <= S.maxStep || k <= S.step) { if (!gateGo(k)) go(k); } return; }
+    if (t.dataset.goto) { const k = +t.dataset.goto; if (t.dataset.replan) leaveHabitsForPlan(); if (S.step === 1 && k > 1) { const mp = medProblem(); if (mp) { $("#nav-note").textContent = mp; renderHealthCard(true); return; } } if (k <= S.maxStep || k <= S.step) { if (!gateGo(k)) go(k); } return; }
     if (t.dataset.win) { S.goal.window = +t.dataset.win; fillInputs(); update(); return; }
     if (t.dataset.steps) { S.move.steps = +t.dataset.steps; fillInputs(); update(); return; }
     if (t.dataset.usewk) { S.goal.deadline = +t.dataset.usewk; fillInputs(); update(); return; }
@@ -9314,6 +9342,7 @@ function bind() {
     if (t.dataset.plannerOff != null) { S.move.plannerOn = false; setSwitch($("#planner-toggle"), false); update(); return; }
     if (t.dataset.mealSrc) { S.food.mealSrc = t.dataset.mealSrc; mealStatus = ""; renderMeals(); save(); return; }
     if (t.dataset.mealDiet) { S.food.mealDiet = t.dataset.mealDiet; mealStatus = ""; renderMeals(); save(); return; }
+    if (t.dataset.mealPattern && window.SampleDays.MEAL_PATTERNS[t.dataset.mealPattern]) { S.food.mealPattern = t.dataset.mealPattern; mealStatus = ""; renderMeals(); save(); return; }
     if (t.dataset.meal) { S.food.mealDay = t.dataset.meal; if (t.dataset.meal !== "favorites") S.food.favBase = t.dataset.meal; mealStatus = ""; renderMeals(); save(); return; }
     if (t.dataset.fsKind) { fs.kind = t.dataset.fsKind; $$("[data-fs-kind]").forEach((c) => c.setAttribute("aria-pressed", String(c === t))); fsSearch(true); return; }
     if (t.dataset.fsPick) { fsSelect(t.dataset.fsPick); return; }
