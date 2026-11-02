@@ -617,11 +617,14 @@
       const pm2=root.userData.panPm,pp=root.userData.panPts;
       if(pm2&&pp){const art=M.artPS||(M.artPS=organ(0xa3201a,.32,{emissive:new T.Color(0x2a0402),emissiveIntensity:.4}));if(window.__PFT_R10AN!==0)ntm(art); /* r10: these two arteries are made after the r03 Neutral pass, so they were the only viscera left on AgX */const P=new T.Vector3();
         const toPm=m=>{pm2.add(m);m.updateMatrixWorld(true);m.position.set(0,0,0);m.quaternion.identity();m.scale.set(1,1,1)};
-        const mk=(pts,r0,r1,mat,name)=>{const VR=window.__PFT_R32VR!==0?14:8;/* r32b: 8 sides read as boxy prisms (SMV/portal/splenic) once zoomed; 14 sides, seam normals welded below (+~2.3k tris, no extra draw call) */const g=tube2(pts,(u,th,s,q,tot)=>{const r=(r0+(r1-r0)*u)*capR(s,tot,.002,.002);return [r,r]},VR,10);const m=new T.Mesh(g,mat);toPm(m);pm2.updateMatrixWorld(true);
+        const mk=(pts,r0,r1,mat,name,cap0)=>{const VR=window.__PFT_R32VR!==0?14:8;/* r32b: 8 sides read as boxy prisms (SMV/portal/splenic) once zoomed; 14 sides, seam normals welded below (+~2.3k tris, no extra draw call) */const g=tube2(pts,(u,th,s,q,tot)=>{const r=(r0+(r1-r0)*u)*capR(s,tot,cap0||.002,.002);return [r,r]},VR,10);const m=new T.Mesh(g,mat);toPm(m);pm2.updateMatrixWorld(true);
           const A=g.attributes.position;for(let i=0;i<A.count;i++){P.fromBufferAttribute(A,i);pm2.worldToLocal(P);A.setXYZ(i,P.x,P.y,P.z)}g.setAttribute("color",new T.Float32BufferAttribute(new Float32Array(A.count*3).fill(1),3));fixVol(g);
           if(VR!==8){const Nn=g.attributes.normal;for(let i=0;i<A.count;i+=VR+1){const k=i+VR;const x=Nn.getX(i)+Nn.getX(k),y=Nn.getY(i)+Nn.getY(k),z=Nn.getZ(i)+Nn.getZ(k),l=Math.hypot(x,y,z)||1;Nn.setXYZ(i,x/l,y/l,z/l);Nn.setXYZ(k,x/l,y/l,z/l)}Nn.needsUpdate=true}
           m.userData.role="vein";m.name=name;m.frustumCulled=false;m.userData.v68=true;meshes.push(m);(byRole.vein=byRole.vein||[]).push(m);return m};
-        mk([[-.002,1.000,.052],[-.004,1.035,.048],[-.008,1.068,.036],[-.011,1.090,.029]],.0045,.0055,M.vein,"Superior mesenteric vein");
+        /* r34: the SMV stopped in a flat, chisel-cut end between the small-bowel loops. It now runs on down into the root of the
+           mesentery (dipping behind the loops), tapers, and closes in a round dome (two short lead-in segments give the dome its rings) */
+        if(window.__PFT_R34SMV!==0){const e0=[-.012,.947,.041],e1=[-.006,.973,.048],L=(a,b,f)=>a.map((x,k)=>x+(b[k]-x)*f);mk([e0,L(e0,e1,.05),L(e0,e1,.14),e1,[-.002,1.000,.052],[-.004,1.035,.048],[-.008,1.068,.036],[-.011,1.090,.029]],.0026,.0055,M.vein,"Superior mesenteric vein",.0026)}
+        else mk([[-.002,1.000,.052],[-.004,1.035,.048],[-.008,1.068,.036],[-.011,1.090,.029]],.0045,.0055,M.vein,"Superior mesenteric vein");
         mk([[-.011,1.090,.029],[-.020,1.108,.026],[-.032,1.124,.029],[-.042,1.136,.034]],.0062,.0058,M.vein,"Portal vein");
         const neck=3;const sv=[[-.011,1.090,.029]];for(let i=neck+1;i<pp.length;i++)sv.push([pp[i][0],pp[i][1]-.003,pp[i][2]-.010]);mk(sv,.0042,.0036,M.vein,"Splenic vein");
         const sa=[[.006,1.128,.016],[.012,1.126,.030]];for(let i=neck+2;i<pp.length;i++){const t=i-neck;sa.push([pp[i][0],pp[i][1]+.012+.004*Math.sin(t*2.1),pp[i][2]-.004+.004*Math.cos(t*1.7)])}mk(sa,.003,.0026,art,"Splenic artery");
@@ -774,7 +777,15 @@
         for(let i=0;i<n;i+=1){if(sb.getY(i)<.55)continue;q.set(P[i*3],P[i*3+1],P[i*3+2]).sub(R0);const f=q.dot(rd)/rl;if(f<0||f>1)continue;q.addScaledVector(rd,-q.dot(rd)*1);const d=q.length();if(d<.012)continue;bins[Math.min(K-1,Math.floor(f*K))].push([d,P[i*3],P[i*3+1],P[i*3+2]])}
         let E=[];for(let k=0;k<K;k++){const b=bins[k].sort((a,c)=>a[0]-c[0]);const f=(k+.5)/K,r=R0.clone().addScaledVector(rd,f*rl);if(b.length<3){E.push(null);continue}const s=b[Math.floor(b.length*.8)];E.push(new T.Vector3(s[1],s[2],s[3]).sub(r))}
         const okE=E.filter(Boolean);if(okE.length>K/3){const avg=okE.reduce((a,c)=>a.add(c),new T.Vector3()).multiplyScalar(1/okE.length);E=E.map(e=>e||avg.clone());
-          for(let r=0;r<4;r++)E=E.map((e,k)=>k==0||k==K-1?e:e.clone().multiplyScalar(.5).addScaledVector(E[k-1],.25).addScaledVector(E[k+1],.25));
+          /* r35: neighbouring root bins often picked loops on opposite sides of the root, so the sheet flipped back and forth and read as a
+             zig-zag of white blades between the loops. The reach of each bin is now smoothed as an angle around the root line (unwrapped)
+             and a length, so the fan turns gradually and its edge runs as one soft ruffled curve. window.__PFT_R35FAN=0 = old fan. */
+          if(window.__PFT_R35FAN!==0){const u1=new T.Vector3(0,0,1);u1.addScaledVector(rd,-u1.dot(rd)).normalize();const u2=new T.Vector3().crossVectors(rd,u1);
+            let an=E.map(e=>Math.atan2(e.dot(u2),e.dot(u1))),ln=E.map(e=>e.length());for(let k=1;k<K;k++){while(an[k]-an[k-1]>Math.PI)an[k]-=2*Math.PI;while(an[k]-an[k-1]<-Math.PI)an[k]+=2*Math.PI}
+            const med=ln.slice().sort((a,c)=>a-c)[K>>1];ln=ln.map(l=>Math.min(l,med*1.6));
+            const sm=(A,R)=>{for(let r=0;r<R;r++)A=A.map((x,k)=>k==0?(x*2+A[1])/3:k==K-1?(x*2+A[K-2])/3:.5*x+.25*(A[k-1]+A[k+1]));return A};an=sm(an,window.__PFT_R35FANR||28);ln=sm(ln,12);
+            E=E.map((e,k)=>u1.clone().multiplyScalar(Math.cos(an[k])*ln[k]).addScaledVector(u2,Math.sin(an[k])*ln[k]))}
+          else for(let r=0;r<4;r++)E=E.map((e,k)=>k==0||k==K-1?e:e.clone().multiplyScalar(.5).addScaledVector(E[k-1],.25).addScaledVector(E[k+1],.25));
           const pos=[],col=[],idx=[],ft=[];for(let k=0;k<K;k++){const f=(k+.5)/K,r=R0.clone().addScaledVector(rd,f*rl),e=E[k],nr=new T.Vector3().crossVectors(rd,e).normalize(),el=e.length(),end=SS(f,0,.07)*(1-SS(f,.93,1));
             const vs=(k%4===0)?1:(k%4===2?.35:0);
             for(let j=0;j<=J;j++){const t=j/J,pl=.0045*Math.pow(t,1.3)*Math.sin(k*Math.PI/2.5+t*2.0)+.0012*Math.sin(k*1.7+t*9.);
@@ -954,6 +965,129 @@
         if(ti.length&&tm&&tm.geometry.index){const og=tm.geometry,oc=og.attributes.position.count,ng=new T.BufferGeometry();for(const k in og.attributes){const A=og.attributes[k],s=A.itemSize,arr=new Float32Array((oc+tp.length/3)*s);arr.set(A.array.subarray(0,oc*s));if(k==="position")arr.set(tp,oc*s);else if(k==="color")arr.fill(1,oc*s);ng.setAttribute(k,new T.Float32BufferAttribute(arr,s))}
           ng.setIndex([...og.index.array,...ti.map(i=>i+oc)]);ng.computeVertexNormals();ng.computeBoundingSphere();og.dispose();tm.geometry=ng}
         window.__pftR32=[fin,rib[1].length/3+rib[-1].length/3,made,ti.length/3]}}catch(e){console.warn("r32 iliac bridge",e)}
+      // r34 (day 1031, original procedural code): (a) the open rims left in the reference arterial tree where the common iliacs
+      // and the inferior mesenteric root leave the aorta (and where the iliacs meet the r32 bridge tubes) are saw-toothed, so thin
+      // red blades stuck out around the aortic split. Each rim is relaxed along itself (Taubin, rim vertices slide only along the
+      // rim) and the three rings behind it follow, which folds the teeth back into a smooth lip. Same triangles, same draw call.
+      // window.__PFT_R34RIM=0 = off.
+      try{const m=window.__PFT_R34RIM===0?null:nm("mesh_20");if(m&&m.geometry.index&&!m.userData.r34){m.userData.r34=1;m.updateMatrixWorld(true);const g=m.geometry,Pa=g.attributes.position,n=Pa.count,ix=g.index.array,v=new T.Vector3();
+        const W=new Float32Array(n*3);for(let i=0;i<n;i++){v.fromBufferAttribute(Pa,i).applyMatrix4(m.matrixWorld);W[i*3]=v.x;W[i*3+1]=v.y;W[i*3+2]=v.z}
+        const wm=new Map(),id=new Int32Array(n);for(let i=0;i<n;i++){const k=Math.round(W[i*3]/2e-4)+","+Math.round(W[i*3+1]/2e-4)+","+Math.round(W[i*3+2]/2e-4);let q=wm.get(k);if(q===undefined){q=i;wm.set(k,i)}id[i]=q}
+        const E=new Map();for(let t=0;t<ix.length;t+=3)for(let e=0;e<3;e++){const a=id[ix[t+e]],b=id[ix[t+(e+1)%3]];if(a===b)continue;const k=a<b?a*n+b:b*n+a;E.set(k,(E.get(k)||0)+1)}
+        const nb=new Map(),bn=new Map(),ad=(M,a,b)=>{let L=M.get(a);if(!L)M.set(a,L=[]);if(!L.includes(b))L.push(b)};for(const [k,c] of E){const a=Math.floor(k/n),b=k%n;ad(nb,a,b);ad(nb,b,a);if(c===1){ad(bn,a,b);ad(bn,b,a)}}
+        // boundary loops near the aortic split / iliac joins
+        const seen=new Set(),rim=new Set();let loops=0;for(const s0 of bn.keys()){if(seen.has(s0))continue;const st=[s0],Lp=[];seen.add(s0);while(st.length){const x=st.pop();Lp.push(x);for(const y of bn.get(x))if(!seen.has(y)){seen.add(y);st.push(y)}}
+          const c=[0,0,0],mn=[9,9,9],mx=[-9,-9,-9];Lp.forEach(i=>{for(let a=0;a<3;a++){c[a]+=W[i*3+a]/Lp.length;mn[a]=Math.min(mn[a],W[i*3+a]);mx[a]=Math.max(mx[a],W[i*3+a])}});
+          if(Lp.length>=18&&Math.abs(c[0])<.07&&c[1]>.92&&c[1]<1.03&&Math.max(mx[0]-mn[0],mx[1]-mn[1],mx[2]-mn[2])>.01){Lp.forEach(i=>rim.add(i));loops++}}
+        // ring distance from the rim (1..3) for the vertices behind it
+        const ring=new Map();rim.forEach(i=>ring.set(i,0));const RD=window.__PFT_R34RIMR||3;for(let r=1;r<=RD;r++)for(const [i,d] of [...ring])if(d===r-1)for(const j of nb.get(i)||[])if(!ring.has(j))ring.set(j,r);
+        const P=new Float32Array(n*3);P.set(W);const vs=[...ring.keys()],IT=window.__PFT_R34RIMK==null?20:window.__PFT_R34RIMK;
+        const step=(lam)=>{const D=new Map();for(const i of vs){const r=ring.get(i),L=r===0?bn.get(i):nb.get(i);if(!L||!L.length)continue;let x=0,y=0,z=0;for(const j of L){x+=P[j*3];y+=P[j*3+1];z+=P[j*3+2]}const w=lam*(r===0?1:Math.max(.15,.6-.3*(r-1)));D.set(i,[w*(x/L.length-P[i*3]),w*(y/L.length-P[i*3+1]),w*(z/L.length-P[i*3+2])])}for(const [i,d] of D){P[i*3]+=d[0];P[i*3+1]+=d[1];P[i*3+2]+=d[2]}};
+        for(let it=0;it<IT;it++){step(.5);step(-.53)}
+        const Pf=new Float32Array(n*3);let moved=0;for(let i=0;i<n;i++){const q=id[i];v.set(P[q*3],P[q*3+1],P[q*3+2]);if(ring.has(q))moved++;m.worldToLocal(v);Pf[i*3]=v.x;Pf[i*3+1]=v.y;Pf[i*3+2]=v.z}
+        g.setAttribute("position",new T.Float32BufferAttribute(Pf,3)); /* Uint16 source: keep the relaxed sub-unit positions as floats */
+        /* normals: the reference normals are kept everywhere else (recomputing them on the unwelded mesh would facet the whole tree);
+           the moved vertices get welded area-weighted face normals, oriented like their old normal */
+        {const No=g.attributes.normal,Nn=new Float32Array(n*3),A=new Float32Array(n*3);for(let i=0;i<n;i++){v.fromBufferAttribute(No,i);Nn[i*3]=v.x;Nn[i*3+1]=v.y;Nn[i*3+2]=v.z}
+          const e1=new T.Vector3(),e2=new T.Vector3();for(let t=0;t<ix.length;t+=3){const a=id[ix[t]],b=id[ix[t+1]],c=id[ix[t+2]];if(!ring.has(a)&&!ring.has(b)&&!ring.has(c))continue;e1.set(P[b*3]-P[a*3],P[b*3+1]-P[a*3+1],P[b*3+2]-P[a*3+2]);e2.set(P[c*3]-P[a*3],P[c*3+1]-P[a*3+1],P[c*3+2]-P[a*3+2]);e1.cross(e2);for(const q of [a,b,c]){A[q*3]+=e1.x;A[q*3+1]+=e1.y;A[q*3+2]+=e1.z}}
+          const Mi=m.matrixWorld.clone().invert(); /* rotation + uniform scale: the inverse maps world directions back to local */
+          for(let i=0;i<n;i++){const q=id[i];if(!ring.has(q))continue;v.set(A[q*3],A[q*3+1],A[q*3+2]);if(v.lengthSq()<1e-30)continue;v.transformDirection(Mi);const o=Nn[i*3]*v.x+Nn[i*3+1]*v.y+Nn[i*3+2]*v.z;if(o<0)v.negate();const w=ring.get(q)>=RD?.5:1;v.set(Nn[i*3]*(1-w)+v.x*w,Nn[i*3+1]*(1-w)+v.y*w,Nn[i*3+2]*(1-w)+v.z*w).normalize();Nn[i*3]=v.x;Nn[i*3+1]=v.y;Nn[i*3+2]=v.z}
+          g.setAttribute("normal",new T.Float32BufferAttribute(Nn,3))}
+        g.computeBoundingSphere();window.__pftR34a=[loops,rim.size,moved]}}catch(e){console.warn("r34 aortic split rims",e)}
+      // (b) the gallbladder read upside down: broad at the neck under the liver and tapering to a point at the bottom. The real organ
+      // is pear-shaped with a round, broad fundus at the bottom that peeks below the liver edge and narrows up into the neck. Each
+      // vertex keeps its direction around the long axis; only its distance from the axis is rescaled to a pear profile (same tris).
+      // window.__PFT_R34GB=0 = off.
+      try{for(const m of (window.__PFT_R34GB===0?[]:by("gall"))){if(m.userData.r34||!m.geometry||m.morphTargetInfluences)continue;m.userData.r34=1;m.updateMatrixWorld(true);const g=m.geometry,Pa=g.attributes.position,n=Pa.count;if(n<60)continue;
+        const c=new T.Vector3(),p=new T.Vector3();for(let i=0;i<n;i++)c.add(p.fromBufferAttribute(Pa,i));c.multiplyScalar(1/n);const C=[[0,0,0],[0,0,0],[0,0,0]];for(let i=0;i<n;i++){const d=p.fromBufferAttribute(Pa,i).sub(c).toArray();for(let a=0;a<3;a++)for(let b=0;b<3;b++)C[a][b]+=d[a]*d[b]}
+        const ax=new T.Vector3(0,1,0);for(let it=0;it<60;it++){const a=ax.toArray();ax.set(C[0][0]*a[0]+C[0][1]*a[1]+C[0][2]*a[2],C[1][0]*a[0]+C[1][1]*a[1]+C[1][2]*a[2],C[2][0]*a[0]+C[2][1]*a[1]+C[2][2]*a[2]).normalize()}
+        const wd=ax.clone().transformDirection(m.matrixWorld);if(wd.y<0)ax.negate(); // u = 0 at the bottom (fundus), 1 at the neck
+        const t=new Float32Array(n);let mn=1e9,mx=-1e9;for(let i=0;i<n;i++){t[i]=p.fromBufferAttribute(Pa,i).sub(c).dot(ax);mn=Math.min(mn,t[i]);mx=Math.max(mx,t[i])}const len=mx-mn;
+        const B=20,cur=new Float32Array(B);const rad=i=>p.fromBufferAttribute(Pa,i).sub(c).addScaledVector(ax,-t[i]).length();for(let i=0;i<n;i++){const k=Math.min(B-1,Math.floor((t[i]-mn)/len*B));cur[k]=Math.max(cur[k],rad(i))}
+        let Rm=0;for(let k=0;k<B;k++)Rm=Math.max(Rm,cur[k]);const curAt=u=>{const f=Math.max(0,Math.min(B-1.001,u*B-.5)),k=Math.floor(f),w=f-k;return Math.max(1e-6,cur[k]+(cur[k+1]-cur[k])*w)};
+        // pear: round dome over the lowest 22 %, broadest at ~30 %, smooth taper to a neck of 45 % at the top (end cap kept round)
+        const F=window.__PFT_R34GBF||1;const tgt=u=>{const body=u<.3?1:1-.55*Math.pow((u-.3)/.7,1.3);const dome=u<.22?Math.sqrt(Math.max(0,1-Math.pow((.22-u)/.22,2))):1;const top=u>.9?Math.sqrt(Math.max(0,1-Math.pow((u-.9)/.1,2)))*.85+.15:1;return Rm*.93*body*dome*top*F};
+        for(let i=0;i<n;i++){const u=(t[i]-mn)/len,r=rad(i);if(r<1e-9)continue;const s=Math.max(.35,Math.min(2.2,tgt(u)/curAt(u)));p.fromBufferAttribute(Pa,i).sub(c);const along=ax.clone().multiplyScalar(t[i]);p.sub(along).multiplyScalar(s).add(along).add(c);Pa.setXYZ(i,p.x,p.y,p.z)}
+        Pa.needsUpdate=true;g.computeVertexNormals();g.computeBoundingBox();g.computeBoundingSphere();window.__pftR34b=[n,+len.toFixed(4),+Rm.toFixed(4)]}}catch(e){console.warn("r34 gallbladder",e)}
+      // r35 (day 1101, original procedural code): (a) the small-bowel tube has three open or chisel-cut ends (start of the jejunum
+      // under the transverse colon, one mid-abdomen, one low in the pelvis); up close they read as hollow, faceted stubs. Each end
+      // is reshaped in place into a round capsule tip: the open rim closes to a point at the tip, the next rings follow a
+      // hemispherical dome, and the tube just behind it is evened out to a round section. Same triangles, same draw call.
+      // Off by default (window.__PFT_R35SB=1 to try): in testing it made the open ends look worse.
+      try{const m=window.__PFT_R35SB!==1?null:nm("Small intestine");if(m&&m.geometry&&m.geometry.index&&!m.userData.r35){m.userData.r35=1;m.updateMatrixWorld(true);
+        const g=m.geometry,Pa=g.attributes.position,n=Pa.count,ix=g.index.array,v=new T.Vector3();
+        const W=new Float32Array(n*3);for(let i=0;i<n;i++){v.fromBufferAttribute(Pa,i).applyMatrix4(m.matrixWorld);W[i*3]=v.x;W[i*3+1]=v.y;W[i*3+2]=v.z}
+        const wm=new Map(),id=new Int32Array(n);for(let i=0;i<n;i++){const k=Math.round(W[i*3]/2e-4)+","+Math.round(W[i*3+1]/2e-4)+","+Math.round(W[i*3+2]/2e-4);let q=wm.get(k);if(q===undefined){q=i;wm.set(k,i)}id[i]=q}
+        const E=new Map();for(let t=0;t<ix.length;t+=3)for(let e=0;e<3;e++){const a=id[ix[t+e]],b=id[ix[t+(e+1)%3]];if(a===b)continue;const k=a<b?a*n+b:b*n+a;E.set(k,(E.get(k)||0)+1)}
+        const nb=new Map(),bn=new Map(),ad=(M2,a,b)=>{let L=M2.get(a);if(!L)M2.set(a,L=[]);if(!L.includes(b))L.push(b)};for(const [k,c] of E){const a=Math.floor(k/n),b=k%n;ad(nb,a,b);ad(nb,b,a);if(c===1){ad(bn,a,b);ad(bn,b,a)}}
+        const seen=new Set(),loops=[];for(const s0 of bn.keys()){if(seen.has(s0))continue;const st=[s0],Lp=[];seen.add(s0);while(st.length){const x=st.pop();Lp.push(x);for(const y of bn.get(x))if(!seen.has(y)){seen.add(y);st.push(y)}}
+          const c=new T.Vector3();Lp.forEach(i=>c.add(v.set(W[i*3],W[i*3+1],W[i*3+2])));c.multiplyScalar(1/Lp.length);loops.push({Lp,c})}
+        // group loops that belong to one end (an end can carry a doubled rim or a few tiny holes next to it)
+        const ends=[];loops.sort((a,b)=>b.Lp.length-a.Lp.length).forEach(l=>{const e=ends.find(e=>e.c.distanceTo(l.c)<.009);if(e)e.Lp.push(...l.Lp);else if(l.Lp.length>=10)ends.push({c:l.c.clone(),Lp:l.Lp.slice()})});
+        const moved=new Map(),HM=window.__PFT_R35SBH||14,dbg=[];let done=0;
+        for(const en of ends){const hop=new Map();en.Lp.forEach(i=>hop.set(i,0));let fr=en.Lp.slice();for(let h=1;h<=HM;h++){const nx=[];for(const i of fr)for(const j of nb.get(i)||[])if(!hop.has(j)){hop.set(j,h);nx.push(j)}fr=nx}
+          const ring=Array.from({length:HM+1},()=>[]);for(const [i,h] of hop)ring[h].push(i);
+          const cen=L=>{const c=new T.Vector3();L.forEach(i=>c.add(v.set(W[i*3],W[i*3+1],W[i*3+2])));return c.multiplyScalar(1/Math.max(1,L.length))};
+          const cB=cen([...ring[6],...ring[7],...ring[8],...ring[9]]),c0=cen(ring[0]),a=c0.clone().sub(cB);if(a.lengthSq()<1e-10)continue;a.normalize();
+          const O=cB.clone().addScaledVector(a,c0.clone().sub(cB).dot(a)),q=new T.Vector3();
+          const tr=i=>{q.set(W[i*3]-O.x,W[i*3+1]-O.y,W[i*3+2]-O.z);const t=q.dot(a);q.addScaledVector(a,-t);return t};
+          const rs=[];for(let h=4;h<=10;h++)for(const i of ring[h]){tr(i);rs.push(q.length())}rs.sort((x,y)=>x-y);const R=rs[rs.length>>1];dbg.push([en.c.toArray().map(x=>+x.toFixed(3)),en.Lp.length,+R.toFixed(4),ring.map(L=>L.length).join(",")]);if(!(R>.002&&R<.019))continue;
+          const mt=ring.map(L=>L.length?L.reduce((s,i)=>s+tr(i),0)/L.length:-9);let Kd=2;while(Kd<HM-3&&mt[Kd]>-.8*R)Kd++;const tc=mt[Kd];
+          const u1=new T.Vector3(1,0,0);if(Math.abs(u1.dot(a))>.9)u1.set(0,1,0);u1.addScaledVector(a,-u1.dot(a)).normalize();
+          for(const [i,h] of hop){const t=tr(i);let rho=q.length();const dir=rho>1e-7?q.clone().multiplyScalar(1/rho):u1.clone();let tt=t,rr=rho;
+            if(h<Kd){const ph=Math.PI/2*(Kd-h)/Kd;tt=tc+R*Math.sin(ph);rr=R*Math.cos(ph)}
+            else{if(t<tc-3*R||rho>2.4*R)continue;const w=1-(h-Kd)/(HM-Kd);rr=rho+(R-rho)*w*w*(3-2*w)}
+            moved.set(i,[O.x+a.x*tt+dir.x*rr,O.y+a.y*tt+dir.y*rr,O.z+a.z*tt+dir.z*rr,h>=HM-1?.5:1,h===0?a.clone():null])}
+          done++}
+        if(moved.size){const Pn=new Float32Array(W);for(const [i,p] of moved){Pn[i*3]=p[0];Pn[i*3+1]=p[1];Pn[i*3+2]=p[2]}
+          const A=new Float32Array(n*3),e1=new T.Vector3(),e2=new T.Vector3();for(let t=0;t<ix.length;t+=3){const x=id[ix[t]],y=id[ix[t+1]],z=id[ix[t+2]];if(!moved.has(x)&&!moved.has(y)&&!moved.has(z))continue;
+            e1.set(Pn[y*3]-Pn[x*3],Pn[y*3+1]-Pn[x*3+1],Pn[y*3+2]-Pn[x*3+2]);e2.set(Pn[z*3]-Pn[x*3],Pn[z*3+1]-Pn[x*3+1],Pn[z*3+2]-Pn[x*3+2]);e1.cross(e2);for(const w of [x,y,z]){A[w*3]+=e1.x;A[w*3+1]+=e1.y;A[w*3+2]+=e1.z}}
+          const No=g.attributes.normal,Mi=m.matrixWorld.clone().invert(),nn=new T.Vector3(),on=new T.Vector3();
+          for(let i=0;i<n;i++){const k=id[i],p=moved.get(k);if(!p)continue;v.set(Pn[k*3],Pn[k*3+1],Pn[k*3+2]);m.worldToLocal(v);Pa.setXYZ(i,v.x,v.y,v.z);
+            if(p[4])nn.copy(p[4]);else nn.set(A[k*3],A[k*3+1],A[k*3+2]);if(nn.lengthSq()<1e-30)continue;nn.transformDirection(Mi);on.fromBufferAttribute(No,i);if(nn.dot(on)<0&&!p[4])nn.negate();nn.lerp(on,1-p[3]).normalize();No.setXYZ(i,nn.x,nn.y,nn.z)}
+          Pa.needsUpdate=true;No.needsUpdate=true;g.computeBoundingBox();g.computeBoundingSphere()}
+        window.__pftR35a=[ends.length,done,moved.size,dbg]}}catch(e){console.warn("r35 bowel ends",e)}
+      // (b) flat, frayed artery branches left in the reference arterial tree (mesh_20): the left renal artery, the root of the
+      // superior mesenteric artery, the inferior mesenteric artery and the two celiac branches in front of the aorta read as
+      // crumpled red blades with saw-tooth rims. Each is replaced with a smooth round 14-sided tube on its own centre line
+      // (root end tucked 3 mm into the aorta, round dome at the far end), appended to the r30/r31 tube mesh: no extra draw call.
+      // window.__PFT_R35ART=0 = off.
+      try{const m=window.__PFT_R35ART===0?null:nm("mesh_20"),tm=nm("Deep pelvic arteries");if(m&&tm&&m.geometry.index&&tm.geometry.index&&!m.userData.r35){m.userData.r35=1;m.updateMatrixWorld(true);tm.updateMatrixWorld(true);
+        const g=m.geometry,Pa=g.attributes.position,n=Pa.count,ix=g.index.array,v=new T.Vector3();
+        const W=new Float32Array(n*3);for(let i=0;i<n;i++){v.fromBufferAttribute(Pa,i).applyMatrix4(m.matrixWorld);W[i*3]=v.x;W[i*3+1]=v.y;W[i*3+2]=v.z}
+        const wm=new Map(),id=new Int32Array(n);for(let i=0;i<n;i++){const k=Math.round(W[i*3]/2e-4)+","+Math.round(W[i*3+1]/2e-4)+","+Math.round(W[i*3+2]/2e-4);let q=wm.get(k);if(q===undefined){q=i;wm.set(k,i)}id[i]=q}
+        const par=new Int32Array(n).map((_,i)=>i),fd=x=>{while(par[x]!==x){par[x]=par[par[x]];x=par[x]}return x};for(let t=0;t<ix.length;t+=3){const a=fd(id[ix[t]]),b=fd(id[ix[t+1]]);par[b]=a;const c=fd(id[ix[t+2]]);par[c]=fd(a)}
+        const C=new Map();for(let t=0;t<ix.length;t+=3){const r=fd(id[ix[t]]);let o=C.get(r);if(!o)C.set(r,o={ts:[],c:new T.Vector3(),k:0});o.ts.push(t);for(let e=0;e<3;e++){const q=ix[t+e];o.c.x+=W[q*3];o.c.y+=W[q*3+1];o.c.z+=W[q*3+2];o.k++}}
+        for(const o of C.values())o.c.multiplyScalar(1/o.k);
+        // aorta centre line from the r31 tube (|x|<.035 around the midline, in front of the spine)
+        const TP=tm.geometry.attributes.position,TW=[];for(let i=0;i<TP.count;i++){v.fromBufferAttribute(TP,i).applyMatrix4(tm.matrixWorld);if(Math.abs(v.x-.01)<.03&&v.z>-.03&&v.z<.05&&v.y>.93&&v.y<1.26)TW.push(v.x,v.y,v.z)}
+        const ao=y=>{let x=0,z=0,k=0;for(let i=0;i<TW.length;i+=3)if(Math.abs(TW[i+1]-y)<.004){x+=TW[i];z+=TW[i+2];k++}if(!k)return null;x/=k;z/=k;let r=0;for(let i=0;i<TW.length;i+=3)if(Math.abs(TW[i+1]-y)<.004)r+=Math.hypot(TW[i]-x,TW[i+2]-z);return [x,z,r/k]};
+        const want=[[.036,1.091,.001,215,.0027],[.009,1.099,.028,90,.0032],[.025,.981,.017,184,.0019]]; /* left renal, SMA root, IMA (the two celiac pieces bend, a straight centre line read worse) */
+        const kill=new Set(),tp=[],ti=[],NR=14;let made=0;
+        for(const [x,y,z,nt,r0] of want){let best=null,bd=.006;for(const o of C.values()){const d=o.c.distanceTo(v.set(x,y,z));if(d<bd&&o.ts.length>nt*.6&&o.ts.length<nt*1.5){bd=d;best=o}}if(!best)continue;
+          const vs=[...new Set(best.ts.flatMap(t=>[id[ix[t]],id[ix[t+1]],id[ix[t+2]]]))],ce=best.c,q=new T.Vector3();
+          let ax=new T.Vector3(1,.3,.2).normalize();for(let it=0;it<20;it++){const nx=new T.Vector3();vs.forEach(i=>{q.set(W[i*3]-ce.x,W[i*3+1]-ce.y,W[i*3+2]-ce.z);nx.addScaledVector(q,q.dot(ax))});if(nx.lengthSq()>0)ax=nx.normalize()}
+          const pr=vs.map(i=>(W[i*3]-ce.x)*ax.x+(W[i*3+1]-ce.y)*ax.y+(W[i*3+2]-ce.z)*ax.z),lo=Math.min(...pr),hi=Math.max(...pr),len=hi-lo;if(len<.008)continue;
+          const NB=Math.max(4,Math.min(9,Math.round(len/.006))),B=Array.from({length:NB},()=>[0,0,0,0]);vs.forEach((i,k)=>{const b=Math.min(NB-1,Math.floor((pr[k]-lo)/(len+1e-9)*NB));B[b][0]+=W[i*3];B[b][1]+=W[i*3+1];B[b][2]+=W[i*3+2];B[b][3]++});
+          let pts=B.filter(b=>b[3]).map(b=>new T.Vector3(b[0]/b[3],b[1]/b[3],b[2]/b[3]));if(pts.length<3)continue;
+          // the end bins stop half a bin short of the real tips: stretch them back out to the projected extremes
+          {const e0=ce.clone().addScaledVector(ax,lo),e1=ce.clone().addScaledVector(ax,hi);const f0=pts[0].clone().sub(ce).dot(ax),f1=pts[pts.length-1].clone().sub(ce).dot(ax);pts[0].addScaledVector(ax,(lo-f0)*.7);pts[pts.length-1].addScaledVector(ax,(hi-f1)*.7);void e0;void e1}
+          for(let r2=0;r2<2;r2++)pts=pts.map((p,k)=>k==0||k==pts.length-1?p:p.clone().multiplyScalar(.5).addScaledVector(pts[k-1],.25).addScaledVector(pts[k+1],.25));
+          // root end: the end nearer the aorta wall goes 3 mm inside it
+          const dA=p=>{const a=ao(p.y);return a?Math.hypot(p.x-a[0],p.z-a[1])-a[2]:9};let rootAt0=dA(pts[0])<dA(pts[pts.length-1]);if(!rootAt0)pts.reverse();
+          {const d0=dA(pts[0]),a=ao(pts[0].y+.003);if(a&&d0<.026){if(d0>.006){/* root stands off the aorta (SMA): curve it back into the front wall */const p0=pts[0],hx=a[0]-p0.x,hz=a[1]-p0.z,hl=Math.hypot(hx,hz)||1,P1=new T.Vector3(a[0]-hx/hl*(a[2]-.003),p0.y+.003,a[1]-hz/hl*(a[2]-.003));pts.unshift(P1.clone().lerp(p0,.5).add(new T.Vector3(0,.002,0)));pts.unshift(P1)}else{const tg=pts[0].clone().sub(pts[1]).normalize();let k=0;while(k<20&&dA(pts[0])>-.003){pts[0].addScaledVector(tg,.001);k++}}}}
+          const cr=t=>{const L=pts.length-1,x2=Math.min(L-1e-6,t*L),k=Math.floor(x2),u=x2-k,p0=pts[Math.max(0,k-1)],p1=pts[k],p2=pts[k+1],p3=pts[Math.min(L,k+2)],u2=u*u,u3=u2*u;
+            const f=(a,b,c,d)=>.5*(2*b+(-a+c)*u+(2*a-5*b+4*c-d)*u2+(-a+3*b-3*c+d)*u3);return new T.Vector3(f(p0.x,p1.x,p2.x,p3.x),f(p0.y,p1.y,p2.y,p3.y),f(p0.z,p1.z,p2.z,p3.z))};
+          let Lc=0;for(let k=1;k<pts.length;k++)Lc+=pts[k].distanceTo(pts[k-1]);const NS=Math.max(10,Math.min(28,Math.round(Lc/.0018))),ec=Math.min(.35,r0*1.1/Lc);
+          const b0=tp.length/3;let Nf=null;for(let s2=0;s2<=NS;s2++){const s=s2/NS,c0=cr(s),tg=cr(Math.min(1,s+.01)).sub(cr(Math.max(0,s-.01))).normalize();if(!Nf){Nf=new T.Vector3(0,0,1);if(Math.abs(Nf.dot(tg))>.9)Nf.set(1,0,0)}Nf.addScaledVector(tg,-Nf.dot(tg)).normalize();const Bf=new T.Vector3().crossVectors(tg,Nf);
+            const dome=s>1-ec?Math.sqrt(Math.max(0,1-Math.pow((s-(1-ec))/ec,2))):1,rr=r0*(1-.15*s)*dome;
+            for(let j=0;j<=NR;j++){const th=j/NR*Math.PI*2;v.set(c0.x+(Nf.x*Math.cos(th)+Bf.x*Math.sin(th))*rr,c0.y+(Nf.y*Math.cos(th)+Bf.y*Math.sin(th))*rr,c0.z+(Nf.z*Math.cos(th)+Bf.z*Math.sin(th))*rr);tm.worldToLocal(v);tp.push(v.x,v.y,v.z)}}
+          for(let a=0;a<NS;a++)for(let j=0;j<NR;j++){const Q=b0+a*(NR+1)+j,R=Q+NR+1;ti.push(Q,Q+1,R,R,Q+1,R+1)}
+          best.ts.forEach(t=>kill.add(t));made++}
+        if(made){const keep=[];for(let t=0;t<ix.length;t+=3)if(!kill.has(t))keep.push(ix[t],ix[t+1],ix[t+2]);g.setIndex(keep);
+          const og=tm.geometry,oc=og.attributes.position.count,ng=new T.BufferGeometry();for(const k in og.attributes){const A=og.attributes[k],s=A.itemSize,arr=new Float32Array((oc+tp.length/3)*s);arr.set(A.array.subarray(0,oc*s));if(k==="position")arr.set(tp,oc*s);else if(k==="color")arr.fill(1,oc*s);else if(k!=="normal"){for(let i=oc;i<oc+tp.length/3;i++)for(let c=0;c<s;c++)arr[i*s+c]=A.array[c]}ng.setAttribute(k,new T.Float32BufferAttribute(arr,s))}
+          ng.setIndex([...og.index.array,...ti.map(i=>i+oc)]);ng.computeVertexNormals();ng.computeBoundingSphere();og.dispose();tm.geometry=ng}
+        window.__pftR35b=[made,kill.size,ti.length/3]}}catch(e){console.warn("r35 artery branches",e)}
       }
       return n}
     // v70: original procedural stomach (swept tube): fundus, body, greater/lesser curvature, antrum and a narrow pylorus that
