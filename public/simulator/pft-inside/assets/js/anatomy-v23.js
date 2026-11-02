@@ -1357,6 +1357,8 @@
     // through the transverse colon. Scale the fitted stomach about the duodenal cap so the
     // fundus sits under the left ribs, then drop colon / small-bowel vertices that still
     // cross the greater curvature to just below it. Window.__PFT_STSEAT=0 restores the old fit.
+    // v7744: runs only for the open Grab3D stomach (window.__PFT_G3DST=1). The closed built-in
+    // stomach is not scaled here, and colon / small bowel keep their authored vertices.
     // No extra triangles. Teaching stomach translucency in anatomy-pft.js is unchanged.
     function seatStomach(gs){
       const sm=meshes.find(m=>m.userData.g3d&&m.userData.role==="stomach"&&m.parent===gs)||gs;
@@ -1407,14 +1409,17 @@
         cleared+=applyDisp(mesh,spread(disp,g.index.array,pos.count,6,2))});
       window.__pftStomachSeat={scale:sc,anchor:anchor.toArray(),draped,cleared};
     }
-    // r27 (day 1025): Grab3D CC0 1.0 organ models (heart, lungs, liver, stomach, kidneys) replace the procedural/HRA organ
+    // r27 (day 1025): Grab3D CC0 1.0 organ models (heart, lungs, liver, kidneys) replace the procedural/HRA organ
     // shapes in every inside view (Half & half, Inside, and the simulator's embedded inside view, which loads this same file).
-    // Each is fitted to the bounding box of the organ it replaces (per-axis scale held within +/-20% of uniform), so positions
-    // stay anatomical. The liver keeps our steatosis material (driven by liver fat / A1c) and the lungs our see-through pink veil; heart, stomach and kidneys keep Grab3D's textures.
+    // v7744: stomach stays the closed built-in mesh. g3d-human-stomach.glb is a cutaway (open front wall).
+    // window.__PFT_G3DST=1 still loads that open model, and seatStomach still runs for it.
+    // Each Grab3D organ is fitted to the bounding box of the organ it replaces (per-axis scale held within +/-20% of uniform), so positions
+    // stay anatomical. The liver keeps our steatosis material (driven by liver fat / A1c) and the lungs our see-through pink veil; heart and kidneys keep Grab3D's textures.
     // The replaced meshes are only hidden (role "<role>P"). window.__PFT_G3DO=0 restores the previous organs.
     function g3dOrgans(){
       if(window.__PFT_G3DO===0||!url)return;const base=url.replace(/[^\/]*$/,""),v="?v=7710";
-      const L={heart:"g3d-human-heart-cutaway.glb",lung:"g3d-human-lungs.glb",liver:"g3d-human-liver.glb",stomach:"g3d-human-stomach.glb",kidney:"g3d-human-kidney.glb"};
+      const L={heart:"g3d-human-heart-cutaway.glb",lung:"g3d-human-lungs.glb",liver:"g3d-human-liver.glb",kidney:"g3d-human-kidney.glb"};
+      if(window.__PFT_G3DST===1)L.stomach="g3d-human-stomach.glb";
       const ld=new T.GLTFLoader();ld.setMeshoptDecoder&&T.MeshoptDecoder&&ld.setMeshoptDecoder(T.MeshoptDecoder);
       const fit=(gs,box,mirror,sh)=>{if(sh){const c0=box.getCenter(new T.Vector3());box=box.clone().translate(c0.clone().negate());box.min.multiplyScalar(sh);box.max.multiplyScalar(sh);box.translate(c0)}gs.updateMatrixWorld(true);const gb=new T.Box3().setFromObject(gs),ge=gb.getSize(new T.Vector3()),te=box.getSize(new T.Vector3());
         const k=[te.x/(ge.x||1e-6),te.y/(ge.y||1e-6),te.z/(ge.z||1e-6)],u=Math.cbrt(Math.abs(k[0]*k[1]*k[2]))||1;gs.scale.set(...k.map(x=>Math.max(u*.8,Math.min(u*1.2,x))));if(mirror)gs.scale.x*=-1;gs.updateMatrixWorld(true);
