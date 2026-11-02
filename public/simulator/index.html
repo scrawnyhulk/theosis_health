@@ -1561,9 +1561,10 @@ body{background-color:var(--bg);background-image:var(--app-bg-image);background-
    and for lab upload / AI reading. Version + timestamp are logged locally (no server). Re-prompts when CONSENT_VERSION changes.
    window.TheosisConsent: {VERSION, get(), has(optIn), open(manage), onChange(fn)} */
 (function () {
-  const BIPA_VERSION = "bipa-2026-10-22-final", VERSION = "2026-10-22c", KEY = "theosis-consent", LOG = "theosis-consent-log";
+  const BIPA_VERSION = "bipa-2026-10-22-final", VERSION = "2026-11-01", KEY = "theosis-consent", LOG = "theosis-consent-log";
   const REQ = [
-    ["advice", "Education only, not medical advice", "I understand this tool is for <b>education only</b>. It is <b>not medical advice</b>, diagnosis or treatment, and using it does <b>not</b> create a clinician–patient (doctor–patient) relationship with Nick Holwey, PA-C. It is not a substitute for care from your own clinician, and I won't change diabetes, blood-pressure or other medicines because of it."],
+    ["advice", "Education only, not medical advice", "I understand this tool is for <b>education only</b>. It is <b>not medical advice</b>, a diagnosis, or treatment. Using it does <b>not</b> create a clinician–patient (doctor–patient) relationship with Nick Holwey, PA-C. It does not take the place of care from my own clinician."],
+    ["medicines", "Do not change your medicines", "<b>Do not change your medicines because of this tool.</b> Do not start a medicine, stop a medicine, skip a dose, or change a dose based on what you see here. That includes <b>diabetes medicines</b> (such as insulin or diabetes tablets), <b>blood pressure medicines</b>, and <b>any other medication</b>. This tool is education only. It cannot tell you what to take. Talk with your own clinician (your own doctor or other licensed professional) about your medicines. I will not change my medicines because of this tool."],
     ["estimates", "Estimates and illustrations", "I understand results, health milestones and body or organ pictures are <b>estimates and illustrations</b> based on population research, not measurements or predictions for me."],
     ["age", "Age", "I am <b>18 or older</b>."],
     ["data", "Your health data", "I understand what health information I may enter (body measurements, health answers, lab results, check-ins), that it is <b>stored on this device by default</b>, that I can delete it at any time with <b>Clear everything</b> or by clearing site data, and that Theosis Health <b>does not sell</b> my data."],
@@ -1614,20 +1615,21 @@ body{background-color:var(--bg);background-image:var(--app-bg-image);background-
     dlg.innerHTML = `<form method="dialog" class="consent-form" novalidate>
       <div class="consent-head"><p class="eyebrow">Theosis Metabolic Simulator</p>
       <h2 id="consent-title" tabindex="-1">Before you start</h2>
+      <p class="consent-sum"><b>Do not change your medicines because of this tool.</b> Do not start, stop, skip, or change the dose of diabetes medicines, blood pressure medicines, or any other medication based on what you see here. Talk with your own clinician about your medicines. This tool is education only. It is not medical care, and it cannot tell you what to take.</p>
       <p class="consent-sum"><b>In short:</b> step 1 is required. The rest are optional and start off. Each one says what it turns on, and you can change any of them later in Settings, under Privacy and consents.</p>
       <p class="hint consent-tmpl">Consent version ${VERSION}</p></div>
       <div class="consent-body" id="consent-scroll">
         <section class="consent-step" data-step="terms"><h3><span class="consent-n">1</span> Terms (required)</h3><p class="consent-what">Needed to use the simulator. Everything you enter stays on this device.</p>
         ${REQ.map(([k, h, x]) => `<section class="consent-sec" data-sec="${k}"><h4>${h}</h4><p>${x}</p></section>`).join("")}
-        <section class="consent-sec" data-sec="breach"><h4>If there's ever a breach</h4><p>If there's ever a breach of identifiable health information we hold, we will notify you and the FTC as the FTC Health Breach Notification Rule requires. By default we hold none: your data stays on this device.</p></section>
-        <label class="check consent-big consent-agree"><input type="checkbox" id="consent-agree" data-req="all"><span><b>I've read and agree</b> to the terms and disclosures in step 1.</span></label></section>
+        <section class="consent-sec" data-sec="breach"><h4>If there is ever a breach</h4><p>If there is ever a breach of identifiable health information we hold, we will notify you and the FTC as the FTC Health Breach Notification Rule requires. By default we hold none: your data stays on this device.</p></section>
+        <label class="check consent-big consent-agree"><input type="checkbox" id="consent-agree" data-req="all"><span><b>I have read and agree</b> to the terms and disclosures in step 1.</span></label></section>
         <section class="consent-step" data-step="ai"><h3><span class="consent-n">2</span> AI features (optional)</h3><p class="consent-what">${UNLOCK.ai}</p>${chk("ai", OPT[0][1], OPT[0][2])}<div class="consent-no"><button type="button" class="btn btn-ghost" data-no="ai">No thanks</button></div></section>
         <section class="consent-step" data-step="photo"></section>
         <section class="consent-step" data-step="labAi"></section>
       </div>
       <div class="consent-foot">
         <ul class="consent-summary" id="consent-summary" aria-label="Your choices"></ul>
-        <p class="consent-err" role="alert" hidden>Please tick "I've read and agree" in step 1 to continue.</p>
+        <p class="consent-err" role="alert" hidden>Please tick "I have read and agree" in step 1 to continue.</p>
         <div class="consent-actions"><button type="button" class="btn btn-ghost" id="consent-withdraw" hidden>Withdraw all consent</button><button type="button" class="btn btn-primary" id="consent-accept" aria-disabled="true">Accept and continue</button></div>
         <p class="hint consent-msg" id="consent-msg" role="status" aria-live="polite"></p></div></form>`;
     document.body.appendChild(dlg);
@@ -1680,7 +1682,7 @@ body{background-color:var(--bg);background-image:var(--app-bg-image);background-
     const d = build(), c = read(); d._manage = !!manage; lastFocus = document.activeElement; paintSteps(d);
     d.querySelector("#consent-agree").checked = !!(manage && c && c.version === VERSION && c.req); d.querySelector(".consent-err").hidden = true; d.scrollTop = 0;
     d.querySelectorAll("[data-opt]").forEach((x) => { x.checked = !!(c && c.version === VERSION && c.opt && c.opt[x.dataset.opt]); });
-    d.querySelector("#consent-title").textContent = manage ? "Privacy and consents" : (c && c.version !== VERSION ? "We've updated our terms. Please review" : "Before you start");
+    d.querySelector("#consent-title").textContent = manage ? "Privacy and consents" : (c && c.version !== VERSION ? "We have updated our terms. Please review them." : "Before you start");
     const info = document.getElementById("info-dlg"); if (info && info.open) info.close();   // v7.6.3: the Privacy notice link used to open this behind the info dialog
     d.querySelector("#consent-withdraw").hidden = !(manage && c && c.version === VERSION && c.req); d.querySelector("#consent-msg").textContent = "";
     d.querySelector("#consent-accept").textContent = manage && c && c.req ? "Save changes" : "Accept and continue";
@@ -2413,7 +2415,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')set(false)})
 
   <!-- ================= METHODS ================= -->
   <div class="methods-wrap">
-    <p class="disclaimer"><strong>Educational tool, not medical advice.</strong> <a href="#disclaimer" data-info="disclaimer">Full disclaimer</a> · <a href="#science" data-info="science">The science</a> · These are estimates from population research. Your results will differ. Using this tool doesn't create a patient relationship. If you're pregnant or breastfeeding, under 18, have diabetes, heart, kidney or liver disease, take prescription medicines, or have a history of disordered eating, talk with your clinician before changing how you eat or train.</p>
+    <p class="disclaimer"><strong>Educational tool, not medical advice.</strong> <a href="#disclaimer" data-info="disclaimer">Full disclaimer</a> · <a href="#science" data-info="science">The science</a> · These are estimates from population research. Your results will differ. Using this tool does not create a patient relationship. <strong>Do not change diabetes medicines, blood pressure medicines, or any other medication because of this tool.</strong> Talk with your own clinician about your medicines. If you are pregnant or breastfeeding, under 18, have diabetes, heart, kidney, or liver disease, take prescription medicines, or have a history of disordered eating, talk with your clinician before changing how you eat or train.</p>
     <details class="card method" id="methods">
       <summary><h2>Methods &amp; references</h2></summary>
       <div class="body">
@@ -5058,12 +5060,13 @@ return { KEY, MEALS, MEAL_IDS, dateKey, addDays, isDate, mealFor, empty, normali
       <p>Every paper behind these topics is listed once, with its own number, on the <a href="#sources" data-info="sources">Sources &amp; Acknowledgements</a> page. Tap a bracketed number in the text to see it.</p>
       <p>Validation against the Hall model and published trials is summarised in VALIDATION.md shipped with the app.</p>
       <p>The full method notes are in <b>Methods &amp; references</b> at the bottom of the main page.</p>` },
-    disclaimer: { s: "Education only, not medical advice. Check with your clinician before big changes, especially with a health condition.", t: "Medical disclaimer", h: `
-      <p><b>This tool is for education. It is not medical advice, diagnosis or treatment</b>, and using it does not create a clinician–patient relationship.</p>
-      <p>Results are estimates based on population research. Real results will differ from person to person. Do not start, stop or change any medicine because of this tool.</p>
-      <p>Talk with your clinician before changing how you eat or train if you are pregnant or breastfeeding, under 18, have diabetes (especially on insulin or sulfonylureas, which can cause low blood sugar as you lose weight), heart, kidney or liver disease, take prescription medicines, or have a history of disordered eating.</p>
-      <p>The personal fat threshold is an estimated weight range from population studies, not a test result. Health milestones are measurable goals you check with real lab tests and measurements. The app doesn't estimate your liver fat, organ fat or future lab values, and its organ pictures are illustrations of typical patterns.</p>
-      <p>If you have chest pain, fainting, severe shortness of breath or thoughts of self-harm, seek emergency care.</p>` },
+    disclaimer: { s: "Education only, not medical care. Do not change diabetes medicines, blood pressure medicines, or any other medication because of this tool. Talk with your own clinician about your medicines.", t: "Medical disclaimer", h: `
+      <p><b>This tool is for education. It is not medical advice, a diagnosis, or treatment</b>, and using it does not create a clinician–patient relationship.</p>
+      <p><b>Do not change your medicines because of this tool.</b> Do not start, stop, skip, or change the dose of diabetes medicines, blood pressure medicines, or any other medication based on what you see here. This tool is non-clinical education only. It cannot tell you what to take. Talk with your own clinician (your own doctor or other licensed professional) about your medicines.</p>
+      <p>Results are estimates based on population research. Real results will differ from person to person.</p>
+      <p>Talk with your clinician before changing how you eat or train if you are pregnant or breastfeeding, under 18, have diabetes (especially on insulin or sulfonylureas, which can cause low blood sugar as you lose weight), heart, kidney, or liver disease, take prescription medicines, or have a history of disordered eating.</p>
+      <p>The personal fat threshold is an estimated weight range from population studies, not a test result. Health milestones are measurable goals you check with real lab tests and measurements. The app does not estimate your liver fat, organ fat, or future lab values, and its organ pictures are illustrations of typical patterns.</p>
+      <p>If you have chest pain, fainting, severe shortness of breath, or thoughts of self-harm, seek emergency care.</p>` },
     privacy: { s: "Your answers stay on your device unless you choose an optional feature that sends something.", t: "Privacy", h: `
       <p><b>Your answers stay on your device.</b> The plan is calculated in your browser. Nothing you enter (weight, health answers, photos, check-ins) is sent to us or stored on a server.</p>
       <ul><li>Your inputs and check-ins are saved in your browser's local storage so you can come back. Use <b>Clear everything</b> or clear your browser data to remove them.</li>
@@ -5083,9 +5086,10 @@ return { KEY, MEALS, MEAL_IDS, dateKey, addDays, isDate, mealFor, empty, normali
       <p>Built by <b>${ORG}</b> (Health Hacks).</p>
       <div class="cred"><p><b>Nick Holwey, PA-C</b></p><p class="hint">Still to add: board certification, licence state(s) and number, years in practice, areas of focus. (To be completed by Nick before launch.)</p></div>
       <p>Clinical content reviewed by: <i>[reviewer name and credentials]</i>. Last reviewed: <i>[date]</i>.</p>` },
-    terms: { s: "Personal, non-commercial, educational use, provided as is.", t: "Terms of use", h: `
+    terms: { s: "Education only. Do not change diabetes medicines, blood pressure medicines, or any other medication because of this tool. Talk with your own clinician about your medicines.", t: "Terms of use", h: `
       <p>© ${Y} ${ORG}. All rights reserved. The Theosis Health name, logo, text, design and software are owned by ${ORG} and protected by copyright and trademark law.</p>
-      <ol><li><b>Educational use.</b> The tool provides general educational estimates. See the medical disclaimer.</li>
+      <p><b>Do not change your medicines because of this tool.</b> This tool is non-clinical education only. It is not medical care, and it cannot tell you what to take. Do not start, stop, skip, or change the dose of diabetes medicines, blood pressure medicines, or any other medication based on what you see here. Talk with your own clinician (your own doctor or other licensed professional) about your medicines.</p>
+      <ol><li><b>Educational use.</b> The tool provides general educational estimates. It is not medical advice, a diagnosis, or treatment. See the medical disclaimer.</li>
       <li><b>Personal, non-commercial use.</b> You may use the tool and print your own plan. You may not copy, resell, reverse-engineer or redistribute the tool or its content without written permission.</li>
       <li><b>No warranty.</b> The tool is provided "as is", without warranties of any kind. Results may contain errors.</li>
       <li><b>Limitation of liability.</b> To the extent the law allows, ${ORG} is not liable for any loss or harm arising from use of the tool.</li>
@@ -5417,7 +5421,7 @@ return { KEY, MEALS, MEAL_IDS, dateKey, addDays, isDate, mealFor, empty, normali
     { id: "reverse", title: "Remission is possible for many", html: `<p>In the <b>DiRECT</b> trial, almost half of people with type 2 diabetes (diagnosed within 6 years) were in remission after a year of weight loss. Among those who lost 15 kg or more, 86% were.${F("direct2018", 4)}</p>
       <p><b>Remission</b> means an A1c under 6.5% at least 3 months after stopping glucose-lowering medicine. Lower numbers while taking medicine mean diabetes is <b>well controlled</b>, which is also a real achievement.${F("riddle2021", 5)}</p>
       <p>In the <b>Diabetes Prevention Program</b>, people with prediabetes who lost about 7% and stayed active cut their chance of getting diabetes by 58%.${F("dpp2002", 6)} Results vary; not everyone reaches remission.</p>` },
-    { id: "edu", title: "Education only", html: `<ul class="intro-list"><li>This is <b>not a diagnosis</b> and does not tell you whether you have, or are cured of, any condition.</li><li>It does <b>not interpret your lab results</b> for you. It only shows them next to published ranges, so you can talk them over with your clinician.</li><li>Never change diabetes or blood-pressure medicines without your clinician.</li></ul>` },
+    { id: "edu", title: "Education only", html: `<ul class="intro-list"><li>This is <b>not a diagnosis</b> and does not tell you whether you have, or are cured of, any condition.</li><li>It does <b>not interpret your lab results</b> for you. It only shows them next to published ranges, so you can talk them over with your clinician.</li><li><b>Do not change your medicines because of this tool.</b> Do not start, stop, skip, or change the dose of diabetes medicines, blood pressure medicines, or any other medication based on what you see here. Talk with your own clinician about your medicines. This tool is education only. It cannot tell you what to take.</li></ul>` },
     { id: "mode", title: "Simple or Advanced?", html: `<table class="intro-cmp"><thead><tr><th scope="col"></th><th scope="col">Simple</th><th scope="col">Advanced</th></tr></thead><tbody>
         <tr><th scope="row">Questions</th><td>A few, with sensible defaults</td><td>Every detail: cardio, lifting, macros, measured RMR</td></tr>
         <tr><th scope="row">Time</th><td>About 2 minutes</td><td>5–10 minutes</td></tr>
