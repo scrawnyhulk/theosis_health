@@ -623,12 +623,21 @@
           m.userData.role="vein";m.name=name;m.frustumCulled=false;m.userData.v68=true;meshes.push(m);(byRole.vein=byRole.vein||[]).push(m);return m};
         /* r34: the SMV stopped in a flat, chisel-cut end between the small-bowel loops. It now runs on down into the root of the
            mesentery (dipping behind the loops), tapers, and closes in a round dome (two short lead-in segments give the dome its rings) */
-        if(window.__PFT_R34SMV!==0){const e0=[-.012,.947,.041],e1=[-.006,.973,.048],L=(a,b,f)=>a.map((x,k)=>x+(b[k]-x)*f);mk([e0,L(e0,e1,.05),L(e0,e1,.14),e1,[-.002,1.000,.052],[-.004,1.035,.048],[-.008,1.068,.036],[-.011,1.090,.029]],.0026,.0055,M.vein,"Superior mesenteric vein",.0026)}
+        /* r36: the SMV, portal and splenic veins met as three separate round end caps with a pinched waist and a visible notch
+           under the elbow. The SMV now runs on into the portal vein, the portal vein starts inside the SMV, and the splenic vein
+           starts inside the portal vein, so the confluence reads as one smooth joined vessel. window.__PFT_R36PV=0 = old. */
+        const R36V=window.__PFT_R36PV!==0;
+        if(window.__PFT_R34SMV!==0){const e0=[-.012,.947,.041],e1=[-.006,.973,.048],L=(a,b,f)=>a.map((x,k)=>x+(b[k]-x)*f);mk([e0,L(e0,e1,.05),L(e0,e1,.14),e1,[-.002,1.000,.052],[-.004,1.035,.048],[-.008,1.068,.036],[-.011,1.090,.029]].concat(R36V?[[-.015,1.098,.027]]:[]),.0026,R36V?.0058:.0055,M.vein,"Superior mesenteric vein",.0026)}
         else mk([[-.002,1.000,.052],[-.004,1.035,.048],[-.008,1.068,.036],[-.011,1.090,.029]],.0045,.0055,M.vein,"Superior mesenteric vein");
-        mk([[-.011,1.090,.029],[-.020,1.108,.026],[-.032,1.124,.029],[-.042,1.136,.034]],.0062,.0058,M.vein,"Portal vein");
-        const neck=3;const sv=[[-.011,1.090,.029]];for(let i=neck+1;i<pp.length;i++)sv.push([pp[i][0],pp[i][1]-.003,pp[i][2]-.010]);mk(sv,.0042,.0036,M.vein,"Splenic vein");
-        const sa=[[.006,1.128,.016],[.012,1.126,.030]];for(let i=neck+2;i<pp.length;i++){const t=i-neck;sa.push([pp[i][0],pp[i][1]+.012+.004*Math.sin(t*2.1),pp[i][2]-.004+.004*Math.cos(t*1.7)])}mk(sa,.003,.0026,art,"Splenic artery");
-        mk([[.006,1.128,.016],[-.006,1.131,.024],[-.020,1.132,.028],[-.036,1.140,.036]],.0028,.0024,art,"Common hepatic artery")}
+        mk((R36V?[[-.008,1.074,.033],[-.0102,1.085,.0305]]:[]).concat([[-.011,1.090,.029],[-.020,1.108,.026],[-.032,1.124,.029],[-.042,1.136,.034]]),R36V?.0054:.0062,.0058,M.vein,"Portal vein",R36V?.007:0);
+        const neck=3;const sv=R36V?[[-.016,1.096,.027],[-.010,1.093,.028]]:[[-.011,1.090,.029]];for(let i=neck+1;i<pp.length;i++)sv.push([pp[i][0],pp[i][1]-.003,pp[i][2]-.010]);mk(sv,.0042,.0036,M.vein,"Splenic vein");
+        /* r36: one celiac trunk. The splenic and common hepatic arteries used to start side by side on the aorta and turn 90 degrees
+           in a sharp elbow; the reference tree's two crumpled celiac blades (removed below) sat over the same spot as a red knot.
+           Both now share a short round trunk out of the front of the aorta (root 6 mm inside the wall) and fork in soft curves.
+           window.__PFT_R36CEL=0 = old paths. */
+        const R36C=window.__PFT_R36CEL!==0,CT=[[.012,1.129,.011],[.012,1.1295,.019],[.0125,1.130,.026],[.013,1.1305,.031]];
+        const sa=R36C?CT.concat([[.021,1.129,.031]]):[[.006,1.128,.016],[.012,1.126,.030]];for(let i=neck+(R36C&&pp.length>neck+4?3:2);i<pp.length;i++){const t=i-neck;sa.push([pp[i][0],pp[i][1]+.012+.004*Math.sin(t*2.1),pp[i][2]-.004+.004*Math.cos(t*1.7)])}mk(sa,R36C?.0036:.003,.0026,art,"Splenic artery",R36C?.004:0);
+        mk(R36C?CT.concat([[.006,1.1315,.034],[-.006,1.1325,.033],[-.020,1.134,.031],[-.036,1.140,.036]]):[[.006,1.128,.016],[-.006,1.131,.024],[-.020,1.132,.028],[-.036,1.140,.036]],R36C?.0036:.0028,.0024,art,"Common hepatic artery",R36C?.004:0)}
       }
     }
 
@@ -1009,6 +1018,50 @@
         const F=window.__PFT_R34GBF||1;const tgt=u=>{const body=u<.3?1:1-.55*Math.pow((u-.3)/.7,1.3);const dome=u<.22?Math.sqrt(Math.max(0,1-Math.pow((.22-u)/.22,2))):1;const top=u>.9?Math.sqrt(Math.max(0,1-Math.pow((u-.9)/.1,2)))*.85+.15:1;return Rm*.93*body*dome*top*F};
         for(let i=0;i<n;i++){const u=(t[i]-mn)/len,r=rad(i);if(r<1e-9)continue;const s=Math.max(.35,Math.min(2.2,tgt(u)/curAt(u)));p.fromBufferAttribute(Pa,i).sub(c);const along=ax.clone().multiplyScalar(t[i]);p.sub(along).multiplyScalar(s).add(along).add(c);Pa.setXYZ(i,p.x,p.y,p.z)}
         Pa.needsUpdate=true;g.computeVertexNormals();g.computeBoundingBox();g.computeBoundingSphere();window.__pftR34b=[n,+len.toFixed(4),+Rm.toFixed(4)]}}catch(e){console.warn("r34 gallbladder",e)}
+      // r36 (day 1102, original procedural code): (a) the r34 pear reshape moved each vertex of the old low-poly gallbladder on its
+      // own, which left a chisel-cut faceted tip, a hard ridge down one side and dozens of folded splinter triangles that caught the
+      // light in close-ups. The organ is now rebuilt as a clean smooth pear on the same axis, length and width: round fundus at the
+      // bottom, broadest at ~30 %, tapering into a neck that curves in toward the midline and back under the liver, slightly
+      // flattened against the liver. Same mesh and material (no extra draw call); a lighter olive-green, closer to the real organ.
+      // window.__PFT_R36GB=0 = off.
+      try{for(const m of (window.__PFT_R36GB===0?[]:by("gall"))){if(m.userData.r36||!m.geometry||m.morphTargetInfluences)continue;m.userData.r36=1;m.updateMatrixWorld(true);const g=m.geometry,Pa=g.attributes.position,n=Pa.count;if(n<60)continue;
+        const p=new T.Vector3(),c=new T.Vector3();for(let i=0;i<n;i++)c.add(p.fromBufferAttribute(Pa,i));c.multiplyScalar(1/n);const C=[[0,0,0],[0,0,0],[0,0,0]];for(let i=0;i<n;i++){const d=p.fromBufferAttribute(Pa,i).sub(c).toArray();for(let a=0;a<3;a++)for(let b=0;b<3;b++)C[a][b]+=d[a]*d[b]}
+        const ax=new T.Vector3(0,1,0);for(let it=0;it<60;it++){const a=ax.toArray();ax.set(C[0][0]*a[0]+C[0][1]*a[1]+C[0][2]*a[2],C[1][0]*a[0]+C[1][1]*a[1]+C[1][2]*a[2],C[2][0]*a[0]+C[2][1]*a[1]+C[2][2]*a[2]).normalize()}
+        if(ax.clone().transformDirection(m.matrixWorld).y<0)ax.negate();
+        let mn=1e9,mx=-1e9;const t=new Float32Array(n);for(let i=0;i<n;i++){t[i]=p.fromBufferAttribute(Pa,i).sub(c).dot(ax);mn=Math.min(mn,t[i]);mx=Math.max(mx,t[i])}const len=mx-mn;
+        // local frame: e1 = toward the midline (world +x, projected), e2 = forward/back (flattening against the liver)
+        const wo=m.localToWorld(c.clone()),toL=(x,y,z)=>m.worldToLocal(wo.clone().add(new T.Vector3(x,y,z).multiplyScalar(.01))).sub(c).normalize();
+        const e1=toL(1,0,-.4);e1.addScaledVector(ax,-e1.dot(ax)).normalize();const e2=new T.Vector3().crossVectors(ax,e1).normalize();
+        let R1=0,R2=0;for(let i=0;i<n;i++){const u=(t[i]-mn)/len;if(u<.15||u>.5)continue;const d=p.fromBufferAttribute(Pa,i).sub(c).addScaledVector(ax,-t[i]);R1=Math.max(R1,Math.abs(d.dot(e1)));R2=Math.max(R2,Math.abs(d.dot(e2)))}
+        const Rw=Math.max(R1,R2)*(window.__PFT_R36GBW||.7),Rf=Rw*(window.__PFT_R36GBF||.86); /* width across, and a little flatter front-to-back */
+        const prof=u=>{const body=u<.28?1:1-.58*Math.pow((u-.28)/.72,1.2);const dome=u<.2?Math.sqrt(Math.max(0,1-Math.pow((.2-u)/.2,2))):1;const top=u>.93?Math.sqrt(Math.max(0,1-Math.pow((u-.93)/.07,2)))*.8+.2:1;return body*dome*top};
+        const cen=u=>{const b=u>.55?Math.pow((u-.55)/.45,2):0;return c.clone().addScaledVector(ax,mn+u*len).addScaledVector(e1,b*len*.16).addScaledVector(e2,-b*len*.05)};
+        const NS=40,NR=24,pos=[],idx=[];
+        for(let a=0;a<=NS;a++){const u=a/NS,uu=.5-.5*Math.cos(u*Math.PI),q=cen(uu),q2=cen(Math.min(1,uu+.01)),q1=cen(Math.max(0,uu-.01)),tg=q2.sub(q1).normalize();
+          const b1=e1.clone().addScaledVector(tg,-e1.dot(tg)).normalize(),b2=new T.Vector3().crossVectors(tg,b1).normalize(),r=prof(uu);
+          for(let j=0;j<NR;j++){const th=j/NR*Math.PI*2;const v=q.clone().addScaledVector(b1,Math.cos(th)*Rw*r).addScaledVector(b2,Math.sin(th)*Rf*r);pos.push(v.x,v.y,v.z)}}
+        for(let a=0;a<NS;a++)for(let j=0;j<NR;j++){const A=a*NR+j,B=a*NR+(j+1)%NR,Cc=A+NR,D=B+NR;idx.push(A,Cc,B,B,Cc,D)}
+        // poles: weld each end ring to a single tip vertex so there is no pinhole
+        const tip=(ring,uu)=>{const k=pos.length/3,q=cen(uu);pos.push(q.x,q.y,q.z);for(let j=0;j<NR;j++){const A=ring*NR+j,B=ring*NR+(j+1)%NR;if(ring===0)idx.push(k,A,B);else idx.push(k,B,A)}};tip(0,0);tip(NS,1);
+        // keep winding outward (normals point away from the centre line)
+        {const a=new T.Vector3(),b=new T.Vector3(),d=new T.Vector3(),q=cen(.4);a.fromArray(pos,idx[(NS>>1)*NR*6]*3);b.fromArray(pos,idx[(NS>>1)*NR*6+1]*3);d.fromArray(pos,idx[(NS>>1)*NR*6+2]*3);const nn=b.clone().sub(a).cross(d.clone().sub(a));if(nn.dot(a.clone().sub(cen(((NS>>1)/NS))))<0)for(let i=0;i<idx.length;i+=3){const x=idx[i+1];idx[i+1]=idx[i+2];idx[i+2]=x}void q}
+        const nv=pos.length/3,ng=new T.BufferGeometry();ng.setAttribute("position",new T.Float32BufferAttribute(pos,3));
+        for(const k in g.attributes){if(k==="position"||k==="normal")continue;const A=g.attributes[k],sz=A.itemSize,arr=new Float32Array(nv*sz);if(k==="aOcc"){for(let i=0;i<nv;i++){const u=(new T.Vector3().fromArray(pos,i*3).sub(c).dot(ax)-mn)/len;arr[i]=Math.max(0,(u-.8)/.2)*.25}}else if(k==="color")arr.fill(1);else for(let i=0;i<nv;i++)for(let e=0;e<sz;e++)arr[i*sz+e]=A.array[e];ng.setAttribute(k,new T.Float32BufferAttribute(arr,sz))}
+        ng.setIndex(idx);ng.computeVertexNormals();ng.computeBoundingBox();ng.computeBoundingSphere();g.dispose();m.geometry=ng;
+        if(!M.gall.userData.r36){M.gall.userData.r36=1;M.gall.color.set(window.__PFT_R36GBC||0x5a7a4e)}
+        window.__pftR36a=[n,nv,+len.toFixed(4),+Rw.toFixed(4)]}}catch(e){console.warn("r36 gallbladder",e)}
+      // (b) the reference arterial tree (mesh_20) still carried the two crumpled celiac blades in front of the aorta (a red knot
+      // with saw-tooth flaps in close-ups). They sit exactly where the procedural celiac trunk + splenic/common hepatic arteries
+      // now run, so their triangles are dropped (index only, same mesh). window.__PFT_R36CEL=0 = keep.
+      try{const m=window.__PFT_R36CEL===0?null:nm("mesh_20");if(m&&m.geometry.index&&!m.userData.r36){m.userData.r36=1;m.updateMatrixWorld(true);
+        const g=m.geometry,Pa=g.attributes.position,n=Pa.count,ix=g.index.array,v=new T.Vector3(),W=new Float32Array(n*3);for(let i=0;i<n;i++){v.fromBufferAttribute(Pa,i).applyMatrix4(m.matrixWorld);W[i*3]=v.x;W[i*3+1]=v.y;W[i*3+2]=v.z}
+        const wm=new Map(),id=new Int32Array(n);for(let i=0;i<n;i++){const k=Math.round(W[i*3]/2e-4)+","+Math.round(W[i*3+1]/2e-4)+","+Math.round(W[i*3+2]/2e-4);let q=wm.get(k);if(q===undefined){q=i;wm.set(k,i)}id[i]=q}
+        const par=new Int32Array(n).map((_,i)=>i),fd=x=>{while(par[x]!==x){par[x]=par[par[x]];x=par[x]}return x};for(let t=0;t<ix.length;t+=3){const a=fd(id[ix[t]]),b=fd(id[ix[t+1]]);par[b]=a;const c=fd(id[ix[t+2]]);par[c]=fd(a)}
+        const C=new Map();for(let t=0;t<ix.length;t+=3){const r=fd(id[ix[t]]);let o=C.get(r);if(!o)C.set(r,o={ts:[],c:[0,0,0],k:0});o.ts.push(t);for(let e=0;e<3;e++){const q=ix[t+e];o.c[0]+=W[q*3];o.c[1]+=W[q*3+1];o.c[2]+=W[q*3+2];o.k++}}
+        const want=[[-.0121,1.135,.0149,285],[.0419,1.1402,.0044,263]],kill=new Set();let hit=0;
+        for(const [x,y,z,nt] of want){let best=null,bd=.012;for(const o of C.values()){const d=Math.hypot(o.c[0]/o.k-x,o.c[1]/o.k-y,o.c[2]/o.k-z);if(d<bd&&o.ts.length>nt*.6&&o.ts.length<nt*1.5){bd=d;best=o}}if(best){best.ts.forEach(t=>kill.add(t));hit++}}
+        if(kill.size){const keep=[];for(let t=0;t<ix.length;t+=3)if(!kill.has(t))keep.push(ix[t],ix[t+1],ix[t+2]);g.setIndex(keep)}
+        window.__pftR36b=[hit,kill.size]}}catch(e){console.warn("r36 celiac blades",e)}
       // r35 (day 1101, original procedural code): (a) the small-bowel tube has three open or chisel-cut ends (start of the jejunum
       // under the transverse colon, one mid-abdomen, one low in the pelvis); up close they read as hollow, faceted stubs. Each end
       // is reshaped in place into a round capsule tip: the open rim closes to a point at the tip, the next rings follow a
