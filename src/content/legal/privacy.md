@@ -1,12 +1,12 @@
 # Privacy Policy — Theosis Health
 
-**Effective date:** October 22, 2026 · **Last updated:** October 22, 2026
+**Effective date:** November 3, 2026 · **Last updated:** November 3, 2026
 
 Theosis Health LLC ("we," "us"), 4026 Bristol Dr., Danville, IL 61834, runs theosishealth.com and its tools (the "Service"). This policy explains what we collect, why, who processes it, how long we keep it, and your choices. Contact: **support@theosishealth.com**.
 
 **The short version**
 - What you enter in the simulator and calculators **stays in your browser on your device**. We have no user accounts and no database of your inputs.
-- **Optional AI features.** If you turn on AI features (Tell us what you ate, web label lookup, food and nutrition-label photos, Ask Theosis, and the AI plan note), what you type or the food photo you choose is sent to Google's Gemini AI to answer that request. We don't store it on our servers. Face and body photos are used only with your separate consent (see Section 3), and lab-report upload is turned off.
+- **Optional AI features.** If you turn on AI features (Tell us what you ate, web label lookup, food and nutrition-label photos, Ask Theosis, and the AI plan note), what you type or the food photo you choose is sent to Google's Gemini AI to answer that request. Face and body photos and lab-report upload each need their own consent (see Section 3). We don't store those uploads on our servers.
 - We receive only what you choose to send us (contact form or email) and basic technical data our web host needs to run the site.
 - **We don't sell your data**, share it for advertising, or use ads, ad pixels, session replay, or third-party trackers. We see only aggregate, cookieless traffic counts from our host, Netlify.
 - We aren't a HIPAA covered entity, and the Service isn't "HIPAA compliant." Laws like the FTC Health Breach Notification Rule and state health-data laws still apply, and we follow them.
@@ -19,13 +19,14 @@ Theosis Health LLC ("we," "us"), 4026 Bristol Dr., Danville, IL 61834, runs theo
 | Contact-form messages (name, email, message) | Our web host's form service (**Netlify Forms**), then our email | Up to 2 years after your last message, then deleted |
 | Emails you send us | Our email provider (Microsoft 365 through GoDaddy) | Up to 3 years after your last message, then deleted |
 | AI feature requests: typed text or food photo (only if you turn on AI features) | Sent to **Google Gemini** (paid API) to answer your request | Not stored by us. Google may keep it briefly for abuse monitoring under its terms |
+| Lab-report file (photo or PDF), only if you consent to lab AI reading | Sent to **Google Gemini** (paid API) for one request to extract numbers you then confirm | Not stored by us. Google may keep it briefly for abuse monitoring under its terms. Confirmed values stay in your browser until you clear site data. |
 | Technical data (IP address, browser, request logs) | Our web host (**Netlify**). IP addresses are converted to a one-way hash for daily usage limits. | Usage counters reset daily. Host logs are kept briefly under Netlify's own retention for security and operations. |
 | Aggregate traffic stats (page views, visitor counts, top pages, referrers) | **Netlify Analytics**, computed by our host from its server logs. No cookies or tracking scripts. | Shown to us only as totals, under Netlify's retention |
 
 We use this information only to run and secure the Service and to reply to you. Please don't send us medical records or clinical details; we can't give individual medical advice.
 
 ## 2. Who we share it with
-Only our service providers that run the Service for us: **Netlify** (hosting and contact forms) and **Microsoft/GoDaddy** (email). We may also disclose information if the law requires it or to protect our rights. We don't sell or rent personal information.
+Only our service providers that run the Service for us: **Netlify** (hosting and contact forms), **Microsoft/GoDaddy** (email), and — when you use AI or lab-upload features — **Google** (Gemini API). We may also disclose information if the law requires it or to protect our rights. We don't sell or rent personal information.
 
 ## 3. AI features, food photos, and features that are off
 **AI features (optional, off until you agree).** AI features work only after you check the AI-features consent box, and you can turn them off anytime in settings. When you use one, the text you type (which may include health details like what you ate, your weight, or your goals) or the food photo you choose is sent from your browser to Google Gemini, using Google's paid API, only to answer that request. Photos are resized and re-encoded on your device first, which removes location and other hidden data (EXIF/GPS). Results come back to your device. We don't store your requests, photos, or results on our servers. Google processes them as our service provider under its paid API terms, which don't allow it to train its models on your data, and may keep them briefly for abuse monitoring as those terms describe. Please don't include other people's information or photos of people. AI answers are general education, not medical advice, and can be wrong.
@@ -41,7 +42,13 @@ This is our public written policy under the Illinois Biometric Information Priva
 - **Security:** we protect it with at least the care we use for other confidential information, including encrypted transfer (HTTPS).
 - **Withdraw:** use "Withdraw consent" in the app's settings or email support@theosishealth.com. Withdrawing deletes saved photos on your device and turns photo features off.
 
-**Lab-report upload** is not available.
+### Lab-report upload (optional)
+
+Lab-report upload is optional and works only after you check the lab-report consent box. You can turn it off anytime in settings and type values instead.
+
+If you choose to upload, a photo or PDF of a lab report is sent from your browser to Google Gemini (paid API) only to extract key printed numbers (such as A1c, fasting glucose, fasting insulin, lipids, ALT, and AST) for you to confirm. The file is held in memory for that one request; we don't write it to disk, logs, or a database, and we don't store the extracted numbers on our servers. Google processes the file as our service provider under its paid API terms (no training on your data) and may keep it briefly for abuse monitoring as those terms describe. You must confirm every value in the app before it is used; AI readings can be wrong.
+
+Please upload only your own report (or one you are authorized to use), crop out names and other identifiers when you can, and don't upload other people's information. Confirmed values you accept stay in your browser's local storage until you clear site data for theosishealth.com. Lab-report upload is education tooling only — not medical advice, diagnosis, or a substitute for reviewing results with your clinician.
 
 ## 4. Consumer health data
 Some information, like weight or A1c, can be "consumer health data" under laws such as Washington's My Health My Data Act. That information stays on your device. See our separate [Consumer Health Data Privacy Policy](/consumer-health-privacy).

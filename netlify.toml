@@ -15,7 +15,7 @@
 #   LABS_MODEL       labs.js (optional)
 #   ALLOWED_ORIGIN   https://theosishealth.com  (CORS/origin guard)
 #   PHOTO_AI_ENABLED leave unset (photo AI off until BIPA consent ships); "true" re-enables
-#   LABS_ENABLED     leave unset (lab upload off until consent ships); "true" re-enables
+#   LABS_ENABLED     set to "true" to allow lab-report upload (consent + privacy are in the app). Leave unset and labs.js stays off.
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
