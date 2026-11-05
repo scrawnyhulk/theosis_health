@@ -1056,6 +1056,7 @@ input[type="checkbox"],input[type="radio"]{min-width:24px;min-height:24px}
 .gain-list{list-style:none;padding:0;margin:.5rem 0;display:grid;gap:.35rem}
 .gain-list li{border:1px solid var(--line,#ddd);border-radius:8px;padding:.45rem .6rem;font-size:.92em}
 .gain-list li.on{border-color:var(--accent,#2a6);background:rgba(40,160,100,.06)}
+.bulk-tbl tr.on td{background:rgba(40,160,100,.08)}
 .qc-card[hidden],.qc-wrap[hidden]{display:none!important}
 .meal-vs{width:100%;margin:.6rem 0;font-size:.92em}.meal-vs caption{text-align:left;font-weight:600;padding-bottom:.3rem}
 /* v7.6.3 projection hierarchy: secondary sections collapse */
@@ -2080,7 +2081,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')set(false)})
                   <label><input type="radio" name="goal.gainMode" value="fast"><span>Fast (more fat)</span></label>
                 </fieldset>
                 <div class="gain-opts" id="gain-opts" aria-live="polite"></div>
-                <p class="hint" id="h-gain-src">Lean: a small surplus to build the most muscle with the least fat. Your surplus is sized to an estimated muscle-gain rate for your training age and sex (practitioner rules of thumb from Lyle McDonald and Alan Aragon, not trial results), so treat these as estimates. Bigger surpluses mostly add fat (Garthe 2013; Iraki 2019; Helms 2023).</p>
+                <p class="hint" id="h-gain-src">Lean keeps a small surplus, so the scale moves slowly and body fat stays lower, while muscle still goes up. Moderate and Fast allow a little more muscle and add more fat. For a higher muscle-gain rate and more size, choose Build muscle (max). Rates are estimates (practitioner rules of thumb, McDonald and Aragon), not trial results.</p>
                 <label class="field mt1" data-field="bfCeiling" id="g-bfceil"><span class="label">Body-fat ceiling <span style="text-transform:none;letter-spacing:0">(optional)</span></span>
                   <span class="control"><input data-f="bfCeiling" inputmode="decimal" placeholder="none"><span class="unit">%</span></span><span class="err"></span>
                   <span class="hint">The plan stops if you'd go above this body fat, so you can cut before continuing.</span></label>
@@ -2111,7 +2112,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')set(false)})
               <div class="adv-body stack small muted">
                 <p>Estimated lean-mass gain with consistent, well-programmed lifting (4+ sessions a week, enough protein, enough food). These are estimates, not guarantees. Genetics, sleep, age and program quality move them a lot.</p>
                 <div class="table-wrap" style="margin-top:.5rem"><table><thead><tr><th>Training age</th><th>Men / month</th><th>Women / month</th></tr></thead><tbody id="rate-table"></tbody></table></div>
-                <p>Basis: practitioner models (beginners ~1–1.5% of body weight a month, intermediates ~0.5–1%, advanced ~0.25–0.5%; practitioner rules of thumb, McDonald; Aragon) checked against review data (Iraki et al., 2019; Slater et al., 2019; Barakat et al., 2020). Women gain about the same <em>relative</em> amount as men (Roberts et al., 2020) but start with less muscle, so absolute gains are about half. Rates are trimmed for 2–3 sessions a week (×0.75), because fewer sessions usually means fewer hard sets per muscle (when weekly volume is equal, training a muscle 2 or 3+ times a week gives similar growth; Schoenfeld 2019), age 40+ (×0.85) and 60+ (×0.7), and taper as your fat-free mass index approaches a natural ceiling (about 25 for men and 21.5 for women; Kouri 1995). Beginners move to intermediate rates after 12 months. The lean-gain surplus is sized to these rates so that you add no more than about 0.8 lb of fat per lb of muscle. In a calorie deficit, gains shrink toward zero as the deficit nears your fat ceiling.</p>
+                <p>Basis: practitioner models (beginners ~1–1.5% of body weight a month, intermediates ~0.5–1%, advanced ~0.25–0.5%; practitioner rules of thumb, McDonald; Aragon) checked against review data (Iraki et al., 2019; Slater et al., 2019; Barakat et al., 2020). Women gain about the same <em>relative</em> amount as men (Roberts et al., 2020) but start with less muscle, so absolute gains are about half. Rates are trimmed for 2–3 sessions a week (×0.75), because fewer sessions usually means fewer hard sets per muscle (when weekly volume is equal, training a muscle 2 or 3+ times a week gives similar growth; Schoenfeld 2019), age 40+ (×0.85) and 60+ (×0.7), and taper as your fat-free mass index approaches a natural ceiling (about 25 for men and 21.5 for women; Kouri 1995). Beginners move to intermediate rates after 12 months. The table is the midpoint. Lean muscle gain uses about 70% of it, with a small surplus, so the scale moves slower and body fat stays lower. Build muscle (max) uses about 1½ times it, with a bigger surplus; food past that rate is stored as fat. The lean-gain surplus is sized so you add only a little fat with each bit of muscle. In a calorie deficit, gains shrink toward zero as the deficit nears your fat ceiling.</p>
               </div>
             </details>
           </div>
@@ -2454,7 +2455,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')set(false)})
         <p><strong>PSMF.</strong> A protein-sparing modified fast is a short-term, clinician-supervised very-low-calorie diet. Protein is at least 1 g per lb (2.2 g/kg) of body weight; with high body fat (BMI 30+, or body fat above 30% for men / 40% for women) it's 1 g per lb of your goal weight or ideal body weight (Devine), your pick, with about 30 g carbohydrate and 15 g fat (Bistrian 1978; Chang &amp; Kashyap 2014). It's suggested only as a gentle note when what you eat is 1,000 kcal or less (for a food log, after you tap Done adding foods), usually reserved for BMI 30+ (27+ with weight-related conditions), and projected with the same stop rules.</p>
         <p><strong>Protein.</strong> 1 g per lb (2.2 g per kg) for anyone who lifts or is gaining. In one meta-analysis (Morton 2018) the extra muscle from more protein leveled off at about 1.6 g/kg a day on average, with the upper confidence limit near 2.2 g/kg, so 2.2 covers nearly everyone (Morton 2018; Jäger 2017). Lean lifters in a deficit may do better higher still: 2.3–3.1 g per kg of lean mass (Helms, Zinn et al. 2014; Helms, Aragon et al. 2014). Spreading it over 3–4 or more meals of about 0.4 g/kg each is a sensible pattern (Schoenfeld &amp; Aragon 2018). Intakes well above this (3.4–4.4 g/kg) were safe and did not add fat in short trials in trained lifters (Antonio 2014, 2015, 2016), but they aren't needed for muscle. Without lifting: 2.2 for maximal fat loss, 2.0 for other fat loss and recomposition, 1.6 for maintenance. With high body fat (BMI 30 or more, or body fat above 30% for men or 40% for women), protein is based on 1 g per lb of <em>your goal weight</em> or of your <em>ideal body weight</em> (Devine), whichever you choose, never on total weight. Otherwise, above ~25% (men) or ~32% (women) body fat it uses your lean mass at a healthy body fat (18% men, 28% women). PSMF keeps its own rule. Fat is about 25–30% of calories (at least 0.5 g/kg of the reference weight), and carbs fill the rest.</p>
         <p><strong>Keep my body fat % (default for lean gain).</strong> The surplus is sized so that fat makes up your starting body-fat percentage of every pound gained (fat gain = BF% × total gain), so body fat stays at or near where it started (within about 0.5 points). The surplus covers your training-limited muscle gain plus that small amount of fat, for example about 50 kcal a day for an intermediate man at 10% body fat. Your muscle-gain rate therefore sets the timeline: 145 → 155 lb at 10% takes about 9 months for an intermediate lifting 4+ times a week and longer for advanced lifters. This assumes a small, steady surplus is enough to support the full training-limited rate, which is an optimistic but common practitioner assumption. If a target, a body-fat cap (keep % or a ceiling) and a deadline can't all fit, the simulator says how long it really takes and offers two one-click fixes: use that many weeks, or allow the body fat needed to make your date. It never stops short of the target silently.</p>
-        <p><strong>Gaining weight.</strong> "Let it rise slowly" is the v4 lean bulk. The surplus is sized to your estimated muscle-gain rate (training age, sex, sessions per week, age, and how close you are to a natural fat-free-mass ceiling), so you add no more than about 0.8 lb of fat per lb of muscle: roughly 300 kcal a day for a male beginner lifting 4+ times a week, 150 for an intermediate, and 75–100 for an advanced lifter (Iraki 2019; Slater 2019; Helms 2023). If a deadline is too short to gain mostly muscle, the simulator says so and shows the realistic timeline instead of filling the gap with fat. "Faster (more fat)" roughly doubles the surplus (300–600 kcal) for hard gainers or people who are underweight, and the projection shows the extra fat. An optional body-fat ceiling stops the plan where you'd cross it. Muscle gain is an estimate: genetics, sleep and program quality change it a lot. The model treats every surplus calorie alike. In trained lifters, extra calories eaten as protein (3.4–4.4 g/kg a day, several hundred kcal more) did not raise fat mass in trials lasting a few months (Antonio 2014, 2015, 2016), so with very high protein the projected fat gain may be too high.</p>
+        <p><strong>Gaining weight.</strong> Lean muscle gain sizes the surplus to about 70% of the monthly muscle-gain table, plus a little fat (about 0.22 lb of fat per lb of muscle). That is often about 50–150 kcal a day: at least 40, and at most 300. Newer lifters land near 100 because their rate asks for it. The scale moves slowly and body fat stays close to where it started. Build muscle (max) is described above: a higher rate and a larger surplus. If a deadline is too short to gain mostly muscle, the simulator says so and shows the realistic timeline instead of filling the gap with fat. "Faster (more fat)" uses a larger surplus (about 300–600 kcal) at the table rate, for hard gainers or people who are underweight, and the projection shows the extra fat. An optional body-fat ceiling stops the plan where you'd cross it. Muscle gain is an estimate: genetics, sleep and program quality change it a lot. The model treats every surplus calorie alike. In trained lifters, extra calories eaten as protein (3.4–4.4 g/kg a day, several hundred kcal more) did not raise fat mass in trials lasting a few months (Antonio 2014, 2015, 2016), so with very high protein the projected fat gain may be too high.</p>
         <p><strong>Body fat estimates.</strong> U.S. Navy tape equations (Hodgdon &amp; Beckett 1984, about ±3–4 points). BMI-based formula when nothing else is available (Deurenberg 1991, about ±5 points). FFMI = lean kg ÷ height m², normalized to 1.8 m (Kouri 1995). Waist-to-height under 0.5 is the healthy cut-off (Ashwell 2012).</p>
         <p><strong>Body figure.</strong> Where the browser can show 3D, the Live summary shows one body from the Personal Fat Threshold model. The slider runs from today to the end of the goal timeline you chose, and the body changes with the fat your plan projects. "Cross-section" shows a slice through the middle of the same model. The skin-tone circles only change the color of that body. How your plan maps onto the model is our own illustrative choice. It is a picture for learning, not a scan or a measurement of you. If 3D can't load, a simple drawing is shown instead.</p>
         <p><strong>Where you carry it.</strong> Your answers set a score from "mostly under the skin" (pinchable, hyperplastic: hips, thighs, arms, flanks, a lower-belly apron; little fat around the organs) to "mostly around the organs" (metabolic: a firm, round belly with more visceral and liver fat). It's nudged by type 2 diabetes, prediabetes or an HbA1c of 5.7% or more and by fatty liver, all tied to visceral and liver fat (Taylor &amp; Holman 2015; Neeland 2012; Fabbrini 2010). A waist large for your height and BMI is a central-fat marker (Ashwell 2012). Age (Kuk 2009) and menopause (Lovejoy 2008) also count, and so do your own description and, when there's no description, your photo's shape. Ancestry is optional and gives small, evidence-based nudges only. On average, South Asian and East/Southeast Asian adults carry more visceral fat at the same BMI (Lear 2007; Raji 2001; Wulan 2010), which is why the ADA recommends diabetes screening from BMI 23 for Asian Americans and why equivalent-risk BMIs are lower (Ntuk 2014). Hispanic/Latino adults have more liver fat on average (Browning 2004). Black/African-ancestry adults have less visceral and more subcutaneous fat at the same waist (Carroll 2008; Katzmarzyk 2010). Fat is split into visceral, belly-subcutaneous, hip-and-thigh, arm/chest/back and other depots. Men carry about twice the visceral share of women at the same fat mass, and the visceral share eases at very high fat mass.</p>
@@ -2471,7 +2472,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')set(false)})
         <p><strong>Exact goals and your daily calorie target (v6.4).</strong> On Maximal or Steady fat loss you can enter an exact goal weight or goal body fat % in the <b>Exact goal</b> box right under the goal cards (it scrolls into view and lights up when you pick a goal). The plan then runs to that target at the goal's pace: Maximal uses your full fat ceiling, Steady about 60% of it. The Food step shows one number, <b>Your daily calorie target</b>: your daily burn minus the deficit (or plus the surplus). Tap <b>How we got this</b> for the breakdown. Once you enter foods or turn on <b>Simulate what I actually eat</b>, a line shows how many calories you're eating and how far over or under your target that is; with simulate on, the projection follows what you eat.</p>
         <p><strong>Softer, more realistic fat (v6.1).</strong> On heavier figures fat is shaped as smooth volume with wide, gradual falloffs, so there are no ledges or angled edges at the belly, flanks or back. A soft gravity fold forms under the lower belly as body fat rises (more with softer fat and after 50), with a gentle roll at the sides and back, and the hips fill out in step with the waist. Where fat is thick the surface is finer and smoothed (muscle definition on lean bodies is unchanged), and skin folds are softly shaded. The figure is an illustration from your estimates, not a scan.</p>
         <p><strong>Muscle definition and close-up (v5).</strong> Visible abdominal definition is drawn as a soft, procedural shading map (not anatomy scanned from a person), faded in by body fat: men full at about 10–12%, softer at 12–15%, none by about 17%; women full at about 17–18%, softer to about 20–23%, none by about 25%, scaled by muscularity. It's illustrative. Real definition varies with genetics, water and lighting. Pinch, Ctrl/⌘ + scroll, double-click or the Close-up button zoom the torso.</p>
-        <p><strong>Build muscle (max) (v5).</strong> A moderate 250–350 kcal a day surplus sized by training age and sex: men about 350 / 300 / 250 kcal and women about 300 / 275 / 250 kcal for under 1 year / 1–3 years / 3+ years of lifting. It steps down as you gain experience over the projection and never goes below 250 (Iraki 2019: roughly 10–20% above maintenance for newer lifters, less once trained; Helms 2023: small surpluses build about as much muscle as large ones, with less fat). Muscle grows only as fast as your estimated gain rate allows, so the rest of the surplus is stored as fat, and the projection shows that fat rise. Without lifting there's no surplus. "See the muscle" shows the fat-free surface, which grows with projected lean mass.</p>
+        <p><strong>Build muscle (max).</strong> Two things differ from Lean muscle gain. The surplus is larger, about 250–350 kcal a day by training age and sex: men about 350 / 300 / 250 kcal and women about 300 / 275 / 250 kcal for under 1 year / 1–3 years / 3+ years of lifting. It steps down as training age rises over the projection and never goes below 250. The muscle-gain rate is also higher: about 1½ times the monthly table, while Lean muscle gain uses about 70% of that table. The same weeks therefore add more muscle, and the figure grows with that lean mass. Food the higher rate cannot use is stored as fat, so body fat rises more than on the lean path. Both paths still slow down near a natural fat-free mass ceiling (about FFMI 25 for men and 21.5 for women). The size of the gap is this app's estimate. Reviews find that very large surpluses add more fat than muscle (Garthe 2013; Helms 2023; Iraki 2019), which is why the rate is capped rather than left open. Without lifting there's no surplus.</p>
         <p><strong>Example days (v5).</strong> Four diet types × five styles (Everyday, Quick &amp; easy, Vegetarian, Plant-based, Gluten-free), built from rounded USDA FoodData Central values. Each type sets calorie shares: Balanced keeps protein at 15–35% and fat at 25–35%; Lower carb about 20% carbs; Higher protein at least 35% protein; Low fat about 18% fat. Your protein target is kept within each type's range. Portions are solved in usable steps to land within about 5% of the calories and on the macro targets. Allergens are listed from the foods used. The Gluten-free style uses only naturally gluten-free foods (oats only if labeled gluten-free), with a reminder that people with celiac disease or gluten sensitivity should check labels for cross-contamination.</p>
         <p><strong>Saved days (v5).</strong> Saved days live only in this browser (localStorage). Export and Import move them as a .json file. Nothing is uploaded.</p>
         <p><strong>Before you set Move and Food.</strong> On the Goal step the projection assumes 2–3 lifting sessions a week and adequate protein, and says so. Once you reach the Move and Food steps, your own choices replace those assumptions everywhere, including the live summary.</p>
@@ -3048,7 +3049,21 @@ function muscleRegions(move, sex) {
 // Natural ceiling: potential tapers over the last ~4 FFMI points below ~25 (men) / ~21.5 (women) (Kouri 1995 found FFMI ≈ 25 as the upper range in natural athletes; the taper width and the 21.5 women's value are the app's assumptions)
 const FFMI_LIMIT = { m: 25, f: 21.5 };
 function ffmiTaper(p, L) { if (L == null) return 1; const h = p.heightCm / 100, ffmi = L / (h * h) + 6.1 * (1.8 - h); return clamp((FFMI_LIMIT[p.sex] - ffmi) / 4, 0.15, 1); }
-function leanPotentialPerDay(p, move, day, proteinLevel, L) {
+/* Share of the table rate (GAIN_RATE) each planned gain path may accrue, and how much fat (kg) comes with each kg of that lean gain once the surplus covers it.
+   Lean muscle gain keeps a smaller share and a small surplus, so the scale moves slower and body fat stays lower while muscle still rises.
+   Build muscle (max) uses a higher share (about 1½×) so the same weeks add more muscle, not only more fat. The natural FFMI taper still applies to every path.
+   Moderate and Fast keep rates near the table; their larger surpluses mostly add fat. Estimates, not trial results. null mode = the table rate (habits, recomp, a date-driven fill). */
+const GAIN_PATH = {
+  lean: { rate: 0.70, fatJoin: 0.22 },
+  moderate: { rate: 0.90, fatJoin: 0.55 },
+  fast: { rate: 1, fatJoin: 0.80 },
+  max: { rate: 1.45, fatJoin: 0.45 },
+};
+function gainPathSpec(mode) {
+  if (mode === "hold") mode = "lean";
+  return GAIN_PATH[mode] || null;
+}
+function leanPotentialPerDay(p, move, day, proteinLevel, L, mode) {
   const t = weeklyTraining(move);
   if (t.liftSessions <= 0) return 0;
   let status = move.experience || "beginner";
@@ -3059,7 +3074,8 @@ function leanPotentialPerDay(p, move, day, proteinLevel, L) {
   const freq = t.custom ? (mr && mr.custom ? 1 : liftGainFreq(t.liftX)) : t.liftSessions >= 4 ? 1 : t.liftSessions >= 2 ? 0.75 : 0.4;
   const age = p.age >= 60 ? 0.7 : p.age >= 40 ? 0.85 : 1;
   const prot = proteinLevel === "low" ? 0.5 : proteinLevel === "moderate" ? 0.8 : 1;
-  return base * freq * age * prot * ffmiTaper(p, L) * liftFactors(move).gain * (mr ? mr.factor : 1);   // v5: style / weekly sets / proximity to failure (Advanced; 1 otherwise)
+  const path = gainPathSpec(mode);
+  return base * freq * age * prot * ffmiTaper(p, L) * liftFactors(move).gain * (mr ? mr.factor : 1) * (path ? path.rate : 1);   // v5: style / weekly sets / proximity to failure (Advanced; 1 otherwise)
 }
 
 // ---------- one day of tissue change ----------
@@ -3081,8 +3097,9 @@ function dayChange(E, F, ctx, L) {
     const y = x * pm / (1 - pm);
     return { dF: -x - gain * RHO_L_GAIN / RHO_F, dL: -y - excess / RHO_L_LOSS + gain, over: excess > 1 ? excess : 0 };
   }
-  // Surplus: a small surplus already supports the full training-limited potential (it is reached once the surplus covers
-  // the lean tissue plus about half as much fat); anything beyond that is stored as fat (Slater 2019; Iraki 2019)
+  // Surplus: lean gain rises with the surplus until it hits this path's potential (GAIN_PATH rate × the table).
+  // It is fully funded once the surplus covers the lean tissue plus fatJoin kg of fat per kg of lean (0.5 when no path is set).
+  // Anything beyond that is stored as fat (Slater 2019; Iraki 2019).
   if (P <= 0) {
     // v7.6.20: no resistance training. Overfeeding still adds some lean tissue (Forbes 1987; Hall 2007: lean share of a weight change = 10.4 / (10.4 + fat kg);
     // Bray 2012: +2.9 kg lean with adequate protein, none with very low protein). Energy density of lean tissue 1,800 kcal/kg (Hall 2008).
@@ -3100,7 +3117,8 @@ function dayChange(E, F, ctx, L) {
     const gainH = Math.min(P, Math.max(0, E) / (RHO_L_GAIN + ctx.holdR * RHO_F));
     return { dF: (E - gainH * RHO_L_GAIN) / RHO_F, dL: gainH, over: 0 };
   }
-  const gain = P * Math.min(1, 0.5 + 0.5 * E / (P * (RHO_L_GAIN + 0.5 * RHO_F)));
+  const join = ctx.fatJoin != null ? ctx.fatJoin : 0.5;
+  const gain = P * Math.min(1, 0.5 + 0.5 * E / (P * (RHO_L_GAIN + join * RHO_F)));
   return { dF: (E - gain * RHO_L_GAIN) / RHO_F, dL: gain, over: 0 };
 }
 function lossFactor(move, proteinLevel) {
@@ -3135,25 +3153,24 @@ function goalDirection(inp) {
   return g.type === "gain" ? "gain" : "neutral";
 }
 function essentialFatKg(sex, leanKg) { const e = ESSENTIAL[sex]; return leanKg * e / (100 - e); }
-/* Gain surplus. Lean (default): sized to the training-limited muscle-gain rate so that at most ~0.8 kg of fat is added per kg
-   of lean (fat:lean at or under 1:1). That works out to ~300 kcal/day for a novice man lifting 4x a week, ~150 intermediate,
-   ~75-100 advanced (women about half), and it shrinks as lean mass nears the natural ceiling. Faster (opt-in, for hard
-   gainers and underweight users): about twice that, 300-600 kcal/day, and clearly adds more fat. */
+/* Gain surplus. Lean (default): sized to GAIN_PATH.lean (about 70% of the table rate) plus ~0.22 kg fat per kg lean,
+   clamped to ~100-300 kcal/day, so the scale moves slower and body fat stays lower. It shrinks as lean mass nears the natural ceiling.
+   Faster (opt-in): 300-600 kcal/day at the table rate, and clearly adds more fat. Build muscle (max) is bulkSurplus plus GAIN_PATH.max. */
 const LEAN_BULK_RATIO = 0.8;
-/* v7.6.3 merged gain choice. Lean (default): the smallest surplus that still covers the training-limited muscle-gain rate, plus a
-   little margin (~0.4 kg fat per kg lean), clamped to ~100-300 kcal/day. It minimises fat gain; it does not try to hold BF% constant.
-   Moderate: ~1.2 kg fat per kg lean, 200-450 kcal/day. Fast: 300-600 kcal/day. Muscle-gain rates by training age and sex are
-   practitioner heuristics (McDonald; Aragon), labelled as estimates. */
+/* v7.6.3 merged gain choice. Lean (default): surplus sized to the lean path's lower rate (GAIN_PATH.lean) plus a little fat
+   (~0.22 kg fat per kg lean), clamped to about 40–300 kcal/day. The scale moves slower and body fat stays lower; muscle still rises.
+   Moderate: ~1.2 kg fat per kg lean, 200-450 kcal/day, at 90% of the table rate. Fast: 300-600 kcal/day at the table rate, mostly fat.
+   Muscle-gain rates by training age and sex are practitioner heuristics (McDonald; Aragon), labelled as estimates. */
 const LEAN_RATIO = 0.4, MOD_RATIO = 1.2;
 /* "Keep my body fat %" (default lean style, v4.1): fat gain = starting BF% x total gain, i.e. fat:lean = bf/(1 - bf). The surplus covers
    the training-limited lean gain plus that much fat (about 50 kcal/day for an intermediate man at 10% body fat), so the timeline is set
    entirely by the muscle-gain rate. */
 const holdRatio = (p) => clamp(p.bf, 3, 60) / (100 - clamp(p.bf, 3, 60));
-/* v5 P7 "Build muscle (max)": a moderate surplus sized by training status (Iraki 2019; Helms 2023: larger surpluses suit
-   newer lifters, ~5–10% for advanced). Muscle still grows only at the training-limited rate, so the rest is stored as fat
-   and the projection shows it. Without lifting there is no muscle signal, so it holds at maintenance (with a warning). */
-// v5.1: a moderate 250–350 kcal surplus (Iraki 2019: ~10–20% of maintenance for newer lifters, less when trained; Helms 2023:
-// small surpluses build about as much muscle with less fat). Steps down with training age over the projection, never below 250.
+/* Build muscle (max): a 250–350 kcal surplus by training age, AND a higher accrual rate (GAIN_PATH.max, about 1½× the table).
+   The extra food funds that higher rate; leftover surplus is stored as fat, so body fat rises more than on the lean path.
+   The natural FFMI ceiling is unchanged. Without lifting there is no muscle signal, so it holds at maintenance (with a warning).
+   Reviews find very large surpluses add more fat than muscle (Garthe 2013; Helms 2023); this path raises the cap modestly rather than removing it. */
+// Steps down with training age over the projection, never below 250.
 /* v7.6.20b: the surplus ranges (kcal/day) each Plan-my-goal gain style uses, named once so the habits-first flow classifies with the same ones. */
 const GAIN_KCAL = { lean: [100, 300], bulk: [250, 350], moderate: [200, 450], fast: [300, 600] };
 const BULK_SURPLUS = { m: { beginner: 350, intermediate: 300, advanced: 250 }, f: { beginner: 300, intermediate: 275, advanced: 250 } }, BULK_MIN = 250;
@@ -3166,12 +3183,17 @@ function bulkSurplus(p, move, day) {
 }
 function surplusFor(p, move, F, L, day, mode) {
   if (mode === "max") return bulkSurplus(p, move, day || 0);
-  const P = leanPotentialPerDay(p, move, day || 0, "high", L);
   if (mode === "hold") mode = "lean";   // v7.6.3: "keep body fat %" removed; old saved plans map to Lean
+  const spec = gainPathSpec(mode);
+  const P = leanPotentialPerDay(p, move, day || 0, "high", L, spec ? mode : null);
   if (mode === "moderate") { if (P <= 0) return 0; return Math.round(clamp(P * (RHO_L_GAIN + MOD_RATIO * RHO_F), GAIN_KCAL.moderate[0], GAIN_KCAL.moderate[1]) / 10) * 10; }
   if (mode === "fast") { const base = P > 0 ? 2 * clamp(P * (RHO_L_GAIN + LEAN_BULK_RATIO * RHO_F), 75, 350) : 0; return Math.round(clamp(Math.max(base, p.sex === "f" ? 300 : 400), GAIN_KCAL.fast[0], GAIN_KCAL.fast[1]) / 10) * 10; }
   if (P <= 0) return 0;
-  return Math.round(clamp(P * (RHO_L_GAIN + LEAN_RATIO * RHO_F), GAIN_KCAL.lean[0], GAIN_KCAL.lean[1]) / 10) * 10;
+  const join = mode === "lean" && spec ? spec.fatJoin : LEAN_RATIO;
+  // Lean can sit under the habits-band floor (GAIN_KCAL.lean[0] = 100) when the rate is small, so an advanced lifter
+  // is not force-fed a surplus that mostly becomes fat. Beginners still land near 100 because the rate asks for it.
+  const lo = mode === "lean" ? 40 : GAIN_KCAL.lean[0];
+  return Math.round(clamp(P * (RHO_L_GAIN + join * RHO_F), lo, GAIN_KCAL.lean[1]) / 10) * 10;
 }
 
 /* v7.6.20e: one rule for "fast gain, mostly fat" (surplus kcal/day vs maintenance), shared by habits.js and the Plan's target-weight path. Built only from GAIN_KCAL:
@@ -3267,7 +3289,9 @@ function simulate(inp, o = {}) {
     // v7.6.20: habits (fixed intake) above baseline raise expenditure too (adaptive thermogenesis / NEAT, uses AT_BETA_UP (20%, capped) and the 14-day response; NOT assumed symmetric with the 14% deficit coefficient, since Rosenbaum & Leibel 2010 (full text) say weight-gain responses are not a mirror image of weight-loss ones; both coefficients are calibrations, see Sources: assume-deficit / assume-surplus)
     if (actual && !psmf && intake > ei0) atTarget = -Math.min(AT_CAP * act.tdee, AT_BETA_UP * Math.min(intake - ei0, AT_UP_MAXEXCESS));
     adapt += (atTarget - adapt) / AT_TAU;
-    const ctx = { k, potential: leanPotentialPerDay(p, inp.move, day, protLevel, L), leanFloor: actual && !psmf && protLevel !== "low" ? 1 : 0, lossFactor: lf, sex: p.sex, age: p.age, holdR: holdR, dateMode: dir === "gain" && g.gainMode === "date" && !actual };
+    const pathMode = (!actual && dir === "gain" && g.gainMode !== "date") ? (g.type === "bulk" ? "max" : (g.gainMode === "hold" ? "lean" : g.gainMode)) : null;
+    const pathSpec = gainPathSpec(pathMode);
+    const ctx = { k, potential: leanPotentialPerDay(p, inp.move, day, protLevel, L, pathSpec ? pathMode : null), fatJoin: pathSpec ? pathSpec.fatJoin : null, leanFloor: actual && !psmf && protLevel !== "low" ? 1 : 0, lossFactor: lf, sex: p.sex, age: p.age, holdR: holdR, dateMode: dir === "gain" && g.gainMode === "date" && !actual };
     // v5 Advanced: refeed days (1–2 days a week at maintenance during a fat-loss diet; Campbell 2020 and Peos 2021 tested longer alternating blocks of diet and maintenance, so the 1–2 day weekly pattern is a common practice, not directly tested there)
     const refeed = refeedDays > 0 && !holding && !isBreak && (day % 7) >= 7 - refeedDays;
     if (refeed) refeedCount++;
@@ -3356,13 +3380,12 @@ function band(inp, R) {
   const series = rows.map((r) => { const a = wAt(lo.rows, r.day), b = wAt(hi.rows, r.day), c = wAt(mid.rows, r.day); return { day: r.day, hiW: r.weightKg + Math.max(a - c, b - c), loW: r.weightKg + Math.min(a - c, b - c) }; });
   return { scale: BAND_SCALE, kcal: Math.round(kcal), weightKg: { lo: Math.min(wA, wB, m.weightKg), mid: m.weightKg, hi: Math.max(wA, wB, m.weightKg) }, fatKg: { lo: Math.min(fA, fB, m.fatKg), mid: m.fatKg, hi: Math.max(fA, fB, m.fatKg) }, series };
 }
-/* v7.1 "Fast vs gradual": same lifter, same weeks, three surplus sizes. Muscle is limited by training (Forbes partition plus the
-   training-status ceiling), so a bigger surplus mostly adds fat (Garthe 2013: elite athletes on ~+500 kcal gained similar lean mass
-   to ad libitum but more fat; Iraki 2019 and Helms 2023 reviews). */
+/* Same lifter, same weeks: Lean / Moderate / Fast, plus Build muscle (max). Rates differ by GAIN_PATH, so max adds more muscle
+   than Lean; surplus past that rate is stored as fat. */
 function compareGain(inp, weeks) {
   const H = Math.round((weeks || 16) * 7), out = [];
-  for (const [mode, label] of [["lean", "Lean"], ["moderate", "Moderate"], ["fast", "Fast"]]) {
-    const gi = Object.assign({}, inp, { goal: Object.assign({}, inp.goal, { type: "gain", gainMode: mode, target: 0, bfCeiling: 0 }), food: Object.assign({}, inp.food, { actualOn: false, psmf: false }) });
+  for (const [mode, label, type] of [["lean", "Lean", "gain"], ["moderate", "Moderate", "gain"], ["fast", "Fast", "gain"], ["max", "Build muscle (max)", "bulk"]]) {
+    const gi = Object.assign({}, inp, { goal: Object.assign({}, inp.goal, { type, gainMode: mode === "max" ? "lean" : mode, target: 0, bfCeiling: 0 }), food: Object.assign({}, inp.food, { actualOn: false, psmf: false }) });
     const s = simulate(gi, { horizonDays: H, forceRecommended: true, pace: 0.6 }), a = s.rows[0], b = s.rows[s.rows.length - 1];
     const sur = Math.round(s.rows.slice(0, -1).reduce((x, r) => x + (r.intake - r.tdee), 0) / Math.max(1, s.rows.length - 1));
     const lean = b.leanKg - a.leanKg, fat = b.fatKg - a.fatKg;
@@ -3569,7 +3592,7 @@ function warningsFor(R) {
   }
   if (R.dir === "gain" && tr.liftSessions === 0 && !(R.inp.move || {}).noLift) W.push({ t: "warn", m: fastGain ? "Without resistance training, a surplus adds almost only fat. Add lifting on the Move step so some of the gain is muscle." : "Muscle gain needs resistance training, so the lean plan holds at maintenance. Add lifting on the Move step to build muscle." });
   if (R.inp.goal.type === "bulk" && tr.liftSessions > 0) { const d = end.fatKg - start.fatKg, l = end.leanKg - start.leanKg;
-    W.push({ t: "info", m: `Even a moderate surplus adds some fat: about ${lbs(Math.max(0, l))} lb of lean and ${lbs(Math.max(0, d))} lb of fat by the end, taking body fat from ${start.bf.toFixed(1)}% to ${end.bf.toFixed(1)}%. Muscle can only grow so fast, so the rest is stored. That's expected; a short cut afterwards shows the muscle.` }); }
+    W.push({ t: "info", m: `Build muscle (max) adds more muscle than the lean path, plus some fat: about ${lbs(Math.max(0, l))} lb of lean and ${lbs(Math.max(0, d))} lb of fat by the end, taking body fat from ${start.bf.toFixed(1)}% to ${end.bf.toFixed(1)}%. Food above your muscle-gain rate is stored as fat. A short cut afterwards shows the new muscle.` }); }
   if (fastGain && R.inp.goal.type !== "bulk") W.push({ t: "info", m: "Faster gain is on: a bigger surplus that adds noticeably more fat than muscle. It suits hard gainers and people who are underweight. Switch back to Lean to keep the gain mostly muscle." });
   { // v7.6.15: gentle notes for gaining weight or body fat (never blocks). Underweight is a good reason to gain.
     const h2 = p.heightCm / 100, bmi0 = p.weightKg / (h2 * h2), bmi1 = end.weightKg / (h2 * h2), hi = p.sex === "m" ? 25 : 32, sexTxt = p.sex === "m" ? "men" : "women";
@@ -3637,7 +3660,7 @@ function nextStepsFor(R) {
 
 /* v7.6.33: ESPEN 2021 guideline ranges for cancer-treatment mode (rule of thumb when energy use is not measured; protein range). Planning ranges, not a prescription. */
 const cancerRanges = (kg) => ({ kcalLo: Math.round(kg * 25 / 5) * 5, kcalHi: Math.round(kg * 30 / 5) * 5, protLo: Math.round(kg * 1.0), protHi: Math.round(kg * 1.5) });
-const api = { nextStepsFor, cancerRanges, cancerRec, lactInfo, lactKcal, cancerOn, holdsGoal, floorOf, OVER_BUFFER_KCAL, LEAN_LOSS_CONSERVATIVE, overFuel, LIVER_GLY_G, LIVER_GLY_KCAL, LB, K_LB, K_KG, RHO_F, TAU, K_UNC, RHO_L_LOSS, RHO_L_GAIN, FLOOR, ESSENTIAL, VERY_LEAN, GAIN_RATE, GOALS,
+const api = { nextStepsFor, cancerRanges, cancerRec, lactInfo, lactKcal, cancerOn, holdsGoal, floorOf, OVER_BUFFER_KCAL, LEAN_LOSS_CONSERVATIVE, overFuel, LIVER_GLY_G, LIVER_GLY_KCAL, LB, K_LB, K_KG, RHO_F, TAU, K_UNC, RHO_L_LOSS, RHO_L_GAIN, FLOOR, ESSENTIAL, VERY_LEAN, GAIN_RATE, GAIN_PATH, GOALS,
   band, compareGain, BAND_SCALE, refit, params: () => ({ HALL_PA, TEF_BETA, BAND_SCALE, ADAPT_CAP: 0.25 }),
   navyBf, bmiBf, analyze, healthSummary, a1cStatus, diabetesStatus, a1cRefHtml, A1C_REF_TEXT, psmfPlan, psmfFor, bulkSurplus, fastGainSurplus, FAST_GAIN_NOTE, BULK_SURPLUS, idealBodyWeight, structuralShare, AT_BETA, AT_TAU, BMI_STOP, LEAN_STOP, bmr, activity, multiplierLabel, referenceWeight, proteinTarget, proteinPlan, highBodyFat, surplusFor, deficitFor, planBands, GAIN_KCAL, holdRatio, ffmiTaper, CARDIO, cardioNetMet, cardioWeek, cardioEntries, LIFT_STYLE, liftFactors, lossFactor, LIFT_TYPES, LIFT_EFFORT, MIN_PRESET, applyOptOuts, liftRows, liftRowNet, liftCustom, liftGainFreq, liftRetention, calibrate, macrosFromInput, macros, leanPotentialPerDay,
   simulate, project, MUSCLES, MUSCLE_KEYS, MUSCLE_UPPER, MUSCLE_NAT, MUSCLE_SPILL, PRESET_GROUPS, weeklySets, setsDose, PRESET_LABEL, defaultGroups, muscleRows, muscleRegions, EXERCISES, matchExercise, inferGroups, rowWeights, goalProblems, goalDirection, weeklyTraining, essentialFatKg };
@@ -5528,8 +5551,8 @@ const GOAL_OPTS = [
   ["maxloss", "Maximal fat loss", "Fastest pace: the biggest deficit your fat can fuel, designed to limit muscle loss as much as possible. Fewest weeks."],
   ["steady", "Steady fat loss", "About 60% of the maximal pace: a smaller deficit (more food), more weeks, easier to keep up."],
   ["recomp", "Body recomposition", "Lose fat and add muscle at about the same weight. Needs lifting."],
-  ["gain", "Lean muscle gain", "A small surplus to build muscle while adding as little fat as possible."],
-  ["bulk", "Build muscle (max)", "A bigger surplus for the most muscle. Some fat comes with it, and you'll see how much."],
+  ["gain", "Lean muscle gain", "A small surplus. The scale moves slowly, body fat stays lower, and you still gain muscle."],
+  ["bulk", "Build muscle (max)", "A bigger surplus and a higher muscle-gain rate, so you gain more size. Some fat comes with it."],
   ["maintain", "Maintain & tone", "Hold your weight while you train."],
   ["targetWeight", "Reach a target weight", "Pick a number and get a realistic timeline."],
   ["targetBf", "Reach a target body fat %", "Pick any body fat %, lower or higher than today. Go lower to lean out, or higher to gain weight."],
@@ -6252,11 +6275,12 @@ function renderStory() {
 function renderBulkCmp() {
   const box = $("#bulk-cmp"); if (!box) return; const on = R && !R.blocked && R.dir === "gain" && E.weeklyTraining(S.move).liftSessions > 0; box.hidden = !on; if (!on) return;
   const wk = Math.max(8, Math.min(26, Math.round(endRow().day / 7))), c = E.compareGain(R.inp, wk);
-  box.innerHTML = `<p class="eyebrow card-eyebrow">Muscle gain · fast vs gradual</p><h2>Same muscle, different fat</h2>
-    <p class="read small">Over ${wk} weeks of the same training, muscle grows at about the same rate because training sets the limit, not food. A bigger surplus mostly adds fat.</p>
-    <table class="tbl bulk-tbl"><thead><tr><th>Pace</th><th>Surplus</th><th>Gain a week</th><th>Lean</th><th>Fat</th><th>Fat per 1 ${uW()} lean</th></tr></thead><tbody>
-    ${c.map((x) => `<tr data-mode="${x.mode}"><td><b>${x.label}</b></td><td>+${fK(x.surplus)} kcal</td><td>${x.weeklyPct.toFixed(2)}%</td><td>${fWd(x.leanKg)}</td><td>${fWd(x.fatKg)}</td><td>${x.fatPerLean != null ? x.fatPerLean.toFixed(1) : "—"}</td></tr>`).join("")}</tbody></table>
-    <p class="hint">Muscle-gain ceilings by training age are practitioner rules of thumb (McDonald, Aragon), not trial results. The muscle/fat split follows Forbes (2000). The pattern matches trials: bigger surpluses added fat without much extra muscle (Garthe 2013; Helms 2023; reviewed in Iraki 2019). "Lean" includes water and glycogen, not only muscle.</p>`;
+  const active = R.inp.goal.type === "bulk" ? "max" : (R.inp.goal.gainMode === "moderate" || R.inp.goal.gainMode === "fast" ? R.inp.goal.gainMode : "lean");
+  box.innerHTML = `<p class="eyebrow card-eyebrow">Muscle gain · lean vs max</p><h2>Same weeks, different muscle</h2>
+    <p class="read small">Over ${wk} weeks of the same training, Lean muscle gain keeps a small surplus: the scale moves slowly, body fat stays lower, and muscle still rises. Build muscle (max) uses a bigger surplus and a higher muscle-gain rate, so you gain more muscle and some fat. Moderate and Fast sit in between.</p>
+    <table class="tbl bulk-tbl"><thead><tr><th>Path</th><th>Surplus</th><th>Gain a week</th><th>Lean</th><th>Fat</th><th>Ending body fat</th></tr></thead><tbody>
+    ${c.map((x) => `<tr data-mode="${x.mode}"${x.mode === active ? ' class="on"' : ""}><td><b>${x.label}${x.mode === active ? " (this plan)" : ""}</b></td><td>+${fK(x.surplus)} kcal</td><td>${x.weeklyPct.toFixed(2)}%</td><td>${fWd(x.leanKg)}</td><td>${fWd(x.fatKg)}</td><td>${fP(x.endBf)}</td></tr>`).join("")}</tbody></table>
+    <p class="hint">Monthly rates are practitioner rules of thumb (McDonald, Aragon), not trial results. Lean muscle gain uses about 70% of that rate. Build muscle (max) uses about 1½ times it. Food above the rate is stored as fat. "Lean" includes water and glycogen, not only muscle.</p>`;
 }
 function renderExpect() {
   const box = $("#expect"); if (!box) return; const it = expectItems(); box.hidden = !it; if (!it) return;
@@ -6593,8 +6617,8 @@ function renderGoal() {
   renderExact(g, b, p, X, exOn);
   $("#g-gain").hidden = dir !== "gain" || g.type === "bulk";
   $$('input[name="goal.gainMode"]').forEach((r) => (r.checked = r.value === gainModeOf(g)));
-  { const box = $("#gain-opts"); if (box) { let c = []; try { if (g.type === "gain" && R && !R.blocked) c = E.compareGain(R.inp, 13); } catch (e) { c = []; window.__gainErr = String(e); }
-    const say = { lean: "Small surplus to build the most muscle with the least fat", moderate: "A bit faster on the scale; noticeably more fat", fast: "For hard gainers or if underweight; clearly more fat" };
+  { const box = $("#gain-opts"); if (box) { let c = []; try { if (g.type === "gain" && R && !R.blocked) c = E.compareGain(R.inp, 13).filter((x) => x.mode !== "max"); } catch (e) { c = []; window.__gainErr = String(e); }
+    const say = { lean: "Smallest surplus. Slower on the scale, body fat stays lower, muscle still goes up", moderate: "A bit more muscle and a faster scale, with more fat", fast: "A little more muscle than Lean, and clearly more fat" };
     box.innerHTML = c.length ? `<ul class="gain-list">${c.map((x) => { const mo = 13 * 7 / 30.44; return `<li data-mode="${x.mode}"${x.mode === gainModeOf(g) ? ' class="on"' : ""}><b>${x.label}</b> · +${fK(x.surplus)} kcal/day · <span>≈ ${fW(Math.max(0, x.leanKg) / mo)} muscle + ${fW(Math.max(0, x.fatKg) / mo)} fat per month</span><br><small>${say[x.mode]}</small></li>`; }).join("")}</ul><p class="hint">Estimates for your numbers with your training; "muscle" is lean mass, which includes some water and glycogen.</p>` : ""; } }
   $("#h-gt").textContent = g.gainTargetKg > lean0() ? `≈ ${fP(100 * (1 - lean0() / g.gainTargetKg))} body fat if every pound were muscle. Real gains add some fat too.` : "Leave blank to just see the next weeks.";
   { const n = $("#g-calcpace"); if (n) { n.hidden = !g.calcPace; if (g.calcPace) n.innerHTML = `Using the pace you chose in the Maximum Fat Burn Calculator: <b>${esc(g.calcLabel || "")}</b> (${Math.round(g.pace * 100)}% of your maximum fat-burn rate). Pick a pace below to change it.`; }
@@ -6773,9 +6797,9 @@ function feasHtml0() {
   if (g.type === "maxloss" || g.type === "steady") return `<div class="feas"><b>${fWd(sfat)} of fat in ${swk} weeks</b>, about ${fW(Math.abs(sfat) / Math.max(1, swk))} a week, ending near ${fP(showE.bf)} body fat. Lean mass: ${fWd(slean)}.${as}${noLift ? " Adding lifting would protect more muscle." : ""}${habitNote}</div>`;
   if (g.type === "recomp") return `<div class="feas ${noLift ? "warn" : ""}"><b>Over ${swk} weeks: ${fWd(sfat)} fat and ${fWd(slean)} lean</b> (estimates). The scale moves only ${fWd(showE.weightKg - s.weightKg)}.${as}${noLift ? " Without lifting, the plan doesn't count any muscle gain, so add lifting on the Move step to include it." : ""}${habitNote}</div>`;
   if (g.type === "bulk") { const sur = R.rec.rows[0].intake - Math.round(R.rec.rows[0].tdee);
-    return `<div class="feas ${noLift ? "warn" : ""}">${noLift ? "<b>Muscle gain needs resistance training.</b> Add it on the Move step; without it the plan holds at maintenance." : `<b>Over ${swk} weeks: ${fWd(slean)} lean and ${fWd(sfat)} fat</b> (estimates), ending near ${fP(showE.bf)} body fat (from ${fP(s.bf)}). A surplus of about ${fK(Math.max(0, sur))} kcal a day, sized to your training experience; muscle can only grow so fast, so the rest is stored as fat.`}${as}${habitNote}</div>`; }
+    return `<div class="feas ${noLift ? "warn" : ""}">${noLift ? "<b>Muscle gain needs resistance training.</b> Add it on the Move step; without it the plan holds at maintenance." : `<b>Over ${swk} weeks: ${fWd(slean)} lean and ${fWd(sfat)} fat</b> (estimates), ending near ${fP(showE.bf)} body fat (from ${fP(s.bf)}). A surplus of about ${fK(Math.max(0, sur))} kcal a day supports a higher muscle-gain rate than Lean muscle gain, so more of the gain is muscle. Some of the extra food is still stored as fat.`}${as}${habitNote}</div>`; }
   if (g.type === "gain") { const ceil = R.main.ceilingHit ? ` You reach your ${fP(g.bfCeiling)} body-fat ceiling around week ${fWk(R.main.ceilingHit)}, so the plan holds there.` : "";
-    return `<div class="feas ${noLift || g.gainMode === "fast" ? "warn" : ""}">${noLift && g.gainMode !== "fast" ? "<b>Muscle gain needs resistance training.</b> Add it on the Move step." : `<b>Over ${swk} weeks: ${fWd(slean)} lean and ${fWd(sfat)} fat</b> (estimates), ${gainShare(s, showE)} of the gain as muscle, <b>ending at ${fP(showE.bf)} body fat</b> (from ${fP(s.bf)}), on a ${g.gainMode === "fast" ? "larger surplus that adds more fat" : gainModeOf(g) === "hold" ? "small surplus that keeps body fat % steady" : "small surplus sized to your muscle-gain rate"}.${ceil}${as}`}${habitNote}</div>`; }
+    return `<div class="feas ${noLift || g.gainMode === "fast" ? "warn" : ""}">${noLift && g.gainMode !== "fast" ? "<b>Muscle gain needs resistance training.</b> Add it on the Move step." : `<b>Over ${swk} weeks: ${fWd(slean)} lean and ${fWd(sfat)} fat</b> (estimates), ${gainShare(s, showE)} of the gain as muscle, <b>ending at ${fP(showE.bf)} body fat</b> (from ${fP(s.bf)}), on a ${g.gainMode === "fast" ? "larger surplus that adds more fat" : g.gainMode === "moderate" ? "medium surplus, with a bit more muscle and more fat than Lean" : gainModeOf(g) === "hold" ? "small surplus that keeps body fat % steady" : "small surplus, so the scale moves slowly and body fat stays lower than on Build muscle (max)"}.${ceil}${as}`}${habitNote}</div>`; }
   return `<div class="feas"><b>Holding steady for ${swk} weeks:</b> ${fWd(sfat)} fat, ${fWd(slean)} lean${noLift || assumed ? "" : " from your training"}.${as}${habitNote}</div>`;
 }
 
@@ -7023,7 +7047,7 @@ function renderFood() {
   const st0 = R.main.rows[0], w0 = st0.fatKg + st0.leanKg, line = (rows, kcal) => { const e = rows[rows.length - 1], wk = Math.max(1, Math.round(e.day / 7)), dw = e.fatKg + e.leanKg - w0, per = Math.abs(dw) / wk;
     const pace = Math.abs(dw) < 0.3 ? `holds your weight` : `${dw < 0 ? "lose" : "gain"} about ${fW(per)} a week`;
     return `${fK(kcal)} kcal a day · ${pace} · ${wk} week${wk === 1 ? "" : "s"}, ending near ${fW(e.fatKg + e.leanKg)}`; };
-  let paceTxt = { maxloss: "Fastest pace, designed to limit muscle loss as much as possible (the biggest deficit your fat can fuel).", steady: "About 60% of the fastest pace: a smaller deficit, so more food and more weeks.", targetWeight: "Paced to reach your goal weight.", targetBf: "Paced to reach your goal body fat.", recomp: "Small deficit with lifting, to lose fat and keep or add muscle.", gain: "Small surplus sized to how fast you can build muscle.", bulk: "Bigger surplus for the most muscle.", maintain: "Eat about what you burn." }[S.goal.type] || "";
+  let paceTxt = { maxloss: "Fastest pace, designed to limit muscle loss as much as possible (the biggest deficit your fat can fuel).", steady: "About 60% of the fastest pace: a smaller deficit, so more food and more weeks.", targetWeight: "Paced to reach your goal weight.", targetBf: "Paced to reach your goal body fat.", recomp: "Small deficit with lifting, to lose fat and keep or add muscle.", gain: "Small surplus. The scale moves slowly and body fat stays lower while muscle still rises.", bulk: "Bigger surplus and a higher muscle-gain rate than Lean muscle gain.", maintain: "Eat about what you burn." }[S.goal.type] || "";
   { const X = exactGoal(); if (X && S.goal.deadline) paceTxt = `Paced to reach ${xLab(X)} by week ${S.goal.deadline}.`;
     else if (X) paceTxt += ` Runs until you reach ${xLab(X)}.`;
     else if ((S.goal.type === "targetWeight" || S.goal.type === "targetBf") && S.goal.deadline) paceTxt = `Paced to reach your goal by week ${S.goal.deadline}.`; }
@@ -8640,7 +8664,7 @@ function renderSnapshot() { if (typeof window.renderSnapshotNow === "function") 
 function a1cCardHtml() { if (typeof window.a1cCardHtmlNow === "function") return window.a1cCardHtmlNow(); lazyLoad("assets/a1c-log.js?v=7655").then(() => { if (V.open && V.view === "home") renderViews(); }, () => {}); return `<div class="v-card a1-card" id="a1-card"><h2>A1c log</h2><p class="hint">Loading…</p></div>`; }
 window.BodyPlanFig3D = window.BodyPlanFig3D || { state: { on: false, failed: false, where: null } };
 function f3dMount() { if (window.__NO_PFT_FIG) return; if (typeof window.f3dMountNow === "function") return window.f3dMountNow(); if (!R || R.blocked) return;
-  lazyLoad("assets/fig3d-pft.js?v=7747").then(() => window.f3dMountNow(), () => { window.BodyPlanFig3D.state.failed = true; const h = document.getElementById("sum-pft"); if (h && !h.innerHTML) { h.hidden = false; h.innerHTML = `<figure class="f3d-fbfig"><img src="assets/f3d-ct-fallback.webp" alt="Example cross-section through the middle of the model" width="720" height="560"><figcaption>Example cross-section. The 3D model can't load on this device.</figcaption></figure>`; } }); }
+  lazyLoad("assets/fig3d-pft.js?v=7748").then(() => window.f3dMountNow(), () => { window.BodyPlanFig3D.state.failed = true; const h = document.getElementById("sum-pft"); if (h && !h.innerHTML) { h.hidden = false; h.innerHTML = `<figure class="f3d-fbfig"><img src="assets/f3d-ct-fallback.webp" alt="Example cross-section through the middle of the model" width="720" height="560"><figcaption>Example cross-section. The 3D model can't load on this device.</figcaption></figure>`; } }); }
 function printRegional(s, e) { const k = changeKind(s, e), c = FD.change(depotsAt(s.fatKg), depotsAt(e.fatKg)), m = muscleSplit(S.profile.sex, e.leanKg - s.leanKg);
   const fat = `around the organs ${fWd(c.vat.kg)} (${fPct(c.vat.pct)}), under the skin ${fWd(c.sub.kg)} (${fPct(c.sub.pct)})`, mus = `upper body ${fWd(m.up)}, legs &amp; glutes ${fWd(m.lo)}`;
   return `<p class="small"><b>${{ loss: "Where fat comes off first", gain: "Where muscle builds, and where fat would add", recomp: "Where you lose fat and gain muscle", hold: "Where things shift" }[k]} (estimate):</b> ${k === "gain" ? `lean (mostly muscle): ${mus}; fat: ${fat}.` : k === "recomp" ? `fat: ${fat}; lean (mostly muscle): ${mus}.` : `fat ${fat}.`}</p>`; }
