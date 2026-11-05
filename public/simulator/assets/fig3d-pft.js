@@ -46,8 +46,9 @@ function f3dMusCalc(i) {
   for (let j = 1; j <= last; j++) { const p = rows[j - 1]; if (mr) dL += Math.max(0, rows[j].leanKg - p.leanKg); if (p.deficit < 0) { surplusDays++; kcal -= p.deficit; dFs += Math.max(0, rows[j].fatKg - p.fatKg); } }
   /* Rates come from the plan engine, not from this file: each day's lean gain is capped by leanPotentialPerDay()
      (GAIN_RATE kg/month by sex and training age, beginner -> intermediate after 1 yr, x weekly-volume factor liftGainFreq,
-     x age, protein, FFMI taper toward Kouri 1995's natural ceiling), and dayChange() sends any surplus beyond what that
-     lean gain uses to fat (Slater 2019; Iraki 2019). So a bigger surplus never adds muscle past the cap, only fat. */
+     x age, protein, FFMI taper toward Kouri 1995's natural ceiling, x the goal path: Lean muscle gain about 70% of the
+     table, Build muscle (max) about 1½×). dayChange() sends any surplus beyond what that lean gain uses to fat
+     (Slater 2019; Iraki 2019). A bigger surplus adds muscle only up to that path's cap; the rest is fat. */
   const out = { lift: !!mr, dL, dLplan: x.leanKg - a.leanKg, dF: x.fatKg - a.fatKg, dFsurplus: dFs, surplus: surplusDays > 0, surplusDays,
     avgSurplus: surplusDays ? kcal / surplusDays : 0, bigSurplus: surplusDays >= 7 && dFs > 0.5 && dFs > Math.max(0, dL), kg: {}, rel: {}, grow: {}, capped: [] };
   if (!mr || dL <= 0) return out;
@@ -77,7 +78,7 @@ function f3dMuscle() {
     : !c.surplus ? "<b>Muscle view.</b> You're eating well below what your body uses, so your muscles hold steady here. Lifting helps keep them. To see them grow, eat closer to what you burn."
     : c.dL <= 0 ? "<b>Muscle view.</b> Your muscles hold steady at this point, so they don't look bigger."
     : c.even ? "<b>Muscle view.</b> Full-body lifting: muscle grows all over, a little at a time." : "<b>Muscle view.</b> You're lifting and eating a little above what you burn, so muscle grows steadily. Bars show where your training focuses.";
-  const wn = $("#f3d-mwarn"); if (wn) { wn.hidden = !(c.lift && c.bigSurplus && F3D.i > 0); wn.innerHTML = `<b>A big calorie surplus doesn't build muscle faster. Past a point, the extra is stored as fat.</b> In this plan that's about ${fW(c.dF)} of fat by this point. Switch to 3D to see it on the body.`; }
+  const wn = $("#f3d-mwarn"); if (wn) { wn.hidden = !(c.lift && c.bigSurplus && F3D.i > 0); wn.innerHTML = `<b>Food above your muscle-gain rate is stored as fat.</b> In this plan that's about ${fW(c.dF)} of fat by this point. Switch to 3D to see it on the body.`; }
   if (l) { const all = Object.keys(c.kg).sort((p, q) => (Math.abs(c.rel[q] - c.rel[p]) > 1e-6 * Math.max(c.rel[q], c.rel[p]) ? c.rel[q] - c.rel[p] : 0) || c.kg[q] - c.kg[p])   /* ties (bench + press + dips work chest, shoulders and triceps equally): bigger muscle first */, top = all.length ? c.rel[all[0]] : 0, lit = (k) => c.kg[k] > 0.002 && c.rel[k] >= 0.12 * top, ks = all.filter(lit), rest = all.filter((k) => !lit(k))   /* v7.6.83: relative, so every muscle a compound lift mainly works lights up even early in a plan */, mx = ks.length ? Math.max(1e-6, c.rel[ks[0]]) : 1;   /* v7.6.83: bars = growth relative to each muscle's own size (what the figure shows), not raw mass, so a big muscle with a few helper sets doesn't outrank the trained ones */
     const amt = (kg) => kg / mx >= 0.66 ? "more focus" : kg / mx >= 0.33 ? "some" : "less focus";   // v7.6.82: relative words only, no amounts
     const box = l.closest(".f3d-mbars"); if (box) box.hidden = !!c.even;
