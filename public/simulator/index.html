@@ -1114,6 +1114,13 @@ input[type="checkbox"],input[type="radio"]{min-width:24px;min-height:24px}
 .g-imp-t th:first-child{text-align:left;font-weight:600}
 .g-imp-t thead th{color:var(--muted,#9aa);font-size:.8rem}
 .g-imp-warn{margin:.5rem 0 0}
+/* Exact goal: weight + body fat that the timeline can't realistically reach */
+.exact-stretch{margin:.65rem 0 .15rem;padding:.75rem .85rem;border-radius:var(--r-sm,8px);background:rgba(212,160,86,.10);box-shadow:inset 3px 0 0 var(--warn,#d4a056)}
+.exact-stretch-hint{margin:0 0 .6rem}
+.exact-stretch-actions{display:flex;flex-wrap:wrap;gap:.5rem}
+.exact-stretch-actions .btn{min-height:44px;flex:1 1 11.5rem}
+.exact-stretch-kept{margin:.5rem 0 0}
+@media(max-width:40rem){.exact-stretch-actions{flex-direction:column}.exact-stretch-actions .btn{width:100%;flex:1 1 auto}}
 
 /* v7.6.12: why a figure is 2D (never silent) */
 .f3-note{display:block;margin:.35rem auto 0;max-width:22rem;font-size:.72rem;line-height:1.35;color:var(--muted,#9aa7b8);text-align:center}
@@ -5538,7 +5545,7 @@ const defaults = () => ({
     health: { pregnant: false, bf: "none", bfMonths: 3, bfPump: false, bfMulti: false, cancer: "no", glucoseMeds: false, edHistory: false, meds: "unknown", medAck: false, diabetes: "unknown", diabetesAuto: false, diabetesPicked: false, a1c: null, fattyLiver: "unknown", labs: {} },
     fat: { carry: "", menopause: "", ancestry: "" } },
   fig: { mode: "skin", tone: 2, skin: 2, top: false, photoThumb: false },
-  goal: { type: "steady", targetBf: null, targetWeightKg: null, deadline: null, window: 12, pace: 0.6, touched: false, gainMode: "lean", gainTargetKg: null, bfCeiling: null, exactW: null, exactBf: null, exactBy: null, exactLead: null },
+  goal: { type: "steady", targetBf: null, targetWeightKg: null, deadline: null, window: 12, pace: 0.6, touched: false, gainMode: "lean", gainTargetKg: null, bfCeiling: null, exactW: null, exactBf: null, exactBy: null, exactLead: null, exactStretchAck: null },
   move: { steps: 7500, preset: "none", noLift: false, noCardio: false, presetBefore: null, cardioMin: 0, cardio: [{ type: "cycling", effort: "moderate", by: "effort" }], experience: "beginner", plannerOn: false, planner: DAYS.map(() => ({ lift: 0, cardio: 0 })), adv: { style: "mixed", sets: 10, rir: "2-3" },
     lifts: [{ type: "hypertrophy", effort: "moderate", min: 60, days: 3 }], groups: {} },
   food: { proteinRef: "goal", actualOn: false, actualKcal: null, actualProtein: "moderate", actualProteinG: null, actualCarbsG: null, actualFatG: null, actualProteinEst: true, style: "balanced", dietBreakEvery: 0, bmrEq: "mifflin", psmf: false, mealDay: "everyday", favBase: "everyday", mealDiet: "balanced", mealPattern: "all", mealSrc: "rec", mealUsed: null, mealMacros: null, log: [], logUsed: false, logDone: false, psmfNoteOff: null, avgUsed: null,
@@ -6618,7 +6625,65 @@ function renderExact(g, b, p, X, exOn) {
   $("#h-xw").textContent = both ? "Your goal. Set independently of body fat." : X && X.by === "bf" ? "Filled in from your goal body fat." : X ? "Your goal." : "";
   $("#h-xbf").textContent = both ? "Your goal. Set independently of weight." : X && X.by === "w" ? "Filled in from your goal weight." : X ? "Your goal." : "";
   $("#g-exact-clear").hidden = !X;
-  $("#g-exact-msg").innerHTML = (both ? leadHtml(g, b, p, X) : "") + (both ? impliedHtml(g, b, p) : "") + (X ? `<p class="hint g-exact-note">${g.deadline ? `Paced to reach <b>${xLab(X)}</b> by week ${g.deadline}. Clear <b>By when</b> to go at the ${g.type === "maxloss" ? "maximal" : "steady"} pace instead.` : `${g.type === "maxloss" ? "Maximal" : "Steady"} pace until you reach <b>${xLab(X)}</b>. Add a date under <b>By when</b> below if you have one.`}</p>` : "");
+  const stretch = both ? exactStretch(g, b, p, X) : null;
+  $("#g-exact-msg").innerHTML = (both ? leadHtml(g, b, p, X) : "") + (both ? impliedHtml(g, b, p) : "") + stretchActionsHtml(stretch) + (X ? `<p class="hint g-exact-note">${g.deadline ? `Paced to reach <b>${xLab(X)}</b> by week ${g.deadline}. Clear <b>By when</b> to go at the ${g.type === "maxloss" ? "maximal" : "steady"} pace instead.` : `${g.type === "maxloss" ? "Maximal" : "Steady"} pace until you reach <b>${xLab(X)}</b>. Add a date under <b>By when</b> below if you have one.`}</p>` : "");
+}
+function stretchKey() { const g = S.goal; return [g.type, g.exactW, g.exactBf, g.deadline || 0].join("|"); }
+/* Weeks for a slower recomp: half of today's muscle-gain potential (the most a small deficit still allows), or the training-age rule of thumb when lifting isn't in the plan yet. */
+function realisticRecompWeeks(dLkg) {
+  const p = S.profile, exp = (S.move && S.move.experience) || "beginner", lean0 = p.weightKg * (1 - bfInfo().bf / 100);
+  let perWeek = 0;
+  try { const P = E.leanPotentialPerDay({ sex: p.sex, age: p.age, heightCm: p.heightCm }, effMove(), 0, "high", lean0); if (P > 0) perWeek = P * 0.5 * 7; } catch (e) { perWeek = 0; }
+  if (!(perWeek > 0.01)) { const lbW = { beginner: 0.25, intermediate: 0.12, advanced: 0.06 }[exp] || 0.25; perWeek = lbW / LB; }
+  return Math.ceil(Math.abs(dLkg) / perWeek);
+}
+function exactStretch(g, b, p, X) {
+  if (!X || X.by !== "both") return null;
+  const I = impliedGoal(g, b, p); if (!I || !(I.dL > 0.45)) return null;
+  const e = R && !R.blocked ? endRow() : null, wk = e ? Math.max(1, Math.round(e.day / 7)) : null, span = g.deadline || wk;
+  const rate = span ? I.dL * LB / span : null, gap = e && X.dual ? I.lean1 - e.leanKg : 0;
+  if (!((X.dual && gap > 0.45) || (rate != null && rate > 0.5))) return null;
+  return { gain: !X.dual };
+}
+/* Shortest By when that lets this exact goal land: for a cut-and-rebuild, the slowed pace has to actually add the lean mass. */
+function deadlineThatFits() {
+  const g = S.goal, b = bfInfo(), p = S.profile, X = exactGoal(), I = impliedGoal(g, b, p);
+  const floor = Math.min(260, Math.max(1, (g.deadline || 0) + 1));
+  if (!X || !I) return floor;
+  if (!X.dual) {
+    const exp = (S.move && S.move.experience) || "beginner";
+    const rate = { beginner: 0.25, intermediate: 0.12, advanced: 0.06 }[exp] || 0.25;
+    return Math.min(260, Math.max(floor, Math.ceil(Math.abs(I.dL) * LB / rate)));
+  }
+  const leanG = I.lean1;
+  let base;
+  try { base = engineInput(); } catch (e) { return Math.min(260, Math.max(floor, realisticRecompWeeks(I.dL))); }
+  const fits = (weeks) => {
+    try {
+      const inp = structuredClone(base); inp.goal.weeks = weeks;
+      const proj = E.project(inp);
+      const rows = proj && !proj.blocked && proj.main && proj.main.rows;
+      return !!(rows && rows.length && rows[rows.length - 1].leanKg >= leanG - 0.45);
+    } catch (e) { return false; }
+  };
+  if (!fits(260)) return 260;
+  if (fits(floor)) return floor;
+  let lo = floor, hi = 260;
+  while (hi - lo > 1) { const mid = Math.round((lo + hi) / 2); if (fits(mid)) hi = mid; else lo = mid; }
+  return hi;
+}
+function stretchActionsHtml(info) {
+  if (!info) return "";
+  if (S.goal.exactStretchAck === stretchKey()) return `<p class="hint exact-stretch-kept" role="status">Keeping these numbers. The plan continues with this goal.</p>`;
+  const hint = info.gain
+    ? `Adding that much lean mass this fast is a stretch. A longer timeline is a slower, more realistic pace.`
+    : `This weight and body fat are a stretch for this timeline. A longer timeline leaves more time to build muscle while fat comes off.`;
+  return `<div class="exact-stretch" id="exact-stretch" data-stretch-note><p class="exact-stretch-hint">${hint}</p>
+    <div class="exact-stretch-actions" role="group" aria-label="What to do with this goal">
+      <button type="button" class="btn btn-primary" data-stretch="timeline">Adjust my timeline</button>
+      <button type="button" class="btn btn-steel" data-stretch="goal">Adjust my goal</button>
+      <button type="button" class="btn btn-ghost" data-stretch="keep">Continue anyway</button>
+    </div></div>`;
 }
 function leadHtml(g, b, p, X) {   // v7.6.71: both goals honoured (no more "follow one" switch); honest about the lean mass it takes
   if (!X || !X.dual) return "";
@@ -6651,13 +6716,13 @@ function impliedHtml(g, b, p) {
   if (up) {
     const span = g.deadline || fatWk, rate = span ? I.dF * LB / span : null, wkTxt = fatWk ? `about <b>${Math.round(fatWk)} weeks</b> at your plan's surplus` : "";
     tl = `Gaining ${fW(I.dF)} of fat${I.dL > T ? ` and ${fW(I.dL)} of lean mass` : ""} takes ${wkTxt || "a few months"}.`;
-    if (I.dL > T) { const lr = lbL / Math.max(1, span || 1); if (lr > 0.5) warn.push(`Adding ${fW(I.dL)} of lean mass this fast (about ${(+lr.toFixed(2))} lb a week) is more than natural muscle gain allows, so more of the weight would be fat. Consider a later date. You can still keep it.`); }
+    if (I.dL > T) { const lr = lbL / Math.max(1, span || 1); if (lr > 0.5) warn.push(`Adding ${fW(I.dL)} of lean mass this fast (about ${(+lr.toFixed(2))} lb a week) is more than natural muscle gain allows, so more of the weight would be fat. Consider a later date.`); }
     if (I.dF > I.fat0 * 1.0 && p.weightKg < 200) warn.push(`This more than doubles your fat mass. That's fine if it's what you want, for example when underweight. Just recheck labs and waist along the way.`);
     if (((I.W / ((p.heightCm / 100) ** 2)) >= 30)) warn.push(`The goal weight puts your BMI at ${(I.W / ((p.heightCm / 100) ** 2)).toFixed(1)} (30 or above). It's your call, but check in with your clinician about your own targets.`);
   } else if (I.dL > 0.45) {
     const span = g.deadline || fatWk, rate = span ? lbL / span : null, rd = (x) => +x.toFixed(2);
     tl = `Lean gain of ${fWd(I.dL)} takes about <b>${wks(0.25, 0.5)}</b> as a newer lifter (0.25–0.5 lb a week), about ${wks(0.12, 0.25)} at an intermediate level, and ${wks(0.06, 0.12)} or more if you have trained for years.${fatWk ? ` The fat-loss part is about ${Math.round(fatWk)} weeks, so plan on the longer of the two: <b>about ${Math.max(Math.round(fatWk), Math.round(lbL / 0.5))} weeks at the earliest</b>.` : ""}`;
-    if (rate && rate > 0.5) warn.push(`That asks for about ${rd(rate)} lb of lean mass a week${g.deadline ? " by your date" : " at the pace the fat loss alone would finish"}. That is faster than natural muscle gain, even for a beginner (about 0.25–0.5 lb a week, and much less if you are trained; Aragon, Schoenfeld). Consider a later date or a smaller goal weight. You can still keep it.`);
+    if (rate && rate > 0.5) warn.push(`That asks for about ${rd(rate)} lb of lean mass a week${g.deadline ? " by your date" : " at the pace the fat loss alone would finish"}. That is faster than natural muscle gain, even for a beginner (about 0.25–0.5 lb a week, and much less if you are trained; Aragon, Schoenfeld). Consider a later date or a smaller goal weight.`);
     else if (rate && rate > 0.25) warn.push(`About ${rd(rate)} lb of lean mass a week is realistic only for beginners, people returning after a layoff, or with a lot of excess fat. Trained lifters gain far less (Aragon, Schoenfeld).`);
   } else if (I.dL < -0.45) {
     const lossPct = 100 * -I.dL / I.lean0;
@@ -9401,7 +9466,41 @@ function bind() {
       if (["2-3", "4+"].includes(m.preset)) m.lifts.forEach((e) => { delete e.groups; delete e.groupW; });
       m.preset = "custom"; liftSig = ""; fillInputs(); update(); const f = $("#lift-list select[data-lt]"); if (f) { f.focus(); f.closest(".lift-box").scrollIntoView({ block: "nearest" }); } return; }
     if (t.dataset && t.dataset.lead) { S.goal.exactLead = t.dataset.lead; update(); return; }
-    if (t.id === "g-exact-clear") { Object.assign(S.goal, { exactW: null, exactBf: null, exactBy: null, exactLead: null }); invalid.delete("exactW"); invalid.delete("exactBf"); fillInputs(); update(); return; }
+    if (t.id === "g-exact-clear") { Object.assign(S.goal, { exactW: null, exactBf: null, exactBy: null, exactLead: null, exactStretchAck: null }); invalid.delete("exactW"); invalid.delete("exactBf"); fillInputs(); update(); return; }
+    if (t.dataset.stretch) {
+      const act = t.dataset.stretch;
+      if (act === "timeline") {
+        t.disabled = true; t.textContent = "Updating timeline…";
+        setTimeout(() => {
+          try {
+            const w = deadlineThatFits();
+            if (w) S.goal.deadline = w;
+            S.goal.exactStretchAck = null;
+            fillInputs(); update();
+            const field = $("#g-dl"), dl = $('[data-f="deadline"]');
+            if (field) field.scrollIntoView({ block: "center" });
+            if (dl) dl.focus();
+          } catch (e) { if (t.isConnected) { t.disabled = false; t.textContent = "Adjust my timeline"; } }
+        }, 40);
+        return;
+      }
+      if (act === "goal") {
+        const box = $("#g-exact"), inp = $('[data-f="exactW"]') || $('[data-f="exactBf"]');
+        if (box) box.scrollIntoView({ block: "center" });
+        if (inp) { inp.focus(); if (inp.select) inp.select(); }
+        return;
+      }
+      if (act === "keep") {
+        S.goal.exactStretchAck = stretchKey();
+        const before = { w: S.goal.exactW, bf: S.goal.exactBf, by: S.goal.deadline };
+        update();
+        if (S.goal.exactW !== before.w || S.goal.exactBf !== before.bf || S.goal.deadline !== before.by) return;
+        const pr = stepProblems(S.step);
+        if (pr) { $("#nav-note").textContent = pr; return; }
+        const k = stepNext(S.step); if (k !== S.step && !gateGo(k)) go(k);
+        return;
+      }
+    }
     if (t.id === "ll-add") { const k = $("#ll-k").value, v = parseNum($("#ll-v").value), w = Math.round(parseNum($("#ll-w").value)); const mx = { a1c: 20, fg: 600, ins: 300, tg: 3000, hdl: 200, ldl: 500, alt: 1000 }[k];
       if (!(v > 0 && v <= mx) || !(w >= 0 && w <= 520)) { $("#ll-v").setAttribute("aria-invalid", "true"); $("#ll-v").focus(); return; } labLog().push({ k, v, week: w }); update(); const d = $("#lablog"); if (d) { d.open = true; } return; }
     if (t.dataset.llDel != null) { labLog().splice(+t.dataset.llDel, 1); update(); return; }
