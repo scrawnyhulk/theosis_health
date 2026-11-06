@@ -611,8 +611,12 @@
         const g=tube2(sb,(u,th,s,q,tot)=>{const r=q[3]*capR(s,tot,.004,.004);return [r,r*.94]},9,9);
         const par=oldI[0].parent;oldI.forEach(drop);addW(g,M.intestine,"intestine","Small intestine",par)}
       // ===== Hepatic veins (right, middle, left) draining into the IVC just below the diaphragm
+      /* r38: three-point hepatic veins with 8 sides read as square elbows under the liver in close-ups. Centre lines are
+         corner-cut (same idea as r37VS) and rings go to 14 sides so they match the portal/SMV tubes; triangle count stays small
+         (~+0.7k). window.__PFT_R38HV=0 = old. */
       if(L){const hv=[[[-.078,1.185,.002],[-.056,1.215,-.004],[-.034,1.236,-.009]],[[-.040,1.160,.032],[-.034,1.205,.010],[-.029,1.240,-.006]],[[.030,1.200,.026],[.004,1.226,.008],[-.022,1.242,-.006]]];
-        hv.forEach((p,i)=>{const g=tube2(p.map(q=>q.concat([.0045])),(u,th,s,q,tot)=>{const r=.0022+.0026*u;return [r,r]},8,10);addW(g,M.vein,"vein","Hepatic vein "+["R","M","L"][i],host)})}
+        const R38HV=window.__PFT_R38HV!==0,sm38=pts=>{let A=pts.map(p=>p.slice());for(let r=0;r<2;r++){const B=[A[0]];for(let i=0;i<A.length-1;i++){const a=A[i],b=A[i+1];B.push(a.map((x,k)=>.75*x+.25*b[k]),a.map((x,k)=>.25*x+.75*b[k]))}B.push(A[A.length-1]);A=B}return A};
+        hv.forEach((p,i)=>{let pts=p.map(q=>q.concat([.0045]));let per=10,VR=8;if(R38HV){const n0=pts.length;pts=sm38(pts);per=Math.max(3,Math.round(10*(n0-1)/(pts.length-1)));VR=14}const g=tube2(pts,(u,th,s,q,tot)=>{const r=.0022+.0026*u;return [r,r]},VR,per);addW(g,M.vein,"vein","Hepatic vein "+["R","M","L"][i],host);if(R38HV&&VR!==8){const A=g.attributes.position,Nn=g.attributes.normal;for(let j=0;j<A.count;j+=VR+1){const k=j+VR;const x=Nn.getX(j)+Nn.getX(k),y=Nn.getY(j)+Nn.getY(k),z=Nn.getZ(j)+Nn.getZ(k),l=Math.hypot(x,y,z)||1;Nn.setXYZ(j,x/l,y/l,z/l);Nn.setXYZ(k,x/l,y/l,z/l)}Nn.needsUpdate=true}})}
       // ===== Portal system and splenic vessels, attached to the pancreas so they move with it
       const pm2=root.userData.panPm,pp=root.userData.panPts;
       if(pm2&&pp){const art=M.artPS||(M.artPS=organ(0xa3201a,.32,{emissive:new T.Color(0x2a0402),emissiveIntensity:.4}));if(window.__PFT_R10AN!==0)ntm(art); /* r10: these two arteries are made after the r03 Neutral pass, so they were the only viscera left on AgX */const P=new T.Vector3();
@@ -848,8 +852,11 @@
             const R37F=window.__PFT_R37FAN!==0;
             for(let j=0;j<=J;j++){const t=j/J,pl=R37F?.0024*Math.pow(t,1.6)*Math.sin(k*2*Math.PI/9+t*1.4)+.0006*Math.sin(k*.42+t*3.):.0045*Math.pow(t,1.3)*Math.sin(k*Math.PI/2.5+t*2.0)+.0012*Math.sin(k*1.7+t*9.);
               const p=r.clone().addScaledVector(e,t*(.35+.65*end)).addScaledVector(nr,pl+.006*Math.sin(Math.PI*t)*el/.05);pos.push(p.x,p.y,p.z);
-              ft.push(t,f);const fat=(1-SS(t,.0,.45))*.7,vv=vs*SS(t,.05,.2)*(1-SS(t,.75,.95))*.8;let cr=.94-.06*fat,cg=.80-.03*fat,cb=.64-.22*fat;cr=cr*(1-vv)+.62*vv;cg=cg*(1-vv)+.16*vv;cb=cb*(1-vv)+.13*vv;
-              const a=(.42+.2*fat+.25*vv)*(1-SS(t,.8,1))*SS(f,0,.05)*(1-SS(f,.95,1));col.push(cr,cg,cb,a)}}
+              ft.push(t,f);const fat=(1-SS(t,.0,.45))*.7;let vv=vs*SS(t,.05,.2)*(1-SS(t,.75,.95))*.8;let cr=.94-.06*fat,cg=.80-.03*fat,cb=.64-.22*fat;cr=cr*(1-vv)+.62*vv;cg=cg*(1-vv)+.16*vv;cb=cb*(1-vv)+.13*vv;
+              /* r38: the fan still read as a pale flat veil between the loops. Warm the root (amber) and keep the free edge
+                 a little clearer, with a touch more mid-fan alpha so it fans instead of fogging. Soft ruffles stay on r37. __PFT_R38FAN=0 = old. */
+              if(window.__PFT_R38FAN!==0){const rootW=(1-SS(t,.0,.55))*(1-SS(f,.85,1));const edgeW=SS(t,.55,.95);const rw=.28*rootW,ew=.10*edgeW;cr=cr*(1-rw)+.88*rw;cg=cg*(1-rw)+.58*rw;cb=cb*(1-rw)+.28*rw;cr=cr*(1-ew)+.97*ew;cg=cg*(1-ew)+.80*ew;cb=cb*(1-ew)+.60*ew;vv=Math.min(1,vv*1.2)}
+              const a=(window.__PFT_R38FAN!==0?(.50+.22*fat+.28*vv):(.42+.2*fat+.25*vv))*(1-SS(t,.8,1))*SS(f,0,.05)*(1-SS(f,.95,1));col.push(cr,cg,cb,a)}}
           for(let k=0;k<K-1;k++)for(let j=0;j<J;j++){const A=k*(J+1)+j,B=A+J+1;idx.push(A,B,A+1,B,B+1,A+1)}
           const g=new T.BufferGeometry();g.setAttribute("position",new T.Float32BufferAttribute(pos,3));g.setAttribute("color",new T.Float32BufferAttribute(col,4));g.setIndex(idx);g.setAttribute("aFt",new T.Float32BufferAttribute(ft,2));g.computeVertexNormals();g.computeBoundingSphere();
           const mat=M.mesFan||(M.mesFan=window.__PFT_R27MES===0?new T.MeshStandardMaterial({color:0xffffff,vertexColors:true,transparent:true,depthWrite:false,side:T.DoubleSide,roughness:.55,metalness:0}):patch(new T.MeshPhysicalMaterial({color:0xffffff,vertexColors:true,transparent:true,depthWrite:false,side:T.DoubleSide,roughness:.42,metalness:0,clearcoat:.35,clearcoatRoughness:.3}),"mesfan27",{uniforms:omU,
@@ -889,7 +896,10 @@
           let pts=B.filter(b=>b[3]).map(b=>new T.Vector3(b[0]/b[3],b[1]/b[3],b[2]/b[3]));if(pts.length<2)continue;
           let rs=0;vs.forEach((i,k)=>{q.set(W[i*3],W[i*3+1],W[i*3+2]).sub(ce);q.addScaledVector(ax,-q.dot(ax));rs+=q.length()});
           // the square stubs are flat boxes: use the mean cross-section distance, a little thinner, as the tube radius
-          const rad=Math.min(.0021,rs/vs.length*.45);for(let r2=0;r2<2;r2++)pts=pts.map((p,k)=>k==0||k==pts.length-1?p:p.clone().multiplyScalar(.5).addScaledVector(pts[k-1],.25).addScaledVector(pts[k+1],.25));
+          /* r38: left-gastric / short-gastric tubes still showed sharp elbows and wire-thin stubs near the cardia. Corner-cut the
+             centre line once more and use a slightly fuller radius so they read as round vessels. window.__PFT_R38LG=0 = old. */
+          const R38LG=window.__PFT_R38LG!==0;const rad=Math.min(R38LG?.0026:.0021,rs/vs.length*(R38LG?.55:.45));for(let r2=0;r2<(R38LG?4:2);r2++)pts=pts.map((p,k)=>k==0||k==pts.length-1?p:p.clone().multiplyScalar(.5).addScaledVector(pts[k-1],.25).addScaledVector(pts[k+1],.25));
+          if(R38LG&&pts.length>=3){const B=[pts[0].clone()];for(let i=0;i<pts.length-1;i++){const a=pts[i],b=pts[i+1];B.push(a.clone().lerp(b,.25),a.clone().lerp(b,.75))}B.push(pts[pts.length-1].clone());pts=B}
           const cr=(t)=>{const L=pts.length-1,x=Math.min(L-1e-6,t*L),k=Math.floor(x),u=x-k,p0=pts[Math.max(0,k-1)],p1=pts[k],p2=pts[k+1],p3=pts[Math.min(L,k+2)],u2=u*u,u3=u2*u;
             return new T.Vector3(.5*(2*p1.x+(-p0.x+p2.x)*u+(2*p0.x-5*p1.x+4*p2.x-p3.x)*u2+(-p0.x+3*p1.x-3*p2.x+p3.x)*u3),.5*(2*p1.y+(-p0.y+p2.y)*u+(2*p0.y-5*p1.y+4*p2.y-p3.y)*u2+(-p0.y+3*p1.y-3*p2.y+p3.y)*u3),.5*(2*p1.z+(-p0.z+p2.z)*u+(2*p0.z-5*p1.z+4*p2.z-p3.z)*u2+(-p0.z+3*p1.z-3*p2.z+p3.z)*u3))};
           const NS=14,NR=12,tp=[],ti=[];let Nf=null;for(let a=0;a<=NS;a++){const s=a/NS,c0=cr(s),tgv=cr(Math.min(1,s+.02)).sub(cr(Math.max(0,s-.02))).normalize();if(!Nf){Nf=new T.Vector3(0,1,0);if(Math.abs(Nf.dot(tgv))>.9)Nf.set(1,0,0)}Nf.addScaledVector(tgv,-Nf.dot(tgv)).normalize();const Bf=new T.Vector3().crossVectors(tgv,Nf);
@@ -1098,6 +1108,10 @@
         for(const k in g.attributes){if(k==="position"||k==="normal")continue;const A=g.attributes[k],sz=A.itemSize,arr=new Float32Array(nv*sz);if(k==="aOcc"){for(let i=0;i<nv;i++){const u=(new T.Vector3().fromArray(pos,i*3).sub(c).dot(ax)-mn)/len;arr[i]=Math.max(0,(u-.8)/.2)*.25}}else if(k==="color")arr.fill(1);else for(let i=0;i<nv;i++)for(let e=0;e<sz;e++)arr[i*sz+e]=A.array[e];ng.setAttribute(k,new T.Float32BufferAttribute(arr,sz))}
         ng.setIndex(idx);ng.computeVertexNormals();ng.computeBoundingBox();ng.computeBoundingSphere();g.dispose();m.geometry=ng;
         if(!M.gall.userData.r36){M.gall.userData.r36=1;M.gall.color.set(window.__PFT_R36GBC||(window.__PFT_R37GBC===0?0x5a7a4e:(window.__PFT_R37GBCV||0x667458))) /* r37: softer olive bile green (r36 rendered as a saturated leaf green) */}
+        /* r38: at figure scale the pear still looked like one flat olive tone. Vertex colours run deep olive at the fundus to a
+           lighter, slightly warmer neck so the organ reads as a sac under the liver. Same mesh. window.__PFT_R38GB=0 = off. */
+        if(window.__PFT_R38GB!==0&&!m.userData.r38gb){m.userData.r38gb=1;const colA=new Float32Array(nv*3);for(let i=0;i<nv;i++){const u=(new T.Vector3().fromArray(pos,i*3).sub(c).dot(ax)-mn)/len;const w=Math.max(0,Math.min(1,u)); /* u=0 fundus, 1=neck; multipliers on the olive material colour */
+          const rf=.72+.40*w,gf=.80+.38*w,bf=.82+.20*w;colA[i*3]=rf;colA[i*3+1]=gf;colA[i*3+2]=bf}ng.setAttribute("color",new T.Float32BufferAttribute(colA,3));if(m.material){m.material.vertexColors=true;m.material.needsUpdate=true}if(M.gall){M.gall.vertexColors=true;M.gall.needsUpdate=true}}
         window.__pftR36a=[n,nv,+len.toFixed(4),+Rw.toFixed(4)]}}catch(e){console.warn("r36 gallbladder",e)}
       // (b) the reference arterial tree (mesh_20) still carried the two crumpled celiac blades in front of the aorta (a red knot
       // with saw-tooth flaps in close-ups). They sit exactly where the procedural celiac trunk + splenic/common hepatic arteries
