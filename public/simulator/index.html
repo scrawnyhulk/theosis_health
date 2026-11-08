@@ -2001,7 +2001,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')set(false)})
             </fieldset>
             <div class="row mt1">
               <label class="field" data-field="menopause"><span class="label">Menopause</span>
-                <span class="control"><select data-sel="profile.fat.menopause"><option value="">Prefer not to say</option><option value="pre">Not yet</option><option value="peri">Going through it</option><option value="post">After menopause</option></select></span></label>
+                <span class="control"><select data-sel="profile.fat.menopause"><option value="">Prefer not to say</option><option value="pre">Not yet</option><option value="perimenopause">Perimenopause</option><option value="peri">Going through it</option><option value="post">After menopause</option></select></span></label>
               <label class="field"><span class="label">Ancestry <span style="text-transform:none;letter-spacing:0">(optional)</span></span>
                 <span class="control"><select data-sel="profile.fat.ancestry" id="anc-sel"></select></span>
                 <span class="hint">Some groups store fat differently and face diabetes risk at lower weights. Used only for the fat-pattern math here; it never changes how the figure looks and is never uploaded.</span></label>
@@ -4653,7 +4653,7 @@ return { KEY, MEALS, MEAL_IDS, dateKey, addDays, isDate, mealFor, empty, normali
     arms: "Because you said you carry it on your arms and upper body, more of it is likely stored under the skin." };
   function expectedWhtr(sex, bmi) { return (sex === "f" ? 0.51 : 0.52) + 0.011 * (bmi - 25); }
   /** inputs: {sex, age, heightCm, weightKg, waistCm, diabetes ('none'|'prediabetes'|'t2'|'t1'|'other'|'unknown'), a1c,
-      fattyLiver ('yes'|'no'|'unknown'), carry (CARRY key), menopause ('pre'|'peri'|'post'|''), ancestry (ANCESTRY key)} */
+      fattyLiver ('yes'|'no'|'unknown'), carry (CARRY key), menopause ('pre'|'perimenopause'|'peri'|'post'|''), ancestry (ANCESTRY key)} */
   function phenotype(inp) {
     // v5: medical facts weigh most (diabetes / HbA1c, fatty liver, waist-to-height); the self-report blends in with a
     // smaller weight, smaller still when medical facts are present. Every factor carries a plain "because" line (ph.why).
@@ -4665,6 +4665,7 @@ return { KEY, MEALS, MEAL_IDS, dateKey, addDays, isDate, mealFor, empty, normali
     if (age) raw += add(clamp((age - 40) * 0.01, -0.15, 0.3), age >= 40 ? "Age: fat shifts toward the organs as we get older" : "Age: younger adults store relatively more fat under the skin",
       age >= 40 ? `Because fat shifts toward the organs with age, ${ORG}.` : `Because you're younger, ${SKIN}.`);
     if (sex === "f") { if (inp.menopause === "post") raw += add(0.25, "After menopause, women tend to store more fat around the belly and organs", `Because you're past menopause, ${ORG}.`);
+      else if (inp.menopause === "perimenopause") raw += add(0.12, "In perimenopause, fat starts shifting toward the belly", `Because you're in perimenopause, fat is starting to shift toward your belly.`);
       else if (inp.menopause === "peri") raw += add(0.12, "Around menopause, fat starts shifting toward the belly", `Because you're around menopause, fat is starting to shift toward your belly.`); }
     const anc = ANCESTRY[inp.ancestry || ""] || ANCESTRY[""];
     if (anc.v) raw += add(anc.v, anc.note || anc.label, anc.v > 0 ? `Based on averages for your ancestry, ${ORG}.` : `Based on averages for your ancestry, ${SKIN}.`);
