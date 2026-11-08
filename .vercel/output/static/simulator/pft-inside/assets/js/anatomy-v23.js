@@ -44,6 +44,8 @@
     return vec2(sqrt(d1),sqrt(d2));}
   float pftAbd(vec3 p,float front){/* day1026c: window lives in body space (root sx/sy scale) and narrows for a lean waist. Scales are guarded: a 0 component used to produce Inf and a blank cutaway. */float sx=max(abs(uBS.x),1e-4);float sy=max(abs(uBS.y),1e-4);float ww=max(uBS.w,1e-4);p=vec3(p.x/sx,(p.y-uBS.z)/sy,p.z/sx);float ax=pow(abs((p.x+.005)/(.13*ww)),2.6);float ay=pow(abs((p.y-1.05)/(.2*(.5+.5*ww))),2.6);
     return (1.-smoothstep(.9,1.,ax+ay))*smoothstep(front-.01,front+.01,p.z);}
+  float pftAbdG(vec3 p,float front,float g){/* r40: same window grown by g (radius ~g^(1/2.6)) for muscle/bone that sit just under the skin wall */float sx=max(abs(uBS.x),1e-4);float sy=max(abs(uBS.y),1e-4);float ww=max(uBS.w,1e-4);p=vec3(p.x/sx,(p.y-uBS.z)/sy,p.z/sx);float ax=pow(abs((p.x+.005)/(.13*ww)),2.6);float ay=pow(abs((p.y-1.05)/(.2*(.5+.5*ww))),2.6);
+    return (1.-smoothstep(.9*g,g,ax+ay))*smoothstep(front-.01,front+.01,p.z);}
   `;
   const GLSL_BUMP=`vec3 pftBump(vec3 n,float h,float s){vec3 dpx=dFdx(-vViewPosition),dpy=dFdy(-vViewPosition);float dhx=dFdx(h),dhy=dFdy(h);
     vec3 r1=cross(dpy,n),r2=cross(n,dpx);float det=dot(dpx,r1);vec3 g=sign(det)*(dhx*r1+dhy*r2);return normalize(abs(det)*n-s*g);}
@@ -115,6 +117,9 @@
     glow.rotation.x=-Math.PI/2;glow.position.y=.002;scene.add(glow);
 
     // ---------- materials ----------
+    // r40 (day 1107): muscle and bone are cut back from a window grown ~6% (pftAbdG) so their front surfaces no longer poke through
+    // the cut skin wall as grey specks along the window rim (z-fighting with the skin back face). Hidden behind skin elsewhere.
+    // window.__PFT_R40RIM=0 = old window.
     const shared={uCut:U(0),uHalf:U(0),uTime:U(0)};
     const st={subq:0,mass:0,belly:0,visc:0,liver:0,pancreas:0,hyper:0,gly:0,glyL:0};
     const tgt={...st};
@@ -141,7 +146,7 @@
       normal:"normal=pftBump(normal,pftNoise(vPos*38.)+.35*pftNoise(vPos*110.),.0016);"});
     const muscleU={uSel:U(0),...shared,uGly:U(0),uMG:{value:new Array(48).fill(0)},uMGk:U(1),uMView:U(0)}; /* v7.6.78: per-muscle growth (index = muscle id), local-unit scale, muscle-only view */
     M.muscle=patch(new T.MeshStandardMaterial({color:0x7d1d17,roughness:.55,metalness:0}),"muscle25",{
-      uniforms:muscleU,vdecl:"attribute vec3 color;\nattribute float aBelly;\nattribute float aFib;attribute float aEdge;attribute float aTd;varying float vTd;varying float vBel;\nuniform float uMG[48];uniform float uMGk;\nvarying float vMid;varying float vGrow;varying float vFib;varying float vEdge;\n",vpre:"{int mi0=int(floor(color.r*64.+.5));float g0=(mi0>0&&mi0<48)?uMG[mi0]:0.;vGrow=g0;transformed+=normalize(objectNormal)*g0*aBelly*uMGk;}\n",vmain:"vMid=color.r;vFib=aFib;vEdge=aEdge;vTd=aTd;vBel=aBelly;\n",fdecl:"uniform float uGly,uSel,uMView;\nvarying float vMid;varying float vGrow;varying float vFib;varying float vEdge;varying float vTd;varying float vBel;\n",discard:"if(uCut>.5&&pftAbd(vPos,.03)>.5)discard;if(uCut>.5&&uHalf<.5&&vPos.y>1.47)discard; ",
+      uniforms:muscleU,vdecl:"attribute vec3 color;\nattribute float aBelly;\nattribute float aFib;attribute float aEdge;attribute float aTd;varying float vTd;varying float vBel;\nuniform float uMG[48];uniform float uMGk;\nvarying float vMid;varying float vGrow;varying float vFib;varying float vEdge;\n",vpre:"{int mi0=int(floor(color.r*64.+.5));float g0=(mi0>0&&mi0<48)?uMG[mi0]:0.;vGrow=g0;transformed+=normalize(objectNormal)*g0*aBelly*uMGk;}\n",vmain:"vMid=color.r;vFib=aFib;vEdge=aEdge;vTd=aTd;vBel=aBelly;\n",fdecl:"uniform float uGly,uSel,uMView;\nvarying float vMid;varying float vGrow;varying float vFib;varying float vEdge;varying float vTd;varying float vBel;\n",discard:"if(uCut>.5&&"+(window.__PFT_R40RIM===0?"pftAbd(vPos,.03)":"pftAbdG(vPos,.03,1.16)")+">.5)discard;if(uCut>.5&&uHalf<.5&&vPos.y>1.47)discard; ",
       color:`float fib,fib2;if(vEdge>=0.){float fq=vFib*1500.+pftNoise(vPos*70.)*3.;float fa=1.-smoothstep(.4,1.2,fwidth(fq));fib=mix(.6,.5+.5*sin(fq),fa);fib2=mix(.85,.75+.25*sin(fq*2.7+1.3),fa);}else{fib=sin(vPos.x*1400.+pftNoise(vPos*vec3(60.,8.,60.))*9.)*.5+.5;fib2=sin(vPos.z*1400.+pftNoise(vPos*vec3(60.,8.,60.)+7.)*9.)*.5+.5;}
         float s=fib*fib2;diffuseColor.rgb*=mix(.62,1.12,s);
         float mid=vMid*64.;float mi=floor(mid+.5);float mt=abs(mi-27.)<.5?26.:mi;float hv=fract(sin(mt*12.9898+.7)*43758.5453); /* r25n: pec abdominal part shares the pec tone (no mid-chest colour step) */diffuseColor.rgb*=mi>.5?(vEdge>=0.?(.86+.24*hv):(.74+.46*hv)):1.;
@@ -157,7 +162,7 @@
         float gr=smoothstep(.64,.74,pftNoise(vPos*230.));diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.15,.62,.55),uGly*.12);diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.5,1.,.9),min(.55,uGly*.6*gr)); // V32g: lighter glycogen speckle so muscle borders stay readable`,
       normal:`normal=pftBump(normal,fib*fib2,.0006);`,light:"if(uMView>.5&&vEdge>=0.)reflectedLight.indirectDiffuse+=diffuseColor.rgb*.08;"});
     M.nail=new T.MeshStandardMaterial({color:0xc99a8c,roughness:.42,metalness:0});
-    const boneU={...shared,uBMV:U(0)};M.bone=patch(new T.MeshStandardMaterial({color:0xcfc4ae,roughness:.62}),"bone",{uniforms:boneU,fdecl:"uniform float uBMV;\n",discard:"if(uCut>.5&&pftAbd(vPos,.03)>.5)discard;if(uCut>.5&&uHalf<.5&&vPos.y>1.47)discard; if(uBMV>.5&&((vPos.z<-.02&&abs(vPos.x)<.035&&vPos.y>1.05&&vPos.y<1.52)||vPos.y>1.47))discard; /* r25n: Muscle view - spinous processes sit under the trapezius/erector origins; the clavicles stay as a pale shelf */"});
+    const boneU={...shared,uBMV:U(0)};M.bone=patch(new T.MeshStandardMaterial({color:0xcfc4ae,roughness:.62}),"bone",{uniforms:boneU,fdecl:"uniform float uBMV;\n",discard:"if(uCut>.5&&"+(window.__PFT_R40RIM===0?"pftAbd(vPos,.03)":"pftAbdG(vPos,.03,1.16)")+">.5)discard;if(uCut>.5&&uHalf<.5&&vPos.y>1.47)discard; if(uBMV>.5&&((vPos.z<-.02&&abs(vPos.x)<.035&&vPos.y>1.05&&vPos.y<1.52)||vPos.y>1.47))discard; /* r25n: Muscle view - spinous processes sit under the trapezius/erector origins; the clavicles stay as a pale shelf */"});
     const organ=(c,r,extra)=>new T.MeshPhysicalMaterial(Object.assign({color:c,roughness:Math.min(.8,r+.2),clearcoat:.06,clearcoatRoughness:.6,specularIntensity:.35,sheen:.12,sheenColor:new T.Color(0xffc0b0)},extra||{}));
     const liverU={...shared,uLiver:U(0),uGlyL:U(0)},pancU={...shared,uPanc:U(0)},omU={...shared,uVisc:U(0)};
     // V26: hepatic steatosis - the whole liver turns paler and yellower from within (diffuse, patchy/mottled
