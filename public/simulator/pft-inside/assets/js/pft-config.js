@@ -24,5 +24,5 @@ window.PFT_CONFIG = {
     adipose: null
   },
   threeScript: "assets/vendor/three-anatomy.min.js?v=7743",
-  anatomyScript: "assets/js/anatomy-v23.js?v=7751"
+  anatomyScript: "assets/js/anatomy-v23.js?v=7752"
 };
