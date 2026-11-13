@@ -14,14 +14,14 @@
     stomach:"Stomach",pancreas:"Pancreas",intestine:"Small intestine",colon:"Large intestine (colon)",omentum:"Greater omentum · visceral fat",mesentery:"Mesentery · visceral fat",
     spleen:"Spleen",kidney:"Kidney",bladder:"Urinary bladder",vessel:"Arteries (arterial tree)",nail:"Nails (finger- and toenails)",lung:"Lungs",diaphragm:"Diaphragm",vein:"Inferior vena cava"};
   // Threshold profiles change the starting body; slider fat is added on top.
-  const BASE={lower:{mass:0,belly:0,visc:0},moderate:{mass:0,belly:0,visc:0},larger:{mass:.45,belly:0,visc:0},extreme:{mass:1,belly:.3,visc:.45}};
-  // Same body states as the 2D render frames (v22src/frames.json): [subq, mass, belly, visc, liver, pancreas, hyper] at fuel 0/40/55/70/85/100 (V24).
+  const BASE={lower:{mass:0,belly:0,visc:0},moderate:{mass:0,belly:0,visc:0},larger:{mass:.45,belly:0,visc:0},extreme:{mass:1,belly:.3,visc:0}};
+  // Body states [subq, mass, belly, visc, liver, pancreas, hyper] at fuel 0/40/55/70/85/100. Subq/mass/belly/hyper follow the 2D render frames; extreme visc is delayed and slight so hyperplasia matches the teaching model (mostly subcutaneous, only a small late visceral rise).
   const FX=[0,40,55,70,85,100];
   const FR={
     lower:[[.06,0,0,0,0,0,0],[.24,0,.13,.13,0,0,0],[.32,0,.25,.25,.09,.01,0],[.38,0,.37,.37,.43,.31,0],[.42,0,.48,.48,.82,.76,0],[.44,0,.55,.55,1,1,0]],
     moderate:[[.2,.1,.06,.06,0,0,0],[.48,.14,.2,.2,0,0,0],[.64,.18,.35,.35,0,0,0],[.8,.22,.53,.53,.2,.01,0],[.92,.26,.72,.72,.71,.54,0],[.98,.28,.85,.85,1,1,0]],
     larger:[[.36,.5,.1,.1,0,0,0],[.62,.5,.2,.2,0,0,0],[.82,.5,.3,.3,0,0,0],[1,.5,.42,.42,0,0,0],[1.14,.5,.72,.66,.14,0,0],[1.2,.5,1.05,1,1,1,0]],
-    extreme:[[.5,1,.42,.48,0,0,0],[.6,1,.42,.48,0,0,.32],[.68,1,.42,.48,0,0,.55],[.76,1,.42,.48,0,0,.78],[.82,1,.43,.5,0,0,.96],[.86,1,.47,.53,0,0,1.1]]};
+    extreme:[[.5,1,.42,0,0,0,0],[.6,1,.42,0,0,0,.32],[.68,1,.42,0,0,0,.55],[.76,1,.42,0,0,0,.78],[.82,1,.43,0,0,0,.96],[.86,1,.47,.12,0,0,1.1]]};
   function frameState(profile,x){const R=FR[profile]||FR.moderate;x=Math.max(0,Math.min(100,+x||0));let i=0;while(i<FX.length-2&&x>FX[i+1])i++;
     const t=(x-FX[i])/(FX[i+1]-FX[i]);return R[i].map((v,k)=>v+(R[i+1][k]-v)*t)}
   const EL_MIN=-1.2,EL_MAX=1.35,D_MIN=.6,D_MAX=7;  // V26: closer zoom (with pan) for liver/visceral detail
