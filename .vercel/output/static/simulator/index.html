@@ -5593,6 +5593,10 @@ const defaults = () => ({
     lifts: [{ type: "hypertrophy", effort: "moderate", min: 60, days: 3 }], groups: {} },
   food: { proteinRef: "goal", actualOn: false, actualKcal: null, actualProtein: "moderate", actualProteinG: null, actualCarbsG: null, actualFatG: null, actualProteinEst: true, style: "balanced", dietBreakEvery: 0, bmrEq: "mifflin", psmf: false, mealDay: "everyday", favBase: "everyday", mealDiet: "balanced", mealPattern: "all", mealSrc: "rec", mealUsed: null, mealMacros: null, log: [], logUsed: false, logDone: false, psmfNoteOff: null, avgUsed: null,
     rmr: null, tdeeKnown: null, refeedDays: 0, yourMacros: { on: false, unit: "pct", p: 30, c: 40, f: 30 } },
+  // foodlog-dash-1123: listed here so they survive a reload. merge() only keeps keys that exist in defaults, so weekly weigh-ins, the lab log,
+  // an applied re-fit and the cancer-mode notes were saved but dropped the next time the page opened.
+  weighIns: [], labLog: [], refit: null, caPlanned: null, caQuestions: [],
+  refitMode: "adaptive",   // fixes-1123: weekly weigh-in card choice ("adaptive" | "fixed"); listed so it survives a reload
 });
 function merge(base, extra) { if (!extra || typeof extra !== "object") return base; for (const k of Object.keys(base)) { if (!(k in extra)) continue;
   if (base[k] && typeof base[k] === "object" && !Array.isArray(base[k])) merge(base[k], extra[k]); else base[k] = extra[k]; } return base; }

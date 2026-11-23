@@ -5596,6 +5596,7 @@ const defaults = () => ({
   // foodlog-dash-1123: listed here so they survive a reload. merge() only keeps keys that exist in defaults, so weekly weigh-ins, the lab log,
   // an applied re-fit and the cancer-mode notes were saved but dropped the next time the page opened.
   weighIns: [], labLog: [], refit: null, caPlanned: null, caQuestions: [],
+  refitMode: "adaptive",   // fixes-1123: weekly weigh-in card choice ("adaptive" | "fixed"); listed so it survives a reload
 });
 function merge(base, extra) { if (!extra || typeof extra !== "object") return base; for (const k of Object.keys(base)) { if (!(k in extra)) continue;
   if (base[k] && typeof base[k] === "object" && !Array.isArray(base[k])) merge(base[k], extra[k]); else base[k] = extra[k]; } return base; }
