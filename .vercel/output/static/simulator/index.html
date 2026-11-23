@@ -1548,6 +1548,24 @@ body{background-color:var(--bg);background-image:var(--app-bg-image);background-
 .entry-hero img{filter:var(--hero-filter)!important;max-width:24rem;mix-blend-mode:normal}
 
 </style>
+<style id="fixes-1123">
+/* v7.7.56 fixes-1123 */
+.pro-off .pro-tag,.pro-off .ll-pro,.pro-off .ll-prev{display:none!important}
+.tn-narrow{display:none}.tn-host{display:none}
+@media (max-width:1279.98px){.tn-wide{display:none}.tn-narrow{display:inline}
+  .tn-host{display:block;border-bottom:1px solid var(--border);background:rgba(10,15,22,.97)}
+  .tn-host .topnav{max-width:80rem;margin:0 auto;padding:.35rem 1rem;flex:none}}
+@media (max-width:63.99rem){.tn-host{border:0;background:none}.tn-host .topnav{max-width:none;margin:0;padding:.3rem 0 calc(.4rem + env(safe-area-inset-bottom))}
+  .topnav{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:1fr}}
+@media print{.tn-host{display:none!important}}
+.hs-adds{list-style:none;margin:.6rem 0;padding:0;display:grid;gap:.7rem}.hs-adds li{display:flex;flex-direction:column;gap:0}
+.hs-adds .link-btn{font-weight:700;text-align:left;min-height:2.5rem;padding:0;align-self:flex-start}.hs-adds small{color:var(--muted);margin-top:-.45rem}
+.rf-modes{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin:.8rem 0 1rem}.rf-modes .label{grid-column:1/-1;margin:0}
+.rf-opt{display:flex;flex-direction:column;align-items:flex-start;gap:.15rem;min-height:3.6rem;padding:.6rem .8rem;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,.02);color:var(--fg);font:inherit;text-align:left;cursor:pointer}
+.rf-opt small{color:var(--muted);font-size:.85rem}.rf-opt[aria-checked="true"]{border-color:var(--accent);background:rgba(59,130,246,.14);box-shadow:inset 0 0 0 1px var(--accent)}
+.rf-opt:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (max-width:420px){.rf-modes{grid-template-columns:1fr}}
+</style>
 <style id="polish-1023-a">
 /* polish-1023: phone header pill fits ("Metabolic Simulator" was cut off); footer clears summary bar + tab bar */
 @media (max-width:480px){.site-header .prod-mark{font-size:min(.74rem,3.1vw);letter-spacing:.01em;padding:.34rem .55rem}}
@@ -2341,6 +2359,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')set(false)})
             <p class="hint" id="table-note" style="margin-top:.6rem"></p>
             </details>
           </div>
+          <div class="card weekly-card" id="weekly-card"></div>
           <div class="card" id="regional" aria-live="polite"></div>
           <div class="card bulk-cmp" id="bulk-cmp" hidden></div>
           <div class="card">
@@ -2358,9 +2377,8 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')set(false)})
           <details class="card proj-more" id="proj-more-story"><summary><b>The story in your numbers</b><small>What these changes mean for you, step by step</small></summary>
             <div class="card story-card" id="story-card" hidden></div>
           </details>
-          <details class="card proj-more" id="proj-more-tips"><summary><b>Tips, weekly check-ins and what to expect</b></summary>
+          <details class="card proj-more" id="proj-more-tips"><summary><b>Tips and what to expect</b></summary>
             <div class="card expect" id="expect" aria-live="polite" hidden></div>
-            <div class="card weekly-card" id="weekly-card"></div>
             <div id="cta" class="cta"></div>
           </details>
           <div class="card" id="ai-card">
@@ -5544,6 +5562,7 @@ const CONFIG = {
   CHECKOUT_URL: null,                                    // Stripe Payment Link / Checkout session endpoint, once set up
   PRO_KEY: "theosis-bodyplan-pro",                       // localStorage key for the signed unlock token
 };
+document.documentElement.classList.toggle("pro-off", !CONFIG.PRO_GATING);   // v7.7.56: Pro badges hide while gating is off (CSS), and come back when it turns on
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const STEPS = ["You", "Goal", "Move", "Food", "Projection"];
@@ -5644,8 +5663,10 @@ function calFor(mv, fat, lean) { const base = isAdv() && (S.food.rmr > 0 || S.fo
 let refitOff = false;
 const moveSet = () => S.maxStep >= 3;
 const foodSet = () => S.maxStep >= 4;
-const ASSUME_TXT = "Assumes 2–3 lifts/week; you'll set this next.";
-function effMove() { const m = modeMove(S.move); return moveSet() ? m : { ...m, preset: "2-3", plannerOn: false }; }
+const ASSUME_TXT = "Counts your current activity, with no lifting yet. You can add lifting on the next step.";
+/* v7.7.56: before the Move step is visited, use the same Move defaults the step starts with (no lifting), so the Goal-step
+   estimate doesn't change once you pass Move. (Was: assume 2–3 lifts a week until Move was visited.) */
+function effMove() { return modeMove(S.move); }
 function engineInput() { const i = engineInput0(); const wt = typeof weightTrend === "function" ? weightTrend() : null; if (wt) i.weightTrend = wt.dir; return i; }
 function engineInput0() {
   const p = S.profile, b = bfInfo(), g = S.goal, gainT = g.type === "gain" && g.gainTargetKg > 0, isT = g.type === "targetBf" || g.type === "targetWeight" || gainT;
@@ -6202,24 +6223,40 @@ function renderExpert() { const box = $("#expert-body"); if (!box) return; if (!
     <div class="table-scroll"><table class="expert-rows"><caption>Weekly model output</caption><thead><tr><th scope="col">Week</th><th scope="col">Weight kg</th><th scope="col">Fat kg</th><th scope="col">Lean kg</th><th scope="col">BF %</th><th scope="col">Intake</th><th scope="col">Burn</th><th scope="col">Adapt.</th><th scope="col">TEF</th></tr></thead><tbody>
     ${rows.filter((r, k) => k < 60).map((r) => `<tr><td>${(+r.week).toFixed(1)}</td><td>${r.weightKg.toFixed(2)}</td><td>${r.fatKg.toFixed(2)}</td><td>${r.leanKg.toFixed(2)}</td><td>${r.bf.toFixed(1)}</td><td>${fK(r.intake)}</td><td>${fK(r.tdee)}</td><td>${fK(r.adapt || 0)}</td><td>${fK(r.tef || 0)}</td></tr>`).join("")}</tbody></table></div>
     <button type="button" class="btn btn-ghost mt1" id="expert-csv">Download CSV</button>`; }
+/* v7.7.56: weekly weigh-in card, out in the open on the Projection step, with a plain choice of how the calorie target works.
+   Adaptive (default): once the weigh-ins are enough for engine.refit, the plan uses the re-fit burn by itself (and drops it
+   when they no longer are). Fixed: the target never changes from weigh-ins; the card still says what they suggest. */
+const refitMode = () => (S.refitMode === "fixed" ? "fixed" : "adaptive");
+function refitWanted(f) { return refitMode() === "adaptive" && f && f.ok && !f.small ? f.k : null; }
+function syncRefit() { const want = refitWanted(refitNow()), have = S.refit && S.refit.applied ? S.refit.k : null; if (want === have) return false;
+  S.refit = want == null ? null : { k: want, applied: true, auto: true, at: new Date().toISOString(), n: (refitNow() || {}).n }; return true; }
+let refitSyncing = false;
 function renderWeekly() {
   const box = $("#weekly-card"); if (!box) return; if (!R || R.blocked) { box.hidden = true; return; } box.hidden = false;
-  const list = weighIns().slice().sort((a, b) => a.week - b.week), f = refitNow(), ap = S.refit && S.refit.applied, nextWk = list.length ? list[list.length - 1].week + 1 : 1;
+  const list = weighIns().slice().sort((a, b) => a.week - b.week), f = refitNow(), mode = refitMode(), nextWk = list.length ? list[list.length - 1].week + 1 : 1;
+  { const want = refitWanted(f), have = S.refit && S.refit.applied ? S.refit.k : null;   // keep the plan in step with the chosen mode (one extra pass, no loop: refitNow ignores S.refit)
+    if (want !== have && !refitSyncing) { refitSyncing = true; setTimeout(() => { try { if (syncRefit()) update(); } finally { refitSyncing = false; } }, 0); } }
+  const ap = S.refit && S.refit.applied;
   const planW = (wk) => { const rows = (ap && f && f.base ? f.base : R).main.rows; const r = rows.find((x) => x.day >= wk * 7) || rows[rows.length - 1]; return r.weightKg; };
   const kcalNow = R.main.rows[0].intake, kcalBase = f && f.base ? f.base.main.rows[0].intake : kcalNow;
   let fit = "";
   if (f && f.ok) {
     const dir = f.kcalPerDay < 0 ? "lower" : "higher", pct = Math.abs(Math.round((f.k - 1) * 100));
-    fit = f.small ? `<p class="refit ok" data-refit="ontrack"><b>You're on track.</b> Your weigh-ins match the plan within normal day-to-day swings, so no change is needed.</p>`
-      : `<p class="refit" data-refit="${dir}">Your ${f.n} weigh-ins suggest your daily burn is about <b>${pct}% ${dir}</b> than estimated (about ${Math.abs(f.kcalPerDay)} kcal a day), assuming you ate close to the plan. The estimate is weighted by how much data you have, because single weigh-ins swing 1–2 lb with water.</p>
-        ${ap ? `<p class="refit-applied" data-refit-applied>Plan adjusted: daily target <b>${fK(kcalBase)} → ${fK(kcalNow)} kcal</b>. <button type="button" class="btn btn-ghost" id="refit-undo">Undo</button></p>` : `<button type="button" class="btn btn-primary" id="refit-apply">Adjust my plan</button> <span class="hint">Recalculates your calorie target and timeline from this.</span>`}`;
-  } else fit = `<p class="hint">${esc((f && f.reason) || "Add at least two weekly weigh-ins, two or more weeks apart.")} Weigh in the same way each week: morning, after the toilet, before eating.</p>`;
-  box.innerHTML = `<p class="eyebrow card-eyebrow">Weekly check-in</p><h2>How's it going?</h2>
+    const said = `Your ${f.n} weigh-ins suggest your body burns about <b>${pct}% ${dir}</b> than estimated (about ${Math.abs(f.kcalPerDay)} kcal a day), if you ate close to the plan. Single weigh-ins swing 1–2 lb with water, so this is weighted by how much data you have.`;
+    fit = f.small ? `<p class="refit ok" data-refit="ontrack"><b>You're on track.</b> Your weigh-ins match the plan within normal day-to-day swings, so your target stays the same.</p>`
+      : mode === "adaptive" ? `<p class="refit" data-refit="${dir}">${said}</p><p class="refit-applied" data-refit-applied>${ap ? `Your daily target now follows this: <b>${fK(kcalBase)} → ${fK(kcalNow)} kcal</b>.` : "Updating your daily target…"}</p>`
+      : `<p class="refit" data-refit="${dir}">${said}</p><p class="hint" data-refit-fixed>Your target stays at <b>${fK(kcalNow)} kcal</b> because you picked a fixed target. Choose <b>Adaptive</b> above to use this.</p>`;
+  } else fit = `<p class="hint">${list.length ? esc((f && f.reason) || "Add at least two weekly weigh-ins, two or more weeks apart.") + " " : ""}${mode === "adaptive" ? "After two weigh-ins at least two weeks apart, your target can start adjusting." : "Your weigh-ins are saved and compared with the plan."}</p>`;
+  const opt = (v, t, d) => `<button type="button" class="rf-opt" role="radio" aria-checked="${mode === v}" data-refit-mode="${v}"><b>${t}</b><small>${d}</small></button>`;
+  box.innerHTML = `<p class="eyebrow card-eyebrow">Weekly check-in</p><h2 id="weekly-h">Log this week's weight</h2>
+    <p class="hint">Once a week, weigh yourself the same way: in the morning, after the toilet, before eating. We compare it with your plan.</p>
+    <div class="rf-modes" role="radiogroup" aria-labelledby="rf-modes-l"><p class="label" id="rf-modes-l">How should your daily calorie target work?</p>
+      ${opt("adaptive", "Adaptive", "Adjusts from my weigh-ins")}${opt("fixed", "Fixed target", "Stays the same number")}</div>
     <div class="wk-form" role="group" aria-label="New weekly weigh-in">
       <label class="field"><span class="label">Week</span><span class="control"><input id="wk-w" inputmode="numeric" value="${nextWk}"></span></label>
       <label class="field"><span class="label">Weight</span><span class="control"><input id="wk-kg" inputmode="decimal"><span class="unit">${uW()}</span></span></label>
       <label class="field"><span class="label">Waist (optional)</span><span class="control"><input id="wk-waist" inputmode="decimal"><span class="unit">${imp() ? "in" : "cm"}</span></span></label>
-      <button type="button" class="btn btn-ghost" id="wk-add">Save check-in</button></div>
+      <button type="button" class="btn btn-primary" id="wk-add">Save weight</button></div>
     ${list.length ? `<table class="tbl wk-tbl"><thead><tr><th>Week</th><th>You</th><th>Plan</th><th>Waist</th><th></th></tr></thead><tbody>${list.map((x) => `<tr data-wk="${x.week}"><td>${x.week}</td><td>${fW(x.weightKg)}</td><td>${fW(planW(x.week))}</td><td>${x.waistCm ? `${lenToDisp(x.waistCm)} ${imp() ? "in" : "cm"}` : "—"}</td><td><button type="button" class="ci-del" data-wk-del="${weighIns().indexOf(x)}" aria-label="Remove week ${x.week}">×</button></td></tr>`).join("")}</tbody></table>` : ""}
     ${fit}`;
 }
@@ -6598,7 +6635,8 @@ function renderGoal() {
     const v = inp.value, dis = (v === "maxloss" && b.source === "bmi") || (E.holdsGoal(p.health) && v !== "maintain") || (p.health.edHistory && v === "maxloss");
     inp.disabled = dis; inp.checked = g.type === v;
     const d = $(`[data-desc="${v}"]`), base = GOAL_OPTS.find((o) => o[0] === v)[2];
-    const why = v === "maxloss" && b.source === "bmi" ? ["🔒 Locked for now. This pace is sized from body fat, and right now that's only a guess from BMI. Add a measured body fat (%, smart-scale fat, or a tape measurement) to unlock it.", "bf", "Add a body fat number to unlock"]
+    const why = v === "maxloss" && b.source === "bmi" ? (CONFIG.PRO_GATING ? ["🔒 Locked for now. This pace is sized from body fat, and right now that's only a guess from BMI. Add a measured body fat (%, smart-scale fat, or a tape measurement) to unlock it.", "bf", "Add a body fat number to unlock"]
+      : ["Needs a body fat number first. This pace is sized from body fat, and right now that's only a guess from BMI. Add a measured body fat (%, smart-scale fat, or a tape measurement) to use it.", "bf", "Add a body fat number"])   // v7.7.56: no lock wording while Pro is off, so it doesn't read like a paywall
       : p.health.pregnant && v !== "maintain" ? ["Not available during pregnancy.", "pregnant", "Change this answer in Step 1"]
       : E.lactInfo(p.health).on && v !== "maintain" ? ["Not available while breastfeeding. The app doesn't set a fat-loss or weight-gain target at this stage.", "lact", "Change this answer in Step 1"]
       : E.cancerOn(p.health) && v !== "maintain" ? ["Not available in cancer-treatment mode. The goal here is to maintain weight and muscle.", "cancer", "Change this answer in Step 1"]
@@ -8658,10 +8696,10 @@ document.addEventListener("click", (ev) => { const t = ev.target.closest("[data-
   if (fitAction(t)) ev.preventDefault(); });
 document.addEventListener("change", (ev) => { if (ev.target && ev.target.id === "uw-ack") document.getElementById("uw-go").disabled = !ev.target.checked; });
 const LAZY = {};
-window.__BP = { muscleRegions: (m, x) => (E.muscleRegions ? E.muscleRegions(m, x) : null), get S() { return S; }, get R() { return R; }, get V() { return V; }, $, esc, fK, fW, fP, fWk, E, effMove, pftInsideStage, rampColor, renderViews: () => renderViews(), fDate, pftCtSkin, pftInsideOpen: () => pftInsideOpen(), save: () => save(), renderSummary: () => renderSummary() };
+window.__BP = { muscleRegions: (m, x) => (E.muscleRegions ? E.muscleRegions(m, x) : null), get S() { return S; }, get R() { return R; }, get V() { return V; }, $, esc, fK, fW, fP, fWk, E, effMove, pftInsideStage, rampColor, renderViews: () => renderViews(), fDate, pftCtSkin, pftInsideOpen: () => pftInsideOpen(), save: () => save(), renderSummary: () => renderSummary(), go: (n) => go(n) };
 function lazyLoad(src) { if (LAZY[src]) return LAZY[src]; LAZY[src] = new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); }); return LAZY[src]; }
 (function () { const l = document.createElement("link"); l.rel = "stylesheet"; l.href = "assets/v7655.css?v=7696"; document.head.appendChild(l); })();
-function renderSnapshot() { if (typeof window.renderSnapshotNow === "function") return window.renderSnapshotNow(); const b = $("#hs-card"); if (b && R && !R.blocked) lazyLoad("assets/health-snapshot.js?v=7673").then(() => window.renderSnapshotNow(), () => {}); }
+function renderSnapshot() { if (typeof window.renderSnapshotNow === "function") return window.renderSnapshotNow(); const b = $("#hs-card"); if (b && R && !R.blocked) lazyLoad("assets/health-snapshot.js?v=7756").then(() => window.renderSnapshotNow(), () => {}); }
 function a1cCardHtml() { if (typeof window.a1cCardHtmlNow === "function") return window.a1cCardHtmlNow(); lazyLoad("assets/a1c-log.js?v=7655").then(() => { if (V.open && V.view === "home") renderViews(); }, () => {}); return `<div class="v-card a1-card" id="a1-card"><h2>A1c log</h2><p class="hint">Loading…</p></div>`; }
 window.BodyPlanFig3D = window.BodyPlanFig3D || { state: { on: false, failed: false, where: null } };
 function f3dMount() { if (window.__NO_PFT_FIG) return; if (typeof window.f3dMountNow === "function") return window.f3dMountNow(); if (!R || R.blocked) return;
@@ -8838,7 +8876,7 @@ function aiShrink(file, max = 1600, q = 0.8) { return new Promise((res, rej) => 
   if (window.createImageBitmap) createImageBitmap(file, { imageOrientation: "from-image" }).then((bm) => draw(bm, bm.width, bm.height, () => { try { bm.close(); } catch (e) { /* ignore */ } }), viaImg); else viaImg();
 }); }
 const aiSafe = (s, n = 100) => String(s).replace(/[^A-Za-z0-9 .,:;=%+\-–−·()/'’→&#]/g, " ").replace(/\s+/g, " ").trim().slice(0, n);
-const aiTag = (feat) => `<span class="tag">Pro${CONFIG.PRO_GATING && !canUse(feat) ? " · locked" : ""}</span>`;
+const aiTag = (feat) => `<span class="tag pro-tag">Pro${CONFIG.PRO_GATING && !canUse(feat) ? " · locked" : ""}</span>`;
 
 function stageWeeks(endDay) {
   const W = Math.round(endDay / 7), std = [4, 8, 12, 16, 24, 36, 52, 78, 104], mid = std.filter((w) => w < W - 1).slice(-3);
@@ -9276,10 +9314,11 @@ const TN_ICON = {
   more: '<circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>' };
 const tnSvg = (k) => `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">${TN_ICON[k]}</svg>`;
 const TN_MORE = [
-  ["Logs", [["glucose", "Glucose log"], ["checkin", "Weekly check-in", "in Projection"], ["soon", "Workout log"]]],
+  ["Logs", [["checkin", "Log this week's weight", "in Projection"], ["lifts", "Workout log", "Advanced · Move step"], ["glucose", "Glucose log"]]],
   ["Your plan", [["timeline", "Projection timeline", "Step 5"], ["pdf", "Plan & PDF", "in Projection"], ["health", "Health context", "in Projection"], ["soon", "Past goals"]]],
   ["App", [["settings", "Settings"], ["soon", "Resources"], ["soon", "Account"]]]];
 const TN = { open: false };
+const TN_PROGRESS = false;   // v7.7.56: the Progress page is still "Coming soon"; set true to show its tab again
 function tnActive() {
   if (typeof V !== "undefined" && V.open) return V.view === "home" ? "home" : V.view === "progress" ? "prog" : "more";
   const f = $("#flog"); if (f && !f.hidden) return "food";
@@ -9288,10 +9327,11 @@ function tnActive() {
 }
 function tnHtml() {
   const a = tnActive(), it = (k, ic, l) => `<button type="button" class="tn-i${a === k ? " on" : ""}" data-tn="${k}"${a === k ? ' aria-current="page"' : ""}>${tnSvg(ic)}<span>${l}</span></button>`;
-  const more = TN_MORE.map(([h, items]) => `<li class="tn-h">${h}</li>` + items.map(([k, l, note]) => k === "soon"
+  // v7.7.56: "Coming soon" items are not listed (they stay in TN_MORE so they're easy to bring back); the Progress tab is hidden until it has content
+  const more = TN_MORE.map(([h, items]) => [h, items.filter(([k]) => k !== "soon")]).filter(([, items]) => items.length).map(([h, items]) => `<li class="tn-h">${h}</li>` + items.map(([k, l, note]) => k === "soon"
     ? `<li><span class="tn-m soon" aria-disabled="true">${l}<span class="tn-badge">Coming soon</span></span></li>`
     : `<li><button type="button" class="tn-m" data-tn="${k}">${l}${(k === "glucose" && typeof glVisible === "function" && !glVisible()) ? "<small>turn on in Settings</small>" : note ? `<small>${note}</small>` : ""}</button></li>`).join("")).join("");
-  return `${it("sim", "sim", "Simulator")}${it("home", "home", "Dashboard")}${it("food", "food", "Food log")}${it("prog", "prog", "Progress")}
+  return `${it("sim", "sim", '<span class="tn-wide">Simulator</span><span class="tn-narrow">My plan</span>')}${it("home", "home", "Dashboard")}${it("food", "food", "Food log")}${TN_PROGRESS ? it("prog", "prog", "Progress") : ""}
   <div class="tn-more"><button type="button" class="tn-i${a === "more" ? " on" : ""}" id="tn-more-btn" aria-expanded="${TN.open}" aria-controls="tn-menu">${tnSvg("more")}<span>More</span></button>
   <ul class="tn-menu" id="tn-menu" aria-label="More pages"${TN.open ? "" : " hidden"}>${more}</ul></div>`;
 }
@@ -9304,6 +9344,12 @@ function tnToProj(sel, openSel) {
   if (S.step !== 5) return;
   requestAnimationFrame(() => { if (openSel) { const d = $(openSel); if (d) d.open = true; } const el = $(sel); if (el && !el.hidden) { el.scrollIntoView({ block: "start" }); const h = el.querySelector("h2, summary"); if (h) { h.setAttribute("tabindex", "-1"); h.focus({ preventScroll: true }); } } });
 }
+/* v7.7.56: Workout log = the lifting log on the Move step (Advanced, Custom lifting). Opens it without changing the plan. */
+function tnToLifts() {
+  if (!isAdv()) setUiMode("advanced");
+  const ok = S.maxStep >= 3 || !stepProblems(1); go(ok ? 3 : 1);   // Step 1 must be answered first (e.g. the medicines question)
+  requestAnimationFrame(() => { const el = S.move.preset === "custom" && !S.move.plannerOn ? ($("#liftlog") || $("#lift-box")) : $("#lift-custom-opt"); if (el && S.step === 3) { el.scrollIntoView({ block: "center" }); const f = el.querySelector("h3, input, button"); if (f) f.focus({ preventScroll: true }); } });
+}
 function tnGo(k) {
   TN.open = false; TN.prog = false;
   if (k === "sim") { if (typeof vLeave === "function") vLeave(); const started = S.maxStep > 1 || S.goal.touched; go(started ? Math.max(1, S.step || 1) : 0); }
@@ -9312,7 +9358,8 @@ function tnGo(k) {
   else if (k === "glucose") openView("glucose");
   else if (k === "settings") openView("settings");
   else if (k === "prog") openView("progress");
-  else if (k === "checkin") tnToProj("#weekly-card", "#proj-more-tips");
+  else if (k === "checkin") tnToProj("#weekly-card");
+  else if (k === "lifts") tnToLifts();
   else if (k === "timeline") tnToProj("#chart-wrap");
   else if (k === "pdf") tnToProj("#recap");
   else if (k === "health") { tnToProj("#health-ctx", "#proj-more-health"); }
@@ -9331,7 +9378,16 @@ document.addEventListener("keydown", (e) => {
 });
 document.addEventListener("focusin", (e) => { if (TN.open && !e.target.closest(".tn-more")) tnClose(false); });
 function tnInit() { const h = $(".site-header .in"); if (!h || $("#topnav")) return; const n = document.createElement("nav"); n.id = "topnav"; n.className = "topnav"; n.setAttribute("aria-label", "Main"); n.setAttribute("data-print", "no");
-  const pm = h.querySelector(".prod-mark"); h.insertBefore(n, pm); document.body.classList.add("has-tabs"); renderTopNav(); }
+  const pm = h.querySelector(".prod-mark"); h.insertBefore(n, pm); document.body.classList.add("has-tabs"); renderTopNav();
+  /* v7.7.56: under 1280px the page shows the Theosis Health site header and hides .site-header (and the tabs inside it).
+     Move the app tabs into their own host so they stay reachable: a slim row under the site header on tablets/small laptops,
+     and the bottom tab bar on phones (existing <64rem CSS). Only one copy exists, so there is no second header. */
+  const host = document.createElement("div"); host.id = "tn-host"; host.className = "tn-host"; host.setAttribute("data-print", "no");
+  const sh = $(".site-header"); sh.parentNode.insertBefore(host, sh.nextSibling);
+  const mq = window.matchMedia("(max-width: 1279.98px)");
+  const place = () => { const nav = $("#topnav"); if (!nav) return; const out = mq.matches; if (out && nav.parentNode !== host) host.appendChild(nav); else if (!out && nav.parentNode !== h) h.insertBefore(nav, pm);
+    document.body.classList.toggle("tabs-out", out); window.dispatchEvent(new Event("resize")); };
+  place(); if (mq.addEventListener) mq.addEventListener("change", place); else if (mq.addListener) mq.addListener(place); }
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", tnInit); else tnInit();
 window.addEventListener("hashchange", () => setTimeout(renderTopNav, 0));
 (function tnWatch() { const ids = ["#entry", "#wizard", "#views", "#flog"]; const mo = new MutationObserver(() => { clearTimeout(TN.t); TN.t = setTimeout(() => { if ($("#topnav") && !TN.open) { const a = tnActive(), cur = $("#topnav .tn-i.on"); if (!cur || cur.dataset.tn !== a) renderTopNav(); } }, 30); });
@@ -9533,8 +9589,9 @@ function bind() {
       const kgv = imp() ? kg / LB : kg, wav = wa > 0 ? (imp() ? wa * 2.54 : wa) : null;
       if (!(wk >= 1 && wk <= 520) || !(kgv >= 30 && kgv <= 350)) { $("#wk-kg").setAttribute("aria-invalid", "true"); $("#wk-kg").focus(); return; }
       const L = weighIns(), i = L.findIndex((x) => x.week === wk); const e = { week: wk, weightKg: +kgv.toFixed(2), waistCm: wav ? +wav.toFixed(1) : null }; if (i >= 0) L[i] = e; else L.push(e);
-      if (S.refit && S.refit.applied) S.refit = Object.assign({}, S.refit, { stale: true }); update(); const b = $("#wk-kg"); if (b) b.focus(); return; }
-    if (t.dataset.wkDel != null) { weighIns().splice(+t.dataset.wkDel, 1); update(); return; }
+      syncRefit(); update(); const b = $("#wk-kg"); if (b) b.focus(); return; }
+    if (t.dataset.wkDel != null) { weighIns().splice(+t.dataset.wkDel, 1); syncRefit(); update(); return; }
+    if (t.dataset.refitMode) { S.refitMode = t.dataset.refitMode === "fixed" ? "fixed" : "adaptive"; syncRefit(); update(); const b = $(`[data-refit-mode="${S.refitMode}"]`); if (b) b.focus(); return; }
     if (t.id === "refit-apply") { const f = refitNow(); if (f && f.ok) { S.refit = { k: f.k, applied: true, at: new Date().toISOString(), n: f.n }; update(); const x = $("#weekly-card"); if (x) { x.classList.add("flash"); setTimeout(() => x.classList.remove("flash"), 1200); } } return; }
     if (t.id === "expert-csv") { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([expertCsv()], { type: "text/csv" })); a.download = `body-plan-model-${new Date().toISOString().slice(0, 10)}.csv`; document.body.appendChild(a); a.click(); a.remove(); return; }
     if (t.id === "refit-undo") { S.refit = null; update(); return; }

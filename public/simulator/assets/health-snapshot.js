@@ -9,7 +9,7 @@ function hsInput(plan) {
   const a1c = Number.isFinite(+h.a1c) && +h.a1c > 0 ? +h.a1c : null;
   const kcal = plan ? r0.intake : S.food.actualOn && Number.isFinite(+S.food.actualKcal) ? +S.food.actualKcal : null;
   const prot = plan ? (R.protein && R.protein.g) || null : S.food.actualOn && Number.isFinite(+S.food.actualProteinG) && +S.food.actualProteinG > 0 ? +S.food.actualProteinG : null;
-  return { htIn: p.heightCm / 2.54, waIn: p.waistCm ? p.waistCm / 2.54 : null, wtLb: p.weightKg * 2.2046226, a1c, dx: ["t1", "t2", "other"].includes(dm), kcal, burn: r0.tdee, prot, target: R.rec && R.rec.rows && R.rec.rows[0] && R.rec.rows[0].intake > 0 ? R.rec.rows[0].intake : r0.intake > 0 ? r0.intake : null, dir: S.goal && S.goal.type && R.dir ? R.dir : null, floor: E.floorOf(p), cardio: Math.round(tw.cardioMin || 0), lifts: tw.liftSessions || 0,
+  return { htIn: p.heightCm / 2.54, waIn: p.waistCm ? p.waistCm / 2.54 : null, wtLb: p.weightKg * 2.2046226, a1c, dx: ["t1", "t2", "other"].includes(dm), kcal, burn: r0.tdee, prot, target: R.rec && R.rec.rows && R.rec.rows[0] && R.rec.rows[0].intake > 0 ? R.rec.rows[0].intake : r0.intake > 0 ? r0.intake : null, dir: S.goal && S.goal.type && R.dir ? R.dir : null, floor: E.floorOf(p), cardio: Math.round(tw.cardioMin || 0), lifts: tw.liftSessions || 0, steps: Math.round(+effMove().steps || 0),
     check: st && st.key ? { under: "under", near: "near", above: "past" }[st.key] : null };
 }
 function hsFactors(p) {
@@ -50,11 +50,15 @@ function hsFactors(p) {
       mean: g >= 0.8 ? "This is at least the basic daily amount most adults need." : "This may be less than the basic daily amount most adults need.",
       why: "Protein helps keep and repair muscle. Muscle is one of the main places the body can use sugar.",
       help: "Eating at least the basic amount, together with lifting, may help keep muscle while losing weight.", cm: ["iom-dri-protein"], cw: [], ch: [], note: "We use weight capped at a BMI of 25 for the per-kg amount." }); }
-  { const a = p.cardio || 0, l = p.lifts || 0, s = (a >= 150 ? 10 : a > 0 ? 5 : 0) + (l >= 2 ? 5 : l >= 1 ? 2 : 0), lv = s >= 13 ? 2 : s >= 5 ? 1 : 0;
-    F.push({ k: "act", nm: "Activity and lifting", max: 15, s, lv, t: `${a} min of activity a week · lifting ${+l.toFixed(1)} day${l === 1 ? "" : "s"} a week`,
-      mean: lv === 2 ? "This meets the national activity guidelines." : lv === 1 ? "Some activity is better than none, and this is partway there." : "Little or no activity right now. Any amount can help.",
+  { const c = p.cardio || 0, l = p.lifts || 0, st = p.steps || 0;
+    // v7.7.56: everyday steps count. About 7,000-8,000 steps a day lines up with roughly 150 min a week of moderate activity
+    // (Tudor-Locke et al. 2011: "a direct estimate of minimal amounts of MVPA ... is 7,000-8,000 steps/day"); 5,000+ counts as part-way (our choice).
+    const stepMin = st >= 7000 ? 150 : st >= 5000 ? 75 : 0, a = c + stepMin;
+    const s = (a >= 150 ? 10 : a > 0 ? 5 : 0) + (l >= 2 ? 5 : l >= 1 ? 2 : 0), lv = s >= 13 ? 2 : s >= 5 ? 1 : 0;
+    F.push({ k: "act", nm: "Activity and lifting", max: 15, s, lv, t: `${st.toLocaleString("en-US")} steps a day · ${c} min of cardio a week · lifting ${+l.toFixed(1)} day${l === 1 ? "" : "s"} a week`,
+      mean: lv === 2 ? "This meets the national activity guidelines." : a >= 150 ? "Your daily steps already count as the weekly activity guideline. Lifting 2 or more days a week would earn the rest." : lv === 1 ? "Some activity is better than none, and this is partway there." : "Little or no activity right now. Any amount can help.",
       why: "Working muscles can take up sugar from the blood, even without much insulin. Regular activity can help insulin work better.",
-      help: "Guidelines suggest at least 150 minutes a week of moderate activity, like brisk walking, and muscle-strengthening on 2 or more days. Small steps count: the biggest gains often come from moving from none to some.", cm: [], cw: [], ch: ["pag2018"], note: "The point split (10 for activity, 5 for lifting) is our own design." }); }
+      help: "Guidelines suggest at least 150 minutes a week of moderate activity, like brisk walking, and muscle-strengthening on 2 or more days. Small steps count: the biggest gains often come from moving from none to some.", cm: ["tudorlocke2011"], cw: [], ch: ["pag2018"], note: "Steps count toward activity: about 7,000 or more steps a day counts as meeting the 150-minute guideline and 5,000 or more as part-way. The 7,000 cutoff follows Tudor-Locke et al. 2011; the part-way step is our own choice. The point split (10 for activity, 5 for lifting) is our own design." }); }
   if (p.check) { const m = { under: [10, 2, "Likely under the limit"], near: [5, 1, "Near the limit"], past: [0, 0, "Likely past the limit"] }[p.check];
     F.push({ k: "pft", nm: "Personal fat threshold (our estimate)", max: 10, s: m[0], lv: m[1], t: m[2] + " (our estimate)",
       mean: "This is the app's personal fat threshold estimate, built from the numbers entered.",
@@ -65,10 +69,27 @@ function hsFactors(p) {
 const hsScore = (F) => { const max = F.reduce((a, f) => a + f.max, 0); return max ? Math.round(100 * F.reduce((a, f) => a + f.s, 0) / max) : null; };
 const hsBand = (s) => (s >= 75 ? [2, "Looking strong", "These answers line up with many healthy signs."] : s >= 45 ? [1, "Some room to improve", "A few changes could make a real difference."] : [0, "Lots of room to improve", "The good news: many of these can change, and small steps often help."]);
 let hsOpen = "";
+/* v7.7.56: a score built from only one or two answers is mostly defaults, so ask for a bit more first */
+const HS_MIN = 3;
+function hsMoreHtml(F) {
+  const have = new Set(F.map((f) => f.k)), adds = [];
+  if (!have.has("whtr")) adds.push(["waist", "Your waist", "a tape measure at the belly button, in Step 1"]);
+  if (!have.has("a1c")) adds.push(["a1c", "Your A1c, or whether you've been told you have diabetes", "from a recent lab report, in Step 1"]);
+  if (!have.has("eat")) adds.push(["eat", "What you eat on a normal day", "turn on \u201cSimulate what I actually eat\u201d in Step 4"]);
+  const need = Math.max(1, HS_MIN - F.length);
+  return `<p class="eyebrow card-eyebrow">Health snapshot</p><h2>Tell us a bit more to see your snapshot</h2>
+  <p>We only score what you've told us. Right now that's ${F.length === 1 ? "one thing" : F.length + " things"}, so a number wouldn't mean much yet. Add ${need === 1 ? "one more" : "any " + need} of these:</p>
+  <ul class="hs-adds">${adds.map(([k, a, b]) => `<li><button type="button" class="link-btn" data-hs-go="${k}">${esc(a)} →</button><small>${esc(b)}</small></li>`).join("")}</ul>
+  <p class="hint">A learning score, not a diagnosis. Everything stays on this device.</p>`;
+}
+document.addEventListener("click", (ev) => { const b = ev.target.closest && ev.target.closest("[data-hs-go]"); if (!b || typeof window.__BP.go !== "function") return; ev.preventDefault();
+  const k = b.dataset.hsGo, step = k === "eat" ? 4 : 1, sel = k === "waist" ? '[data-f="waist"]' : k === "a1c" ? '[data-f="a1c"]' : "#actual-toggle";
+  window.__BP.go(step); setTimeout(() => { const el = document.querySelector(sel); if (el) { el.scrollIntoView({ block: "center" }); el.focus(); } }, 80); });
 const hsCite = (ids) => { const T = window.TheosisSources; return ids && ids.length && T ? ids.map((id) => T.fn(id)).join(`<sup class="fn-sep" aria-hidden="true">,</sup>`) : ""; };
 function renderSnapshotNow() {
   const box = $("#hs-card"); if (!box) return; if (!R || R.blocked) { box.innerHTML = ""; box.hidden = true; return; } box.hidden = false;
   const F = hsFactors(hsInput(false)), sc = hsScore(F); if (sc == null) { box.innerHTML = ""; return; }
+  if (F.length < HS_MIN) { box.innerHTML = hsMoreHtml(F); return; }   // v7.7.56: no score from one or two answers
   const B = hsBand(sc), PL = hsScore(hsFactors(hsInput(true))), miss = 6 - F.length;
   box.innerHTML = `<p class="eyebrow card-eyebrow">Health snapshot</p>
   <div class="hs-score"><div class="hs-ring" style="--p:${sc};--c:${rampColor(sc / 100)}" role="img" aria-label="Learning score ${sc} out of 100: ${B[1]}"><b>${sc}</b></div><div><div class="hs-band" style="color:${rampColor(sc / 100)}">${B[1]}</div><p class="hint">${B[2]}</p></div></div>
