@@ -8067,7 +8067,7 @@ function isPro() {
 function canUse(feature) { return !CONFIG.PRO_GATING || !CONFIG.PRO_FEATURES.includes(feature) || isPro(); }
 function proGate(feature, where) {
   if (canUse(feature)) return true;
-  const el = $(where); if (el) el.insertAdjacentHTML("afterend", `<p class="pro-note">This is a Pro feature. ${CONFIG.CHECKOUT_URL ? `<a href="${esc(CONFIG.CHECKOUT_URL)}">Unlock Pro</a>` : "Pro isn't on sale yet."}</p>`);
+  const el = $(where); if (el && !(el.nextElementSibling && el.nextElementSibling.classList.contains("pro-note"))) el.insertAdjacentHTML("afterend", `<p class="pro-note">This is a Pro feature. ${CONFIG.CHECKOUT_URL ? `<a href="${esc(CONFIG.CHECKOUT_URL)}">Unlock Pro</a>` : "Pro isn't on sale yet."}</p>`);
   return false;
 }
 
@@ -8274,7 +8274,7 @@ function recapPairs() {
   const h = imp() ? `${Math.floor(p.heightCm / 2.54 / 12)} ft ${+(p.heightCm / 2.54 % 12).toFixed(1)} in` : `${+p.heightCm.toFixed(1)} cm`;
   const g = S.goal; const isT = g.type === "targetBf" || g.type === "targetWeight";
   return [["You", `${p.sex === "m" ? "Male" : "Female"}, ${p.age}, ${h}, ${fW(p.weightKg)}, ${fP(b.bf)} body fat${b.source === "measured" ? "" : b.source === "navy" ? " (tape est.)" : " (BMI est.)"}`],
-    ["Goal", `${goalLabel()}${g.type === "targetBf" ? `: ${g.targetBf}%` : g.type === "targetWeight" ? `: ${fW(g.targetWeightKg)}` : ""}${isT ? (g.deadline ? ` by week ${g.deadline}` : "") : ` · ${g.window} weeks`}`],
+    ["Goal", `${goalLabel()}${g.type === "targetBf" ? `: ${g.targetBf}%` : g.type === "targetWeight" ? `: ${fW(g.targetWeightKg)}` : ""}${isT ? (g.deadline ? ` by week ${g.deadline}` : "") : exactGoal() && endRow() ? ` · about ${fWk(endRow().day)} weeks` : ` · ${g.window} weeks`}`],   // v7.7.54: an exact goal sets its own length, not the 12-week window
     ["Move", `${S.move.steps.toLocaleString("en-US")} steps/day · ${t.liftSessions ? `${S.move.plannerOn || t.custom ? (S.move.preset === "min" ? "2 minimalist" : t.liftSessions) : t.liftSessions === 2.5 ? "2–3" : "4+"} lifting sessions/week` : "no lifting"} · ${S.move.noCardio ? "no cardio" : t.cardioMin + " min cardio/week"}`],
     ["Daily burn", `${fK(R.act0.tdee)} kcal (${R.act0.multiplier.toFixed(2)}× BMR)`],
     ["Eat", S.food.psmf ? `${fK(fixedKcal())} kcal/day PSMF (clinician-guided) · protein ≥ ${R.psmf.protein} g · plan would be ${fK(r0.intake)}` : S.food.actualOn ? `${fK(fixedKcal())} kcal/day (actual) · plan would be ${fK(r0.intake)}` : `${fK(r0.intake)} kcal/day to start · P ${R.macros.protein} g · F ${R.macros.fat} g · C ${R.macros.carbs} g`],
