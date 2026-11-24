@@ -1062,6 +1062,7 @@ input[type="checkbox"],input[type="radio"]{min-width:24px;min-height:24px}
 .scale-bf{margin:.6rem 0}.scale-bf summary{cursor:pointer;color:#9cc3ff}.goal-fix{display:inline;margin-left:.2rem;font-size:inherit}
 .gain-list{list-style:none;padding:0;margin:.5rem 0;display:grid;gap:.35rem}
 .gain-list li{border:1px solid var(--line,#ddd);border-radius:8px;padding:.45rem .6rem;font-size:.92em}
+.gain-cmp{margin-top:.1rem}.g-gain-sub{margin:.15rem 0 .45rem}
 .gain-list li.on{border-color:var(--accent,#2a6);background:rgba(40,160,100,.06)}
 .bulk-tbl tr.on td{background:rgba(40,160,100,.08)}
 .qc-card[hidden],.qc-wrap[hidden]{display:none!important}
@@ -2099,14 +2100,15 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')set(false)})
                 </div>
               </div>
               <div id="g-gain">
-                <span class="label">How fast to gain</span>
-                <fieldset class="seg sm"><legend class="sr-only">Gain speed</legend>
-                  <label><input type="radio" name="goal.gainMode" value="lean"><span>Lean (default)</span></label>
+                <span class="label" id="g-gain-h">How hard to push muscle gain</span>
+                <p class="hint g-gain-sub" id="g-gain-sub"></p>
+                <fieldset class="seg sm" id="gain-seg"><legend class="sr-only">How hard to push muscle gain</legend>
+                  <label><input type="radio" name="goal.gainMode" value="lean"><span>Lean</span></label>
                   <label><input type="radio" name="goal.gainMode" value="moderate"><span>Moderate</span></label>
-                  <label><input type="radio" name="goal.gainMode" value="fast"><span>Fast (more fat)</span></label>
+                  <label><input type="radio" name="goal.gainMode" value="fast"><span>Fast</span></label>
                 </fieldset>
                 <div class="gain-opts" id="gain-opts" aria-live="polite"></div>
-                <p class="hint" id="h-gain-src">Lean keeps a small surplus, so the scale moves slowly and body fat stays lower, while muscle still goes up. Moderate and Fast allow a little more muscle and add more fat. For a higher muscle-gain rate and more size, choose Build muscle (max). Rates are estimates (practitioner rules of thumb, McDonald and Aragon), not trial results.</p>
+                <p class="hint" id="h-gain-src">Muscle can only be built so fast, so extra food past that rate is stored as fat. Rates are estimates (practitioner rules of thumb, McDonald and Aragon), not trial results.</p>
                 <label class="field mt1" data-field="bfCeiling" id="g-bfceil"><span class="label">Body-fat ceiling <span style="text-transform:none;letter-spacing:0">(optional)</span></span>
                   <span class="control"><input data-f="bfCeiling" inputmode="decimal" placeholder="none"><span class="unit">%</span></span><span class="err"></span>
                   <span class="hint">The plan stops if you'd go above this body fat, so you can cut before continuing.</span></label>
@@ -2371,7 +2373,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')set(false)})
           <div class="card bulk-cmp" id="bulk-cmp" hidden></div>
           <div class="card">
             <p class="eyebrow card-eyebrow">What to do next</p>
-            <h2>Your next three steps</h2>
+            <h2>Your next steps</h2>
             <ol class="steps-list" id="next-steps"></ol>
           </div>
           <details class="card proj-more" id="proj-more-health"><summary><b>Your threshold, labs and diabetes risk</b><small>Personal fat threshold, inside view, lab context</small></summary>
@@ -3408,14 +3410,16 @@ function band(inp, R) {
 }
 /* Same lifter, same weeks: Lean / Moderate / Fast, plus Build muscle (max). Rates differ by GAIN_PATH, so max adds more muscle
    than Lean; surplus past that rate is stored as fat. */
-function compareGain(inp, weeks) {
-  const H = Math.round((weeks || 16) * 7), out = [];
+function compareGain(inp, weeks, toTarget) {
+  /* toTarget (v7.7.59): with a goal weight and no date, each surplus size is run until the goal weight is reached, so the list can say how long each takes. */
+  const H = Math.round((weeks || 16) * 7), out = [], tgt = toTarget && inp.goal.target > 0 ? inp.goal.target : 0;
   for (const [mode, label, type] of [["lean", "Lean", "gain"], ["moderate", "Moderate", "gain"], ["fast", "Fast", "gain"], ["max", "Build muscle (max)", "bulk"]]) {
-    const gi = Object.assign({}, inp, { goal: Object.assign({}, inp.goal, { type, gainMode: mode === "max" ? "lean" : mode, target: 0, bfCeiling: 0 }), food: Object.assign({}, inp.food, { actualOn: false, psmf: false }) });
-    const s = simulate(gi, { horizonDays: H, forceRecommended: true, pace: 0.6 }), a = s.rows[0], b = s.rows[s.rows.length - 1];
+    if (tgt && mode === "max") continue;
+    const gi = Object.assign({}, inp, { goal: Object.assign({}, inp.goal, { type: tgt ? inp.goal.type : type, gainMode: mode === "max" ? "lean" : mode, target: tgt, weeks: null, bfCeiling: 0 }), food: Object.assign({}, inp.food, { actualOn: false, psmf: false }) });
+    const s = tgt ? simulate(gi, { horizonDays: MAX_DAYS, target: targetFnFor(gi), stopAtTarget: true, forceRecommended: true, pace: 0.6 }) : simulate(gi, { horizonDays: H, forceRecommended: true, pace: 0.6 }), a = s.rows[0], b = s.rows[s.rows.length - 1];
     const sur = Math.round(s.rows.slice(0, -1).reduce((x, r) => x + (r.intake - r.tdee), 0) / Math.max(1, s.rows.length - 1));
     const lean = b.leanKg - a.leanKg, fat = b.fatKg - a.fatKg;
-    out.push({ mode, label, surplus: sur, leanKg: lean, fatKg: fat, fatPerLean: lean > 0.05 ? fat / lean : null, endBf: b.bf, weeklyPct: 100 * (b.weightKg - a.weightKg) / a.weightKg / (H / 7) });
+    out.push({ mode, label, surplus: sur, leanKg: lean, fatKg: fat, fatPerLean: lean > 0.05 ? fat / lean : null, endBf: b.bf, weeklyPct: 100 * (b.weightKg - a.weightKg) / a.weightKg / (H / 7), reachedDays: tgt ? s.reached : null });
   }
   return out;
 }
@@ -3442,12 +3446,14 @@ function bfUpInput(inp) {
   const p = inp.profile, g = inp.goal, t = g.target, lean = p.weightKg * (1 - p.bf / 100), W0 = lean / (1 - t / 100);
   const mk = (w) => Object.assign({}, inp, { goal: Object.assign({}, g, { type: "targetWeight", baseType: undefined, target: w, bfGoal: t }) });
   const bfAt = (w) => { const gi = mk(w), s = simulate(gi, { pace: g.pace || 0.6, horizonDays: MAX_DAYS, target: targetFnFor(gi), stopAtTarget: true, forceRecommended: true }); return s.reached == null ? null : s.rows[s.rows.length - 1].bf; };
-  // body fat at the moment the weight is reached rises with the goal weight: bisect for the weight that ends at the goal body fat
+  // body fat at the moment the weight is reached rises with the goal weight: bisect for the weight that ends at the goal body fat.
+  // v7.7.59: an upper guess that isn't reached within 5 years counts as "too heavy" and is bisected too (before, it made every such goal "not reachable"
+  // and the note said the plan aimed for 1.5x the needed weight).
   let lo = Math.max(W0, p.weightKg + 0.3), hi = Math.max(lo, W0) * 1.5, W = lo;
   const b0 = bfAt(lo);
   if (b0 != null && b0 < t - 0.1) {
     const bh = bfAt(hi);
-    if (bh != null && bh >= t) { for (let i = 0; i < 14; i++) { const mid = (lo + hi) / 2, bm = bfAt(mid); if (bm == null || bm >= t) hi = mid; else lo = mid; } W = hi; }
+    if (bh == null || bh >= t) { for (let i = 0; i < 14; i++) { const mid = (lo + hi) / 2, bm = bfAt(mid); if (bm == null || bm >= t) hi = mid; else lo = mid; } W = hi; }
     else W = hi;   // not reachable by this style: the plan reports it
   }
   return { inp: mk(W), weightKg: W, leanKeptKg: W0 };
@@ -3501,7 +3507,7 @@ function project(inp0) {
     if (dateDay != null) inpMain = withG({ gainMode: "date", dateDay });
     /* v7.6.20e: a goal weight that needs a big surplus to make the requested weeks is a fast gain that is mostly fat. The implied surplus is the daily surplus the date-driven plan
        would need for the requested weeks; it's judged with the same rule the habits-first flow uses (fastGainSurplus: above the Moderate style's top, or the Fast style's start without regular lifting). */
-    if (want && (feas.status === "tooFast" || feas.dateDriven)) { const dr = dateRun(want).s.rows[0]; feas.impliedSurplus = Math.round(dr.intake - dr.tdee); feas.fastGain = fastGainSurplus(feas.impliedSurplus, weeklyTraining(inp.move).liftSessions); }
+    if (want && (feas.status === "tooFast" || feas.dateDriven)) { const dr = dateRun(want).s.rows[0]; feas.impliedSurplus = Math.round(dr.intake - dr.tdee); feas.fastGain = fastGainSurplus(feas.impliedSurplus, weeklyTraining(inp.move).liftSessions);  }
     if (feas.status === "ceiling") horizon = Math.ceil(feas.ceilingDay);
     else if (planDays == null) horizon = 52 * 7;
     else { horizon = Math.ceil(planDays); if (want && feas.status === "fits") horizon = Math.max(horizon, want); }
@@ -3676,11 +3682,12 @@ function nextStepsFor(R) {
   add(R.horizon > 16 * 7 && !(R.inp.food.dietBreakEvery > 0) && R.dir === "loss", "Plan a maintenance week every 8–12 weeks", "Short breaks at maintenance calories help adherence and training quality on long plans.");
   add(R.inp.goal.type === "bulk", "Gain about 0.25–0.5% of body weight a week", "Newer lifters can sit near the top of that range. Check your waist every two weeks; if it climbs faster than your weight, trim 100–150 kcal.");
   add(R.inp.goal.type === "bulk", "Plan a short cut afterwards", "A muscle-building phase adds some fat. Many lifters follow 3–6 months of building with 4–8 weeks of fat loss to show the new muscle.");
-  add(R.dir === "gain" && R.inp.goal.gainMode === "moderate", "Aim for about 0.25–0.5% body-weight gain per week", "Check your waist every two weeks; if it climbs, switch to Lean.");
-  add(R.dir === "gain" && R.inp.goal.gainMode === "lean", "Aim for about 0.25% body-weight gain per week (less if you're advanced)", "If the scale climbs faster than that, trim 100–150 kcal. Most of the extra would be fat.");
-  add(R.dir === "gain" && R.inp.goal.gainMode === "fast", "Aim for 0.5–1% body-weight gain per week", "Check your waist every two weeks. If it climbs quickly, switch back to Lean.");
+  const gm = R.inp.goal.gainMode, toLean = "switch to Lean";   // v7.7.59: gain tips skip Build muscle (max), which has its own (it used to get the Lean tip too)
+  add(R.dir === "gain" && R.inp.goal.type !== "bulk" && gm === "moderate", "Aim for about 0.25–0.5% body-weight gain per week", `Check your waist every two weeks; if it climbs, ${toLean}.`);
+  add(R.dir === "gain" && R.inp.goal.type !== "bulk" && gm === "lean", "Aim for about 0.25% body-weight gain per week (less if you're advanced)", "If the scale climbs faster than that, trim 100–150 kcal. Most of the extra would be fat.");
+  add(R.dir === "gain" && R.inp.goal.type !== "bulk" && gm === "fast", "Aim for 0.5–1% body-weight gain per week", `Check your waist every two weeks. If it climbs quickly, switch back to Lean.`);
   add(R.inp.goal.type === "recomp" || R.inp.goal.type === "maintain", "Track waist and strength, not just the scale", "In a recomposition the scale barely moves. A shrinking waist and rising lifts show it's working.");
-  add(true, "Weigh daily, judge the weekly average", "Water and salt swing the scale 1–3 lb day to day. Re-run this plan every 4–6 weeks with fresh numbers.");
+  add(true, "Judge the weekly average, not one weigh-in", "Water and salt swing the scale 1–3 lb day to day. Weigh daily if you like, and log your weekly average in the Weekly check-in on this page. Re-run this plan every 4–6 weeks with fresh numbers.");
   return S;
 }
 
@@ -6152,7 +6159,7 @@ function pftRangeTxt(e) { return `${fW(e.weightKg.lo)}–${fW(e.weightKg.hi)}`; 
 function renderPftGoal() {
   const box = $("#pft-goal"); if (!box) return; const on = S.goal.type === "pft"; box.hidden = !on; if (!on) return; const e = pftEst();
   box.innerHTML = e.over ? `<p class="pft-h"><b>Your estimated fat threshold: about ${pftRangeTxt(e)}</b> (${Math.round(e.lossPct.lo)}–${Math.round(e.lossPct.hi)}% below today). The plan aims for ${fW(e.weightKg.mid)}${e.waistLossCm ? ` and a waist under ${uW() === "lb" ? Math.round(e.waistTarget / 2.54) + " in" : e.waistTarget + " cm"}` : ""}.</p><ul class="pft-why">${e.why.map((w) => `<li>${esc(w)}</li>`).join("")}</ul><p class="hint">An estimate from published trials, not a diagnosis. Confidence: ${e.confidence}. Work with your clinician, especially if you take diabetes or blood-pressure medicines (doses often need lowering as you lose weight).</p>`
-    : `<p class="pft-h"><b>${e.known ? "You're likely already under your fat threshold." : "We need a marker to estimate your threshold."}</b></p><p class="hint">${esc(e.why[0])} ${e.known ? "This goal runs as steady fat loss." : "Add your A1c, fatty liver status or waist in Step 1."}</p>`;
+    : `<p class="pft-h"><b>${e.known ? "You're likely already under your fat threshold." : "We need a marker to estimate your threshold."}</b></p><p class="hint">${esc(e.why[0])} ${e.known ? "This goal runs as steady fat loss." : "Add your A1c, fatty liver status or waist in Step 1. Until then, this goal runs as steady fat loss."}</p>`;
 }
 /* v7.1 (revised): measurable milestone ladder. No unmeasured internal values are predicted; lab steps show study results at a % loss
    (population ranges with citations) and when YOUR PLAN reaches that % loss. A step is ticked only by a real lab or check-in entry. */
@@ -6261,7 +6268,7 @@ function renderWeekly() {
   } else fit = `<p class="hint">${list.length ? esc((f && f.reason) || "Add at least two weekly weigh-ins, two or more weeks apart.") + " " : ""}${mode === "adaptive" ? "After two weigh-ins at least two weeks apart, your target can start adjusting." : "Your weigh-ins are saved and compared with the plan."}</p>`;
   const opt = (v, t, d) => `<button type="button" class="rf-opt" role="radio" aria-checked="${mode === v}" data-refit-mode="${v}"><b>${t}</b><small>${d}</small></button>`;
   box.innerHTML = `<p class="eyebrow card-eyebrow">Weekly check-in</p><h2 id="weekly-h">Log this week's weight</h2>
-    <p class="hint">Once a week, weigh yourself the same way: in the morning, after the toilet, before eating. We compare it with your plan.</p>
+    <p class="hint">Once a week, log your weight, weighed the same way each time: in the morning, after the toilet, before eating. If you weigh daily, log that week's average. We compare it with your plan.</p>
     <div class="rf-modes" role="radiogroup" aria-labelledby="rf-modes-l"><p class="label" id="rf-modes-l">How should your daily calorie target work?</p>
       ${opt("adaptive", "Adaptive", "Adjusts from my weigh-ins")}${opt("fixed", "Fixed target", "Stays the same number")}</div>
     <div class="wk-form" role="group" aria-label="New weekly weigh-in">
@@ -6640,6 +6647,32 @@ function buildGoalOpts() {
     return `<tr><td>${{ beginner: "Under 1 year", intermediate: "1–3 years", advanced: "3+ years" }[s]}</td><td>${m} kg (${(m * LB).toFixed(1)} lb)</td><td>${f} kg (${(f * LB).toFixed(1)} lb)</td></tr>`; }).join("");
 }
 const lean0 = () => S.profile.weightKg * (1 - bfInfo().bf / 100);
+/* v7.7.59 redundancy pass (Nick, Nov 23): keep Lean / Moderate / Fast next to the timeline, and explain it plainly. With a set timeline the choice is
+   how hard to push: a bigger calorie surplus builds a bit more muscle but adds more fat over the same weeks. The rows show totals over the weeks
+   that apply (the Timeline, or the By-when date with a goal weight), not per month over a fixed 13 weeks. With a goal weight and no date the
+   rows show how long each takes instead. Surpluses are shown to the nearest 10 kcal (they're averages over the run, so raw values read like +201). */
+function renderGainChoice(g, dir, isT, X) {
+  const wrap = $("#g-gain"); if (!wrap || wrap.hidden) return;
+  const box = $("#gain-opts"), sub = $("#g-gain-sub");
+  const tgtKg = g.type === "gain" ? g.gainTargetKg : R && !R.blocked && R.inp.goal.target > 0 ? R.inp.goal.target : null;
+  const bfT = g.type === "targetBf", hasT = !!(isT || X) && tgtKg > 0 && !bfT, cur = gainModeOf(g), r10 = (k) => Math.round(k / 10) * 10;
+  const weeks = hasT ? (g.deadline > 0 ? g.deadline : null) : bfT ? null : (g.window || 12), toGoal = hasT && !weeks;
+  const noLift = E.weeklyTraining(effMove()).liftSessions === 0;
+  const say = { lean: "Slower muscle gain but less fat gain", moderate: "Faster muscle gain but more fat gain", fast: "Fastest muscle gain but the most fat gain" };
+  box.innerHTML = "";
+  sub.textContent = weeks ? `A bigger calorie surplus builds a bit more muscle over your ${weeks} weeks, but adds more fat.` : toGoal ? `A bigger calorie surplus reaches ${fW(tgtKg)} sooner, but more of the gain is fat.` : "A bigger calorie surplus builds muscle a bit faster, but adds more fat.";
+  if (noLift) { sub.textContent += " Muscle gain needs strength training, so add it on the Move step (next)."; return; }
+  let c = [];
+  try { if (R && !R.blocked) c = E.compareGain(R.inp, weeks || 13, toGoal); } catch (e) { c = []; window.__gainErr = String(e); }
+  const rows = c.filter((x) => x.mode !== "max"), max = c.find((x) => x.mode === "max");
+  if (!rows.length) return;
+  const line = (x) => toGoal
+    ? (x.reachedDays != null ? `about <b>${fWk(x.reachedDays)} weeks</b> to ${fW(tgtKg)}: ≈ ${fWd(Math.max(0, x.leanKg))} muscle and ${fWd(Math.max(0, x.fatKg))} fat` : `doesn't reach ${fW(tgtKg)} within 5 years`)
+    : weeks ? `≈ <b>${fWd(Math.max(0, x.leanKg))} muscle</b> and <b>${fWd(Math.max(0, x.fatKg))} fat</b> over ${weeks} weeks` : "";
+  box.innerHTML = `<ul class="gain-list">${rows.map((x) => `<li data-mode="${x.mode}"${x.mode === cur ? ' class="on"' : ""}><b>${x.label}</b> · +${fK(r10(x.surplus))} kcal/day${line(x) ? ` · <span>${line(x)}</span>` : ""}<br><small>${say[x.mode]}</small></li>`).join("")}</ul>`
+    + (max && g.type === "gain" && weeks ? `<p class="hint gain-cmp">For comparison, <b>Build muscle (max)</b> (a separate goal above): +${fK(r10(max.surplus))} kcal/day, ≈ ${fWd(Math.max(0, max.leanKg))} muscle and ${fWd(Math.max(0, max.fatKg))} fat over ${weeks} weeks, because it assumes a harder-training muscle-gain rate.</p>` : "")
+    + `<p class="hint">Estimates for your numbers with your training; "muscle" is lean mass, which includes some water and glycogen.</p>`;
+}
 function renderGoal() {
   const g = S.goal, b = bfInfo(), p = S.profile;
   $("#goal-lead").textContent = S.mode === "habits" ? "Pick a goal to compare against. Your projection follows what you actually eat (Step 4)." : "What you'd like to work toward. You'll get instant feedback on whether it's realistic.";
@@ -6668,13 +6701,11 @@ function renderGoal() {
   renderExact(g, b, p, X, exOn);
   $("#g-gain").hidden = dir !== "gain" || g.type === "bulk";
   $$('input[name="goal.gainMode"]').forEach((r) => (r.checked = r.value === gainModeOf(g)));
-  { const box = $("#gain-opts"); if (box) { let c = []; try { if (g.type === "gain" && R && !R.blocked) c = E.compareGain(R.inp, 13).filter((x) => x.mode !== "max"); } catch (e) { c = []; window.__gainErr = String(e); }
-    const say = { lean: "Smallest surplus. Slower on the scale, body fat stays lower, muscle still goes up", moderate: "A bit more muscle and a faster scale, with more fat", fast: "A little more muscle than Lean, and clearly more fat" };
-    box.innerHTML = c.length ? `<ul class="gain-list">${c.map((x) => { const mo = 13 * 7 / 30.44; return `<li data-mode="${x.mode}"${x.mode === gainModeOf(g) ? ' class="on"' : ""}><b>${x.label}</b> · +${fK(x.surplus)} kcal/day · <span>≈ ${fW(Math.max(0, x.leanKg) / mo)} muscle + ${fW(Math.max(0, x.fatKg) / mo)} fat per month</span><br><small>${say[x.mode]}</small></li>`; }).join("")}</ul><p class="hint">Estimates for your numbers with your training; "muscle" is lean mass, which includes some water and glycogen.</p>` : ""; } }
+  renderGainChoice(g, dir, isT, X);
   $("#h-gt").textContent = g.gainTargetKg > lean0() ? `≈ ${fP(100 * (1 - lean0() / g.gainTargetKg))} body fat if every pound were muscle. Real gains add some fat too.` : "Leave blank to just see the next weeks.";
   { const n = $("#g-calcpace"); if (n) { n.hidden = !g.calcPace; if (g.calcPace) n.innerHTML = `Using the pace you chose in the Maximum Fat Burn Calculator: <b>${esc(g.calcLabel || "")}</b> (${Math.round(g.pace * 100)}% of your maximum fat-burn rate). Pick a pace below to change it.`; }
     document.querySelectorAll('input[name="goal.pace"]').forEach((r) => { if (g.calcPace) r.checked = false; }); }
-  $("#g-pace").hidden = !((isT || (g.type === "pft" && pftEst().over)) && dir === "loss") || g.type === "gain";
+  $("#g-pace").hidden = !((isT || (g.type === "pft" && pftEst().over)) && dir === "loss") || g.type === "gain" || g.deadline > 0;   // v7.7.59: a By-when date already sets the pace, so the no-deadline pace picker is hidden
   $("#g-exp").hidden = !(g.type === "recomp" || g.type === "gain" || g.type === "bulk" || ((g.type === "targetWeight" || g.type === "targetBf") && dir === "gain"));
   $$("#window-chips .chip").forEach((c) => c.setAttribute("aria-pressed", String(+c.dataset.win === +g.window)));
   const lean = p.weightKg * (1 - b.bf / 100);
@@ -6804,10 +6835,10 @@ function impliedHtml(g, b, p) {
     warn.push(`This goal implies losing about ${fW(-I.dL)} of lean mass (${lossPct.toFixed(1)}%). Fat loss usually costs a little lean mass, but if you want to keep your muscle, raise the goal weight or lower the goal body fat %. You can still keep it.`);
     tl = fatWk ? `Fat loss of ${fW(-I.dF)} takes about <b>${Math.round(fatWk)} weeks</b> on your pace.` : "";
   } else if (I.dF < -0.45) tl = fatWk ? `Fat loss of ${fW(-I.dF)} takes about <b>${Math.round(fatWk)} weeks</b> on your pace.` : "";
-  if (up && e && Math.abs(e.bf - I.BF) > 1) warn.push(`The plan reaches ${fW(I.W)} at about ${fP(e.bf)} body fat, not ${fP(I.BF)}: with your lifting and training level ${e.bf < I.BF ? "more of the gain is muscle" : "more of the gain is fat"} than this goal assumes. That's fine; to land closer to ${fP(I.BF)}, adjust the goal weight or the How fast to gain style.`);
+  if (up && e && Math.abs(e.bf - I.BF) > 1) warn.push(`The plan reaches ${fW(I.W)} at about ${fP(e.bf)} body fat, not ${fP(I.BF)}: with your lifting and training level ${e.bf < I.BF ? "more of the gain is muscle" : "more of the gain is fat"} than this goal assumes. That's fine; to land closer to ${fP(I.BF)}, adjust the goal weight or How hard to push muscle gain.`);
   if (Math.abs(I.dF) <= 0.45 && I.dL <= 0.45) warn.push("Both numbers are close to where you are now, so this goal would change very little.");
   const r0 = R && !R.blocked ? R.rec.rows[0] : null;
-  const band = r0 && up ? `<p class="hint g-imp-band"><b>Calorie band:</b> gaining needs a surplus. Your plan starts at about <b>${fK(r0.intake)} kcal</b> a day against maintenance of about ${fK(Math.round(r0.tdee / 10) * 10)} kcal (${r0.intake >= r0.tdee ? "+" : ""}${fK(Math.round(r0.intake - r0.tdee))}). ${I.dL > T ? "Keep protein around 1 g per lb of goal weight and lift at least 2–3 times a week so part of the gain is muscle." : "Pick Moderate or Fast under How fast to gain for a bigger surplus."}</p>` : r0 && I.dL > 0.45 ? `<p class="hint g-imp-band"><b>Calorie band:</b> fat loss needs a deficit, muscle gain needs fuel. Stay near maintenance to about 15% below it, roughly <b>${fK(Math.round(r0.tdee * 0.85 / 10) * 10)}–${fK(Math.round(r0.tdee / 10) * 10)} kcal</b> (maintenance is about ${fK(Math.round(r0.tdee / 10) * 10)} kcal) with protein around 1 g per lb of goal weight and lifting at least 2–3 times a week. A bigger deficit (your current plan: ${fK(r0.intake)} kcal) is faster for fat but slows or stops muscle gain.</p>` : r0 ? `<p class="hint g-imp-band"><b>Calorie band:</b> your plan starts at about ${fK(r0.intake)} kcal a day against maintenance of about ${fK(Math.round(r0.tdee / 10) * 10)} kcal.</p>` : "";
+  const band = r0 && up ? `<p class="hint g-imp-band"><b>Calorie band:</b> gaining needs a surplus. Your plan starts at about <b>${fK(r0.intake)} kcal</b> a day against maintenance of about ${fK(Math.round(r0.tdee / 10) * 10)} kcal (${r0.intake >= r0.tdee ? "+" : ""}${fK(Math.round(r0.intake - r0.tdee))}). ${I.dL > T ? "Keep protein around 1 g per lb of goal weight and lift at least 2–3 times a week so part of the gain is muscle." : "Pick Moderate or Fast under How hard to push muscle gain for a bigger surplus."}</p>` : r0 && I.dL > 0.45 ? `<p class="hint g-imp-band"><b>Calorie band:</b> fat loss needs a deficit, muscle gain needs fuel. Stay near maintenance to about 15% below it, roughly <b>${fK(Math.round(r0.tdee * 0.85 / 10) * 10)}–${fK(Math.round(r0.tdee / 10) * 10)} kcal</b> (maintenance is about ${fK(Math.round(r0.tdee / 10) * 10)} kcal) with protein around 1 g per lb of goal weight and lifting at least 2–3 times a week. A bigger deficit (your current plan: ${fK(r0.intake)} kcal) is faster for fat but slows or stops muscle gain.</p>` : r0 ? `<p class="hint g-imp-band"><b>Calorie band:</b> your plan starts at about ${fK(r0.intake)} kcal a day against maintenance of about ${fK(Math.round(r0.tdee / 10) * 10)} kcal.</p>` : "";
   return `<div class="g-implied" id="g-implied" data-kind="${I.kind}"><p class="label g-imp-h">What this goal means: ${head}</p>
     <table class="g-imp-t"><thead><tr><th></th><th>Now</th><th>Goal</th><th>Change</th></tr></thead><tbody>${row("Weight", p.weightKg, I.W, I.W - p.weightKg)}${row("Lean mass", I.lean0, I.lean1, I.dL)}${row("Fat mass", I.fat0, I.fat1, I.dF)}</tbody></table>
     <p class="hint">Goal lean mass = goal weight × (1 − goal body fat %) = ${fW(I.lean1)}.</p>${tl ? `<p class="hint g-imp-tl">${tl}</p>` : ""}${band}${warn.map((w) => `<p class="feas warn g-imp-warn">${w}</p>`).join("")}</div>`;
@@ -6818,7 +6849,7 @@ function bfGoalNote() {
   const bg = R.bfGoal, both = R.inp.goal.bfGoal > 0; if (!bg && !both) return "";
   const t = bg ? bg.target : R.inp.goal.bfGoal, gm = R.inp.goal.gainMode, nl = (R.inp.move || {}).noLift;
   let h = bg ? `<p class="hint g-bf-note"><b>Goal: ${fP(t)} body fat (up from ${fP(R.analysis.bf != null ? R.analysis.bf : bfInfo().bf)}).</b> At today\'s lean mass that\'s about ${fW(bg.leanKeptKg)}. Counting the muscle you\'d add on the way, the plan aims for about <b>${fW(bg.weightKg)}</b>. Gaining body fat on purpose is fine: the surplus is sized for it.</p>` : "";
-  if (R.feas.status === "unreachable" && gm === "lean") h += `<p class="feas warn g-bf-warn">The Lean style adds too little fat to ever reach ${fP(t)}. Pick Moderate or Fast under <b>How fast to gain</b>.</p>`;
+  if (R.feas.status === "unreachable" && gm === "lean") h += `<p class="feas warn g-bf-warn">The Lean style adds too little fat to ever reach ${fP(t)}. Pick Moderate or Fast under <b>How hard to push muscle gain</b>.</p>`;
   else if (nl && R.feas.status !== "unreachable") h += `<p class="hint g-bf-note">Lifting is off, so this gain is almost all fat.</p>`;
   return h; }
 function feasHtml0() {
@@ -6840,8 +6871,8 @@ function feasHtml0() {
     if (f.status === "fits" && R.dir === "loss") return `<div class="feas"><b>Doable.</b> To arrive by week ${g.deadline}, the plan runs at about <b>${Math.round(R.pace * 100)}% of your fat ceiling</b>. The fastest route designed to limit muscle loss would take ${fast} weeks.${habitNote}</div>`;
     if (R.dir === "loss") return `<div class="feas"><b>About ${fWk(reachD)} weeks</b> at a ${R.pace >= 0.99 ? "maximal" : R.pace >= 0.8 ? "firm" : "steady"} pace (around ${fDate(reachD)}). ${R.pace < 0.99 ? `The fastest route designed to limit muscle loss is ${fast} weeks.` : "That's the fastest muscle-sparing route."}${habitNote}</div>`;
     const gm = R.inp.goal.gainMode, mo = reachD / 30.44;
-    if (f.dateDriven) return `<div class="feas"><b>Reaching ${R.inp.goal.fatGoalKg > 0 && exactGoal() ? xLab(exactGoal()) : fW(R.inp.goal.target)} by week ${R.inp.goal.weeks}:</b> some muscle and about ${fWd(re.fatKg - s.fatKg)} fat, <b>ending at ${fP(re.bf)} body fat</b> (from ${fP(s.bf)}; estimates). The surplus is sized to make your date, so anything beyond your muscle-gain rate is stored as fat.${fastGainNoteHtml(f)}${habitNote}</div>`;
-    return `<div class="feas ${gm === "fast" ? "warn" : ""}"><b>About ${fWk(reachD)} weeks</b>${mo >= 3 ? ` (≈ ${mo < 10 ? mo.toFixed(1) : Math.round(mo)} months)` : ""} of ${gm === "fast" ? "faster" : gm === "hold" ? "lean gain at the current body fat %" : "lean"}${gm === "fast" ? " gain" : gm === "hold" ? "" : " gain"} (around ${fDate(reachD)}): some muscle and about ${fWd(re.fatKg - s.fatKg)} fat, <b>ending at ${fP(re.bf)} body fat</b> (from ${fP(s.bf)}; estimates).${habitNote}</div>`;
+    if (f.dateDriven) return `<div class="feas${f.fastGain ? " warn" : ""}"><b>Reaching ${R.inp.goal.fatGoalKg > 0 && exactGoal() ? xLab(exactGoal()) : fW(R.inp.goal.target)} by week ${R.inp.goal.weeks}:</b> about ${fWd(Math.max(0, re.leanKg - s.leanKg))} muscle and ${fWd(re.fatKg - s.fatKg)} fat, <b>ending at ${fP(re.bf)} body fat</b> (from ${fP(s.bf)}; estimates). The surplus is sized to make your date, so anything beyond your muscle-gain rate is stored as fat.${fastGainNoteHtml(f)}${habitNote}</div>`;
+    return `<div class="feas ${gm === "fast" ? "warn" : ""}"><b>About ${fWk(reachD)} weeks</b>${mo >= 3 ? ` (≈ ${mo < 10 ? mo.toFixed(1) : Math.round(mo)} months)` : ""} of ${gm === "fast" ? "faster" : gm === "moderate" ? "moderate" : gm === "hold" ? "lean gain at the current body fat %" : "lean"}${gm === "hold" ? "" : " gain"} (around ${fDate(reachD)}): about ${fWd(Math.max(0, re.leanKg - s.leanKg))} muscle and ${fWd(re.fatKg - s.fatKg)} fat, <b>ending at ${fP(re.bf)} body fat</b> (from ${fP(s.bf)}; estimates).${habitNote}</div>`;
   }
   const assumed = R.assumed && R.assumed.move, noLift = !assumed && E.weeklyTraining(S.move).liftSessions === 0;
   const as = assumed ? ` <span class="assume">${ASSUME_TXT}</span>` : "";
@@ -6851,6 +6882,7 @@ function feasHtml0() {
     return `<div class="feas ${noLift ? "warn" : ""}">${noLift ? "<b>Muscle gain needs resistance training.</b> Add it on the Move step; without it the plan holds at maintenance." : `<b>Over ${swk} weeks: ${fWd(slean)} lean and ${fWd(sfat)} fat</b> (estimates), ending near ${fP(showE.bf)} body fat (from ${fP(s.bf)}). A surplus of about ${fK(Math.max(0, sur))} kcal a day supports a higher muscle-gain rate than Lean muscle gain, so more of the gain is muscle. Some of the extra food is still stored as fat.`}${as}${habitNote}</div>`; }
   if (g.type === "gain") { const ceil = R.main.ceilingHit ? ` You reach your ${fP(g.bfCeiling)} body-fat ceiling around week ${fWk(R.main.ceilingHit)}, so the plan holds there.` : "";
     return `<div class="feas ${noLift || g.gainMode === "fast" ? "warn" : ""}">${noLift && g.gainMode !== "fast" ? "<b>Muscle gain needs resistance training.</b> Add it on the Move step." : `<b>Over ${swk} weeks: ${fWd(slean)} lean and ${fWd(sfat)} fat</b> (estimates), ${gainShare(s, showE)} of the gain as muscle, <b>ending at ${fP(showE.bf)} body fat</b> (from ${fP(s.bf)}), on a ${g.gainMode === "fast" ? "larger surplus that adds more fat" : g.gainMode === "moderate" ? "medium surplus, with a bit more muscle and more fat than Lean" : gainModeOf(g) === "hold" ? "small surplus that keeps body fat % steady" : "small surplus, so the scale moves slowly and body fat stays lower than on Build muscle (max)"}.${ceil}${as}`}${habitNote}</div>`; }
+  if (g.type === "pft") return `<div class="feas"><b>${fWd(sfat)} of fat in ${swk} weeks</b> at a steady fat-loss pace, about ${fW(Math.abs(sfat) / Math.max(1, swk))} a week, ending near ${fP(showE.bf)} body fat. Lean mass: ${fWd(slean)}.${as}${habitNote}</div>`;   // v7.7.59: no threshold estimate (or already under it) runs as steady fat loss, so don't call it "holding steady"
   return `<div class="feas"><b>Holding steady for ${swk} weeks:</b> ${fWd(sfat)} fat, ${fWd(slean)} lean${noLift || assumed ? "" : " from your training"}.${as}${habitNote}</div>`;
 }
 
@@ -8338,8 +8370,10 @@ function recapPairs() {
   const p = S.profile, b = bfInfo(), t = E.weeklyTraining(S.move), r0 = R.rec.rows[0];
   const h = imp() ? `${Math.floor(p.heightCm / 2.54 / 12)} ft ${+(p.heightCm / 2.54 % 12).toFixed(1)} in` : `${+p.heightCm.toFixed(1)} cm`;
   const g = S.goal; const isT = g.type === "targetBf" || g.type === "targetWeight";
+  const gainT = g.type === "gain" && g.gainTargetKg > 0, gm = { lean: "Lean", moderate: "Moderate", fast: "Fast" };   // v7.7.59: the recap names the gain target and the surplus size that applies
+  const gainTxt = g.type !== "gain" ? null : gainT ? `: ${fW(g.gainTargetKg)}${g.deadline ? ` by week ${g.deadline} (${gm[gainModeOf(g)] || "Lean"} push)` : endRow() ? ` · about ${fWk(endRow().day)} weeks (${gm[gainModeOf(g)] || "Lean"} push)` : ""}` : ` · ${g.window} weeks (${gm[gainModeOf(g)] || "Lean"} push)`;
   return [["You", `${p.sex === "m" ? "Male" : "Female"}, ${p.age}, ${h}, ${fW(p.weightKg)}, ${fP(b.bf)} body fat${b.source === "measured" ? "" : b.source === "navy" ? " (tape est.)" : " (BMI est.)"}`],
-    ["Goal", `${goalLabel()}${g.type === "targetBf" ? `: ${g.targetBf}%` : g.type === "targetWeight" ? `: ${fW(g.targetWeightKg)}` : ""}${isT ? (g.deadline ? ` by week ${g.deadline}` : "") : exactGoal() && endRow() ? ` · about ${fWk(endRow().day)} weeks` : ` · ${g.window} weeks`}`],   // v7.7.54: an exact goal sets its own length, not the 12-week window
+    ["Goal", gainTxt != null ? `${goalLabel()}${gainTxt}` : `${goalLabel()}${g.type === "targetBf" ? `: ${g.targetBf}%` : g.type === "targetWeight" ? `: ${fW(g.targetWeightKg)}` : ""}${isT ? (g.deadline ? ` by week ${g.deadline}` : "") : exactGoal() && endRow() ? ` · about ${fWk(endRow().day)} weeks` : ` · ${g.window} weeks`}`],   // v7.7.54: an exact goal sets its own length, not the 12-week window
     ["Move", `${S.move.steps.toLocaleString("en-US")} steps/day · ${t.liftSessions ? `${S.move.plannerOn || t.custom ? (S.move.preset === "min" ? "2 minimalist" : t.liftSessions) : t.liftSessions === 2.5 ? "2–3" : "4+"} lifting sessions/week` : "no lifting"} · ${S.move.noCardio ? "no cardio" : t.cardioMin + " min cardio/week"}`],
     ["Daily burn", `${fK(R.act0.tdee)} kcal (${R.act0.multiplier.toFixed(2)}× BMR)`],
     ["Eat", S.food.psmf ? `${fK(fixedKcal())} kcal/day PSMF (clinician-guided) · protein ≥ ${R.psmf.protein} g · plan would be ${fK(r0.intake)}` : S.food.actualOn ? `${fK(fixedKcal())} kcal/day (actual) · plan would be ${fK(r0.intake)}` : `${fK(r0.intake)} kcal/day to start · P ${R.macros.protein} g · F ${R.macros.fat} g · C ${R.macros.carbs} g`],
@@ -8634,22 +8668,22 @@ function habWeekly(el) {   // Food step: weekly total -> daily average
   if (out) out.textContent = `That's about ${fK(d)} kcal a day, now used as what you eat.`; fillInputs(); update();
 }
 const BANDS = [
-  { id: "rapid", name: "Rapid fat loss", lo: -Infinity, hi: -0.25, mid: -0.30, goal: "maxloss",
+  { id: "rapid", name: "Maximal fat loss", lo: -Infinity, hi: -0.25, mid: -0.30, goal: "maxloss",
     why: "About 25–35% below maintenance. In Garthe 2011 the faster group ate ~30% less and lost ~1% of body weight a week, but gained no lean mass.",
     cite: "Garthe I, et al. Int J Sport Nutr Exerc Metab. 2011;21(2):97-104." },
-  { id: "mild", name: "Mild fat loss", lo: -0.25, hi: -0.10, mid: -0.17, goal: "steady",
+  { id: "mild", name: "Steady fat loss", lo: -0.25, hi: -0.10, mid: -0.17, goal: "steady",
     why: "About 10–25% below maintenance. In Garthe 2011 the slower group ate ~19% less (~0.7% of body weight a week) and gained 2.1% lean mass while losing fat. A meta-regression found an energy deficit of about 500 kcal/day prevented lean-mass gains from lifting.",
     cite: "Garthe 2011 (above); Murphy C, Koehler K. Scand J Med Sci Sports. 2022;32(1):125-137." },
-  { id: "recomp", name: "Recomposition", lo: -0.10, hi: -0.02, mid: -0.06, goal: "recomp",
+  { id: "recomp", name: "Body recomposition", lo: -0.10, hi: -0.02, mid: -0.06, goal: "recomp",
     why: "A small deficit (about 2–10% below maintenance) with progressive lifting and high protein. Trained and untrained people can gain muscle and lose fat at the same time. Gains are slower than with a surplus.",
     cite: "Barakat C, et al. Strength Cond J. 2020;42(5):7-21; Murphy & Koehler 2022." },
   { id: "maint", name: "Maintenance", lo: -0.02, hi: 0.03, mid: 0, goal: "maintain",
     why: "Within a few percent of maintenance. Weight holds; with lifting, slow recomposition is possible.",
     cite: "Barakat 2020; Murphy & Koehler 2022 (lean mass still rose with lifting at energy balance)." },
-  { id: "lean", name: "Lean / mild gain", lo: 0.03, hi: 0.10, mid: 0.07, goal: "gain",
+  { id: "lean", name: "Lean muscle gain", lo: 0.03, hi: 0.10, mid: 0.07, goal: "gain",
     why: "About 5–10% above maintenance, the range advised for advanced lifters, aiming for ~0.25% of body weight a week.",
     cite: "Iraki J, Fitschen P, Espinar S, Helms E. Sports. 2019;7(7):154." },
-  { id: "max", name: "Maximal gain", lo: 0.10, hi: Infinity, mid: 0.15, goal: "bulk",
+  { id: "max", name: "Build muscle (max)", lo: 0.10, hi: Infinity, mid: 0.15, goal: "bulk",
     why: "About 10–20% above maintenance for novice/intermediate lifters (~0.25–0.5% of body weight a week). A ~500 kcal/day surplus raised lean mass 2.8% in elite athletes, but a larger, unguided surplus added mostly fat, not more muscle.",
     cite: "Iraki 2019; Garthe I, et al. Appl Physiol Nutr Metab. 2011;36(4):547-554; Garthe I, et al. Eur J Sport Sci. 2013;13(3):295-303." },
 ];
@@ -8684,7 +8718,7 @@ function renderFit() {
       <div class="fit-btns"><button type="button" class="btn btn-steel" data-fit="goal" data-fit-goal="${alt.goal}">Change goal to ${esc(GOAL_LABEL(alt.goal))}</button>${f.want ? `<button type="button" class="btn btn-primary" data-fit="kcal" data-fit-kcal="${fixKcalFor(f.want, f)}">Adjust calories to ${fK(fixKcalFor(f.want, f))} kcal</button>` : ""}</div></div>`; }
     else if (f && f.mismatch) h += `<div class="fit-banner fit-mismatch" role="status"><p><strong>Your calories fit ${esc(f.band.name.toLowerCase())} better than ${esc(GOAL_LABEL(S.goal.type).toLowerCase())}.</strong> ${fK(f.intake)} kcal is ${pctTxt(f.pct)} vs your maintenance (~${fK(Math.round(f.maint / 10) * 10)}).${gainUnderTxt(f)}</p>
       <div class="fit-btns"><button type="button" class="btn btn-steel" data-fit="goal" data-fit-goal="${f.band.goal}">Change goal to ${esc(GOAL_LABEL(f.band.goal))}</button>${f.want && S.food.actualOn ? `<button type="button" class="btn btn-primary" data-fit="kcal" data-fit-kcal="${fixKcalFor(f.want, f)}">${f.want.mid > f.band.mid ? "Add" : "Reduce"} calories (${fK(fixKcalFor(f.want, f))} kcal)</button>` : ""}</div></div>`;
-    if (f && st === 4) h += `<p class="hint fit-line">Your intake: <strong>${fK(f.intake)} kcal</strong> = ${pctTxt(f.pct)} of your estimated maintenance (${fK(Math.round(f.maint / 10) * 10)} kcal) → <strong>${esc(f.band.name)}</strong>.</p>` + bandTable(f.band);
+    if (f && st === 4) h += `<p class="hint fit-line">Your intake: <strong>${fK(f.intake)} kcal</strong> = ${pctTxt(f.pct)} of your estimated maintenance (${fK(Math.round(f.maint))} kcal), in the <strong>${esc(f.band.name)}</strong> range.</p>` + bandTable(f.band);
     el.innerHTML = h; el.hidden = !h; } }
 const GOAL_LABEL = (t) => (E.GOALS && E.GOALS[t] ? E.GOALS[t].label : t);
 function fitAction(t) {
@@ -8726,11 +8760,11 @@ const LAZY = {};
 window.__BP = { muscleRegions: (m, x) => (E.muscleRegions ? E.muscleRegions(m, x) : null), get S() { return S; }, get R() { return R; }, get V() { return V; }, $, esc, fK, fW, fP, fWk, E, effMove, pftInsideStage, rampColor, renderViews: () => renderViews(), fDate, pftCtSkin, pftInsideOpen: () => pftInsideOpen(), save: () => save(), renderSummary: () => renderSummary(), go: (n) => go(n) };
 function lazyLoad(src) { if (LAZY[src]) return LAZY[src]; LAZY[src] = new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); }); return LAZY[src]; }
 (function () { const l = document.createElement("link"); l.rel = "stylesheet"; l.href = "assets/v7655.css?v=7696"; document.head.appendChild(l); })();
-function renderSnapshot() { if (typeof window.renderSnapshotNow === "function") return window.renderSnapshotNow(); const b = $("#hs-card"); if (b && R && !R.blocked) lazyLoad("assets/health-snapshot.js?v=7757").then(() => window.renderSnapshotNow(), () => {}); }
+function renderSnapshot() { if (typeof window.renderSnapshotNow === "function") return window.renderSnapshotNow(); const b = $("#hs-card"); if (b && R && !R.blocked) lazyLoad("assets/health-snapshot.js?v=7759").then(() => window.renderSnapshotNow(), () => {}); }
 function a1cCardHtml() { if (typeof window.a1cCardHtmlNow === "function") return window.a1cCardHtmlNow(); lazyLoad("assets/a1c-log.js?v=7655").then(() => { if (V.open && V.view === "home") renderViews(); }, () => {}); return `<div class="v-card a1-card" id="a1-card"><h2>A1c log</h2><p class="hint">Loading…</p></div>`; }
 window.BodyPlanFig3D = window.BodyPlanFig3D || { state: { on: false, failed: false, where: null } };
 function f3dMount() { if (window.__NO_PFT_FIG) return; if (typeof window.f3dMountNow === "function") return window.f3dMountNow(); if (!R || R.blocked) return;
-  lazyLoad("assets/fig3d-pft.js?v=7757").then(() => window.f3dMountNow(), () => { window.BodyPlanFig3D.state.failed = true; const h = document.getElementById("sum-pft"); if (h && !h.innerHTML) { h.hidden = false; h.innerHTML = `<figure class="f3d-fbfig"><img src="assets/f3d-ct-fallback.webp" alt="Example cross-section through the middle of the model" width="720" height="560"><figcaption>Example cross-section. The 3D model can't load on this device.</figcaption></figure>`; } }); }
+  lazyLoad("assets/fig3d-pft.js?v=7759").then(() => window.f3dMountNow(), () => { window.BodyPlanFig3D.state.failed = true; const h = document.getElementById("sum-pft"); if (h && !h.innerHTML) { h.hidden = false; h.innerHTML = `<figure class="f3d-fbfig"><img src="assets/f3d-ct-fallback.webp" alt="Example cross-section through the middle of the model" width="720" height="560"><figcaption>Example cross-section. The 3D model can't load on this device.</figcaption></figure>`; } }); }
 function printRegional(s, e) { const k = changeKind(s, e), c = FD.change(depotsAt(s.fatKg), depotsAt(e.fatKg)), m = muscleSplit(S.profile.sex, e.leanKg - s.leanKg);
   const fat = `around the organs ${fWd(c.vat.kg)} (${fPct(c.vat.pct)}), under the skin ${fWd(c.sub.kg)} (${fPct(c.sub.pct)})`, mus = `upper body ${fWd(m.up)}, legs &amp; glutes ${fWd(m.lo)}`;
   return `<p class="small"><b>${{ loss: "Where fat comes off first", gain: "Where muscle builds, and where fat would add", recomp: "Where you lose fat and gain muscle", hold: "Where things shift" }[k]} (estimate):</b> ${k === "gain" ? `lean (mostly muscle): ${mus}; fat: ${fat}.` : k === "recomp" ? `fat: ${fat}; lean (mostly muscle): ${mus}.` : `fat ${fat}.`}</p>`; }
@@ -8747,7 +8781,7 @@ function buildPrint() {
   ${(() => { const L = pftLadder(); if (!L || !(L.e.over || L.steps.length)) return ""; return `<h2>Health milestones</h2>${L.e.over ? `<p>Estimated personal fat threshold: a weight range of about ${pftRangeTxt(L.e)} (a likely range from your markers, not an exact line).</p>` : ""}${L.stages.length && L.stages[0].key !== "unknown" ? `<p>Estimated threshold status: ${L.stages.map((x) => `${x.frac === 0 ? "now" : x.frac === 1 ? "end" : "week " + Math.round(x.day / 7)}: ${esc(x.label.toLowerCase())}`).join(" · ")}.</p>` : ""}${L.steps.length ? `<h3>Milestone ladder (measurable goals)</h3><ol class="pr-ladder">${L.steps.map((x) => `<li>${x.state === "confirmed" ? "✓ " : ""}<b>${esc(x.label)}</b> (now ${esc(fmtStep(x, x.now))})${x.state === "confirmed" ? `: confirmed, ${esc(fmtStep(x, x.by.value))} at week ${x.by.week}` : ""}. ${esc(stepWhen(x))}${x.cite ? ` (${esc(x.cite)})` : ""}${x.remissionNote ? ` <i>${esc(x.remissionNote)}</i>` : ""}</li>`).join("")}</ol>` : ""}${L.recheck ? "<p><b>Recheck your labs with your clinician around week 12</b>, and again after each 5% of weight lost.</p>" : ""}<p><i>Study results are population averages, not predictions for you. This report does not estimate liver fat, organ fat or future lab values.</i></p>`; })()}
   ${(() => { const it = expectItems(), rc = recItems(); return (it ? `<h2>Where you can expect changes</h2><ul>${it.map(([, h]) => `<li>${h}</li>`).join("")}</ul>` : "") + (rc.length ? `<h2>Recommendations for you</h2><ul>${rc.map((r) => `<li><b>${r.h}.</b> ${r.b}${r.eff ? ` <i>Estimated effect: ${r.eff}</i>` : ""}</li>`).join("")}</ul>` : ""); })()}
   ${aiPlanHtml()}
-  <h2>Next three steps</h2><ol>${R.nextSteps.map((n) => `<li><b>${esc(n.title)}.</b> ${esc(n.body)}</li>`).join("")}</ol>
+  <h2>Next steps</h2><ol>${R.nextSteps.map((n) => `<li><b>${esc(n.title)}.</b> ${esc(n.body)}</li>`).join("")}</ol>
   ${R.warnings.length ? `<h2>Notes &amp; cautions</h2>${R.warnings.map((w) => `<p class="warn">${esc(w.m)}</p>`).join("")}` : ""}
   <h2 class="pb">Week by week</h2><table><thead><tr><th>Week</th><th>Date</th><th>Eat (kcal)</th><th>Burn</th><th>Weight (${uW()})</th><th>Body fat</th><th>Fat</th><th>Lean</th></tr></thead><tbody>${rows.map((r) => `<tr><td>${fWk(r.day)}</td><td>${fDate(r.day)}</td><td>${r.end ? "—" : fK(r.intake)}</td><td>${fK(r.tdee)}</td><td>${nW(r.weightKg)}</td><td>${fP(r.bf)}</td><td>${nW(r.fatKg)}</td><td>${nW(r.leanKg)}</td></tr>`).join("")}</tbody></table>
   <p class="foot"><b>Theosis Health</b> · theosishealth.com · an education company that doesn't provide medical care.<br>Educational tool, not medical advice. These are estimates from population research (Alpert 2005; Hall 2008/2011; Forbes 2000; Mifflin 1990; NHLBI 1998), and your results will differ. Talk with your clinician before major changes, especially if you're pregnant, take glucose-lowering medicine, or have a chronic condition.</p>`;
