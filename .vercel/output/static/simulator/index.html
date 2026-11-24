@@ -3220,8 +3220,11 @@ function surplusFor(p, move, F, L, day, mode) {
   const join = mode === "lean" && spec ? spec.fatJoin : LEAN_RATIO;
   // Lean can sit under the habits-band floor (GAIN_KCAL.lean[0] = 100) when the rate is small, so an advanced lifter
   // is not force-fed a surplus that mostly becomes fat. Beginners still land near 100 because the rate asks for it.
-  const lo = mode === "lean" ? 40 : GAIN_KCAL.lean[0];
-  return Math.round(clamp(P * (RHO_L_GAIN + join * RHO_F), lo, GAIN_KCAL.lean[1]) / 10) * 10;
+  // v7.7.59: no 40 kcal floor for Lean any more. When the muscle-gain rate is small (years of lifting, age 60+), a fixed 40 kcal/day was more
+  // than the muscle could use, so Lean ended up about half fat (e.g. 66-year-old advanced lifter: +0.9 lb lean, +0.8 lb fat in 16 weeks).
+  // Lean is now always sized to the rate plus its small fat share, rounded UP to 10 kcal so the rate is still fully fed.
+  if (mode === "lean") return Math.ceil(clamp(P * (RHO_L_GAIN + join * RHO_F), 0, GAIN_KCAL.lean[1]) / 10) * 10;
+  return Math.round(clamp(P * (RHO_L_GAIN + join * RHO_F), GAIN_KCAL.lean[0], GAIN_KCAL.lean[1]) / 10) * 10;
 }
 
 /* v7.6.20e: one rule for "fast gain, mostly fat" (surplus kcal/day vs maintenance), shared by habits.js and the Plan's target-weight path. Built only from GAIN_KCAL:
@@ -5639,8 +5642,8 @@ const nW = (kg, d = 1) => +(imp() ? kg * LB : kg).toFixed(d);
 const fW = (kg, d = 1) => `${nW(kg, d).toLocaleString("en-US")} ${uW()}`;
 const fWd = (kg) => { const v = nW(kg); return `${v > 0 ? "+" : v < 0 ? "−" : "±"}${Math.abs(v).toLocaleString("en-US")} ${uW()}`; };
 /* v7.6.82 (Nick): exact muscle-gain amounts aren't knowable, so a lean GAIN is never shown as a number; losses still are. */
-const fLeanL = (kg) => kg > 0.1 ? "some muscle gain likely" : `${fWd(kg)} lean`;
-const fLeanV = (kg) => kg > 0.1 ? "some gain likely" : fWd(kg);
+const fLeanL = (kg) => kg > 0.1 ? `about ${fWd(kg)} muscle (estimate)` : `${fWd(kg)} lean`;   // v7.7.59: show the same muscle estimate the Goal step shows, instead of "some muscle gain likely"
+const fLeanV = (kg) => fWd(kg);   // v7.7.59: the estimate, same as the Goal step
 const fK = (k) => Math.round(k).toLocaleString("en-US");
 const fP = (x) => `${(+x.toFixed(1))}%`;
 const fWk = (days) => +(days / 7).toFixed(1);
@@ -6532,7 +6535,7 @@ function mbarOutcome(d) {
   const dF = e.fatKg - st.fatKg, dL = e.leanKg - st.leanKg, T = 0.45, fit = typeof calorieFit === "function" ? calorieFit() : null;
   let lab = dF < -T && dL > T ? "Recomposition" : dF < -T && dL < -T ? "Fat loss, some lean loss" : dF < -T ? "Fat loss" : dF > T && dL > T ? "Weight gain" : dL > T ? "Lean gain" : dF > T ? "Fat gain" : "About maintenance";
   if (fit && fit.mismatch && fit.band && fit.band.id === "maint") lab = "About maintenance";
-  const parts = []; if (Math.abs(dF) >= T) parts.push(`fat ${fWd(dF)}`); if (dL >= T) parts.push("some muscle gain likely"); else if (dL <= -T) parts.push(`lean ${fWd(dL)}`);
+  const parts = []; if (Math.abs(dF) >= T) parts.push(`fat ${fWd(dF)}`); if (dL >= T) parts.push(`muscle about ${fWd(dL)} (estimate)`); else if (dL <= -T) parts.push(`lean ${fWd(dL)}`);
   const goalTxt = goalLabel(), same = S.food.actualOn ? ` (goal: ${goalTxt})` : "";
   return `${lab}${parts.length ? ": " + parts.join(", ") : ""}${same}`;
 }
@@ -6651,6 +6654,13 @@ const lean0 = () => S.profile.weightKg * (1 - bfInfo().bf / 100);
    how hard to push: a bigger calorie surplus builds a bit more muscle but adds more fat over the same weeks. The rows show totals over the weeks
    that apply (the Timeline, or the By-when date with a goal weight), not per month over a fixed 13 weeks. With a goal weight and no date the
    rows show how long each takes instead. Surpluses are shown to the nearest 10 kcal (they're averages over the run, so raw values read like +201). */
+/* v7.7.59: plain reason when the muscle-gain rate is trimmed for training age or age (same factors as the rate table: intermediate/advanced
+   rates, x0.85 at 40+, x0.7 at 60+; practitioner rules of thumb, McDonald and Aragon). Empty for a young beginner. */
+function slowGainNote() {
+  const exp = (S.move && S.move.experience) || "beginner", age = +S.profile.age || 0, yrs = exp === "advanced" ? "years of lifting" : exp === "intermediate" ? "a year or more of lifting" : "", old = age >= 40;
+  if (!yrs && !old) return "";
+  return `Muscle grows more slowly ${yrs ? `after ${yrs}` : ""}${yrs && old ? " and " : ""}${old ? `at age ${age}` : ""}, so every option here builds less muscle for you than for a young beginner, and a bigger surplus mostly adds fat.`;
+}
 function renderGainChoice(g, dir, isT, X) {
   const wrap = $("#g-gain"); if (!wrap || wrap.hidden) return;
   const box = $("#gain-opts"), sub = $("#g-gain-sub");
@@ -6662,6 +6672,7 @@ function renderGainChoice(g, dir, isT, X) {
   box.innerHTML = "";
   sub.textContent = weeks ? `A bigger calorie surplus builds a bit more muscle over your ${weeks} weeks, but adds more fat.` : toGoal ? `A bigger calorie surplus reaches ${fW(tgtKg)} sooner, but more of the gain is fat.` : "A bigger calorie surplus builds muscle a bit faster, but adds more fat.";
   if (noLift) { sub.textContent += " Muscle gain needs strength training, so add it on the Move step (next)."; return; }
+  { const sn = slowGainNote(); if (sn) sub.textContent += " " + sn; }
   let c = [];
   try { if (R && !R.blocked) c = E.compareGain(R.inp, weeks || 13, toGoal); } catch (e) { c = []; window.__gainErr = String(e); }
   const rows = c.filter((x) => x.mode !== "max"), max = c.find((x) => x.mode === "max");
@@ -6881,7 +6892,7 @@ function feasHtml0() {
   if (g.type === "bulk") { const sur = R.rec.rows[0].intake - Math.round(R.rec.rows[0].tdee);
     return `<div class="feas ${noLift ? "warn" : ""}">${noLift ? "<b>Muscle gain needs resistance training.</b> Add it on the Move step; without it the plan holds at maintenance." : `<b>Over ${swk} weeks: ${fWd(slean)} lean and ${fWd(sfat)} fat</b> (estimates), ending near ${fP(showE.bf)} body fat (from ${fP(s.bf)}). A surplus of about ${fK(Math.max(0, sur))} kcal a day supports a higher muscle-gain rate than Lean muscle gain, so more of the gain is muscle. Some of the extra food is still stored as fat.`}${as}${habitNote}</div>`; }
   if (g.type === "gain") { const ceil = R.main.ceilingHit ? ` You reach your ${fP(g.bfCeiling)} body-fat ceiling around week ${fWk(R.main.ceilingHit)}, so the plan holds there.` : "";
-    return `<div class="feas ${noLift || g.gainMode === "fast" ? "warn" : ""}">${noLift && g.gainMode !== "fast" ? "<b>Muscle gain needs resistance training.</b> Add it on the Move step." : `<b>Over ${swk} weeks: ${fWd(slean)} lean and ${fWd(sfat)} fat</b> (estimates), ${gainShare(s, showE)} of the gain as muscle, <b>ending at ${fP(showE.bf)} body fat</b> (from ${fP(s.bf)}), on a ${g.gainMode === "fast" ? "larger surplus that adds more fat" : g.gainMode === "moderate" ? "medium surplus, with a bit more muscle and more fat than Lean" : gainModeOf(g) === "hold" ? "small surplus that keeps body fat % steady" : "small surplus, so the scale moves slowly and body fat stays lower than on Build muscle (max)"}.${ceil}${as}`}${habitNote}</div>`; }
+    return `<div class="feas ${noLift || g.gainMode === "fast" ? "warn" : ""}">${noLift && g.gainMode !== "fast" ? "<b>Muscle gain needs resistance training.</b> Add it on the Move step." : `<b>Over ${swk} weeks: ${fWd(slean)} lean and ${fWd(sfat)} fat</b> (estimates), ${gainShare(s, showE)} of the gain as muscle, <b>ending at ${fP(showE.bf)} body fat</b> (from ${fP(s.bf)}), on a ${g.gainMode === "fast" ? "larger surplus that adds more fat" : g.gainMode === "moderate" ? "medium surplus, with a bit more muscle and more fat than Lean" : gainModeOf(g) === "hold" ? "small surplus that keeps body fat % steady" : "small surplus, so the scale moves slowly and body fat stays lower than on Build muscle (max)"}.${ceil}${(() => { const e = (S.move && S.move.experience) || "beginner", a = +S.profile.age || 0, y = e !== "beginner", o = a >= 40; return y || o ? ` Gains are slower ${y ? "after years of lifting" : ""}${y && o ? " and " : ""}${o ? "with age" : ""}.` : ""; })()}${as}`}${habitNote}</div>`; }
   if (g.type === "pft") return `<div class="feas"><b>${fWd(sfat)} of fat in ${swk} weeks</b> at a steady fat-loss pace, about ${fW(Math.abs(sfat) / Math.max(1, swk))} a week, ending near ${fP(showE.bf)} body fat. Lean mass: ${fWd(slean)}.${as}${habitNote}</div>`;   // v7.7.59: no threshold estimate (or already under it) runs as steady fat loss, so don't call it "holding steady"
   return `<div class="feas"><b>Holding steady for ${swk} weeks:</b> ${fWd(sfat)} fat, ${fWd(slean)} lean${noLift || assumed ? "" : " from your training"}.${as}${habitNote}</div>`;
 }
@@ -8308,8 +8319,8 @@ function heroHtml() {
   else { big = `${nW(e.weightKg)}<small>${uW()}</small>`; sub = `<strong>${fP(e.bf)} body fat</strong> after ${fWk(days)} weeks · ${fDate(days, true)}${rangeTxt ? ` · ${rangeTxt}` : ""}`; }
   const dFat = e.fatKg - s.fatKg, dLean = e.leanKg - s.leanKg;
   const how = S.food.psmf ? `on a clinician-guided PSMF (about ${fK(fixedKcal())} kcal a day)` : S.food.actualOn ? `eating about ${fK(fixedKcal())} kcal a day` : "following this plan";
-  const sentence = reached ? `Starting at <strong>${fW(s.weightKg)}</strong> and ${fP(s.bf)} body fat, ${how} gets you to your goal in about <strong>${fWk(R.main.reached)} weeks</strong>: <strong>${fW(e.weightKg)} at ${fP(e.bf)}</strong>, with ${fWd(dFat)} of fat and ${Math.abs(dLean) < 0.23 ? "lean mass essentially held" : dLean > 0 ? "some muscle gain likely" : `${fWd(dLean)} of lean mass`}.`
-    : `After <strong>${fWk(days)} weeks</strong> ${how}, you'd be about <strong>${fW(e.weightKg)} at ${fP(e.bf)} body fat</strong>: ${fWd(dFat)} of fat and ${Math.abs(dLean) < 0.23 ? "lean mass essentially held" : dLean > 0 ? "some muscle gain likely" : `${fWd(dLean)} of lean mass`}.`;
+  const sentence = reached ? `Starting at <strong>${fW(s.weightKg)}</strong> and ${fP(s.bf)} body fat, ${how} gets you to your goal in about <strong>${fWk(R.main.reached)} weeks</strong>: <strong>${fW(e.weightKg)} at ${fP(e.bf)}</strong>, with ${fWd(dFat)} of fat and ${Math.abs(dLean) < 0.23 ? "lean mass essentially held" : dLean > 0 ? `about ${fWd(dLean)} of muscle (an estimate)` : `${fWd(dLean)} of lean mass`}.`
+    : `After <strong>${fWk(days)} weeks</strong> ${how}, you'd be about <strong>${fW(e.weightKg)} at ${fP(e.bf)} body fat</strong>: ${fWd(dFat)} of fat and ${Math.abs(dLean) < 0.23 ? "lean mass essentially held" : dLean > 0 ? `about ${fWd(dLean)} of muscle (an estimate)` : `${fWd(dLean)} of lean mass`}.`;
   const before = photo ? `<img class="photo" src="${photo}" alt="Your photo (before)">` : FIG.svg(st, { title: `Before: ${fP(b.bf)} body fat` });
   const BD = bandNow(), bandTxt = BD && Math.abs(BD.weightKg.hi - BD.weightKg.lo) > 0.3 ? `<p class="hint band-txt" data-band>Likely range at week ${fWk(days)}: <b>${nW(BD.weightKg.lo)}–${fW(BD.weightKg.hi)}</b>, if your true daily burn is about 8% lower or higher than estimated (shaded on the chart). Even the best prediction equation lands within 10% of measured burn for most, but not all, people (Frankenfield 2005).</p>` : "";
   const stopTxt = R.main.stopped ? ` The projection stops at week ${fWk(R.main.stopped.day)}; see the note below.` : "";
@@ -8318,7 +8329,7 @@ function heroHtml() {
   <div class="result-hero mt1"><div><div class="big">${big}</div><p class="big-sub">${sub}</p></div><p class="summary">${sentence}${stopTxt}</p></div>
   ${photoPairHtml()}
   <div class="stats">${stat("Weight", nW(s.weightKg), nW(e.weightKg), fWd(e.weightKg - s.weightKg), "")}${stat("Body fat", fP(s.bf), fP(e.bf), `${(e.bf - s.bf > 0 ? "+" : "")}${(e.bf - s.bf).toFixed(1)} points`, "")}
-  ${stat("Fat", nW(s.fatKg), nW(e.fatKg), fWd(dFat), "")}${dLean > 0.1 ? `<div class="stat"><div class="k">Muscle</div><div class="v">Some gain likely</div><div class="d">amount varies by person</div></div>` : stat("Lean", nW(s.leanKg), nW(e.leanKg), fWd(dLean), "")}</div>
+  ${stat("Fat", nW(s.fatKg), nW(e.fatKg), fWd(dFat), "")}${dLean > 0.1 ? `<div class="stat"><div class="k">Muscle</div><div class="v">${fWd(dLean)}</div><div class="d">estimate; varies by person</div></div>` : stat("Lean", nW(s.leanKg), nW(e.leanKg), fWd(dLean), "")}</div>
   ${CONFIG.FIG3D && webgl() ? anatReadHtml(s, e) : ""}
   ${takeawaysHtml(bandTxt)}`;
 }
@@ -8614,7 +8625,7 @@ function renderHabitsRead() {
     return `<p class="hab-maint" data-hab-maint>You eat about <b>${fK(f.intake)} kcal</b> a day. Maintenance for someone like you is estimated at about <b>${fK(m)} kcal</b>. ${Math.abs(d) < 50 ? "That's roughly the same, so your weight would likely stay about level." : `That's about <b>${fK(Math.abs(d))} kcal ${d > 0 ? "over" : "under"}</b> a day.`} These are estimates; real needs vary.</p>`; })()}
   <p class="hab-conf"><span class="tag">${c.likelihood === "likely" ? "Likely match" : "Possible match"}</span> A likely match from what you entered. It is not a diagnosis, a judgment or a recommendation.</p>
   <ul class="hab-why">${c.why.map((w) => `<li>${esc(w)}</li>`).join("")}</ul>
-  <p class="read">If you keep exactly these habits, the model estimates you would ${dir(pj.dW)} over ${pj.weeks} weeks: about ${fW(Math.abs(pj.dF))} of fat ${pj.dF >= 0 ? "gained" : "lost"} and ${pj.dL > 0.1 ? "some muscle gain likely" : `${fW(Math.abs(pj.dL))} of lean mass ${pj.dL >= 0 ? "kept" : "lost"}`}.${c.stopped ? " The projection stops early here to stay inside safe limits." : ""}</p>
+  <p class="read">If you keep exactly these habits, the model estimates you would ${dir(pj.dW)} over ${pj.weeks} weeks: about ${fW(Math.abs(pj.dF))} of fat ${pj.dF >= 0 ? "gained" : "lost"} and ${pj.dL > 0.1 ? `about ${fW(pj.dL)} of muscle gained (an estimate)` : `${fW(Math.abs(pj.dL))} of lean mass ${pj.dL >= 0 ? "kept" : "lost"}`}.${c.stopped ? " The projection stops early here to stay inside safe limits." : ""}</p>
   ${c.offTrack ? `<div class="hab-off" role="group" aria-label="This path may not be what you want"><ul class="alerts">${c.offReasons.map((m) => alertHtml({ t: "warn", m })).join("")}</ul>
     <p class="hab-q"><b>Do you want to stay on this path?</b></p>
     <div class="hab-btns"><button type="button" class="btn btn-ghost" data-hab="stay"${hab.stay === "stay" ? ' aria-pressed="true"' : ""}>Yes, this is my path</button><button type="button" class="btn btn-primary" data-hab="plan">No, help me build a plan</button><button type="button" class="btn btn-ghost" data-hab="see">See what this path will look like over time</button></div>
