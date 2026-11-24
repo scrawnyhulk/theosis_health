@@ -1064,6 +1064,20 @@ input[type="checkbox"],input[type="radio"]{min-width:24px;min-height:24px}
 .gain-list li{border:1px solid var(--line,#ddd);border-radius:8px;padding:.45rem .6rem;font-size:.92em}
 .gain-cmp{margin-top:.1rem}.g-gain-sub{margin:.15rem 0 .45rem}
 .gain-list li.on{border-color:var(--accent,#2a6);background:rgba(40,160,100,.06)}
+/* strength-goal-1123 "Get stronger" (mockup) */
+.sg-best{display:grid;gap:.5rem;margin:.4rem 0 .2rem}
+.sg-row{display:grid;grid-template-columns:minmax(7.5rem,1fr) minmax(6.5rem,8.5rem) auto minmax(5.5rem,7rem);align-items:center;gap:.5rem}
+.sg-row .field,.sg-add-row .field{margin:0}.sg-name{font-weight:600}.sg-x{color:var(--muted,#8e9aab)}
+.sg-list{list-style:none;margin:.6rem 0 0;padding:0;display:grid;gap:.5rem}
+.sg-li{display:grid;grid-template-columns:1.1fr 1fr 1fr 1.1fr;gap:.6rem;align-items:center;padding:.7rem .9rem;border-radius:12px;background:rgba(255,255,255,.03);box-shadow:0 0 0 1px rgba(255,255,255,.1)}
+.sg-li small{display:block;color:var(--muted,#8e9aab);font-size:.8rem;font-weight:400}.sg-n{font-size:1.05rem}.sg-e1 b{font-size:1.15rem}
+.sg-ch.up{color:#7ed39a}.sg-none{grid-column:2/-1}
+@media (max-width:520px){.sg-li{grid-template-columns:1fr 1fr}.sg-li .sg-n,.sg-none{grid-column:1/-1}.sg-ch{grid-column:1/-1}}
+.sg-add{margin-top:.9rem}.sg-add-row{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin-top:.35rem}
+.sg-add-row select{min-height:2.75rem}.sg-add-row .sg-w{flex:1 1 7rem;max-width:9rem}.sg-add-row .sg-r{flex:1 1 6rem;max-width:7.5rem}.sg-add-row .btn{min-height:2.75rem}
+.sg-msg:empty{display:none}.sg-body{margin-top:.8rem}.sg-more{margin-top:.6rem}.sg-more summary{cursor:pointer;font-weight:600;min-height:44px;display:flex;align-items:center}
+.sg-row .field,.sg-row .control{min-width:0}.sg-row input{min-width:0;width:100%}
+@media (max-width:520px){.sg-row{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);row-gap:.3rem}.sg-row .sg-name{grid-column:1/-1}}
 .bulk-tbl tr.on td{background:rgba(40,160,100,.08)}
 .qc-card[hidden],.qc-wrap[hidden]{display:none!important}
 .meal-vs{width:100%;margin:.6rem 0;font-size:.92em}.meal-vs caption{text-align:left;font-weight:600;padding-bottom:.3rem}
@@ -2123,6 +2137,14 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')set(false)})
                 </fieldset>
                 <p class="hint">Maximal uses your full fat ceiling (about 31 kcal per lb of body fat a day). Steady uses about 60% of it, capped at a quarter of your daily burn.</p>
               </div>
+              <div id="g-strength" class="g-strength" hidden>
+                <span class="label" id="sg-lifts-h">Lifts to track</span>
+                <div class="chips mt1" role="group" aria-labelledby="sg-lifts-h" id="sg-lift-chips"></div>
+                <p class="hint">Pick the lifts you want to get stronger at. Your progress is measured by these, not the scale.</p>
+                <span class="label mt1" id="sg-best-h">Your current best <span class="g-opt">(optional)</span></span>
+                <div class="sg-best" id="sg-best" aria-labelledby="sg-best-h"></div>
+                <p class="hint">Your heaviest recent set, for example 135 lb for 5 reps. Leave it blank if you're not sure. You can add it later on the Projection page.</p>
+              </div>
               <div id="g-exp">
                 <span class="label">Lifting experience</span>
                 <fieldset class="seg sm"><legend class="sr-only">Lifting experience</legend>
@@ -2354,6 +2376,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')set(false)})
           <header class="step-head"><p class="eyebrow">Step 5 of 5</p><h1 id="h-proj" tabindex="-1">Projection</h1></header>
           <div id="fit-banner-5" class="fit-wrap" hidden></div>
           <div class="card hab-path" id="hab-path" hidden></div>
+          <div class="card strength-card" id="strength-card" aria-live="polite" hidden></div>
           <div class="card" id="proj-hero" aria-live="polite"></div>
           <div class="card mt1 adv-only" id="ll-proj-note" role="status" hidden></div>
           <div class="card mt1 f3d" id="f3d-phone" hidden></div>
@@ -2610,6 +2633,7 @@ const GOALS = {
   gain:         { label: "Lean muscle gain", loss: false },
   maintain:     { label: "Maintain & tone", loss: false },
   bulk:         { label: "Build muscle (max)", loss: false },
+  strength:     { label: "Get stronger", loss: false },   // strength-goal-1123 (mockup): about maintenance, progress tracked by lifts
   targetWeight: { label: "Reach a target weight", loss: null },
   targetBf:     { label: "Reach a target body fat %", loss: true },
   pft:          { label: "Get under my fat threshold", loss: true },   // v7: mapped to a target weight (pft.js) by the UI
@@ -2865,7 +2889,7 @@ function referenceWeight(p, leanKg) {
   if (p.bf <= over) return { kg: p.weightKg, basis: "current weight" };
   return { kg: leanKg / (1 - healthy), basis: `your lean mass at ${Math.round(healthy * 100)}% body fat` };
 }
-const PROTEIN_PER_KG = { maxloss: 2.2, steady: 2.0, targetBf: 2.0, targetWeight: 2.0, recomp: 2.0, gain: 1.8, maintain: 1.6, bulk: 2.2 };
+const PROTEIN_PER_KG = { maxloss: 2.2, steady: 2.0, targetBf: 2.0, targetWeight: 2.0, recomp: 2.0, gain: 1.8, maintain: 1.6, bulk: 2.2, strength: 1.8 };
 /* v4 protein: 1 g per lb (2.2 g/kg) for anyone lifting or gaining. With high body fat (BMI >= 30, or body fat above 30% men /
    40% women) it's based on goal weight or ideal body weight (user's pick) instead of current weight. Moderately high body fat
    keeps the lean-mass-based reference. Others keep the goal table. PSMF has its own rule (psmfPlan). */
@@ -3209,6 +3233,10 @@ function bulkSurplus(p, move, day) {
   const st = yrs < 1 ? "beginner" : yrs < 3 ? "intermediate" : "advanced";
   return Math.max(BULK_MIN, BULK_SURPLUS[p.sex === "f" ? "f" : "m"][st]);
 }
+/* strength-goal-1123 "Get stronger" (mockup): about maintenance plus at most a tiny surplus, so the body stays about the same and the plan is about
+   lifting heavier. It reuses the Lean muscle gain sizing (the person's own muscle-gain rate, surplusFor "lean"), capped at the bottom of the Lean
+   band (GAIN_KCAL.lean[0] = 100 kcal/day). No new numbers. Without lifting there is nothing to fuel, so it holds at maintenance. */
+function strengthSurplus(p, move, F, L, day) { if (weeklyTraining(move).liftSessions <= 0) return 0; return Math.min(GAIN_KCAL.lean[0], surplusFor(p, move, F, L, day || 0, "lean")); }
 function surplusFor(p, move, F, L, day, mode) {
   if (mode === "max") return bulkSurplus(p, move, day || 0);
   if (mode === "hold") mode = "lean";   // v7.6.3: "keep body fat %" removed; old saved plans map to Lean
@@ -3241,6 +3269,7 @@ function deficitFor(inp, pace, tdee, F, L, k, day) {
   else if (g.type === "steady") def = Math.min(0.6 * ceilEnd, 0.25 * tdee);
   else if (g.type === "recomp") def = Math.min(0.10 * tdee, 0.3 * ceilEnd);
   else if (g.type === "maintain") def = 0;
+  else if (g.type === "strength") def = -strengthSurplus(p, inp.move, F, L, day);
   else if (dir === "loss") def = pace <= 0.6 ? Math.min(pace * ceilEnd, 0.25 * tdee) : pace * ceilEnd;
   else if (dir === "gain" && g.gainMode === "date") {   // reach g.target on day g.dateDay: lean at the training-limited rate, the rest as fat
     const n = Math.max(0, (g.target + 0.15 - F - L) / Math.max(3, g.dateDay - (day || 0))), P = leanPotentialPerDay(p, inp.move, day || 0, "high", L), ln = Math.min(P, n);
@@ -3640,6 +3669,7 @@ function warningsFor(R) {
     if (R.dir === "gain" && end.weightKg > p.weightKg * 1.25) W.push({ t: "info", m: `That's a big gain (${lbs(end.weightKg - p.weightKg)} lb, ${Math.round(100 * (end.weightKg / p.weightKg - 1))}%). Many people do it in phases of 3–6 months with a check-in between. The projection shows it as one continuous plan.` });
   }
   if (R.dir === "gain" && R.feas.status === "ceiling") W.push({ t: "info", m: "You'd reach the body-fat ceiling before the target weight. Many lifters then run a short cut (4–8 weeks) and start the next lean phase from there." });
+  if (R.inp.goal.type === "strength" && tr.liftSessions === 0) W.push({ t: "warn", m: "Getting stronger needs lifting. Add it on the Move step; until then the plan just holds your weight." });
   if (R.inp.goal.type === "recomp" && tr.liftSessions === 0) W.push({ t: "warn", m: "Recomposition depends on resistance training. Without it, a small deficit just means slow fat loss." });
   const leanChange = end.leanKg - start.leanKg;
   if (leanChange < -1) W.push({ t: "warn", m: `This projection loses about ${lbs(-leanChange)} lb of lean mass. More protein, lifting, or a smaller deficit would protect it.` });
@@ -3689,6 +3719,10 @@ function nextStepsFor(R) {
   add(R.dir === "gain" && R.inp.goal.type !== "bulk" && gm === "moderate", "Aim for about 0.25–0.5% body-weight gain per week", `Check your waist every two weeks; if it climbs, ${toLean}.`);
   add(R.dir === "gain" && R.inp.goal.type !== "bulk" && gm === "lean", "Aim for about 0.25% body-weight gain per week (less if you're advanced)", "If the scale climbs faster than that, trim 100–150 kcal. Most of the extra would be fat.");
   add(R.dir === "gain" && R.inp.goal.type !== "bulk" && gm === "fast", "Aim for 0.5–1% body-weight gain per week", `Check your waist every two weeks. If it climbs quickly, switch back to Lean.`);
+  // strength-goal-1123: training guidance from the ACSM position stand on progression models (2009); progression pace is a coaching rule of thumb (Rippetoe & Kilgore)
+  add(R.inp.goal.type === "strength", "Lift heavier for fewer reps", "For strength, experienced lifters do most work sets at about 1–6 reps with heavy weights. Newer lifters can build up with 8–12 reps at lighter weights first (ACSM 2009 strength guidelines).");
+  add(R.inp.goal.type === "strength", "Add weight when you beat your target reps", "When you can do 1–2 more reps than your target on two workouts in a row, add a little weight, about 2–10% (ACSM 2009 strength guidelines). Rest 2–3 minutes between heavy sets of big lifts.");
+  add(R.inp.goal.type === "strength", "Track your lifts, not the scale", "Your weight should stay about the same on this goal. Log your best set for each lift on this page and watch those numbers climb.");
   add(R.inp.goal.type === "recomp" || R.inp.goal.type === "maintain", "Track waist and strength, not just the scale", "In a recomposition the scale barely moves. A shrinking waist and rising lifts show it's working.");
   add(true, "Judge the weekly average, not one weigh-in", "Water and salt swing the scale 1–3 lb day to day. Weigh daily if you like, and log your weekly average in the Weekly check-in on this page. Re-run this plan every 4–6 weeks with fresh numbers.");
   return S;
@@ -5350,6 +5384,10 @@ return { KEY, MEALS, MEAL_IDS, dateKey, addDays, isDate, mealFor, empty, normali
     ["iom-dri-protein", "IOM 2005 (protein RDA)", "Protein and Amino Acids (chapter 10). In: Institute of Medicine. Dietary Reference Intakes for Energy, Carbohydrate, Fiber, Fat, Fatty Acids, Cholesterol, Protein, and Amino Acids. Washington, DC: National Academies Press; 2002/2005. Adult protein RDA 0.8 g per kg a day, assuming normal body composition. Read level: standard value, not re-read for this release.", "Body fat estimates and reference ranges", "https://www.ncbi.nlm.nih.gov/books/NBK56068/"],
     ["ada-standards", "ADA Standards of Care (A1c bands)", "American Diabetes Association. Classification and diagnosis of diabetes: Standards of Care in Diabetes. Diabetes Care. A1c 5.7–6.4% is the prediabetes range and 6.5% or more the diabetes range (see also the NIDDK A1c test). " + NR, "Body fat estimates and reference ranges"],
     ["acsm-equations", "ACSM metabolic equations", "American College of Sports Medicine. ACSM's Guidelines for Exercise Testing and Prescription. Metabolic equations for walking and running. " + NR, "Energy and body composition"],
+    // strength-goal-1123 ("Get stronger" mockup)
+    ["acsm2009-progression", "ACSM 2009 (resistance-training progression)", "American College of Sports Medicine. Position stand: Progression models in resistance training for healthy adults. Med Sci Sports Exerc 2009;41(3):687–708. For strength: novices about 60–70% of 1RM for 8–12 reps; experienced lifters cycle heavier loads (about 80–100% of 1RM, emphasis on 1–6 reps); at least 2–3 min rest between sets of core lifts with heavy loads; add about 2–10% load when 1–2 reps over the target can be done on two consecutive sessions. " + NR, "Muscle, protein and training"],
+    ["epley1985", "Epley 1985 (estimated 1-rep max)", "Epley B. Poundage chart. Boyd Epley Workout. Lincoln, NE: Body Enterprises; 1985. Estimated 1-rep max = weight × (1 + reps ÷ 30). A coaching formula, most often used for sets of about 10 reps or fewer. " + NR, "Muscle, protein and training"],
+    ["rippetoe-pp", "Rippetoe & Kilgore (Practical Programming)", "Rippetoe M, Kilgore L. Practical Programming for Strength Training. Wichita Falls, TX: Aasgaard Company; 2006 (later editions with Baker A). Defines novice, intermediate and advanced lifters by how often they can add weight: workout to workout, week to week, and over longer cycles. A coaching text, not a study. " + NR, "Muscle, protein and training"],
     ["devine1974", "Devine 1974", "Devine BJ. Gentamicin therapy. Drug Intell Clin Pharm 1974;8:650–5 (source of the ideal body weight formula). " + NR, "Body fat estimates and reference ranges"],
   ];
 
@@ -5370,6 +5408,7 @@ return { KEY, MEALS, MEAL_IDS, dateKey, addDays, isDate, mealFor, empty, normali
   // Inline "Author year" text is turned into numbered buttons by a DOM pass (linkify). Alias table: [regex source, [ids]].
   const nm = (name, year) => `\\b${name}(?:,?\\s+(?:&|and)\\s+[A-Z][\\w\\-]+)?(?:,?\\s+et al\\.?,?)?,?\\s*(?:${year}[ab]?|\\(${year}[ab]?\\))`;
   const ALIAS = [
+    ["ACSM 2009 strength guidelines", ["acsm2009-progression"]], ["Rippetoe &(?:amp;)? Kilgore", ["rippetoe-pp"]], ["Epley 1985", ["epley1985"]],   // strength-goal-1123; listed first so the generic "ACSM 2009" (Donnelly, weight loss) doesn't catch them
     ["Look AHEAD \\(Wing 2011\\)", ["wing2011"]], ["DiRECT \\(Lean 2018\\)", ["direct2018"]], ["Donnelly 2009 \\(ACSM\\)", ["donnelly2009"]],
     ["Helms,\\s+Zinn et al\\.? 2014", ["helms2014b"]], ["Helms,\\s+Aragon et al\\.? 2014", ["helms2014a"]], ["Aragon et al\\.? 2014", ["helms2014a"]],
     ["Antonio 2014, 2015, 2016", ["antonio2014", "antonio2015", "antonio2016"]], ["Lean 2018/2019", ["direct2018"]],
@@ -5472,9 +5511,9 @@ return { KEY, MEALS, MEAL_IDS, dateKey, addDays, isDate, mealFor, empty, normali
   function openPage(id) { if (!window.TheosisInfo) return; window.TheosisInfo.PAGES.sources.h = pageHtml(); window.TheosisInfo.open("sources");
     if (id) { const li = document.getElementById("srcp-" + id); if (li) { li.classList.add("src-hit"); li.setAttribute("tabindex", "-1"); li.scrollIntoView({ block: "center" }); li.focus(); } } }
   // v7.6.48 citation audit: verified PubMed IDs replace title searches (a title search for a non-paper entry, "mcdonald", redirected to an unrelated wound-care paper, PMID 20424292). Each PMID below was matched on first author, year, volume and first page. See REFERENCE-AUDIT.md.
-  const PMID = {"acg2017": "27995906", "acs2022": "35294043", "ainsworth2011": "21681120", "alpert2005": "15615615", "androulakis2020": "31797219", "antonio2014": "24834017", "antonio2015": "26500462", "antonio2016": "26778925", "asco2020": "32432946", "ashwell2012": "22106927", "bickel2011": "21131862", "bistrian1978": "702762", "browning2004": "15565570", "byrne2018": "28925405", "campbell2020": "33467235", "carroll2008": "18239557", "cava2017": "28507015", "chang2014": "25183847", "chaston2008": "18180786", "deurenberg1991": "2043597", "direct2018": "29221645", "dpp2002": "11832527", "dulloo1998": "9734736", "espen2017": "27637832", "espen2021": "33946039", "fabbrini2009": "19706383", "fabbrini2010": "20041406", "forbes2000": "10865771", "frankenfield2005": "15883556", "fyfe2022": "34822137", "garthe2011": "21558571", "garthe2013": "23679146", "grundy2019": "30586774", "hall2011": "21872751", "hallgreen2008": "18087265", "hamman2006": "16936160", "helms2014a": "24864135", "helms2014b": "24092765", "helms2023": "37914977", "iraki2019": "31247944", "iversen2021": "34125411", "jager2017": "28642676", "janssen2000": "10904038", "jensen2008": "18987271", "karpe2015": "25365922", "katzmarzyk2010": "19828714", "kelly2009": "19753111", "keytel2005": "15966347", "kouri1995": "7496846", "kuk2009": "19576300", "lear2007": "17684205", "lim2011": "21656330", "longland2016": "26817506", "lookahead2014": "24307184", "lovejoy2008": "18332882", "magkos2016": "26916363", "mclaughlin2003": "14623617", "merlotti2017": "28148928", "mifflin1990": "2305711", "morton2018": "28698222", "murphy2022": "34623696", "neeland2012": "22990274", "nhlbi1998": "9813653", "ntuk2014": "24974975", "patel2016": "27582882", "pelland2026": "41343037", "peos2021": "33587549", "perreault2012": "22683134", "raji2001": "11701707", "refalo2023": "36334240", "riddle2021": "34462270", "roberts2020": "32218059", "robinson2024": "38970765", "schoenfeld2017": "27433992", "schoenfeld2018": "29497353", "schoenfeld2019": "30558493", "schorr2018": "29950175", "shulman1990": "2403659", "slater2019": "31482093", "stefan2019": "30174213", "tang2013": "23382291", "taylor2008": "18726585", "taylor2015": "25515001", "taylor2018": "30078554", "taylor2023": "37593846", "thomas2013": "23628852", "vilargomez2015": "25865049", "villareal2017": "28514618", "weinheimer2010": "20591106", "wing2011": "21593294", "woolcott2018": "30030479", "wulan2010": "20079586"};
+  const PMID = {"acsm2009-progression": "19204579", "acg2017": "27995906", "acs2022": "35294043", "ainsworth2011": "21681120", "alpert2005": "15615615", "androulakis2020": "31797219", "antonio2014": "24834017", "antonio2015": "26500462", "antonio2016": "26778925", "asco2020": "32432946", "ashwell2012": "22106927", "bickel2011": "21131862", "bistrian1978": "702762", "browning2004": "15565570", "byrne2018": "28925405", "campbell2020": "33467235", "carroll2008": "18239557", "cava2017": "28507015", "chang2014": "25183847", "chaston2008": "18180786", "deurenberg1991": "2043597", "direct2018": "29221645", "dpp2002": "11832527", "dulloo1998": "9734736", "espen2017": "27637832", "espen2021": "33946039", "fabbrini2009": "19706383", "fabbrini2010": "20041406", "forbes2000": "10865771", "frankenfield2005": "15883556", "fyfe2022": "34822137", "garthe2011": "21558571", "garthe2013": "23679146", "grundy2019": "30586774", "hall2011": "21872751", "hallgreen2008": "18087265", "hamman2006": "16936160", "helms2014a": "24864135", "helms2014b": "24092765", "helms2023": "37914977", "iraki2019": "31247944", "iversen2021": "34125411", "jager2017": "28642676", "janssen2000": "10904038", "jensen2008": "18987271", "karpe2015": "25365922", "katzmarzyk2010": "19828714", "kelly2009": "19753111", "keytel2005": "15966347", "kouri1995": "7496846", "kuk2009": "19576300", "lear2007": "17684205", "lim2011": "21656330", "longland2016": "26817506", "lookahead2014": "24307184", "lovejoy2008": "18332882", "magkos2016": "26916363", "mclaughlin2003": "14623617", "merlotti2017": "28148928", "mifflin1990": "2305711", "morton2018": "28698222", "murphy2022": "34623696", "neeland2012": "22990274", "nhlbi1998": "9813653", "ntuk2014": "24974975", "patel2016": "27582882", "pelland2026": "41343037", "peos2021": "33587549", "perreault2012": "22683134", "raji2001": "11701707", "refalo2023": "36334240", "riddle2021": "34462270", "roberts2020": "32218059", "robinson2024": "38970765", "schoenfeld2017": "27433992", "schoenfeld2018": "29497353", "schoenfeld2019": "30558493", "schorr2018": "29950175", "shulman1990": "2403659", "slater2019": "31482093", "stefan2019": "30174213", "tang2013": "23382291", "taylor2008": "18726585", "taylor2015": "25515001", "taylor2018": "30078554", "taylor2023": "37593846", "thomas2013": "23628852", "vilargomez2015": "25865049", "villareal2017": "28514618", "weinheimer2010": "20591106", "wing2011": "21593294", "woolcott2018": "30030479", "wulan2010": "20079586"};
   // Books, reports and non-PubMed items: a PubMed title search lands on unrelated papers, so no link is shown (flagged in REFERENCE-AUDIT.md).
-  const NOLINK = new Set(["mcdonald", "hodgdon1984", "idf2006", "nice-ng246", "keys1950", "forbes1987", "ada-standards", "acsm-equations", "devine1974"]);
+  const NOLINK = new Set(["mcdonald", "hodgdon1984", "idf2006", "nice-ng246", "keys1950", "forbes1987", "ada-standards", "acsm-equations", "devine1974", "epley1985", "rippetoe-pp"]);
   const DOI = { barakat2020: "10.1519/SSC.0000000000000584" }; // verified via Crossref (title, authors, Strength Cond J 2020;42:7-21)
   const fixLink = (id, link) => NOLINK.has(id) ? "" : PMID[id] ? "https://pubmed.ncbi.nlm.nih.gov/" + PMID[id] + "/" : DOI[id] ? "https://doi.org/" + DOI[id] : link;
   REG.forEach((r) => { r[4] = fixLink(r[0], r[4]); });
@@ -5591,6 +5630,7 @@ const GOAL_OPTS = [
   ["recomp", "Body recomposition", "Lose fat and add muscle at about the same weight. Needs lifting."],
   ["gain", "Lean muscle gain", "A small surplus. The scale moves slowly, body fat stays lower, and you still gain muscle."],
   ["bulk", "Build muscle (max)", "A bigger surplus and a higher muscle-gain rate, so you gain more size. Some fat comes with it."],
+  ["strength", "Get stronger", "Lift heavier without trying to get bigger. Eat about what you burn, and track your progress by your lifts instead of the scale."],
   ["maintain", "Maintain & tone", "Hold your weight while you train."],
   ["targetWeight", "Reach a target weight", "Pick a number and get a realistic timeline."],
   ["targetBf", "Reach a target body fat %", "Pick any body fat %, lower or higher than today. Go lower to lean out, or higher to gain weight."],
@@ -5606,7 +5646,8 @@ const defaults = () => ({
     health: { pregnant: false, bf: "none", bfMonths: 3, bfPump: false, bfMulti: false, cancer: "no", glucoseMeds: false, edHistory: false, meds: "unknown", medAck: false, diabetes: "unknown", diabetesAuto: false, diabetesPicked: false, a1c: null, fattyLiver: "unknown", labs: {} },
     fat: { carry: "", menopause: "", ancestry: "" } },
   fig: { mode: "skin", tone: 2, skin: 2, top: false, photoThumb: false },
-  goal: { type: "steady", targetBf: null, targetWeightKg: null, deadline: null, window: 12, pace: 0.6, touched: false, gainMode: "lean", gainTargetKg: null, bfCeiling: null, exactW: null, exactBf: null, exactBy: null, exactLead: null, exactStretchAck: null },
+  goal: { type: "steady", targetBf: null, targetWeightKg: null, deadline: null, window: 12, pace: 0.6, touched: false, gainMode: "lean", gainTargetKg: null, bfCeiling: null, exactW: null, exactBf: null, exactBy: null, exactLead: null, exactStretchAck: null,
+    strength: { lifts: ["squat", "bench", "deadlift"], log: [] } },   // strength-goal-1123: lifts to track and dated best sets ({ key, date, wKg, reps }); arrays so merge() keeps them
   move: { steps: 7500, preset: "none", noLift: false, noCardio: false, presetBefore: null, cardioMin: 0, cardio: [{ type: "cycling", effort: "moderate", by: "effort" }], experience: "beginner", plannerOn: false, planner: DAYS.map(() => ({ lift: 0, cardio: 0 })), adv: { style: "mixed", sets: 10, rir: "2-3" },
     lifts: [{ type: "hypertrophy", effort: "moderate", min: 60, days: 3 }], groups: {} },
   food: { proteinRef: "goal", actualOn: false, actualKcal: null, actualProtein: "moderate", actualProteinG: null, actualCarbsG: null, actualFatG: null, actualProteinEst: true, style: "balanced", dietBreakEvery: 0, bmrEq: "mifflin", psmf: false, mealDay: "everyday", favBase: "everyday", mealDiet: "balanced", mealPattern: "all", mealSrc: "rec", mealUsed: null, mealMacros: null, log: [], logUsed: false, logDone: false, psmfNoteOff: null, avgUsed: null,
@@ -6684,6 +6725,71 @@ function renderGainChoice(g, dir, isT, X) {
     + (max && g.type === "gain" && weeks ? `<p class="hint gain-cmp">For comparison, <b>Build muscle (max)</b> (a separate goal above): +${fK(r10(max.surplus))} kcal/day, ≈ ${fWd(Math.max(0, max.leanKg))} muscle and ${fWd(Math.max(0, max.fatKg))} fat over ${weeks} weeks, because it assumes a harder-training muscle-gain rate.</p>` : "")
     + `<p class="hint">Estimates for your numbers with your training; "muscle" is lean mass, which includes some water and glycogen.</p>`;
 }
+/* strength-goal-1123 "Get stronger" (mockup, local test only). Lifts are tracked on this device only (saved with the plan, never uploaded).
+   Estimated 1-rep max: Epley formula, weight x (1 + reps / 30) (Epley 1985, a coaching formula), shown only for sets of 1–10 reps where it is most often used.
+   No future-strength projection: how fast strength rises varies too much, so the card gives the coaching rule of thumb instead (Rippetoe & Kilgore,
+   Practical Programming for Strength Training: newer lifters can add weight most workouts, then week to week, then month to month). Sets from the
+   lifting log (assets/liftlog.js, Advanced) are read in too, by exercise id. */
+const SG_LIFTS = [["squat", "Squat"], ["bench", "Bench press"], ["deadlift", "Deadlift"], ["ohp", "Overhead press"], ["row", "Row"], ["pullup", "Pull-up"]];
+const sgName = (k) => (SG_LIFTS.find((x) => x[0] === k) || [k, k])[1];
+function sgState() { const g = S.goal; if (!g.strength || typeof g.strength !== "object") g.strength = { lifts: ["squat", "bench", "deadlift"], log: [] };
+  if (!Array.isArray(g.strength.lifts)) g.strength.lifts = []; if (!Array.isArray(g.strength.log)) g.strength.log = []; return g.strength; }
+const sgLifts = () => sgState().lifts.filter((k) => SG_LIFTS.some((x) => x[0] === k));
+const sgToday = () => { const d = new Date(), p = (n) => String(n).padStart(2, "0"); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`; };
+const sgE1 = (wKg, reps) => (wKg > 0 && reps >= 1 && reps <= 10 ? (reps === 1 ? wKg : wKg * (1 + reps / 30)) : null);
+const sgDate = (d) => { const [y, m, dd] = d.split("-").map(Number); return new Date(y, m - 1, dd).toLocaleDateString("en-US", { month: "short", day: "numeric" }); };
+/** every set for one lift: manual bests plus lifting-log sets, best set per day, oldest first */
+function sgSets(key) {
+  const out = sgState().log.filter((e) => e.key === key && e.wKg > 0 && e.reps > 0).map((e) => ({ date: e.date, wKg: e.wKg, reps: e.reps, src: "you" }));
+  try { const L = window.LiftLog && window.LiftLog.log; if (L && Array.isArray(L.sessions)) for (const ss of L.sessions) for (const ex of ss.ex || []) if (ex.key === key) for (const x of ex.sets || []) {
+    if (x.reps > 0 && x.w > 0) out.push({ date: ss.date, wKg: x.unit === "kg" ? x.w : x.w / LB, reps: x.reps, src: "log" }); } } catch (e) { /* lifting log is optional */ }
+  const byDay = {}; for (const x of out) { x.e1 = sgE1(x.wKg, x.reps); const b = byDay[x.date]; if (!b || (x.e1 || 0) > (b.e1 || 0) || (x.e1 == null && b.e1 == null && x.wKg > b.wKg)) byDay[x.date] = x; }
+  return Object.values(byDay).sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0)); }
+function sgLatestManual(key) { const a = sgState().log.filter((e) => e.key === key); return a.length ? a[a.length - 1] : null; }
+function sgSaveBest(key, wDisp, reps, replaceToday) {
+  const st = sgState(), d = sgToday(), w = +wDisp > 0 ? wFromDisp(+wDisp) : null, r = Math.round(+reps);
+  if (replaceToday) st.log = st.log.filter((e) => !(e.key === key && e.date === d));
+  if (!(w > 0) || !(r >= 1 && r <= 30)) return false;
+  st.log.push({ key, date: d, wKg: +w.toFixed(3), reps: r }); st.log = st.log.slice(-400); return true; }
+let sgKey = "", sgAddLast = null;
+/** plain body line for the strength goal: "about the same" only when the scale moves under ~1 kg (2.2 lb); newer lifters add some muscle as they get stronger */
+const sgBodyHead = (dW) => (Math.abs(dW) < 1 ? "your body stays about the same" : "your body changes only a little");
+function renderStrengthGoal() {
+  const lifts = sgLifts(), key = [lifts.join(","), S.units].join("|"), chips = $("#sg-lift-chips"), box = $("#sg-best"); if (!chips || !box) return;
+  chips.innerHTML = SG_LIFTS.map(([k, n]) => `<button type="button" class="chip" data-sglift="${k}" aria-pressed="${lifts.includes(k)}">${esc(n)}</button>`).join("");
+  if (key === sgKey && box.childElementCount) return;   // keep the typed boxes (and focus) unless the lift list or units changed
+  sgKey = key;
+  box.innerHTML = lifts.length ? lifts.map((k) => { const m = sgLatestManual(k);
+    return `<div class="sg-row"><span class="sg-name">${esc(sgName(k))}</span>
+      <label class="field sg-w"><span class="sr-only">${esc(sgName(k))} weight</span><span class="control"><input data-sgw="${k}" inputmode="decimal" placeholder="weight" value="${m ? nW(m.wKg) : ""}"><span class="unit">${uW()}</span></span></label>
+      <span class="sg-x" aria-hidden="true">×</span>
+      <label class="field sg-r"><span class="sr-only">${esc(sgName(k))} reps</span><span class="control"><input data-sgr="${k}" inputmode="numeric" placeholder="reps" value="${m ? m.reps : ""}"><span class="unit">reps</span></span></label></div>`; }).join("")
+    : `<p class="hint">Pick at least one lift above.</p>`;
+}
+function renderStrengthCard() {
+  sgKey = "";   // the Goal-step boxes refresh next time, so they show a best set logged here
+  const box = $("#strength-card"); if (!box) return; const on = S.goal.type === "strength" && R && !R.blocked; box.hidden = !on; if (!on) { box.innerHTML = ""; return; }
+  const lifts = sgLifts(), s = R.main.rows[0], e = endRow(), wk = fWk(e.day), sur = Math.max(0, R.rec.rows[0].intake - Math.round(R.rec.rows[0].tdee));
+  const noLift = E.weeklyTraining(S.move).liftSessions === 0, fromLog = lifts.some((k) => sgSets(k).some((x) => x.src === "log"));
+  const rows = lifts.map((k) => { const a = sgSets(k), first = a[0], last = a[a.length - 1];
+    if (!last) return `<li class="sg-li" data-sgrow="${k}"><b class="sg-n">${esc(sgName(k))}</b><span class="sg-none muted">No sets yet. Add your best set below.</span></li>`;
+    const set = (x) => `${nW(x.wKg)} ${uW()} × ${x.reps}`, d = a.length > 1 && first.e1 != null && last.e1 != null ? last.e1 - first.e1 : null;
+    const ch = d == null ? (a.length > 1 ? "—" : "Log again in a week or two") : `${fWd(d)} (${d >= 0 ? "+" : "−"}${Math.abs(Math.round(100 * d / first.e1))}%)`;
+    return `<li class="sg-li" data-sgrow="${k}"><b class="sg-n">${esc(sgName(k))}</b><span class="sg-set">${set(last)}<small>best set · ${sgDate(last.date)}</small></span><span class="sg-e1"><b>${last.e1 != null ? `≈ ${fW(last.e1, 0)}` : "—"}</b><small>est. 1-rep max</small></span><span class="sg-ch${d > 0 ? " up" : ""}">${ch}${a.length > 1 ? `<small>since ${sgDate(first.date)}</small>` : ""}</span></li>`; }).join("");
+  box.innerHTML = `<p class="eyebrow card-eyebrow">Get stronger · your scoreboard</p><h2>Your lifts</h2>
+  ${noLift ? `<p class="feas warn"><b>Getting stronger needs lifting.</b> Add it on the Move step. <button type="button" class="link-btn" data-goto="3">Go to Move →</button></p>` : ""}
+  ${lifts.length ? `<ul class="sg-list" aria-label="Your tracked lifts">${rows}</ul>`
+    : `<p class="hint">Pick the lifts to track on the Goal step. <button type="button" class="link-btn" data-goto="2">Go to Goal →</button></p>`}
+  ${lifts.length ? `<form class="sg-add" id="sg-add" autocomplete="off"><span class="label">Log a new best set (today)</span><div class="sg-add-row">
+    <label class="field"><span class="sr-only">Lift</span><span class="control"><select id="sg-add-lift">${lifts.map((k) => `<option value="${k}"${k === sgAddLast ? " selected" : ""}>${esc(sgName(k))}</option>`).join("")}</select></span></label>
+    <label class="field sg-w"><span class="sr-only">Weight</span><span class="control"><input id="sg-add-w" inputmode="decimal" placeholder="weight" enterkeyhint="next"><span class="unit">${uW()}</span></span></label>
+    <label class="field sg-r"><span class="sr-only">Reps</span><span class="control"><input id="sg-add-r" inputmode="numeric" placeholder="reps" enterkeyhint="done"><span class="unit">reps</span></span></label>
+    <button type="submit" class="btn btn-steel">Save</button></div><p class="sg-msg hint" id="sg-msg" role="status"></p></form>` : ""}
+  <p class="read small sg-body"><b>${(() => { const h = sgBodyHead(e.weightKg - s.weightKg); return h[0].toUpperCase() + h.slice(1); })()}.</b> Over ${wk} weeks: ${fWd(e.weightKg - s.weightKg)} on the scale, ${fWd(e.leanKg - s.leanKg)} lean and ${fWd(e.fatKg - s.fatKg)} fat (estimates), eating about what you burn${sur >= 5 ? ` (+${fK(sur)} kcal a day)` : ""}.${e.leanKg - s.leanKg >= 0.5 ? " Some muscle comes with getting stronger, so most of this gain is lean." : ""}</p>
+  <details class="sg-more"><summary>How fast will my lifts go up?</summary><div class="stack small">
+    <p>It varies a lot, so the app doesn't predict your future lifts. A common coaching rule of thumb: newer lifters can often add a little weight most workouts, after the first year or so progress comes week to week, and after years of lifting it comes month to month (Rippetoe &amp; Kilgore). Age and sleep slow it too.</p>
+    <p>Est. 1-rep max uses the Epley formula (Epley 1985): weight × (1 + reps ÷ 30), shown for sets of 10 reps or fewer. It's an estimate for tracking, so you never need to test a true max.${fromLog ? " Includes sets from your lifting log." : ""}</p></div></details>`;
+}
 function renderGoal() {
   const g = S.goal, b = bfInfo(), p = S.profile;
   $("#goal-lead").textContent = S.mode === "habits" ? "Pick a goal to compare against. Your projection follows what you actually eat (Step 4)." : "What you'd like to work toward. You'll get instant feedback on whether it's realistic.";
@@ -6717,7 +6823,8 @@ function renderGoal() {
   { const n = $("#g-calcpace"); if (n) { n.hidden = !g.calcPace; if (g.calcPace) n.innerHTML = `Using the pace you chose in the Maximum Fat Burn Calculator: <b>${esc(g.calcLabel || "")}</b> (${Math.round(g.pace * 100)}% of your maximum fat-burn rate). Pick a pace below to change it.`; }
     document.querySelectorAll('input[name="goal.pace"]').forEach((r) => { if (g.calcPace) r.checked = false; }); }
   $("#g-pace").hidden = !((isT || (g.type === "pft" && pftEst().over)) && dir === "loss") || g.type === "gain" || g.deadline > 0;   // v7.7.59: a By-when date already sets the pace, so the no-deadline pace picker is hidden
-  $("#g-exp").hidden = !(g.type === "recomp" || g.type === "gain" || g.type === "bulk" || ((g.type === "targetWeight" || g.type === "targetBf") && dir === "gain"));
+  { const sg = $("#g-strength"); if (sg) { sg.hidden = g.type !== "strength"; if (!sg.hidden) renderStrengthGoal(); } }
+  $("#g-exp").hidden = !(g.type === "recomp" || g.type === "gain" || g.type === "bulk" || g.type === "strength" || ((g.type === "targetWeight" || g.type === "targetBf") && dir === "gain"));
   $$("#window-chips .chip").forEach((c) => c.setAttribute("aria-pressed", String(+c.dataset.win === +g.window)));
   const lean = p.weightKg * (1 - b.bf / 100);
   $("#h-tbf").textContent = g.type === "targetWeight" ? "Matches your goal weight at today's lean mass. Type here to aim for a body fat % instead." : g.targetBf > 0 && g.targetBf < 66 ? (g.targetBf > b.bf + 0.05 ? `≈ ${fW(lean / (1 - g.targetBf / 100))} at today's lean mass, a bit more once you add some muscle. A higher body fat than today is fine; this runs as a gain plan.` : `≈ ${fW(lean / (1 - g.targetBf / 100))} if you keep today's lean mass`) : "";
@@ -6727,7 +6834,7 @@ function renderGoal() {
     if (g.type === "targetWeight" && tb && g.targetWeightKg > lean) tb.value = +(100 * (1 - lean / g.targetWeightKg)).toFixed(1); }
   const t = E.weeklyTraining(effMove()), rate = E.GAIN_RATE[p.sex][S.move.experience];
   $("#h-exp").innerHTML = (R && R.assumed && R.assumed.move ? `<span class="assume">${ASSUME_TXT}</span> ` : "") + (t.liftSessions > 0 ? `Muscle grows a little at a time while you lift, faster with a small surplus and for newer lifters. How much varies a lot from person to person.`
-    : `You haven't added lifting yet. Muscle gain needs it, so set it on the Move step (next).`);
+    : g.type === "strength" ? `You haven't added lifting yet. Getting stronger needs it, so set it on the Move step (next).` : `You haven't added lifting yet. Muscle gain needs it, so set it on the Move step (next).`);
   $("#feas").innerHTML = feasHtml();
 }
 function renderExact(g, b, p, X, exOn) {
@@ -6893,6 +7000,8 @@ function feasHtml0() {
     return `<div class="feas ${noLift ? "warn" : ""}">${noLift ? "<b>Muscle gain needs resistance training.</b> Add it on the Move step; without it the plan holds at maintenance." : `<b>Over ${swk} weeks: ${fWd(slean)} lean and ${fWd(sfat)} fat</b> (estimates), ending near ${fP(showE.bf)} body fat (from ${fP(s.bf)}). A surplus of about ${fK(Math.max(0, sur))} kcal a day supports a higher muscle-gain rate than Lean muscle gain, so more of the gain is muscle. Some of the extra food is still stored as fat.`}${as}${habitNote}</div>`; }
   if (g.type === "gain") { const ceil = R.main.ceilingHit ? ` You reach your ${fP(g.bfCeiling)} body-fat ceiling around week ${fWk(R.main.ceilingHit)}, so the plan holds there.` : "";
     return `<div class="feas ${noLift || g.gainMode === "fast" ? "warn" : ""}">${noLift && g.gainMode !== "fast" ? "<b>Muscle gain needs resistance training.</b> Add it on the Move step." : `<b>Over ${swk} weeks: ${fWd(slean)} lean and ${fWd(sfat)} fat</b> (estimates), ${gainShare(s, showE)} of the gain as muscle, <b>ending at ${fP(showE.bf)} body fat</b> (from ${fP(s.bf)}), on a ${g.gainMode === "fast" ? "larger surplus that adds more fat" : g.gainMode === "moderate" ? "medium surplus, with a bit more muscle and more fat than Lean" : gainModeOf(g) === "hold" ? "small surplus that keeps body fat % steady" : "small surplus, so the scale moves slowly and body fat stays lower than on Build muscle (max)"}.${ceil}${(() => { const e = (S.move && S.move.experience) || "beginner", a = +S.profile.age || 0, y = e !== "beginner", o = a >= 40; return y || o ? ` Gains are slower ${y ? "after years of lifting" : ""}${y && o ? " and " : ""}${o ? "with age" : ""}.` : ""; })()}${as}`}${habitNote}</div>`; }
+  if (g.type === "strength") { const sur = Math.max(0, R.rec.rows[0].intake - Math.round(R.rec.rows[0].tdee));
+    return `<div class="feas ${noLift ? "warn" : ""}">${noLift ? "<b>Getting stronger needs lifting.</b> Add it on the Move step (next). Until then the plan just holds your weight." : `<b>Over ${swk} weeks ${sgBodyHead(showE.weightKg - s.weightKg)}:</b> ${fWd(showE.weightKg - s.weightKg)} on the scale, ${fWd(slean)} lean and ${fWd(sfat)} fat (estimates). You eat about what you burn${sur >= 5 ? ` plus a little (+${fK(sur)} kcal a day)` : ""}, so the food supports your training without adding size. Your progress shows up in your lifts.`}${as}${habitNote}</div>`; }
   if (g.type === "pft") return `<div class="feas"><b>${fWd(sfat)} of fat in ${swk} weeks</b> at a steady fat-loss pace, about ${fW(Math.abs(sfat) / Math.max(1, swk))} a week, ending near ${fP(showE.bf)} body fat. Lean mass: ${fWd(slean)}.${as}${habitNote}</div>`;   // v7.7.59: no threshold estimate (or already under it) runs as steady fat loss, so don't call it "holding steady"
   return `<div class="feas"><b>Holding steady for ${swk} weeks:</b> ${fWd(sfat)} fat, ${fWd(slean)} lean${noLift || assumed ? "" : " from your training"}.${as}${habitNote}</div>`;
 }
@@ -7141,7 +7250,7 @@ function renderFood() {
   const st0 = R.main.rows[0], w0 = st0.fatKg + st0.leanKg, line = (rows, kcal) => { const e = rows[rows.length - 1], wk = Math.max(1, Math.round(e.day / 7)), dw = e.fatKg + e.leanKg - w0, per = Math.abs(dw) / wk;
     const pace = Math.abs(dw) < 0.3 ? `holds your weight` : `${dw < 0 ? "lose" : "gain"} about ${fW(per)} a week`;
     return `${fK(kcal)} kcal a day · ${pace} · ${wk} week${wk === 1 ? "" : "s"}, ending near ${fW(e.fatKg + e.leanKg)}`; };
-  let paceTxt = { maxloss: "Fastest pace, designed to limit muscle loss as much as possible (the biggest deficit your fat can fuel).", steady: "About 60% of the fastest pace: a smaller deficit, so more food and more weeks.", targetWeight: "Paced to reach your goal weight.", targetBf: "Paced to reach your goal body fat.", recomp: "Small deficit with lifting, to lose fat and keep or add muscle.", gain: "Small surplus. The scale moves slowly and body fat stays lower while muscle still rises.", bulk: "Bigger surplus and a higher muscle-gain rate than Lean muscle gain.", maintain: "Eat about what you burn." }[S.goal.type] || "";
+  let paceTxt = { maxloss: "Fastest pace, designed to limit muscle loss as much as possible (the biggest deficit your fat can fuel).", steady: "About 60% of the fastest pace: a smaller deficit, so more food and more weeks.", targetWeight: "Paced to reach your goal weight.", targetBf: "Paced to reach your goal body fat.", recomp: "Small deficit with lifting, to lose fat and keep or add muscle.", gain: "Small surplus. The scale moves slowly and body fat stays lower while muscle still rises.", bulk: "Bigger surplus and a higher muscle-gain rate than Lean muscle gain.", maintain: "Eat about what you burn.", strength: "About what you burn, plus a tiny bit (at most 100 kcal a day) to support training. Your body stays about the same while your lifts go up." }[S.goal.type] || "";
   { const X = exactGoal(); if (X && S.goal.deadline) paceTxt = `Paced to reach ${xLab(X)} by week ${S.goal.deadline}.`;
     else if (X) paceTxt += ` Runs until you reach ${xLab(X)}.`;
     else if ((S.goal.type === "targetWeight" || S.goal.type === "targetBf") && S.goal.deadline) paceTxt = `Paced to reach your goal by week ${S.goal.deadline}.`; }
@@ -8338,8 +8447,8 @@ function renderHero() {
 }
 function renderProjection() {
   if (!R || R.blocked) { $("#proj-hero").innerHTML = `<p class="blocked">${(R && R.blocked ? R.blocked : ["Complete the earlier steps."]).map(esc).join("<br>")}</p><button type="button" class="btn btn-ghost mt1" data-goto="2" data-replan="1">Go to Goal</button>`;
-    ["#cta", "#chart-wrap", "#table", "#next-steps", "#recap", "#ai-body", "#proj-chips"].forEach((s) => ($(s).innerHTML = "")); $("#health-ctx").hidden = true; return; }
-  renderHero();
+    ["#cta", "#chart-wrap", "#table", "#next-steps", "#recap", "#ai-body", "#proj-chips"].forEach((s) => ($(s).innerHTML = "")); $("#health-ctx").hidden = true; { const sc = $("#strength-card"); if (sc) sc.hidden = true; } return; }
+  renderHero(); renderStrengthCard();
   renderRegional(); renderPftCard(); renderStory(); renderBulkCmp(); renderExpect(); renderWeekly(); renderExpert(); renderHealthCtx(); renderProjChips();
   const cta = $("#cta"); cta.classList.toggle("hot", R.consult);
   cta.innerHTML = `<p><b>${R.consult ? "Your plan raised a flag worth a conversation" : "Want help putting this into practice?"}</b>${R.consult ? "Something in your numbers or health check is better handled with a clinician. A consult can make this plan safe for you." : "Book a consult to turn this projection into a supervised, personalized plan."}</p>
@@ -8384,7 +8493,7 @@ function recapPairs() {
   const gainT = g.type === "gain" && g.gainTargetKg > 0, gm = { lean: "Lean", moderate: "Moderate", fast: "Fast" };   // v7.7.59: the recap names the gain target and the surplus size that applies
   const gainTxt = g.type !== "gain" ? null : gainT ? `: ${fW(g.gainTargetKg)}${g.deadline ? ` by week ${g.deadline} (${gm[gainModeOf(g)] || "Lean"} push)` : endRow() ? ` · about ${fWk(endRow().day)} weeks (${gm[gainModeOf(g)] || "Lean"} push)` : ""}` : ` · ${g.window} weeks (${gm[gainModeOf(g)] || "Lean"} push)`;
   return [["You", `${p.sex === "m" ? "Male" : "Female"}, ${p.age}, ${h}, ${fW(p.weightKg)}, ${fP(b.bf)} body fat${b.source === "measured" ? "" : b.source === "navy" ? " (tape est.)" : " (BMI est.)"}`],
-    ["Goal", gainTxt != null ? `${goalLabel()}${gainTxt}` : `${goalLabel()}${g.type === "targetBf" ? `: ${g.targetBf}%` : g.type === "targetWeight" ? `: ${fW(g.targetWeightKg)}` : ""}${isT ? (g.deadline ? ` by week ${g.deadline}` : "") : exactGoal() && endRow() ? ` · about ${fWk(endRow().day)} weeks` : ` · ${g.window} weeks`}`],   // v7.7.54: an exact goal sets its own length, not the 12-week window
+    ["Goal", g.type === "strength" ? `${goalLabel()} · ${g.window} weeks${sgLifts().length ? ` · tracking ${andList(sgLifts().map(sgName))}` : ""}` : gainTxt != null ? `${goalLabel()}${gainTxt}` : `${goalLabel()}${g.type === "targetBf" ? `: ${g.targetBf}%` : g.type === "targetWeight" ? `: ${fW(g.targetWeightKg)}` : ""}${isT ? (g.deadline ? ` by week ${g.deadline}` : "") : exactGoal() && endRow() ? ` · about ${fWk(endRow().day)} weeks` : ` · ${g.window} weeks`}`],   // v7.7.54: an exact goal sets its own length, not the 12-week window
     ["Move", `${S.move.steps.toLocaleString("en-US")} steps/day · ${t.liftSessions ? `${S.move.plannerOn || t.custom ? (S.move.preset === "min" ? "2 minimalist" : t.liftSessions) : t.liftSessions === 2.5 ? "2–3" : "4+"} lifting sessions/week` : "no lifting"} · ${S.move.noCardio ? "no cardio" : t.cardioMin + " min cardio/week"}`],
     ["Daily burn", `${fK(R.act0.tdee)} kcal (${R.act0.multiplier.toFixed(2)}× BMR)`],
     ["Eat", S.food.psmf ? `${fK(fixedKcal())} kcal/day PSMF (clinician-guided) · protein ≥ ${R.psmf.protein} g · plan would be ${fK(r0.intake)}` : S.food.actualOn ? `${fK(fixedKcal())} kcal/day (actual) · plan would be ${fK(r0.intake)}` : `${fK(r0.intake)} kcal/day to start · P ${R.macros.protein} g · F ${R.macros.fat} g · C ${R.macros.carbs} g`],
@@ -8703,7 +8812,7 @@ const bandById = (id) => BANDS.find((b) => b.id === id);
 function goalBands(g) {
   const t = g.type === "targetWeight" ? (E.goalDirection(engineInput()) === "loss" ? "lossT" : "gainT") : g.type;
   return { maxloss: ["rapid", "mild"], steady: ["mild"], targetBf: ["rapid", "mild"], pft: ["rapid", "mild"], lossT: ["rapid", "mild"], recomp: ["recomp", "maint"],
-    maintain: ["maint", "recomp"], gain: ["lean"], bulk: ["max", "lean"], gainT: ["lean", "max"] }[t] || null; }
+    maintain: ["maint", "recomp"], strength: ["maint", "lean"], gain: ["lean"], bulk: ["max", "lean"], gainT: ["lean", "max"] }[t] || null; }
 const userIntake = () => !!(S.food.actualOn || S.food.psmf || (S.food.yourMacros && S.food.yourMacros.on));
 function calorieFit() {
   if (!R || R.blocked || !R.main || !R.main.rows || !R.main.rows.length || !(R.main.ei0 > 0)) return null;
@@ -9159,7 +9268,11 @@ function aiInit() {
   document.addEventListener("change", (ev) => { const t = ev.target;
     if (t.id === "ai-stage-me") { AI.adult = t.checked; aiRenderStages(); } else if (t.id === "ai-food-label" || t.id === "ai-food-label-lib") { const f = t.files[0]; t.value = ""; aiFoodPhoto(f, "label"); }
     else if (t.id === "ai-plan-opt") { /* read at print time */ } });
-  document.addEventListener("submit", (ev) => { if (ev.target.id === "ask-form") { ev.preventDefault(); const q = $("#ask-q"); aiAskSend(q && q.value); } });
+  document.addEventListener("submit", (ev) => { if (ev.target.id === "sg-add") { ev.preventDefault();   // strength-goal-1123: Projection "Log a new best set"
+      const k = $("#sg-add-lift").value, w = parseNum($("#sg-add-w").value), r = parseNum($("#sg-add-r").value);
+      if (!(w > 0) || !(r >= 1 && r <= 30)) { const m = $("#sg-msg"); if (m) m.textContent = "Enter the weight and the reps (1–30) for your best set."; return; }
+      sgAddLast = k; sgSaveBest(k, w, r, false); save(); update(); const m = $("#sg-msg"); if (m) m.textContent = `Saved: ${sgName(k)}, ${w} ${uW()} × ${Math.round(r)}.`; return; }
+    if (ev.target.id === "ask-form") { ev.preventDefault(); const q = $("#ask-q"); aiAskSend(q && q.value); } });
   document.addEventListener("keydown", (ev) => { if (ev.target.id === "ask-q" && ev.key === "Enter" && !ev.shiftKey) { ev.preventDefault(); aiAskSend(ev.target.value); } });
   aiRenderAll(); aiCheck();
 }
@@ -9536,6 +9649,11 @@ function bind() {
     if (ev.target.id === "fs-q" && ev.key === "Enter") { ev.preventDefault(); clearTimeout(fs.timer); fsSearch(true); } });
   document.addEventListener("change", (ev) => {
     const el = ev.target;
+    if (el.matches && el.matches("input[data-sgw], input[data-sgr]")) {   // strength-goal-1123: Goal-step "current best" boxes (today's entry for that lift)
+      const k = el.dataset.sgw || el.dataset.sgr, w = $(`input[data-sgw="${k}"]`), r = $(`input[data-sgr="${k}"]`), wv = parseNum(w && w.value), rv = parseNum(r && r.value);
+      if (!(wv > 0)) { sgSaveBest(k, null, null, true); save(); update(); return; }
+      if (wv > 0 && rv >= 1 && rv <= 30) { sgSaveBest(k, wv, rv, true); save(); update(); }
+      return; }
     if (el.matches && el.matches("input[data-optout]")) {   // v7.6.15: "I don't do strength training" / "I don't want to do cardio"
       const k = el.dataset.optout, m = S.move; m[k] = !!el.checked;
       if (k === "noLift") { if (m.noLift) { if (m.preset !== "none") m.presetBefore = m.preset; m.preset = "none"; } else m.preset = m.presetBefore && m.presetBefore !== "none" ? m.presetBefore : "2-3"; liftSig = ""; }
@@ -9575,6 +9693,7 @@ function bind() {
     if (t.dataset.f3top) { S.fig.top = !S.fig.top; $$("[data-f3top]").forEach((b) => b.setAttribute("aria-pressed", String(!S.fig.top))); return setFigLook(null, null); }
     if (t.dataset.goto) { const k = +t.dataset.goto; if (t.dataset.replan) leaveHabitsForPlan(); if (S.step === 1 && k > 1) { const mp = medProblem(); if (mp) { $("#nav-note").textContent = mp; renderHealthCard(true); return; } } if (k <= S.maxStep || k <= S.step) { if (!gateGo(k)) go(k); } return; }
     if (t.dataset.win) { S.goal.window = +t.dataset.win; fillInputs(); update(); return; }
+    if (t.dataset.sglift) { const st = sgState(), k = t.dataset.sglift; st.lifts = st.lifts.includes(k) ? st.lifts.filter((x) => x !== k) : SG_LIFTS.map((x) => x[0]).filter((x) => x === k || st.lifts.includes(x)); save(); update(); return; }
     if (t.dataset.steps) { S.move.steps = +t.dataset.steps; fillInputs(); update(); return; }
     if (t.dataset.usewk) { S.goal.deadline = +t.dataset.usewk; fillInputs(); update(); return; }
     if (t.dataset.allowbf) { S.goal.bfCeiling = +t.dataset.allowbf; fillInputs(); update(); return; }
