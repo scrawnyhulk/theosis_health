@@ -553,7 +553,7 @@ canvas.fig3d:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .fs-card:focus{outline:none}
 .fs-card-h{display:flex;justify-content:space-between;gap:.75rem;align-items:flex-start}
 .fs-card-h small{display:block;color:var(--muted);font-size:.8rem}
-.fs-amt{margin-top:.6rem}
+.fs-amt{margin-top:.6rem}#fs-detail .fs-amt{grid-template-columns:minmax(0,2fr) minmax(0,1fr)}
 table.nf{width:100%;margin-top:.7rem;border-collapse:collapse;font-size:.88rem}
 table.nf caption{text-align:left;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding-bottom:.35rem}
 table.nf td{padding:.3rem 0;border-top:1px solid var(--hairline)}
@@ -967,9 +967,16 @@ input[type="checkbox"],input[type="radio"]{min-width:24px;min-height:24px}
 .flog-top .btn{min-height:44px}
 .flog-lead{margin:.2rem 0 1rem}
 .fl-date{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.8rem}
-.fl-dnav{min-width:48px;min-height:48px;font-size:1.5rem;line-height:1;padding:0}
+.fl-dnav{min-width:48px;min-height:48px;font-size:1.5rem;line-height:1;padding:0}.fl-dnav:disabled{opacity:.35;cursor:default}#fl-today{min-width:48px;min-height:48px}
 .fl-dpick input{min-height:48px;font:inherit;font-size:1rem;padding:.4rem .6rem;border-radius:var(--r-md);background:rgba(255,255,255,.06);color:inherit;border:1px solid rgba(207,214,224,.35);color-scheme:dark}
 .fl-day-h{font-size:1.15rem;margin:.2rem 0 .5rem}
+.fl-tgt{margin:-.4rem 0 1rem}.fl-tgt p{margin:.35rem 0 0;font-size:.92rem;color:var(--muted)}.fl-tgt p b{color:var(--fg)}
+.fl-tgt-bar{height:8px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden}.fl-tgt-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#2a7ae0,#5c9cf0)}
+.fl-tgt.over .fl-tgt-bar i{background:linear-gradient(90deg,#c98a2e,#e7a34b)}
+.fl-usual{margin:0 0 .8rem}.fl-usual .label{display:block;margin-bottom:.35rem}
+.fl-usual-row{display:flex;gap:.45rem;overflow-x:auto;padding-bottom:.25rem;scrollbar-width:thin;-webkit-overflow-scrolling:touch}
+.fl-usual-b{flex:none;display:flex;flex-direction:column;align-items:flex-start;gap:.05rem;min-height:48px;max-width:15rem;text-align:left;line-height:1.2}
+.fl-usual-b span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}.fl-usual-b small{color:var(--muted);font-size:.78rem}
 .fl-tot{display:grid;grid-template-columns:repeat(5,1fr);gap:.4rem;margin:0 0 1rem}
 .fl-tot-c{background:rgba(255,255,255,.05);border-radius:var(--r-md);padding:.6rem .3rem;text-align:center;box-shadow:inset 0 0 0 1px rgba(207,214,224,.14)}
 .fl-tot-c b{display:block;font-size:1.25rem}.fl-tot-c small{color:var(--muted);font-size:.78rem}
@@ -2434,6 +2441,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')set(false)})
     <div id="fl-totals" aria-live="polite"></div>
     <div class="fl-add card">
       <div class="fl-meal-pick" id="fl-meal-pick"></div>
+      <div class="fl-usual" id="fl-usual" hidden></div>
       <div class="chips fl-tabs" role="group" aria-label="How to add">
         <button type="button" class="chip" data-fl-tab="text" aria-pressed="true">Tell us what you ate</button><button type="button" class="chip" data-fl-tab="search" aria-pressed="false">Search or scan</button><button type="button" class="chip" data-fl-tab="recent" aria-pressed="false">Recent</button><button type="button" class="chip" data-fl-tab="favs" aria-pressed="false">Favorites</button><button type="button" class="chip" data-fl-tab="quick" aria-pressed="false">Quick add</button>
       </div>
@@ -2442,11 +2450,11 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')set(false)})
       <div id="fl-text" data-fl-pane="text" hidden></div>
       <div id="fl-quick" data-fl-pane="quick" hidden>
         <div class="row fl-quick-row">
-          <label class="field"><span class="label">Calories</span><span class="control"><input id="flq-kcal" inputmode="decimal" data-local="1" placeholder="e.g. 450"><span class="unit">kcal</span></span></label>
-          <label class="field"><span class="label">Protein <small class="muted">(optional)</small></span><span class="control"><input id="flq-p" inputmode="decimal" data-local="1"><span class="unit">g</span></span></label>
-          <label class="field"><span class="label">Carbs <small class="muted">(optional)</small></span><span class="control"><input id="flq-c" inputmode="decimal" data-local="1"><span class="unit">g</span></span></label>
-          <label class="field"><span class="label">Fat <small class="muted">(optional)</small></span><span class="control"><input id="flq-f" inputmode="decimal" data-local="1"><span class="unit">g</span></span></label>
-          <label class="field fl-qname"><span class="label">Name <small class="muted">(optional)</small></span><span class="control"><input id="flq-name" type="text" data-local="1" maxlength="60" placeholder="e.g. Restaurant lunch"></span></label>
+          <label class="field"><span class="label">Calories</span><span class="control"><input id="flq-kcal" inputmode="decimal" enterkeyhint="done" data-local="1" placeholder="e.g. 450"><span class="unit">kcal</span></span></label>
+          <label class="field"><span class="label">Protein <small class="muted">(optional)</small></span><span class="control"><input id="flq-p" inputmode="decimal" enterkeyhint="done" data-local="1"><span class="unit">g</span></span></label>
+          <label class="field"><span class="label">Carbs <small class="muted">(optional)</small></span><span class="control"><input id="flq-c" inputmode="decimal" enterkeyhint="done" data-local="1"><span class="unit">g</span></span></label>
+          <label class="field"><span class="label">Fat <small class="muted">(optional)</small></span><span class="control"><input id="flq-f" inputmode="decimal" enterkeyhint="done" data-local="1"><span class="unit">g</span></span></label>
+          <label class="field fl-qname"><span class="label">Name <small class="muted">(optional)</small></span><span class="control"><input id="flq-name" type="text" enterkeyhint="done" data-local="1" maxlength="60" placeholder="e.g. Restaurant lunch"></span></label>
         </div>
         <div class="actions"><button type="button" class="btn btn-steel" id="flq-add">Add calories</button></div>
       </div>
@@ -7190,6 +7198,11 @@ async function fsUsda(q, kind, signal) {
   const out = { items, note: CONFIG.FDC_PUBLIC_KEY === "DEMO_KEY" ? "USDA results use the shared DEMO_KEY (about 30 searches an hour)." : "" }; fsCachePut(k, out); return out;
 }
 const fsGtinSet = (q) => { const d = String(q || "").replace(/\D/g, ""), out = new Set([d.replace(/^0+/, "")]); if (d.length === 8 && /^[01]/.test(d)) out.add(FL.upcEtoA(d).replace(/^0+/, "")); return out; };
+/* foodlog-1123: put the closest name matches first ("banana" -> "Bananas, raw" before a banana yogurt bar). Order only; no numbers change. */
+function fsScore(q, f) { const toks = q.toLowerCase().split(/\s+/).filter((t) => t.length > 1), n = String(f.name || "").toLowerCase(), w0 = n.split(/[^a-z0-9]+/).filter(Boolean)[0] || "", t0 = toks[0] || "";
+  let sc = 0; if (t0 && (w0 === t0 || w0 === t0 + "s" || w0 === t0 + "es" || t0 === w0 + "s")) sc += 3; if (toks.length && toks.every((t) => n.includes(t.replace(/e?s$/, "")))) sc += 2;
+  if (f.src === "usda" && !f.brand) sc += 1; if (f.servings && f.servings[0] && f.servings[0].common) sc += 1; return sc; }
+function fsRank(q, list) { return list.map((f, i) => ({ f, i, s: fsScore(q, f) })).sort((x, y) => y.s - x.s || x.i - y.i).map((x) => x.f); }
 function fsOnInput() { clearTimeout(fs.timer); fs.timer = setTimeout(() => fsSearch(false), 400); }
 async function fsSearch(force) {
   const q = $("#fs-q").value.trim().replace(/\s+/g, " ").slice(0, 80), st = $("#fs-status");
@@ -7202,7 +7215,7 @@ async function fsSearch(force) {
   const useOff = fs.kind !== "generic", useUsda = true;
   fsErrClear(); st.textContent = bc ? `Looking up barcode ${q}…` : "Searching…";
   const errs = [], notes = [], lists = { off: [], usda: [] };
-  const mix = () => { const a = lists.usda, b = lists.off, out = myFoodsMatch(q); for (let i = 0; i < Math.max(a.length, b.length); i++) { if (b[i]) out.push(b[i]); if (a[i]) out.push(a[i]); } return out; };
+  const mix = () => { const a = lists.usda, b = lists.off, out = myFoodsMatch(q), rest = []; for (let i = 0; i < Math.max(a.length, b.length); i++) { if (b[i]) rest.push(b[i]); if (a[i]) rest.push(a[i]); } return out.concat(bc ? rest : fsRank(q, rest)); };
   const done = (src) => (r) => { lists[src] = r.items; if (r.note) notes.push(r.note); if (seq === fs.seq) { fs.results = mix(); renderFsResults(); } };
   const fail = (src) => (e) => { if (e.name !== "AbortError") errs.push(e.message || `${src} search failed.`); };
   const timeout = setTimeout(() => ctl.abort(), 12000);
@@ -7233,7 +7246,7 @@ function renderFsDetail() {
   box.innerHTML = `<div class="fs-card" tabindex="-1" aria-label="${esc(f.name)} nutrition facts">
     <div class="fs-card-h"><div><b>${esc(f.name)}</b>${f.brand ? `<small>${esc(f.brand)}</small>` : ""}</div><span class="tag">${f.mine ? "My food" : f.src === "off" ? "Open Food Facts" : `USDA${f.dataType ? " · " + esc(f.dataType) : ""}`}</span></div>
     <div class="row fs-amt"><label class="field"><span class="label">Serving</span><span class="control"><select id="fs-serving">${f.servings.map((s, i) => `<option value="${i}" ${i === fs.sel.si ? "selected" : ""}>${esc(s.label)}</option>`).join("")}</select></span></label>
-      <label class="field"><span class="label">How many</span><span class="control"><input id="fs-count" inputmode="decimal" value="${fs.sel.count}" aria-describedby="fs-amt-h"></span><span class="hint" id="fs-amt-h">${(+grams.toFixed(1)).toLocaleString("en-US")} ${sv.unit === "ml" ? "ml" : "g"} total</span></label></div>
+      <label class="field"><span class="label">How many</span><span class="control"><input id="fs-count" inputmode="decimal" enterkeyhint="done" value="${fs.sel.count}" aria-describedby="fs-amt-h"></span><span class="hint" id="fs-amt-h">${(+grams.toFixed(1)).toLocaleString("en-US")} ${sv.unit === "ml" ? "ml" : "g"} total</span></label></div>
     <div id="fs-nf" aria-live="polite">${fsFactsHtml()}</div>
     ${fsMealActionsHtml()}</div>`;
 }
@@ -7242,7 +7255,7 @@ function renderFsDetail() {
 function fsMealActionsHtml() {
   const ML = (k) => FL.MEALS.find((m) => m[0] === k)[1], lock = fs.target === "log" && typeof fl !== "undefined" ? fl.lock : null, cancel = `<button type="button" class="btn btn-ghost" data-fs-cancel="1">Cancel</button>`;
   if (lock) return `<div class="actions fs-meal-actions"><button type="button" class="btn btn-steel btn-big" data-fs-addmeal="${lock}">Add to ${ML(lock)}</button><button type="button" class="link-btn" data-fs-add="1">Sort it later</button>${cancel}</div>`;
-  const now = FL.mealFor(new Date());
+  const now = fs.target === "log" && typeof fl !== "undefined" && FL.MEALS.some((m) => m[0] === fl.meal) ? fl.meal : FL.mealFor(new Date());   // foodlog-1123: follow the meal picked in the Food Log
   return `<div class="actions fs-meal-actions"><button type="button" class="btn btn-steel btn-big" data-fs-addmeal="${now}">Add to ${ML(now)}</button><button type="button" class="btn btn-ghost" data-fs-pickmeal="1">Other meal…</button>${cancel}</div><p class="hint"><button type="button" class="link-btn" data-fs-add="1">Sort it later</button> puts it in Unsorted foods, out of the way.</p>`;
 }
 function fsFactsHtml() {
@@ -7858,8 +7871,8 @@ function fqxDelQueue(i) { const a = fqLoad(), e = a[i]; if (!e) return; a.splice
   fqxToast(`Deleted ${e.item.name}.`, () => { const b = fqLoad(); b.splice(Math.min(i, b.length), 0, e); fqSave(b); fqRender(); }); }
 function fqxDelLogged(id) { FLS = FL.load(); const f = FL.findItem(FLS, id); if (!f) return; const it = { ...f.item }, date = f.date; FL.removeItem(FLS, date, id); flSave();
   const was = (S.food.log || []).length, keep = (S.food.log || []).filter((x) => x.lid === id); S.food.log = (S.food.log || []).filter((x) => x.lid !== id); if (S.food.log.length !== was) fsApplyLog();
-  fqxRerender(); fqxStatus(`Deleted ${it.name}.`);
-  fqxToast(`Deleted ${it.name}.`, () => { FLS = FL.load(); const n = FL.addItem(FLS, date, it); flSave(); if (n && keep.length) { keep.forEach((x) => { x.lid = n.id; S.food.log.push(x); }); fsApplyLog(); } fqxRerender(); }); }
+  if (fl.open) fl.status = `Deleted ${it.name}.`; fqxRerender(); fqxStatus(`Deleted ${it.name}.`);
+  fqxToast(`Deleted ${it.name}.`, () => { if (fl.open) fl.status = `Put ${it.name} back.`; FLS = FL.load(); const n = FL.addItem(FLS, date, it); flSave(); if (n && keep.length) { keep.forEach((x) => { x.lid = n.id; S.food.log.push(x); }); fsApplyLog(); } fqxRerender(); }); }
 document.addEventListener("click", (ev) => { const t = ev.target.closest && ev.target.closest("[data-fx-star],[data-fx-undo],[data-fq-del],[data-fq-ldel],[data-fx-menu]"); if (!t) return; ev.preventDefault(); ev.stopPropagation();
   if (t.dataset.fxUndo) { const u = fqx.undo; fqx.undo = null; clearTimeout(fqx.timer); const tt = $("#fx-toast"); if (tt) tt.hidden = true; if (u) { u(); fqxStatus("Undone."); } return; }
   if (t.dataset.fxStar != null) { const it = fqx.stars.get(t.dataset.fxStar); if (!it) return; fqxToggleFav(it); const on = fqxIsFav(it); $$("[data-fx-k]").filter((b) => b.dataset.fxK === t.dataset.fxK).forEach((b) => { b.classList.toggle("on", on); b.setAttribute("aria-pressed", String(on)); b.textContent = on ? "★" : "☆"; b.setAttribute("aria-label", `${on ? "Favorite" : "Add to favorites"}: ${it.name}`); const li = b.closest("li"); if (li) li.classList.toggle("fx-fav", on); }); return; }
@@ -7901,9 +7914,9 @@ function flItemRow(it) {
   if (!ed) return `<li class="fl-it${fqxIsFav(it) ? " fx-fav" : ""}"><button type="button" class="fl-it-b" data-fl-edit="${esc(it.id)}" data-fq-lid="${esc(it.id)}" aria-label="Edit ${esc(it.name)}, ${fK(n.kcal)} kcal">${main}</button>${fqxStar(it)}${fqxTrash(`data-fq-ldel="${esc(it.id)}"`, it.name)}</li>`;
   const sv = it.servingsList && it.servingsList.length ? it.servingsList : null, si = sv ? Math.max(0, sv.findIndex((s) => Math.abs(s.g - it.g) < 0.01 && s.label === it.label)) : 0;
   return `<li class="fl-it editing"><div class="fl-edit" role="group" aria-label="Edit ${esc(it.name)}">${main}
-    <div class="row fl-edit-row">${it.quick ? `<label class="field"><span class="label">Calories</span><span class="control"><input id="fle-kcal" inputmode="decimal" data-local="1" value="${+it.per100.kcal}"><span class="unit">kcal</span></span></label>`
+    <div class="row fl-edit-row">${it.quick ? `<label class="field"><span class="label">Calories</span><span class="control"><input id="fle-kcal" inputmode="decimal" enterkeyhint="done" data-local="1" value="${+it.per100.kcal}"><span class="unit">kcal</span></span></label>`
       : `${sv ? `<label class="field"><span class="label">Serving</span><span class="control"><select id="fle-sv">${sv.map((s, i) => `<option value="${i}" ${i === si ? "selected" : ""}>${esc(s.label)}</option>`).join("")}</select></span></label>` : ""}
-      <label class="field"><span class="label">How many</span><span class="control"><input id="fle-n" inputmode="decimal" data-local="1" value="${+it.servings}"></span></label>`}
+      <label class="field"><span class="label">How many</span><span class="control"><input id="fle-n" inputmode="decimal" enterkeyhint="done" data-local="1" value="${+it.servings}"></span></label>`}
       <label class="field"><span class="label">Meal</span><span class="control"><select id="fle-meal">${FL.MEALS.map(([k, l]) => `<option value="${k}" ${k === it.meal ? "selected" : ""}>${l}</option>`).join("")}</select></span></label></div>
     <div class="actions"><button type="button" class="btn btn-steel" data-fl-esave="${esc(it.id)}">Save</button><button type="button" class="btn btn-ghost" data-fe-logged="${esc(it.id)}">Edit nutrition</button><button type="button" class="btn btn-ghost" data-fl-edel="${esc(it.id)}">Delete</button>
       ${it.quick ? "" : `<button type="button" class="btn btn-ghost" data-fl-fav="${esc(it.id)}" aria-pressed="${FL.isFav(FLS, it)}">${FL.isFav(FLS, it) ? "★ Favorite" : "☆ Add to favorites"}</button>`}<button type="button" class="btn btn-ghost" data-fl-ecancel="1">Cancel</button></div></div></li>`;
@@ -7913,13 +7926,23 @@ function flListPane() {
   if (!list.length) return `<p class="hint">${fl.tab === "recent" ? "Foods you add show up here, so the ones you eat often are one tap away." : "No favorites yet. Open a food in your log and tap ☆ Add to favorites."}</p>`;
   return `<ul class="fl-pick">${list.map((f, i) => { const n = FL.itemNutr({ ...f, servings: 1 }); return `<li><button type="button" class="fl-pick-b" data-fl-quickpick="${fl.tab}:${i}"><span>${esc(f.name)}${f.brand ? ` <small>${esc(f.brand)}</small>` : ""}<small>${esc(f.label)}</small></span><span class="fl-pick-k"><b>${fK(n.kcal)} kcal</b><small>+ Add</small></span></button></li>`; }).join("")}</ul>`;
 }
+/* foodlog-1123: the plan's daily target next to what's logged (only once the simulator has a plan), and one-tap re-add of usual foods. */
+function flTarget() { try { if (!R || R.blocked || !R.rec || !R.rec.rows || !R.rec.rows[0] || !(S.maxStep >= 5)) return null; const k = R.rec.rows[0].intake; return k > 0 ? { kcal: k, protein: R.macros && R.macros.protein > 0 ? R.macros.protein : null } : null; } catch (e) { return null; } }
+function flTargetHtml(t) { const g = flTarget(); if (!g) return "";
+  const k = t.kcal || 0, left = Math.round(g.kcal - k), pct = Math.max(0, Math.min(100, 100 * k / g.kcal)), over = left < 0;
+  const pr = g.protein ? ` · protein ${flNum(t.protein || 0)} of ${flNum(g.protein)} g` : "";
+  return `<div class="fl-tgt${over ? " over" : ""}" data-fl-target="1"><div class="fl-tgt-bar" aria-hidden="true"><i style="width:${pct.toFixed(1)}%"></i></div><p><b>${over ? `${flNum(-left)} kcal over` : `${flNum(left)} kcal left`}</b> of your ${flNum(g.kcal)} kcal plan target${pr}.</p></div>`; }
+function flUsual() { const out = [], seen = new Set();
+  const add = (list, tab, fav) => list.forEach((f, i) => { if (out.length >= 6 || !f || seen.has(f.key)) return; seen.add(f.key); out.push({ f, ref: `${tab}:${i}`, fav, k: FL.itemNutr({ ...f, servings: 1 }).kcal || 0 }); });
+  add(FLS.favs.slice(0, 3), "favs", true); add(FLS.recent, "recent", false); add(FLS.favs, "favs", true); return out; }
 function renderFoodLog() {
   if (fl.follow && fl.date !== flToday()) { fl.date = flToday(); fl.follow = fl.date === flToday(); fl.meal = FL.mealFor(new Date()); }
   if (!fl.open) return; const d = fl.date, day = FLS.days[d], items = day ? day.items : [];
   $("#fl-date").value = d; $("#fl-date").max = FL.addDays(flToday(), 1);
-  $("#fl-today").hidden = d === flToday();
-  $("#fl-totals").innerHTML = `<h2 class="fl-day-h">${esc(flDateLabel(d))}${day && day.complete ? ` <span class="tag">Complete</span>` : ""}</h2>${flTotalsHtml(FL.dayTotals(FLS, d))}`;
-  const ML = FL.MEALS.find((m) => m[0] === fl.meal)[1], showRow = fl.lock || fl.tab !== "search";
+  $("#fl-today").hidden = d === flToday(); $("#fl-next").disabled = d >= FL.addDays(flToday(), 1);   // foodlog-1123: same limit as the date picker
+  { const T = FL.dayTotals(FLS, d); $("#fl-totals").innerHTML = `<h2 class="fl-day-h">${esc(flDateLabel(d))}${day && day.complete ? ` <span class="tag">Complete</span>` : ""}</h2>${flTotalsHtml(T)}${flTargetHtml(T)}`; }
+  { const u = $("#fl-usual"), L = flUsual(), ML = FL.MEALS.find((m) => m[0] === fl.meal)[1]; u.hidden = !L.length; u.innerHTML = L.length ? `<span class="label" id="fl-usual-l">Add again with one tap</span><div class="fl-usual-row" role="group" aria-labelledby="fl-usual-l">${L.map((x) => `<button type="button" class="chip fl-usual-b" data-fl-quickpick="${x.ref}" aria-label="Add ${esc(x.f.name)}, ${esc(x.f.label)}, ${fK(x.k)} kcal, to ${esc(ML)}"><span>${x.fav ? "★ " : ""}${esc(x.f.name.length > 28 ? x.f.name.slice(0, 27) + "…" : x.f.name)}</span><small>${fK(x.k)} kcal</small></button>`).join("")}</div>` : ""; }
+  const ML = FL.MEALS.find((m) => m[0] === fl.meal)[1], showRow = true;   // foodlog-1123: always show where foods go
   $("#fl-meal-pick").hidden = !showRow;
   $("#fl-meal-pick").innerHTML = fl.pickOpen ? `<span class="label" id="fl-meal-l">Add to</span><div class="chips" role="group" aria-labelledby="fl-meal-l" id="fl-meal-chips">${FL.MEALS.map(([k, l]) => `<button type="button" class="chip fl-meal-chip" data-fl-meal="${k}" aria-pressed="${k === fl.meal}">${l}</button>`).join("")}</div>`
     : `<p class="fl-adding"><b>Adding to ${ML}</b> <button type="button" class="link-btn" data-fl-change="1" aria-label="Change meal (now ${ML})">Change</button>${fl.lock ? ` <button type="button" class="link-btn" data-fl-unlock="1">Done</button>` : ""}</p>`;
@@ -7965,7 +7988,7 @@ function flBind() {
     if (t.dataset.openLog) { ev.preventDefault(); openFoodLog(); return; }
     if (!fl.open && !t.dataset.flUseavg && !t.dataset.flTosim) return;
     if (t.id === "fl-back") return closeFoodLog();
-    if (t.id === "fl-prev" || t.id === "fl-next") { fl.date = FL.addDays(fl.date, t.id === "fl-prev" ? -1 : 1); fl.follow = fl.date === flToday(); fl.edit = null; fl.status = ""; fl.copyAsk = false; renderFoodLog(); return; }
+    if ((t.id === "fl-prev" || t.id === "fl-next") && !t.disabled) { fl.date = FL.addDays(fl.date, t.id === "fl-prev" ? -1 : 1); fl.follow = fl.date === flToday(); fl.edit = null; fl.status = ""; fl.copyAsk = false; renderFoodLog(); return; }
     if (t.dataset.flGoday) { fl.date = t.dataset.flGoday; fl.follow = fl.date === flToday(); fl.edit = null; fl.status = ""; fl.copyAsk = false; renderFoodLog(); window.scrollTo(0, 0); return; }
     if (t.id === "fl-today") { fl.date = flToday(); fl.follow = fl.date === flToday(); fl.edit = null; fl.status = ""; fl.copyAsk = false; renderFoodLog(); return; }
     if (t.dataset.flMeal) { fl.meal = t.dataset.flMeal; if (fl.lock) fl.lock = fl.meal; fl.pickOpen = false; renderFoodLog(); if (fs.sel) renderFsDetail(); return; }
@@ -8703,11 +8726,11 @@ const LAZY = {};
 window.__BP = { muscleRegions: (m, x) => (E.muscleRegions ? E.muscleRegions(m, x) : null), get S() { return S; }, get R() { return R; }, get V() { return V; }, $, esc, fK, fW, fP, fWk, E, effMove, pftInsideStage, rampColor, renderViews: () => renderViews(), fDate, pftCtSkin, pftInsideOpen: () => pftInsideOpen(), save: () => save(), renderSummary: () => renderSummary(), go: (n) => go(n) };
 function lazyLoad(src) { if (LAZY[src]) return LAZY[src]; LAZY[src] = new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); }); return LAZY[src]; }
 (function () { const l = document.createElement("link"); l.rel = "stylesheet"; l.href = "assets/v7655.css?v=7696"; document.head.appendChild(l); })();
-function renderSnapshot() { if (typeof window.renderSnapshotNow === "function") return window.renderSnapshotNow(); const b = $("#hs-card"); if (b && R && !R.blocked) lazyLoad("assets/health-snapshot.js?v=7756").then(() => window.renderSnapshotNow(), () => {}); }
+function renderSnapshot() { if (typeof window.renderSnapshotNow === "function") return window.renderSnapshotNow(); const b = $("#hs-card"); if (b && R && !R.blocked) lazyLoad("assets/health-snapshot.js?v=7757").then(() => window.renderSnapshotNow(), () => {}); }
 function a1cCardHtml() { if (typeof window.a1cCardHtmlNow === "function") return window.a1cCardHtmlNow(); lazyLoad("assets/a1c-log.js?v=7655").then(() => { if (V.open && V.view === "home") renderViews(); }, () => {}); return `<div class="v-card a1-card" id="a1-card"><h2>A1c log</h2><p class="hint">Loading…</p></div>`; }
 window.BodyPlanFig3D = window.BodyPlanFig3D || { state: { on: false, failed: false, where: null } };
 function f3dMount() { if (window.__NO_PFT_FIG) return; if (typeof window.f3dMountNow === "function") return window.f3dMountNow(); if (!R || R.blocked) return;
-  lazyLoad("assets/fig3d-pft.js?v=7753").then(() => window.f3dMountNow(), () => { window.BodyPlanFig3D.state.failed = true; const h = document.getElementById("sum-pft"); if (h && !h.innerHTML) { h.hidden = false; h.innerHTML = `<figure class="f3d-fbfig"><img src="assets/f3d-ct-fallback.webp" alt="Example cross-section through the middle of the model" width="720" height="560"><figcaption>Example cross-section. The 3D model can't load on this device.</figcaption></figure>`; } }); }
+  lazyLoad("assets/fig3d-pft.js?v=7757").then(() => window.f3dMountNow(), () => { window.BodyPlanFig3D.state.failed = true; const h = document.getElementById("sum-pft"); if (h && !h.innerHTML) { h.hidden = false; h.innerHTML = `<figure class="f3d-fbfig"><img src="assets/f3d-ct-fallback.webp" alt="Example cross-section through the middle of the model" width="720" height="560"><figcaption>Example cross-section. The 3D model can't load on this device.</figcaption></figure>`; } }); }
 function printRegional(s, e) { const k = changeKind(s, e), c = FD.change(depotsAt(s.fatKg), depotsAt(e.fatKg)), m = muscleSplit(S.profile.sex, e.leanKg - s.leanKg);
   const fat = `around the organs ${fWd(c.vat.kg)} (${fPct(c.vat.pct)}), under the skin ${fWd(c.sub.kg)} (${fPct(c.sub.pct)})`, mus = `upper body ${fWd(m.up)}, legs &amp; glutes ${fWd(m.lo)}`;
   return `<p class="small"><b>${{ loss: "Where fat comes off first", gain: "Where muscle builds, and where fat would add", recomp: "Where you lose fat and gain muscle", hold: "Where things shift" }[k]} (estimate):</b> ${k === "gain" ? `lean (mostly muscle): ${mus}; fat: ${fat}.` : k === "recomp" ? `fat: ${fat}; lean (mostly muscle): ${mus}.` : `fat ${fat}.`}</p>`; }
@@ -9178,7 +9201,7 @@ function homeHtml() {
   <div class="v-card v-dial">${gauge || `<h2>On-track score</h2><p>The on-track score needs what you actually eat and do. Enter your intake in the Food step or log meals in the Food Log, and it appears here with your top three tips.</p><div class="actions"><button type="button" class="btn btn-ghost" data-open-log="1">Open Food Log</button><button type="button" class="btn btn-ghost" data-v-sim="4">Go to the Food step</button></div>`}</div>
   ${a1cCardHtml()}
   <div class="v-card"><h2>Next up</h2><ul class="v-next">${nxt}</ul></div>
-  <p class="hint">All figures are model estimates, not medical advice. Weight trends and weekly check-ins need logged weigh-ins, which this build doesn't collect yet, so they aren't shown.</p>`;
+  <p class="hint">All figures are model estimates, not medical advice. Log your weight each week in your plan's weekly check-in to see how you're tracking. <button type="button" class="link-btn" data-tn-weekly="1">Go to the weekly check-in</button></p>`;
 }
 
 function glMeals() { const out = [], F = FL.load(), ds = Object.keys(F.days).sort().reverse().slice(0, 7);
@@ -9369,6 +9392,7 @@ function tnGo(k) {
   else if (k === "health") { tnToProj("#health-ctx", "#proj-more-health"); }
   renderTopNav();
 }
+document.addEventListener("click", (e) => { const w = e.target.closest && e.target.closest("[data-tn-weekly]"); if (w) { e.preventDefault(); tnGo("checkin"); } });   // foodlog-1123: Dashboard link to the weekly check-in
 document.addEventListener("click", (e) => {
   const b = e.target.closest("#topnav [data-tn], #tn-more-btn");
   if (b) { e.preventDefault(); if (b.id === "tn-more-btn") { TN.open = !TN.open; renderTopNav(); if (TN.open) { const f = $("#tn-menu .tn-m:not(.soon)"); f && f.focus(); } } else tnGo(b.dataset.tn); return; }
