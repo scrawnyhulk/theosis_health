@@ -1597,7 +1597,12 @@ body{background-color:var(--bg);background-image:var(--app-bg-image);background-
 /* polish-1023: source number buttons get a 32px invisible tap area (looks unchanged) */
 .fn::before{content:"";position:absolute;left:50%;top:50%;width:max(100%,32px);height:max(100%,32px);transform:translate(-50%,-50%)}
 </style>
-<style>.startover-bar{position:sticky;top:60px;z-index:30;display:flex;justify-content:flex-end;pointer-events:none;margin:0 0 6px}.startover-btn{pointer-events:auto;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;border-radius:999px;border:2px solid #f0b070;background:#2a1a08;color:#ffd9a8;font:600 16px/1 system-ui,sans-serif;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.45)}.startover-btn:hover,.startover-btn:focus-visible{background:#f0b070;color:#1a1005;outline:none}</style>
+<style>.startover-bar{position:sticky;top:60px;z-index:30;display:flex;justify-content:flex-end;pointer-events:none;margin:0 0 6px}.startover-btn{pointer-events:auto;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;border-radius:999px;border:2px solid #f0b070;background:#2a1a08;color:#ffd9a8;font:600 16px/1 system-ui,sans-serif;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.45)}.startover-btn:hover,.startover-btn:focus-visible{background:#f0b070;color:#1a1005;outline:none}
+/* proposals-1125: on phones the sticky pill covered headings and the right-hand options of pickers as you scrolled. It now sits in the step
+   header row, beside "Step N of 5", and scrolls away with the page (each step opens at the top, so it's always the first thing you see). */
+@media(max-width:40rem){.startover-bar{position:relative;top:auto;height:0;margin:0;z-index:5}.startover-bar .startover-btn{position:absolute;right:0;top:2px;min-height:40px;padding:0 14px;font-size:15px;box-shadow:none}#prog-mobile{padding:11px 150px 11px 0;min-height:44px;box-sizing:border-box}
+/* the chat bubble sits in the live-summary bar, left of its arrow, instead of floating over the Projection cards */
+body.fab-docked .ask-fab{z-index:36;min-height:44px;min-width:44px;width:44px;height:44px;padding:0;justify-content:center;box-shadow:none}body.fab-docked .mbar-head .chev{margin-left:calc(44px + .75rem)}}</style>
 </head>
 <body>
 <!-- v7.6.69: charcoal/slate app background (grain texture removed) + simulation-trend hero -->
@@ -9994,6 +9999,16 @@ new MutationObserver((ms) => { for (const m of ms) m.addedNodes.forEach((n) => {
 <script id="polish-1023-bars">/* polish-1023: page bottom padding follows the real height of the phone summary bar + tab bar, so the footer never hides under them */
 (function(){function fit(){var m=document.getElementById("mbar"),t=document.getElementById("topnav");if(!m)return;var h=0;[m,t].forEach(function(e){if(e&&e.getClientRects().length&&getComputedStyle(e).position==="fixed")h+=e.querySelector(".mbar-head")&&e===m?e.querySelector(".mbar-head").getBoundingClientRect().height:e.getBoundingClientRect().height});var gone=!(t&&t.getClientRects().length&&t.getBoundingClientRect().height>0);document.body.classList.toggle("tabs-gone",gone);if(h)document.body.style.setProperty("--polish-bars",Math.ceil(h+12)+"px")}
 function init(){fit();if(window.ResizeObserver){var ro=new ResizeObserver(fit);["mbar","topnav"].forEach(function(id){var e=document.getElementById(id);if(e)ro.observe(e)})}addEventListener("resize",fit)}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);else init()})();</script>
+<script>/* proposals-1125: dock the chat bubble into the phone live-summary bar so it never covers page content (see CSS above). */
+(function(){var mq=window.matchMedia?matchMedia("(max-width:40rem)"):null,raf=0;
+function place(){raf=0;var f=document.getElementById("ask-fab"),m=document.getElementById("mbar"),h=document.getElementById("mbar-toggle"),c=h&&h.querySelector(".chev"),b=document.body;if(!f||!b)return;
+var on=!!(mq&&mq.matches&&m&&!m.hidden&&h&&c&&!f.hidden&&b.classList.contains("has-mbar")&&m.getClientRects().length);b.classList.toggle("fab-docked",on);
+if(!on){f.style.bottom="";f.style.right="";return}var r=h.getBoundingClientRect(),cr=c.getBoundingClientRect(),mid=cr.top+cr.height/2;
+f.style.bottom=Math.round(innerHeight-mid-22)+"px";f.style.right=Math.round(innerWidth-cr.left+8)+"px"}
+function q(){if(!raf)raf=requestAnimationFrame(place)}
+function init(){q();new MutationObserver(q).observe(document.body,{attributes:true,attributeFilter:["class"],childList:true});var m=document.getElementById("mbar");if(m){new MutationObserver(q).observe(m,{attributes:true,subtree:true,attributeFilter:["hidden","class"]});if(window.ResizeObserver)new ResizeObserver(q).observe(m);m.addEventListener("transitionend",q)}
+addEventListener("resize",q);addEventListener("scroll",q,{passive:true});if(mq&&mq.addEventListener)mq.addEventListener("change",q)}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);else init()})();</script>
 </body>
 </html>
