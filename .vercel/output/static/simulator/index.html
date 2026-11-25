@@ -1995,7 +1995,9 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')set(false)})
               </div>
               <div class="row">
                 <label class="field" data-field="a1c"><span class="label">Latest lab HbA1c <span style="text-transform:none;letter-spacing:0">(optional)</span></span>
-                    <span class="control"><input data-f="a1c" inputmode="decimal" placeholder="e.g. 5.9"><span class="unit">%</span></span><span class="err"></span><span class="hint adv-only a1c-split-note">A higher A1c often goes with more fat around the organs and liver. If you enter one, the figure moves more of your fat there and less under the skin; your outer size stays the same. Leave it blank and it has no effect.</span></label>
+                    <span class="control"><input data-f="a1c" inputmode="decimal" placeholder="e.g. 5.9"><span class="unit">%</span></span><span class="err"></span><span class="hint" id="a1c-log-note"></span><span class="hint adv-only a1c-split-note">A higher A1c often goes with more fat around the organs and liver. If you enter one, the figure moves more of your fat there and less under the skin; your outer size stays the same. Leave it blank and it has no effect.</span></label>
+                <label class="field" data-field="a1cDate"><span class="label">Test date</span>
+                    <span class="control"><input type="date" id="a1c-date" aria-describedby="a1c-log-note"></span></label>
               </div>
               <div class="health-actions" id="health-actions">
                 <button type="button" class="btn btn-ghost" id="labs-toggle" aria-expanded="false" aria-controls="labs-box">Add lab results</button>
@@ -5657,7 +5659,7 @@ const defaults = () => ({
     rmr: null, tdeeKnown: null, refeedDays: 0, yourMacros: { on: false, unit: "pct", p: 30, c: 40, f: 30 } },
   // foodlog-dash-1123: listed here so they survive a reload. merge() only keeps keys that exist in defaults, so weekly weigh-ins, the lab log,
   // an applied re-fit and the cancer-mode notes were saved but dropped the next time the page opened.
-  weighIns: [], labLog: [], refit: null, caPlanned: null, caQuestions: [],
+  weighIns: [], labLog: [], a1cLog: [], refit: null,   // proposals-1125: a1cLog = the one dated A1c log ({ id, date, added, v, week? }); see a1cSync() caPlanned: null, caQuestions: [],
   refitMode: "adaptive",   // fixes-1123: weekly weigh-in card choice ("adaptive" | "fixed"); listed so it survives a reload
 });
 function merge(base, extra) { if (!extra || typeof extra !== "object") return base; for (const k of Object.keys(base)) { if (!(k in extra)) continue;
@@ -5669,6 +5671,7 @@ function migrateNone(saved) { { const p = S.profile;   // proposals-1125: the se
   { const h = saved && saved.profile && saved.profile.health; if (h && (!h.meds || h.meds === "unknown") && h.glucoseMeds) S.profile.health.meds = "yes"; }  // v7.6.18: the old yes/no glucose-medication flag becomes the required medication answer
   const m = saved && saved.move; if (m && m.preset === "none" && !m.noLift && (saved.maxStep || 0) >= 3 && !m.plannerOn) { S.move.noLift = true; } }
 try { const saved = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEY) || "null"); if (saved && saved.v === 1) { S = merge(defaults(), saved); migrateNone(saved); HAD_SAVED = !!((saved.maxStep || 0) > 1 || (saved.goal && saved.goal.touched) || (saved.profile && saved.profile.weightKg && saved.step > 0)); } } catch (e) { /* storage unavailable */ }
+try { a1cMigrate(); } catch (e) { /* keep going without the old A1c entries */ }
 S.step = 0;
 const UI_KEY = "theosis-bodyplan-ui";
 try { const u = JSON.parse(localStorage.getItem(UI_KEY) || "null"); if (u && (u.mode === "simple" || u.mode === "advanced")) S.ui.mode = u.mode; } catch (e) { /* ignore */ }
@@ -5834,7 +5837,10 @@ const FIELDS = {
     [`cpace${i}`, { opt: true, conv: "pace", get: () => (S.move.cardio[i] || {}).paceMinMi, set: (v) => { if (S.move.cardio[i]) S.move.cardio[i].paceMinMi = v; }, min: 4, max: 40, msg: () => (imp() ? "Enter a pace like 9:30 (4–40 min per mile)." : "Enter a pace like 5:45 (2.5–25 min per km).") }],
     [`cgrade${i}`, { opt: true, get: () => (S.move.cardio[i] || {}).grade, set: (v) => { if (S.move.cardio[i]) S.move.cardio[i].grade = v; }, min: 0, max: 25, msg: () => "Enter a grade of 0–25%." }],
     [`ckcal${i}`, { opt: true, get: () => (S.move.cardio[i] || {}).kcalWeek, set: (v) => { if (S.move.cardio[i]) S.move.cardio[i].kcalWeek = v; }, min: 0, max: 15000, msg: () => "Enter 0–15,000 kcal a week." }]])),
-  a1c: { opt: true, get: () => S.profile.health.a1c, set: (v) => (S.profile.health.a1c = v), min: 2, max: 25, msg: () => "Enter an A1c from 2 to 25%, or leave it blank." },
+  a1c: { opt: true, get: () => S.profile.health.a1c, set: (v) => { const l = a1cLatest(), d = ($("#a1c-date") || {}).value || "";   // proposals-1125: Step 1 edits the newest entry of the one A1c log (or starts one)
+      if (v == null) { if (l && !a1cNewOne) a1cDel(l.id); }
+      else if (l && !a1cNewOne) { l.v = Math.round(v * 10) / 10; if (d) l.date = d; a1cSync(); }
+      else { a1cNewOne = false; a1cPut(v, d || a1cToday()); } }, min: 2, max: 25, msg: () => "Enter an A1c from 2 to 25%, or leave it blank." },
 };
 /** pace as "m:ss" or decimal minutes */
 function parsePace(str) { str = String(str).trim(); if (str === "") return null; const m = /^(\d{1,2}):(\d{1,2})$/.exec(str); if (m) return +m[1] + +m[2] / 60; const n = parseNum(str); return n; }
@@ -6225,9 +6231,36 @@ function bandNow() { if (!R || R.blocked) return null; if (bandCache.R !== R) ba
 function gapNow() { if (!R || R.blocked) return null; const rs = R.main.rows.slice(0, -1); if (!rs.length) return null; const D = rs.reduce((a, r) => a + (r.tdee - r.intake), 0) / rs.length, T = rs.reduce((a, r) => a + r.tdee, 0) / rs.length; return { D, e: E.BAND_SCALE * T }; }
 const LAB_KEYS = [["a1c", "A1c", "%"], ["fg", "Fasting glucose", "mg/dL"], ["ins", "Fasting insulin", "µIU/mL"], ["tg", "Triglycerides", "mg/dL"], ["hdl", "HDL", "mg/dL"], ["ldl", "LDL", "mg/dL"], ["alt", "ALT", "U/L"]];
 function labLog() { return Array.isArray(S.labLog) ? S.labLog : (S.labLog = []); }
+/* proposals-1125: ONE dated A1c log. Step 1 ("Latest lab HbA1c"), the Dashboard A1c card and the Projection "Enter a new lab result" form
+   all read and write S.a1cLog. The newest result (test date, or the day it was added when no date was given) is copied into
+   S.profile.health.a1c by a1cSync(); everything else (pftInput() for the threshold estimate, E.diabetesStatus(), the figure, the
+   snapshot) keeps reading S.profile.health.a1c, so the threshold/diabetes logic itself is unchanged. */
+const a1cToday = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
+function a1cLog() { return Array.isArray(S.a1cLog) ? S.a1cLog : (S.a1cLog = []); }
+const a1cKey = (x) => x.date || x.added || "";
+function a1cSorted() { return a1cLog().map((x, i) => ({ x, i })).sort((a, b) => a1cKey(a.x).localeCompare(a1cKey(b.x)) || a.i - b.i).map((o) => o.x); }
+function a1cLatest() { const a = a1cSorted(); return a.length ? a[a.length - 1] : null; }
+function a1cSync() { const l = a1cLatest(); S.profile.health.a1c = l ? l.v : null; }
+let a1cNewOne = false;   // Step 1 "Add a newer result": the next value typed there starts a new entry instead of editing the newest one
+function a1cPut(v, date, week) { const L = a1cLog(); date = date || ""; v = Math.round(+v * 10) / 10;
+  const ex = L.find((x) => (x.date || "") === date && date !== "" && (week == null || x.week == null || x.week === week));
+  if (ex) { ex.v = v; if (week != null) ex.week = week; }
+  else L.push(Object.assign({ id: "a" + Date.now() + Math.floor(Math.random() * 1000), date, added: a1cToday(), v }, week != null ? { week } : {}));
+  a1cSync(); }
+function a1cDel(id) { S.a1cLog = a1cLog().filter((x) => x.id !== id); a1cSync(); }
+function a1cMigrate() { const L = a1cLog(), h = S.profile.health; let moved = false;
+  try { const o = JSON.parse(localStorage.getItem("theosis-a1c") || "null");   // the old Dashboard-only log (it never changed anything)
+    for (const x of (o && Array.isArray(o.items) ? o.items : [])) if (x && /^\d{4}-\d{2}-\d{2}$/.test(x.date) && +x.v >= 3 && +x.v <= 20 && !L.some((y) => y.date === x.date)) { L.push({ id: String(x.id || x.date), date: x.date, added: x.date, v: Math.round(+x.v * 10) / 10 }); }
+    if (o) moved = true; } catch (e) { /* ignore */ }
+  if (labLog().some((x) => x.k === "a1c")) { S.labLog = labLog().filter((x) => { if (x.k !== "a1c") return true; L.push({ id: "w" + x.week + "-" + x.v, date: x.date || "", added: "", v: +x.v, week: x.week }); return false; }); }   // old Projection lab-log A1c rows (week of plan only)
+  if (h.a1c > 0 && !L.some((x) => Math.abs(x.v - h.a1c) < 0.05)) L.unshift({ id: "step1", date: "", added: "", v: Math.round(+h.a1c * 10) / 10 });   // an old Step 1 value with no date
+  if (L.length) a1cSync();
+  if (moved) { try { localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(S)); localStorage.removeItem("theosis-a1c"); } catch (e) { /* keep the old copy */ } } }
+const a1cDateTxt = (x) => x.date ? new Date(x.date + "T12:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "date not entered";
 function weighIns() { return Array.isArray(S.weighIns) ? S.weighIns : (S.weighIns = []); }
 function ladderLogs() {
   const by = {}; for (const x of labLog()) { (by[x.week] = by[x.week] || { week: x.week })[x.k] = x.v; }
+  for (const x of a1cSorted()) if (x.week != null) (by[x.week] = by[x.week] || { week: x.week }).a1c = x.v;   // proposals-1125: A1c comes from the one A1c log
   for (const x of weighIns()) { const o = (by[x.week] = by[x.week] || { week: x.week }); o.weightKg = x.weightKg; if (x.waistCm > 0) o.waistCm = x.waistCm; }
   for (const c of CI.list || []) { const t = ciStats(c), o = (by[c.week] = by[c.week] || { week: c.week }); if (t.entered) { o.weightKg = t.weightKg; if (c.bf > 0) o.bf = c.bf; } if (c.waistCm > 0) o.waistCm = c.waistCm; }
   return Object.values(by);
@@ -6258,13 +6291,15 @@ function ladderHtml(L) {
     <small class="lad-ev">${s.kind === "lab" && s.lossPct ? `${esc(s.text)} ` : ""}${esc(stepWhen(s))}${s.cite ? ` <cite>(${esc(s.cite)})</cite>` : ""}</small>${s.remissionNote ? `<small class="lad-rem">${esc(s.remissionNote)}</small>` : ""}</div></li>`).join("")}</ol>`;
 }
 function labLogHtml() {
-  const rows = labLog().slice().sort((a, b) => a.week - b.week);
-  return `<details class="lablog" id="lablog"${rows.length ? " open" : ""}><summary>Enter a new lab result</summary>
+  const rows = labLog().slice().sort((a, b) => a.week - b.week), a1s = a1cSorted().slice().reverse();
+  return `<details class="lablog" id="lablog"${rows.length || a1s.length ? " open" : ""}><summary>Enter a new lab result</summary>
     <div class="lablog-form"><label class="field"><span class="label">Test</span><span class="control"><select id="ll-k">${LAB_KEYS.map(([k, t, u]) => `<option value="${k}">${t} (${u})</option>`).join("")}</select></span></label>
     <label class="field"><span class="label">Result</span><span class="control"><input id="ll-v" inputmode="decimal"></span></label>
     <label class="field"><span class="label">Week of plan</span><span class="control"><input id="ll-w" inputmode="numeric" value="12"></span></label>
+    <label class="field"><span class="label">Test date</span><span class="control"><input id="ll-d" type="date" value="${a1cToday()}" max="${a1cToday()}"></span></label>
     <button type="button" class="btn btn-ghost" id="ll-add">Add result</button></div>
-    ${rows.length ? `<ul class="lablog-list">${rows.map((x, i) => `<li>Week ${x.week}: ${esc((LAB_KEYS.find((k) => k[0] === x.k) || [0, x.k])[1])} ${x.v} <button type="button" class="ci-del" data-ll-del="${labLog().indexOf(x)}" aria-label="Remove this result">×</button></li>`).join("")}</ul>` : ""}</details>`;
+    ${rows.length || a1s.length ? `<ul class="lablog-list">${a1s.map((x) => `<li>${x.week != null ? `Week ${x.week}: ` : ""}A1c ${x.v}% · ${esc(a1cDateTxt(x))} <button type="button" class="ci-del" data-a1x-del="${esc(x.id)}" aria-label="Remove this A1c result">×</button></li>`).join("")}${rows.map((x, i) => `<li>Week ${x.week}: ${esc((LAB_KEYS.find((k) => k[0] === x.k) || [0, x.k])[1])} ${x.v}${x.date ? ` · ${esc(a1cDateTxt(x))}` : ""} <button type="button" class="ci-del" data-ll-del="${labLog().indexOf(x)}" aria-label="Remove this result">×</button></li>`).join("")}</ul>` : ""}
+    ${a1s.length ? `<p class="hint">A1c results here are the same A1c log as Step 1 and the Dashboard. The newest one is used.</p>` : ""}</details>`;
 }
 function stagesHtml(st) { return st.length && st[0].key !== "unknown" ? `<div class="pft-stages" role="list" aria-label="Estimated threshold status along the plan">${st.map((x) => `<div role="listitem" class="ps ps-${x.key}"><span>${x.frac === 0 ? "Now" : x.frac === 1 ? "End" : `Wk ${Math.round(x.day / 7)}`}</span><b>${esc(x.label)}</b><small>${fW(x.weightKg)}</small></div>`).join("")}</div>` : ""; }
 function renderPftCard() {
@@ -6646,8 +6681,13 @@ function renderSummary() {
   if (mbarOpen) { mount3d("mbar-now", $('#mbar-panel [data-f3="mbar-now"]'), sp, null, `Now: ${fP(b.bf)} body fat.`); if (e && !(photo && aiState.result)) mount3d("mbar-end", $('#mbar-panel [data-f3="mbar-end"]'), ap, sp, `Projected: ${fP(e.bf)} body fat.`, { morphFrom: true }); }
 }
 
+function renderA1cStep1() { const d = $("#a1c-date"), note = $("#a1c-log-note"); if (!d || !note) return; const l = a1cNewOne ? null : a1cLatest(), n = a1cLog().length;   // proposals-1125
+  d.max = a1cToday(); if (document.activeElement !== d) d.value = l ? l.date || "" : a1cNewOne ? a1cToday() : d.value || a1cToday();
+  if (a1cNewOne) { const f = $('[data-f="a1c"]'); if (f && document.activeElement !== f && !invalid.has("a1c")) f.value = ""; }
+  note.innerHTML = a1cNewOne ? "Type the newer result and its test date." : n ? `${n === 1 ? "Saved in your A1c log" : `Your newest of ${n} results in your A1c log`}${l && !l.date ? " (test date not entered)" : ""}. The newest result is the one the simulator uses. <button type="button" class="link-btn" id="a1c-new">Add a newer result</button>`
+    : "Saved in your A1c log with its test date."; }
 function renderYou() {
-  const p = S.profile, b = bfInfo();
+  const p = S.profile, b = bfInfo(); renderA1cStep1();
   $(".h-imp").hidden = !imp(); $(".h-met").hidden = imp();
   $$("[data-bfmode]").forEach((el) => (el.hidden = el.dataset.bfmode !== p.bfMode));
   $('[data-field="hip"]').hidden = p.sex !== "f";
@@ -8893,11 +8933,11 @@ document.addEventListener("click", (ev) => { const t = ev.target.closest("[data-
   if (fitAction(t)) ev.preventDefault(); });
 document.addEventListener("change", (ev) => { if (ev.target && ev.target.id === "uw-ack") document.getElementById("uw-go").disabled = !ev.target.checked; });
 const LAZY = {};
-window.__BP = { muscleRegions: (m, x) => (E.muscleRegions ? E.muscleRegions(m, x) : null), get S() { return S; }, get R() { return R; }, get V() { return V; }, $, esc, fK, fW, fP, fWk, E, effMove, pftInsideStage, rampColor, renderViews: () => renderViews(), fDate, pftCtSkin, pftInsideOpen: () => pftInsideOpen(), save: () => save(), renderSummary: () => renderSummary(), go: (n) => go(n) };
+window.__BP = { muscleRegions: (m, x) => (E.muscleRegions ? E.muscleRegions(m, x) : null), get S() { return S; }, get R() { return R; }, get V() { return V; }, $, esc, fK, fW, fP, fWk, E, effMove, pftInsideStage, rampColor, renderViews: () => renderViews(), fDate, pftCtSkin, pftInsideOpen: () => pftInsideOpen(), save: () => save(), a1cItems: () => a1cSorted().map((x) => ({ ...x })), a1cPut: (v, d) => { a1cPut(v, d); fillInputs(); update(); }, a1cDel: (id) => { a1cDel(id); fillInputs(); update(); }, a1cToday, renderSummary: () => renderSummary(), go: (n) => go(n) };
 function lazyLoad(src) { if (LAZY[src]) return LAZY[src]; LAZY[src] = new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); }); return LAZY[src]; }
 (function () { const l = document.createElement("link"); l.rel = "stylesheet"; l.href = "assets/v7655.css?v=7696"; document.head.appendChild(l); })();
 function renderSnapshot() { if (typeof window.renderSnapshotNow === "function") return window.renderSnapshotNow(); const b = $("#hs-card"); if (b && R && !R.blocked) lazyLoad("assets/health-snapshot.js?v=7759").then(() => window.renderSnapshotNow(), () => {}); }
-function a1cCardHtml() { if (typeof window.a1cCardHtmlNow === "function") return window.a1cCardHtmlNow(); lazyLoad("assets/a1c-log.js?v=7655").then(() => { if (V.open && V.view === "home") renderViews(); }, () => {}); return `<div class="v-card a1-card" id="a1-card"><h2>A1c log</h2><p class="hint">Loading…</p></div>`; }
+function a1cCardHtml() { if (typeof window.a1cCardHtmlNow === "function") return window.a1cCardHtmlNow(); lazyLoad("assets/a1c-log.js?v=7761").then(() => { if (V.open && V.view === "home") renderViews(); }, () => {}); return `<div class="v-card a1-card" id="a1-card"><h2>A1c log</h2><p class="hint">Loading…</p></div>`; }
 window.BodyPlanFig3D = window.BodyPlanFig3D || { state: { on: false, failed: false, where: null } };
 function f3dMount() { if (window.__NO_PFT_FIG) return; if (typeof window.f3dMountNow === "function") return window.f3dMountNow(); if (!R || R.blocked) return;
   lazyLoad("assets/fig3d-pft.js?v=7759").then(() => window.f3dMountNow(), () => { window.BodyPlanFig3D.state.failed = true; const h = document.getElementById("sum-pft"); if (h && !h.innerHTML) { h.hidden = false; h.innerHTML = `<figure class="f3d-fbfig"><img src="assets/f3d-ct-fallback.webp" alt="Example cross-section through the middle of the model" width="720" height="560"><figcaption>Example cross-section. The 3D model can't load on this device.</figcaption></figure>`; } }); }
@@ -9694,6 +9734,7 @@ function bind() {
     else if (el.matches("input[data-le]")) { const e = S.move.lifts[+el.dataset.le]; if (e) e.effort = el.value; update(); }
     else if (el.matches("input[data-ce]")) { const e = S.move.cardio[+el.dataset.ce]; if (e) e.effort = el.value; update(); }
     else if (el.matches("input[data-cby]")) { const e = S.move.cardio[+el.dataset.cby]; if (e) e.by = el.value; update(); const f = $(`[data-crow="${el.dataset.cby}"] .cardio-adv input[data-f]`); f && f.focus(); }
+    else if (el.id === "a1c-date") { const l = a1cNewOne ? null : a1cLatest(); if (l && /^\d{4}-\d{2}-\d{2}$/.test(el.value) && el.value <= a1cToday()) { l.date = el.value; a1cSync(); update(); } }   // proposals-1125: the date of the A1c shown in Step 1
     else if (el.id === "ai-adult" || el.id === "ai-consent") { aiState[el.id === "ai-adult" ? "adult" : "consent"] = el.checked; renderAi(); }
     else if (el.id === "ai-week") { aiState.day = +el.value; aiState.result = null; renderAi(); }
     else if (el.id === "fs-serving" || el.id === "fs-count") { fsDetailUpdate(); }
@@ -9792,8 +9833,11 @@ function bind() {
       }
     }
     if (t.id === "ll-add") { const k = $("#ll-k").value, v = parseNum($("#ll-v").value), w = Math.round(parseNum($("#ll-w").value)); const mx = { a1c: 20, fg: 600, ins: 300, tg: 3000, hdl: 200, ldl: 500, alt: 1000 }[k];
-      if (!(v > 0 && v <= mx) || !(w >= 0 && w <= 520)) { $("#ll-v").setAttribute("aria-invalid", "true"); $("#ll-v").focus(); return; } labLog().push({ k, v, week: w }); update(); const d = $("#lablog"); if (d) { d.open = true; } return; }
+      if (!(v > 0 && v <= mx) || !(w >= 0 && w <= 520)) { $("#ll-v").setAttribute("aria-invalid", "true"); $("#ll-v").focus(); return; } const dt = ($("#ll-d") || {}).value || "", date = /^\d{4}-\d{2}-\d{2}$/.test(dt) && dt <= a1cToday() ? dt : "";
+      if (k === "a1c") a1cPut(v, date, w); else labLog().push(Object.assign({ k, v, week: w }, date ? { date } : {})); update(); const d = $("#lablog"); if (d) { d.open = true; } return; }   // proposals-1125: A1c goes to the one dated A1c log
     if (t.dataset.llDel != null) { labLog().splice(+t.dataset.llDel, 1); update(); return; }
+    if (t.dataset.a1xDel != null) { a1cDel(t.dataset.a1xDel); fillInputs(); update(); return; }
+    if (t.id === "a1c-new") { a1cNewOne = true; renderA1cStep1(); const f = $('[data-f="a1c"]'); if (f) f.focus(); return; }
     if (t.id === "wk-add") { const wk = Math.round(parseNum($("#wk-w").value)), kg = parseNum($("#wk-kg").value), wa = parseNum($("#wk-waist").value);
       const kgv = imp() ? kg / LB : kg, wav = wa > 0 ? (imp() ? wa * 2.54 : wa) : null;
       if (!(wk >= 1 && wk <= 520) || !(kgv >= 30 && kgv <= 350)) { $("#wk-kg").setAttribute("aria-invalid", "true"); $("#wk-kg").focus(); return; }
@@ -9806,7 +9850,7 @@ function bind() {
     if (t.id === "refit-undo") { S.refit = null; update(); return; }
     if (t.id === "labs-toggle") { HC.labsOpen = !HC.labsOpen; HC.labsTouched = true; renderHealthCard(); return; }
     if (t.id === "lu-pick") { const C = window.TheosisConsent; const pick = () => { const f = $("#lu-file"); if (f) f.click(); }; if (C && C.labGate) { C.labGate(pick); return; } if (C && !C.has("labAi")) { C.open(true, "labAi"); return; } pick(); return; }
-    if (t.id === "lu-use") { const h = S.profile.health; h.labs = h.labs || {}; document.querySelectorAll("[data-luv]").forEach((el) => { const n = parseNum(el.value); if (n > 0) { if (el.dataset.luv === "a1c") h.a1c = n; else h.labs[el.dataset.luv] = n; } }); LU.found = null; LU.msg = "Values added. You can still edit them above."; fillInputs(); update(); return; }
+    if (t.id === "lu-use") { const h = S.profile.health; h.labs = h.labs || {}; document.querySelectorAll("[data-luv]").forEach((el) => { const n = parseNum(el.value); if (n > 0) { if (el.dataset.luv === "a1c") a1cPut(n, ""); else h.labs[el.dataset.luv] = n; } }); LU.found = null; LU.msg = "Values added. You can still edit them above."; fillInputs(); update(); return; }
     if (t.id === "lu-discard") { LU.found = null; LU.msg = ""; renderLabUpload(); return; }
     if (t.dataset.story != null) { S.ui.storyOpen = +t.dataset.story; renderStory(); save(); const tab = document.querySelector(`#story-card [role=tab][data-story="${S.ui.storyOpen}"]`); if (tab) tab.focus(); return; }
     if (t.dataset.rec && REC_APPLY[t.dataset.rec]) { REC_APPLY[t.dataset.rec](); fillInputs(); update(); const x = $("#expect"); if (x) { x.classList.add("flash"); setTimeout(() => x.classList.remove("flash"), 1500); } return; }
