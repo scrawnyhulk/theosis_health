@@ -3695,7 +3695,10 @@ function nextStepsFor(R) {
     const minEat = Math.max(floorOf(p), Math.ceil((first.tdee - first.ceiling) / 10) * 10);
     add(R.main.overDays > 0 || R.inp.food.actualKcal < floorOf(p), `Eat at least ${minEat.toLocaleString("en-US")} kcal a day`, `Right now your fat can cover about ${ceil0.toLocaleString("en-US")} kcal a day. A bigger gap than that comes out of muscle.`);
   }
-  add(tr.liftSessions === 0 && (R.inp.move || {}).noLift && !holdsGoal(p.health) && R.dir !== "gain", "Keep protein high, since you're not lifting", "Without lifting, protein and a moderate deficit are your main protection for muscle. Walking and everyday activity help too. Strength work is optional, and two short sessions a week would add real protection if you ever want it.");
+  /* daily-1125: recomposition and Get stronger need lifting, so don't call strength work optional there (the Projection says the goal needs it) */
+  const needLift = ["recomp", "strength"].includes((R.inp.goal || {}).type);
+  add(tr.liftSessions === 0 && (R.inp.move || {}).noLift && !holdsGoal(p.health) && R.dir !== "gain" && needLift, "Add lifting: this goal needs it", `${R.inp.goal.type === "strength" ? "Getting stronger" : "A recomposition"} needs strength training. Without it, protein only protects the muscle you have. Two short sessions a week on the Move step is enough to start.`);
+  add(tr.liftSessions === 0 && (R.inp.move || {}).noLift && !holdsGoal(p.health) && R.dir !== "gain" && !needLift, "Keep protein high, since you're not lifting", "Without lifting, protein and a moderate deficit are your main protection for muscle. Walking and everyday activity help too. Strength work is optional, and two short sessions a week would add real protection if you ever want it.");
   add(tr.liftSessions === 0 && !(R.inp.move || {}).noLift && !holdsGoal(p.health), "Add 2–3 strength sessions a week", "Full-body basics (a squat, a push, a pull, a hinge) for 2–3 sets each. This is what signals the body to keep muscle, or build it.");
   add(true, `Hit about ${R.protein.g} g of protein a day`, `That's ${R.protein.perKg} g per kg${R.protein.perKg === 2.2 ? " (1 g per lb)" : ""} of ${R.ref.basis}. Spread it over 3–4 meals (about 0.4 g/kg each), with protein at each one.`);
   const holdG = holdsGoal(p.health);
