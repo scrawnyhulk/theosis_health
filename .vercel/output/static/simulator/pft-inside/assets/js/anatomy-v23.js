@@ -131,22 +131,32 @@
     M.skin=patch(new T.MeshPhysicalMaterial({color:0xb08672,roughness:.58,metalness:0,specularIntensity:.55,sheen:.3,sheenColor:new T.Color(0xd98e78),sheenRoughness:.6,clearcoat:0,side:T.DoubleSide}),"skin",{
       uniforms:shared,
       discard:"if(uCut>.5&&pftAbd(vPos,.025)>.5)discard;",
-      color:"if(!gl_FrontFacing){diffuseColor.rgb=vec3(.20,.035,.03);}else{float cav=clamp(length(fwidth(normalize(vNormal)))*5.,0.,1.);diffuseColor.rgb*=1.-.28*cav;} // V32g2: crease/knuckle shading",
+      color:"if(!gl_FrontFacing){diffuseColor.rgb=vec3(.20,.035,.03);"+(window.__PFT_ENV!==0?"if(uCut>.5){float sxk=max(abs(uBS.x),1e-4);float bz=vPos.z/sxk;float ap=smoothstep(.02,.06,bz);diffuseColor.rgb=mix(diffuseColor.rgb,mix(vec3(.62,.44,.17),vec3(.80,.61,.27),pftNoise(vPos*40.)*.6+.2)*(.75+.25*smoothstep(.06,.2,bz)),ap);}":"")+"/* 1125: Inside view - the inner face of a big belly in front of the abdominal wall is the subcutaneous fat layer, so it is drawn as cut fat instead of a dark-red slab */}else{float cav=clamp(length(fwidth(normalize(vNormal)))*5.,0.,1.);diffuseColor.rgb*=1.-.28*cav;} // V32g2: crease/knuckle shading",
       normal:"if(gl_FrontFacing){normal=pftBump(normal,pftNoise(vPos*260.)*.5+pftNoise(vPos*55.),.0009);float hnd=smoothstep(.17,.20,abs(vPos.x))*smoothstep(.60,.63,vPos.y)*(1.-smoothstep(.78,.81,vPos.y)),ft=1.-smoothstep(.07,.10,vPos.y);if(hnd+ft>.01){normal=pftBump(normal,hnd*pftNoise(vPos*vec3(320.,1500.,320.))+ft*pftNoise(vPos*vec3(320.,320.,1500.))+.6*pftNoise(vPos*820.),.00042*(hnd+ft));}} // V32i: fine skin lines + pores on hands and feet",
       light:`#if NUM_DIR_LIGHTS>0
         for(int i=0;i<NUM_DIR_LIGHTS;i++){float nl=dot(normal,directionalLights[i].direction);float w=max(0.,(nl+.6)/1.6)-max(0.,nl);
         reflectedLight.directDiffuse+=diffuseColor.rgb*vec3(1.,.38,.26)*w*directionalLights[i].color*.55;}
       #endif
       // V25: back rim lights are kept low on the body surface (they drew bright lines along upward-facing folds)`});
-    M.fat=patch(new T.MeshPhysicalMaterial({color:0xf0c35a,roughness:.55,sheen:.15,sheenColor:new T.Color(0xffe2a0),clearcoat:.15,transparent:true,depthWrite:false,side:T.FrontSide}),"fat",{
+    // 1125 (3d-leftover): Half & half at high fat. The fat layer is one see-through shell cut at the midline, so from the muscle side its
+    // cut edge read as thin cream ribbons floating off the chest/back, and folds inside the shell (jaw/neck crease, ear) showed through
+    // as a cream "collar" and a doubled shell at the back of the neck. Now (a) only the nearest fat surface is drawn (a depth-only
+    // pre-pass, FAT_PRE below) so inner folds never show through, and (b) seen from the muscle side, the inside of the shell is drawn as a
+    // flat cream cut face, so the cut reads as a solid slice of fat. window.__PFT_ENV=0 restores the old shell.
+    const FAT_ENV=window.__PFT_ENV!==0;
+    const FAT_BACK="if(!gl_FrontFacing&&(uHalf<.5||cameraPosition.x>-.02))discard;";
+    M.fat=patch(new T.MeshPhysicalMaterial({color:0xf0c35a,roughness:.55,sheen:.15,sheenColor:new T.Color(0xffe2a0),clearcoat:.15,transparent:true,depthWrite:false,side:FAT_ENV?T.DoubleSide:T.FrontSide}),"fat"+(FAT_ENV?"-cap":""),{
       uniforms:fatU,
       vdecl:"#ifndef USE_COLOR\nattribute vec4 color;\n#endif\nvarying vec4 vW;\n",vmain:"vW=color;",
       fdecl:"varying vec4 vW;uniform float uSubq,uMass,uBelly,uHyper,uFatOp;\n",
-      discard:"if(uHalf>.5&&vPos.x<0.0)discard;",
+      discard:"if(uHalf>.5&&vPos.x<0.0)discard;"+(FAT_ENV?FAT_BACK:""),
       color:`float th=vW.r*uSubq+vW.a*uHyper*.9+vW.g*uMass*.8+vW.r*uBelly*.2;float lob=pftNoise(vPos*38.);
         diffuseColor.rgb=mix(vec3(.95,.64,.12),vec3(1.,.83,.30),lob*.7+.15);
-        diffuseColor.a=min(.96,.42+.24*smoothstep(.0,.3,vW.r+vW.g*.6)+.5*smoothstep(.05,.8,th))*uFatOp;if(diffuseColor.a<.01)discard;`,
-      normal:"normal=pftBump(normal,pftNoise(vPos*38.)+.35*pftNoise(vPos*110.),.0016);"});
+        diffuseColor.a=min(.96,.42+.24*smoothstep(.0,.3,vW.r+vW.g*.6)+.5*smoothstep(.05,.8,th))*uFatOp;if(diffuseColor.a<.01)discard;`+(FAT_ENV?`
+        if(!gl_FrontFacing){diffuseColor.rgb=mix(vec3(.93,.74,.36),vec3(.98,.86,.52),lob*.6+.2);diffuseColor.a=.94*uFatOp;}`:""),
+      normal:"normal=pftBump(normal,pftNoise(vPos*38.)+.35*pftNoise(vPos*110.),.0016);"+(FAT_ENV?"if(!gl_FrontFacing){normal=normalize((viewMatrix*vec4(-1.,0.,0.,0.)).xyz);}":"")});
+    // depth-only twin of the fat shell, drawn just before it (renderOrder 2.95 < 3) with the same cut rules
+    const FAT_PRE=FAT_ENV?patch(new T.MeshStandardMaterial({colorWrite:false,depthWrite:true,transparent:true,side:T.DoubleSide}),"fat-pre",{uniforms:fatU,discard:"if(uHalf>.5&&vPos.x<0.0)discard;"+FAT_BACK}):null;
     const muscleU={uSel:U(0),...shared,uGly:U(0),uMG:{value:new Array(48).fill(0)},uMGk:U(1),uMView:U(0)}; /* v7.6.78: per-muscle growth (index = muscle id), local-unit scale, muscle-only view */
     M.muscle=patch(new T.MeshStandardMaterial({color:0x7d1d17,roughness:.55,metalness:0}),"muscle25",{
       uniforms:muscleU,vdecl:"attribute vec3 color;\nattribute float aBelly;\nattribute float aFib;attribute float aEdge;attribute float aTd;varying float vTd;varying float vBel;\nuniform float uMG[48];uniform float uMGk;attribute float aRoom;uniform float uHalf,uMView;\nvarying float vMid;varying float vGrow;varying float vFib;varying float vEdge;\n",vpre:"{int mi0=int(floor(color.r*64.+.5));float g0=(mi0>0&&mi0<48)?uMG[mi0]:0.;vGrow=g0;float gr=g0*aBelly*uMGk;float capOn=uMView>.5?0.:(uHalf>.5?smoothstep(-.012,.012,(modelMatrix*vec4(position,1.)).x):1.);gr=mix(gr,min(gr,aRoom),capOn);transformed+=normalize(objectNormal)*gr;}\n" /* r43: growth capped by the room under the skin wherever skin/fat covers the muscle */,vmain:"vMid=color.r;vFib=aFib;vEdge=aEdge;vTd=aTd;vBel=aBelly;\n",fdecl:"uniform float uGly,uSel,uMView;\nvarying float vMid;varying float vGrow;varying float vFib;varying float vEdge;varying float vTd;varying float vBel;\n",discard:"if(uCut>.5&&"+(window.__PFT_R40RIM===0?"pftAbd(vPos,.03)":(window.__PFT_R42===0?"pftAbdG(vPos,.03,1.16)":"(uHalf<.5?pftAbdG(vPos,-.04,1.9):pftAbdG(vPos,.03,1.16))"))+">.5)discard;if(uCut>.5&&uHalf<.5&&vPos.y>1.47)discard; ",
@@ -1477,6 +1487,8 @@
           const f=new T.Mesh(o.geometry,M.fat);f.userData.role="fat";f.morphTargetDictionary=o.morphTargetDictionary;f.morphTargetInfluences=o.morphTargetInfluences.slice();
           f.renderOrder=3;f.frustumCulled=false;o.parent.add(f);f.position.copy(o.position);f.quaternion.copy(o.quaternion);f.scale.copy(o.scale);f.updateMatrix();
           meshes.push(f);(byRole.fat=byRole.fat||[]).push(f);
+          if(FAT_PRE){const z=new T.Mesh(o.geometry,FAT_PRE);z.name="Fat depth pre-pass";z.userData.role="fat";z.userData.fatPre=true;z.morphTargetDictionary=o.morphTargetDictionary;z.morphTargetInfluences=o.morphTargetInfluences.slice();
+            z.renderOrder=2.95;z.frustumCulled=false;z.castShadow=false;z.receiveShadow=false;o.parent.add(z);z.position.copy(o.position);z.quaternion.copy(o.quaternion);z.scale.copy(o.scale);z.updateMatrix();meshes.push(z);}   // 1125: not in byRole.fat (fat-only passes keep their single mesh)
         }
         if(role==="omentum"||role==="mesentery"||role==="lung"||role==="diaphragm")o.renderOrder=2;
       });
