@@ -1926,14 +1926,17 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')set(false)})
             <div class="section">
               <div class="section-head"><h2>Body fat</h2></div>
               <fieldset class="seg sm"><legend class="sr-only">How do you know the body fat number?</legend>
-                <label><input type="radio" name="profile.bfMode" value="known"><span>I know it</span></label>
+                <label><input type="radio" name="profile.bfMode" value="known"><span>I know my %</span></label>
+                <label><input type="radio" name="profile.bfMode" value="scale"><span>Smart scale</span></label>
                 <label><input type="radio" name="profile.bfMode" value="navy"><span>Tape measure</span></label>
                 <label><input type="radio" name="profile.bfMode" value="bmi"><span>I don't know</span></label>
               </fieldset>
               <div data-bfmode="known">
                 <label class="field" data-field="bf"><span class="label">Body fat</span>
-                  <span class="control"><input data-f="bf" inputmode="decimal"><span class="unit">%</span></span><span class="err"></span>
-                  <span class="hint">From a DEXA scan, InBody, smart scale or calipers. Scans are the most accurate.</span></label>
+                  <span class="control"><input data-f="bf" inputmode="decimal"><span class="unit">%</span></span><span class="err"></span></label>
+                <label class="field" data-field="bfBy"><span class="label">Measured by</span>
+                  <span class="control"><select data-sel="profile.bfBy"><option value="">Not sure</option><option value="dexa">DEXA scan</option><option value="scale">Smart scale or InBody</option><option value="calipers">Calipers</option><option value="other">Something else</option></select></span>
+                  <span class="hint">A DEXA scan is the most accurate. Only this number is used.</span></label>
               </div>
               <div data-bfmode="navy">
                 <div class="row">
@@ -1947,8 +1950,8 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')set(false)})
                 <p class="hint">U.S. Navy tape method (Hodgdon &amp; Beckett, 1984). Measure snug, not tight, after breathing out. Hips are only used for women.</p>
               </div>
               <div data-bfmode="bmi"><p class="hint">We'll estimate from your BMI, age and sex (Deurenberg, 1991). It's a rough guess and can be off by 5 points or more, especially if you're muscular. A quick tape measurement is better.</p></div>
-              <details class="scale-bf" id="scale-bf"><summary>Have smart-scale or body-comp numbers (fat in lb or kg)?</summary>
-                <p class="hint">From a Hume, InBody or similar scale. Enter total fat, or subcutaneous and visceral fat. Any of these counts as a measured body fat and is used instead of the estimate above.</p>
+              <div data-bfmode="scale" id="scale-bf">
+                <p class="hint">From a Hume, InBody or similar scale that shows fat in pounds or kilograms. Enter total fat, or subcutaneous and visceral fat.</p>
                 <label class="field" data-field="scaleFat"><span class="label">Total fat mass</span>
                   <span class="control"><input data-f="scaleFat" inputmode="decimal" placeholder="optional"><span class="unit" data-u="w">lb</span></span><span class="err"></span></label>
                 <div class="row">
@@ -1956,10 +1959,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')set(false)})
                     <span class="control"><input data-f="subqFat" inputmode="decimal" placeholder="optional"><span class="unit" data-u="w">lb</span></span><span class="err"></span></label>
                   <label class="field" data-field="viscFat"><span class="label">Visceral fat</span>
                     <span class="control"><input data-f="viscFat" inputmode="decimal" placeholder="optional"><span class="unit" data-u="w">lb</span></span><span class="err"></span></label>
-                </div></details>
-              <label class="field adv-only adv-field" data-field="dexaBf"><span class="label">DEXA body fat <span class="adv-tag">Advanced</span></span>
-                <span class="control"><input data-f="dexaBf" inputmode="decimal" placeholder="optional"><span class="unit">%</span></span><span class="err"></span>
-                <span class="hint">From a DEXA scan. When filled in, it's used instead of the estimate.</span></label>
+                </div></div>
               <div class="estimate" id="bf-estimate" aria-live="polite"></div>
             </div>
             <div class="health-card" id="health-card" role="group" aria-labelledby="h-health">
@@ -5645,6 +5645,7 @@ const pftEst = () => PF.estimate(pftInput());
 const defaults = () => ({
   v: 1, glucoseOptIn: false, mode: "plan", step: 0, maxStep: 1, maxPos: null, units: "imperial", ui: { mode: "simple" },
   profile: { sex: "m", age: 35, heightCm: 177.8, weightKg: 190 / LB, bfMode: "bmi", bf: 25, neckCm: null, waistCm: null, hipCm: null, dexaBf: null,
+    bfBy: "", scaleFatKg: null, subqFatKg: null, viscFatKg: null,   // proposals-1125: one body-fat source picker (bfMode known|scale|navy|bmi); bfBy tags a typed % (dexa|scale|calipers|other|""); dexaBf kept only so old saves can migrate
     health: { pregnant: false, bf: "none", bfMonths: 3, bfPump: false, bfMulti: false, cancer: "no", glucoseMeds: false, edHistory: false, meds: "unknown", medAck: false, diabetes: "unknown", diabetesAuto: false, diabetesPicked: false, a1c: null, fattyLiver: "unknown", labs: {} },
     fat: { carry: "", menopause: "", ancestry: "" } },
   fig: { mode: "skin", tone: 2, skin: 2, top: false, photoThumb: false },
@@ -5662,7 +5663,9 @@ const defaults = () => ({
 function merge(base, extra) { if (!extra || typeof extra !== "object") return base; for (const k of Object.keys(base)) { if (!(k in extra)) continue;
   if (base[k] && typeof base[k] === "object" && !Array.isArray(base[k])) merge(base[k], extra[k]); else base[k] = extra[k]; } return base; }
 let S = defaults(), HAD_SAVED = false;   // HAD_SAVED (v7.6.11): the person already used the simulator, so a hand-off from the calculator must not overwrite their numbers
-function migrateNone(saved) { if (S.profile.fat.menopause === "peri") S.profile.fat.menopause = "perimenopause";   // proposals-1125: "Going through it" merged into Perimenopause
+function migrateNone(saved) { { const p = S.profile;   // proposals-1125: the separate DEXA box is gone; an old DEXA % becomes "I know my %" tagged DEXA (it was already the number in use)
+    if (p.dexaBf > 0) { Object.assign(p, { bfMode: "known", bf: p.dexaBf, bfBy: "dexa" }); } p.dexaBf = null; }
+  if (S.profile.fat.menopause === "peri") S.profile.fat.menopause = "perimenopause";   // proposals-1125: "Going through it" merged into Perimenopause
   { const h = saved && saved.profile && saved.profile.health; if (h && (!h.meds || h.meds === "unknown") && h.glucoseMeds) S.profile.health.meds = "yes"; }  // v7.6.18: the old yes/no glucose-medication flag becomes the required medication answer
   const m = saved && saved.move; if (m && m.preset === "none" && !m.noLift && (saved.maxStep || 0) >= 3 && !m.plannerOn) { S.move.noLift = true; } }
 try { const saved = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEY) || "null"); if (saved && saved.v === 1) { S = merge(defaults(), saved); migrateNone(saved); HAD_SAVED = !!((saved.maxStep || 0) > 1 || (saved.goal && saved.goal.touched) || (saved.profile && saved.profile.weightKg && saved.step > 0)); } } catch (e) { /* storage unavailable */ }
@@ -5709,10 +5712,11 @@ const getPath = (path) => path.split(".").reduce((o, k) => (o == null ? o : o[k]
 const setPath = (path, v) => { const ks = path.split("."), last = ks.pop(); ks.reduce((o, k) => o[k], S)[last] = v; };
 function bfInfo() {
   const p = S.profile;
-  if (isAdv() && p.dexaBf > 0) return { bf: p.dexaBf, source: "measured", dexa: true };
-  { const fat = p.scaleFatKg > 0 ? p.scaleFatKg : p.subqFatKg > 0 && p.viscFatKg > 0 ? p.subqFatKg + p.viscFatKg : 0;
-    if (fat > 0 && p.weightKg > 0) { const bf = 100 * fat / p.weightKg; if (bf >= 3 && bf <= 65) return { bf: +bf.toFixed(1), source: "measured", scale: true }; } }
-  if (p.bfMode === "known") return { bf: p.bf, source: "measured" };
+  // proposals-1125: only the source picked in the Body fat picker drives the number (was: DEXA > smart scale > typed %, with hidden overrides)
+  if (p.bfMode === "scale") { const fat = p.scaleFatKg > 0 ? p.scaleFatKg : p.subqFatKg > 0 && p.viscFatKg > 0 ? p.subqFatKg + p.viscFatKg : 0;
+    if (fat > 0 && p.weightKg > 0) { const bf = 100 * fat / p.weightKg; if (bf >= 3 && bf <= 65) return { bf: +bf.toFixed(1), source: "measured", scale: true, by: "scale" }; }
+    return { bf: E.bmiBf(p.sex, p.age, p.heightCm, p.weightKg), source: "bmi", scaleMissing: true }; }
+  if (p.bfMode === "known") return { bf: p.bf, source: "measured", by: p.bfBy || "" };
   if (p.bfMode === "navy") { const v = E.navyBf(p.sex, p.heightCm, p.neckCm || 0, p.waistCm || 0, p.hipCm); if (v != null && p.neckCm && p.waistCm && (p.sex === "m" || p.hipCm)) return { bf: v, source: "navy" };
     return { bf: E.bmiBf(p.sex, p.age, p.heightCm, p.weightKg), source: "bmi", navyMissing: true }; }
   return { bf: E.bmiBf(p.sex, p.age, p.heightCm, p.weightKg), source: "bmi" };
@@ -6650,14 +6654,15 @@ function renderYou() {
   $('[data-field="waist"]').hidden = p.bfMode === "navy";
   if (typeof renderSpecialYou === "function") renderSpecialYou();
   const est = $("#bf-estimate");
-  if (b.scale) { est.hidden = false; est.innerHTML = `<b>${fP(b.bf)}</b><span>body fat from your smart-scale fat numbers (counts as measured)${p.bfMode === "known" && p.bf > 0 ? `, used instead of the ${fP(p.bf)} typed above` : p.bfMode === "navy" ? ", used instead of the tape estimate" : ""}</span>`; }
+  if (b.scale) { est.hidden = false; est.innerHTML = `<b>${fP(b.bf)}</b><span>body fat from your smart-scale fat numbers (counts as measured)</span>`; }
+  else if (b.scaleMissing) { est.hidden = false; est.innerHTML = `<b>≈ ${fP(b.bf)}</b><span>Enter your total fat${imp() ? " in lb" : " in kg"}, or subcutaneous and visceral fat. Using a BMI-based guess for now.</span>`; }
   else if (p.bfMode === "known") { est.hidden = true; }
   else { est.hidden = false;
     est.innerHTML = b.source === "navy" ? `<b>≈ ${fP(b.bf)}</b><span>body fat · U.S. Navy tape estimate (about ±3–4 points)</span>`
       : p.bfMode === "navy" ? `<b>≈ ${fP(b.bf)}</b><span>Enter neck, waist${p.sex === "f" ? " and hips" : ""} for a tape estimate. Using a BMI-based guess for now.</span>`
       : `<b>≈ ${fP(b.bf)}</b><span>body fat · BMI-based estimate (about ±5 points)</span>`; }
   const a = E.analyze({ ...p, bf: b.bf });
-  $("#an-src").textContent = b.source === "measured" ? "Measured body fat" : b.source === "navy" ? "Tape estimate" : "BMI estimate";
+  $("#an-src").textContent = b.source === "measured" ? ({ dexa: "Measured body fat · DEXA", scale: "Measured body fat · smart scale", calipers: "Measured body fat · calipers" }[b.by] || "Measured body fat") : b.source === "navy" ? "Tape estimate" : "BMI estimate";
   const sexWord = p.sex === "m" ? "men" : "women";
   const lever = a.category === "above the healthy range" || a.category === "average" ? "Losing fat is your biggest lever. Protecting muscle while you do it matters just as much."
     : a.ffmiCategory === "below average" || a.ffmiCategory === "average" ? "You're already fairly lean. Building muscle (gain or recomposition) will change your shape most."
@@ -8632,7 +8637,7 @@ function projectionExtras(B, e) {
     const d0 = depotsAt(s.fatKg), d1 = depotsAt(e.fatKg);
     if (Math.abs(dFatE) >= 0.3 && d0 && d1) { const reg = { belly: [d0.vat + d0.abd, d1.vat + d1.abd], hips_thighs: [d0.gf, d1.gf], arms_upper: [d0.up, d1.up] };
       o.fatFirst = Object.keys(reg).map((k) => [k, Math.abs(reg[k][1] - reg[k][0]) / Math.max(0.1, reg[k][0])]).filter((x) => x[1] >= 0.03).sort((a, b) => b[1] - a[1]).slice(0, 2).map((x) => x[0]); }
-    if (d0 && d1) { const meas = p.viscFatKg > 0 && p.subqFatKg > 0, sub0 = Math.max(0.1, s.fatKg - d0.vat), sub1 = e.fatKg - d1.vat;
+    if (d0 && d1) { const meas = p.bfMode === "scale" && p.viscFatKg > 0 && p.subqFatKg > 0, sub0 = Math.max(0.1, s.fatKg - d0.vat), sub1 = e.fatKg - d1.vat;
       o.depotsMeasured = !!meas; o.vatStartKg = +(meas ? p.viscFatKg : d0.vat).toFixed(2); o.subqStartKg = +(meas ? p.subqFatKg : sub0).toFixed(2);
       o.vatEndKg = +(o.vatStartKg * d1.vat / Math.max(0.05, d0.vat)).toFixed(2); o.subqEndKg = +(o.subqStartKg * sub1 / sub0).toFixed(2); }
   } catch (err) { /* extras are optional: the base numbers still work */ }
@@ -9605,6 +9610,7 @@ function stepProblems(step) {
   const bad = [...invalid].filter(vis);
   if (bad.length) return "Fix the highlighted field first.";
   if (step === 1) { const mp = medProblem(); if (mp) return mp; }
+  if (step === 1 && S.profile.bfMode === "scale" && bfInfo().scaleMissing) return `Enter your smart-scale total fat, or choose "I don't know".`;
   if (step === 1 && S.profile.bfMode === "navy" && bfInfo().navyMissing) return `Enter neck and waist${S.profile.sex === "f" ? " and hips" : ""}, or choose "I don't know".`;
   if (step === 2 && R && R.blocked) return "Adjust your goal first.";
   return "";
