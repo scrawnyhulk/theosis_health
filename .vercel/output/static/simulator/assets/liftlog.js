@@ -50,11 +50,11 @@
   const blank = () => ({ v: VER, on: true, scale: "rir", sessions: [] });
   function clean(o) {
     const L = blank(); if (!o || typeof o !== "object") return L;
-    L.on = o.on !== false; L.scale = o.scale === "rpe" ? "rpe" : "rir";
+    L.on = o.on !== false; L.scale = "rir";   // proposals-1125: one effort scale everywhere, "reps left in the tank"; old RPE entries become reps left (10 - RPE, the same math setRir() used)
     L.sessions = (Array.isArray(o.sessions) ? o.sessions : []).filter((s) => s && /^\d{4}-\d\d-\d\d$/.test(s.date)).map((s) => ({ id: s.id || uid(), date: s.date,
       ex: (Array.isArray(s.ex) ? s.ex : []).map((e) => ({ id: e.id || uid(), key: EXI[e.key] ? e.key : null, name: String(e.name || (EXI[e.key] || {}).name || "Exercise").slice(0, 60),
         pri: (e.pri || []).filter((k) => MK.includes(k)), sec: (e.sec || []).filter((k) => MK.includes(k)),
-        sets: (Array.isArray(e.sets) ? e.sets : []).slice(0, 30).map((x) => ({ reps: num(x.reps), w: num(x.w), unit: x.unit === "kg" ? "kg" : "lb", rir: num(x.rir), rpe: num(x.rpe) })) })) }));
+        sets: (Array.isArray(e.sets) ? e.sets : []).slice(0, 30).map((x) => ({ reps: num(x.reps), w: num(x.w), unit: x.unit === "kg" ? "kg" : "lb", rir: num(x.rir) != null ? num(x.rir) : num(x.rpe) != null ? Math.max(0, 10 - num(x.rpe)) : null, rpe: null })) })) }));
     return L;
   }
   let LOG = (() => { try { return clean(JSON.parse(localStorage.getItem(KEY) || "null")); } catch (e) { return blank(); } })();
@@ -187,7 +187,7 @@ ${e.sets.map((x, j) => `<span class="n">${j + 1}</span><input inputmode="numeric
     const past = sortedPast();
     h += `<h4 class="ll-h4">History</h4>${past.length ? past.slice(0, 30).map((p) => `<div class="ll-day"><div><b>${esc(nice(p.date))}</b><small>${esc(sumTxt(p))} · ${esc(p.ex.map((e) => e.name).join(", ").slice(0, 60))}</small></div><div style="display:flex;gap:.4rem"><button type="button" class="ll-btn sm" data-edit="${p.date}">Edit</button><button type="button" class="ll-btn sm dng" data-delday="${p.id}" aria-label="Delete ${esc(nice(p.date))}">Delete</button></div></div>`).join("") : `<p class="ll-sub">No workouts yet.</p>`}</div>`;
     h += `<div class="ll-more">${ui.more ? `<div class="ll-morep"><div class="ll-moreh"><b>Settings, backup and delete</b><button type="button" class="ll-btn sm" id="ll-moreclose" aria-label="Close settings">✕ Close</button></div>
-<div class="ll-row"><span>Effort scale:</span><button type="button" class="ll-btn sm${sc === "rir" ? " pri" : ""}" data-scale="rir">Reps left</button><button type="button" class="ll-btn sm${sc === "rpe" ? " pri" : ""}" data-scale="rpe">RPE (1–10)</button></div>
+<p class="ll-sub">Effort is "reps left in the tank": how many more reps you could have done at the end of the set (0–1 is close to failure). It's the same scale as the Move step.</p>
 <div class="ll-row"><button type="button" class="ll-btn sm" id="ll-export">Download backup (to restore later)</button><button type="button" class="ll-btn sm" id="ll-csv">Download spreadsheet (to read)</button><label class="ll-btn sm" style="display:inline-flex;align-items:center">Restore from backup<input type="file" id="ll-import" accept="application/json,.json" hidden></label><button type="button" class="ll-btn sm dng" id="ll-wipe">Delete my log</button></div>
 <p class="ll-sub">Your log stays on this device only. Nothing is uploaded. The backup file can be loaded back in; the spreadsheet opens in Excel or Google Sheets for reading.</p></div>` : `<button type="button" class="ll-btn" id="ll-moreopen" aria-expanded="false">⚙ Settings, backup and delete</button>`}</div>`;
     return h;

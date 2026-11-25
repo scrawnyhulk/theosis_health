@@ -703,7 +703,7 @@ hr.soft{border:0;border-top:1px solid rgba(231,237,245,.08);margin:1rem 0}
 .cardio-top .field{margin:0}
 .cardio-del{align-self:center;margin-top:1.2rem}
 .cardio-eff{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem .8rem;margin-top:.5rem}
-.cardio-eff .seg{flex:0 1 20rem;min-width:15rem}
+.cardio-eff .seg{flex:0 1 20rem;min-width:15rem}.lift-eff-h{flex:1 1 100%;margin:0}
 .seg-sm span{min-height:2.2rem;font-size:.82rem}
 .cardio-note{margin:0}
 #cardio-add{margin:.25rem 0 .4rem}
@@ -1602,7 +1602,7 @@ body{background-color:var(--bg);background-image:var(--app-bg-image);background-
 <body>
 <!-- v7.6.69: charcoal/slate app background (grain texture removed) + simulation-trend hero -->
 <!-- v7.6.68 perf: consent runs first so the terms screen shows while the rest of the page streams in -->
-<script src="assets/liftlog.js?v=7698"></script>
+<script src="assets/liftlog.js?v=7761"></script>
 <script>
 /* v7.2 Required consent (clickwrap). Wording is versioned (see VERSION).
    v7.6.2: one scrollable screen of grouped terms + a single "I've read and agree" checkbox + Accept; optional opt-ins for photos (with written biometric consent, Illinois BIPA)
@@ -2215,12 +2215,13 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')set(false)})
                 <div class="row mt-s">
                   <label class="field" data-field="liftSets"><span class="label">Hard sets per muscle a week</span>
                     <span class="control"><input data-f="liftSets" inputmode="numeric"><span class="unit">sets</span></span><span class="err"></span></label>
-                  <div><span class="label">How close to failure</span>
-                    <fieldset class="seg sm"><legend class="sr-only">Reps left in the tank</legend>
-                      <label><input type="radio" name="move.adv.rir" value="0-1"><span>0–1 left</span></label>
-                      <label><input type="radio" name="move.adv.rir" value="2-3"><span>2–3 left</span></label>
+                  <div id="lift-rir-pick"><span class="label">Reps left in the tank</span>
+                    <fieldset class="seg sm"><legend class="sr-only">Reps left in the tank at the end of a set</legend>
                       <label><input type="radio" name="move.adv.rir" value="4+"><span>4+ left</span></label>
+                      <label><input type="radio" name="move.adv.rir" value="2-3"><span>2–3 left</span></label>
+                      <label><input type="radio" name="move.adv.rir" value="0-1"><span>0–1 left</span></label>
                     </fieldset></div>
+                  <p class="hint lift-rir-src" id="lift-rir-src" hidden>Effort comes from <b>Reps left in the tank</b> on your lifting above, so there's one effort scale.</p>
                 </div>
                 <p class="hint" id="lift-adv-note"></p>
               </div>
@@ -5665,7 +5666,8 @@ const defaults = () => ({
 function merge(base, extra) { if (!extra || typeof extra !== "object") return base; for (const k of Object.keys(base)) { if (!(k in extra)) continue;
   if (base[k] && typeof base[k] === "object" && !Array.isArray(base[k])) merge(base[k], extra[k]); else base[k] = extra[k]; } return base; }
 let S = defaults(), HAD_SAVED = false;   // HAD_SAVED (v7.6.11): the person already used the simulator, so a hand-off from the calculator must not overwrite their numbers
-function migrateNone(saved) { { const p = S.profile;   // proposals-1125: the separate DEXA box is gone; an old DEXA % becomes "I know my %" tagged DEXA (it was already the number in use)
+function migrateNone(saved) { try { syncLiftRir(); } catch (e) { /* */ }   // proposals-1125: one effort scale; the Advanced reps-left value follows the lifting rows
+  { const p = S.profile;   // proposals-1125: the separate DEXA box is gone; an old DEXA % becomes "I know my %" tagged DEXA (it was already the number in use)
     if (p.dexaBf > 0) { Object.assign(p, { bfMode: "known", bf: p.dexaBf, bfBy: "dexa" }); } p.dexaBf = null; }
   if (S.profile.fat.menopause === "peri") S.profile.fat.menopause = "perimenopause";   // proposals-1125: "Going through it" merged into Perimenopause
   { const h = saved && saved.profile && saved.profile.health; if (h && (!h.meds || h.meds === "unknown") && h.glucoseMeds) S.profile.health.meds = "yes"; }  // v7.6.18: the old yes/no glucose-medication flag becomes the required medication answer
@@ -5729,7 +5731,7 @@ function baseActivity() { const b = bfInfo(), fat = S.profile.weightKg * b.bf / 
 /** Simple mode ignores everything that only Advanced can set (it stays saved, so switching back restores it). */
 /** v7.6.8x Pro preview: in Advanced, a lifting log (assets/liftlog.js) replaces the manual Custom lifting rows when it is on and has entries */
 function modeMove(m) { const o = modeMove0(m); return isAdv() && window.LiftLog ? window.LiftLog.apply(o) : o; }
-function modeMove0(m) { return isAdv() ? m : { ...m, adv: null, cardio: (m.cardio || []).map((e) => ({ ...e, by: "effort" })), lifts: Array.isArray(m.lifts) ? m.lifts.map((e) => { const o = { ...e }; delete o.ex; delete o.groupW; delete o.groups; return o; }) : m.lifts }; }
+function modeMove0(m) { return isAdv() ? (m && m.adv && m.preset === "custom" && rirFromLifts(m.lifts) ? { ...m, adv: { ...m.adv, rir: rirFromLifts(m.lifts) } } : m) : { ...m, adv: null, cardio: (m.cardio || []).map((e) => ({ ...e, by: "effort" })), lifts: Array.isArray(m.lifts) ? m.lifts.map((e) => { const o = { ...e }; delete o.ex; delete o.groupW; delete o.groups; return o; }) : m.lifts }; }
 function calFor(mv, fat, lean) { const base = isAdv() && (S.food.rmr > 0 || S.food.tdeeKnown > 0) ? E.calibrate(S.profile, mv, fat, lean, S.food.bmrEq, { rmr: S.food.rmr, tdee: S.food.tdeeKnown }) : null;
   const rf = S.refit && S.refit.applied && !refitOff ? S.refit.k : 1; if (rf === 1) return base;
   return Object.assign({}, base || {}, { tdeeK: ((base && base.tdeeK) || 1) * rf }); }
@@ -7083,6 +7085,13 @@ function buildPlanner() {
 }
 /* v5 P4: cardio list. Row 0's minutes stay in S.move.cardioMin (data-f="cardio"); rows 1–4 in S.move.cardio[i].min. */
 const EFFORTS = [["easy", "Easy"], ["moderate", "Moderate"], ["hard", "Hard"]];
+// proposals-1125: one lifting effort scale, "reps left in the tank". Same keys and math as before (easy = 4+ left, moderate = 2–3, hard = 0–1,
+// the mapping the lifting log already used); the Advanced "How close to failure" picker is now set from it (rirFromLifts) instead of being a second control.
+const LIFT_EFFORTS = [["easy", "4+ left"], ["moderate", "2–3 left"], ["hard", "0–1 left"]];
+function rirFromLifts(lifts) { const M = { easy: "4+", moderate: "2-3", hard: "0-1" }, L = (Array.isArray(lifts) ? lifts : []).filter((e) => e && M[e.effort]); if (!L.length) return null;
+  const top = L.reduce((a, e) => ((+e.min || 0) * (+e.days || 0) > (+a.min || 0) * (+a.days || 0) ? e : a), L[0]); return M[top.effort]; }   // the row with the most lifting time sets it
+function syncLiftRir() { const m = S.move, r = m.preset === "custom" ? rirFromLifts(m.lifts) : null; if (r && m.adv) m.adv.rir = r;
+  const pk = document.getElementById("lift-rir-pick"), src = document.getElementById("lift-rir-src"); if (pk && src) { pk.hidden = !!r; src.hidden = !r; } }   // Custom rows set it; presets keep the Advanced picker (same scale)
 let cardioSig = "";
 function cardioRowHtml(e, i) {
   const C = E.CARDIO, minF = i === 0 ? "cardio" : `cardio${i}`, adv = S.ui && S.ui.mode === "advanced";
@@ -7144,7 +7153,7 @@ function liftRowHtml(e, i) {
     <label class="field lift-ex"><span class="label">Exercises <span class="g-opt">(optional, for your notes)</span></span><span class="control"><input data-lx="${i}" maxlength="120" autocomplete="off" placeholder="e.g. squat, bench press, rows" aria-label="Lifting type ${i + 1} exercises (optional)"></span></label>
     <div class="row lift-srl">${[["sets", "Sets", "sets", "numeric"], ["reps", "Reps", "reps", "numeric"], ["load", "Load", S.units === "metric" ? "kg" : "lb", "decimal"]].map(([k, l, u, im]) => `<label class="field"><span class="label">${l} <span class="g-opt">(for your notes)</span></span><span class="control"><input data-lsr="${i}" data-k="${k}" inputmode="${im}" maxlength="6" aria-label="Lifting type ${i + 1} ${l.toLowerCase()} (optional)"><span class="unit">${u}</span></span></label>`).join("")}</div>
     ${musChipsBox(i)}</div>
-    <div class="cardio-eff"><fieldset class="seg seg-sm"><legend class="sr-only">Effort for lifting type ${i + 1}</legend>${EFFORTS.map(([k, l]) => `<label><input type="radio" name="lift-eff-${i}" value="${k}" data-le="${i}" data-local><span>${l}</span></label>`).join("")}</fieldset><span class="hint cardio-note" data-lnote="${i}"></span></div>
+    <div class="cardio-eff"><span class="label lift-eff-h">Reps left in the tank</span><fieldset class="seg seg-sm"><legend class="sr-only">Reps left in the tank at the end of a set, lifting type ${i + 1}</legend>${LIFT_EFFORTS.map(([k, l]) => `<label><input type="radio" name="lift-eff-${i}" value="${k}" data-le="${i}" data-local><span>${l}</span></label>`).join("")}</fieldset><span class="hint cardio-note" data-lnote="${i}"></span></div>
   </div>`;
 }
 function renderLifts() {
@@ -7174,7 +7183,7 @@ function renderLifts() {
   const t = E.weeklyTraining(m), gp = E.liftGainFreq(t.liftX || 0), base = E.liftGainFreq(4);
   $("#lift-sum").innerHTML = t.liftSessions > 0 ? `${t.liftSessions} session${t.liftSessions === 1 ? "" : "s"} and ${Math.round(t.liftMin)} minutes a week. Muscle-gain rate about <strong>${Math.round(gp / base * 100)}%</strong> of a full 4-session program; ${t.liftXr >= 4 ? "full" : t.liftXr >= 2 ? "strong" : t.liftXr >= 1 ? "partial" : "little"} protection of muscle in a deficit.` : "Add minutes and days to count your lifting.";
 }
-function renderMove() {
+function renderMove() { syncLiftRir();   // proposals-1125
   const m = S.move;
   renderCardio(); renderLifts();
   { const bx = $('[data-f="stepsN"]'); if (bx && document.activeElement !== bx && !invalid.has("stepsN")) bx.value = fmtSteps(m.steps); }
@@ -9731,7 +9740,7 @@ function bind() {
     else if (el.matches("#planner-body select[data-pl]")) { S.move.planner[+el.dataset.pl].lift = +el.value; update(); }
     else if (el.matches("select[data-ct]")) { const e = S.move.cardio[+el.dataset.ct]; if (e) { e.type = el.value; if (e.by === "pace" && !E.CARDIO[e.type].pace) e.by = "effort"; } update(); }
     else if (el.matches("select[data-lt]")) { const e = S.move.lifts[+el.dataset.lt]; if (e) e.type = el.value; update(); }
-    else if (el.matches("input[data-le]")) { const e = S.move.lifts[+el.dataset.le]; if (e) e.effort = el.value; update(); }
+    else if (el.matches("input[data-le]")) { const e = S.move.lifts[+el.dataset.le]; if (e) e.effort = el.value; syncLiftRir(); update(); }
     else if (el.matches("input[data-ce]")) { const e = S.move.cardio[+el.dataset.ce]; if (e) e.effort = el.value; update(); }
     else if (el.matches("input[data-cby]")) { const e = S.move.cardio[+el.dataset.cby]; if (e) e.by = el.value; update(); const f = $(`[data-crow="${el.dataset.cby}"] .cardio-adv input[data-f]`); f && f.focus(); }
     else if (el.id === "a1c-date") { const l = a1cNewOne ? null : a1cLatest(); if (l && /^\d{4}-\d{2}-\d{2}$/.test(el.value) && el.value <= a1cToday()) { l.date = el.value; a1cSync(); update(); } }   // proposals-1125: the date of the A1c shown in Step 1
