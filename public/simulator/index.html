@@ -5780,6 +5780,11 @@ function gainModeOf(g) {
 }
 function ensureTargets() {
   const b = bfInfo(), lean = S.profile.weightKg * (1 - b.bf / 100), ess = E.ESSENTIAL[S.profile.sex];
+  // proposals-1125: one goal. A goal weight / body fat typed anywhere (Exact goal or a target card) is stored once in exactW/exactBf;
+  // the target cards read it, so tapping a card never swaps in a different number. Only when nothing is typed yet do the cards start from a suggestion.
+  { const g = S.goal, wFromBf = (v) => lean / (1 - v / 100), bfFromW = (w) => 100 * (1 - lean / w);
+    if (g.exactW > 0) g.targetWeightKg = g.exactW; else if (g.exactBf > 0) g.targetWeightKg = wFromBf(g.exactBf);
+    if (g.exactBf > 0) g.targetBf = g.exactBf; else if (g.exactW > lean) g.targetBf = +bfFromW(g.exactW).toFixed(1); }
   if (S.goal.targetBf == null) S.goal.targetBf = Math.max(ess + 4, Math.round(b.bf - 8));
   if (S.goal.targetWeightKg == null) S.goal.targetWeightKg = imp() ? Math.round(S.profile.weightKg * LB * 0.92) / LB : Math.round(S.profile.weightKg * 0.92);
   void lean;
@@ -5793,14 +5798,14 @@ const FIELDS = {
   waist2: { conv: "len", opt: true, get: () => S.profile.waistCm, set: (v) => (S.profile.waistCm = v), min: 45, max: 220, msg: () => (imp() ? "Enter 18–87 in." : "Enter 45–220 cm.") },
   neck: { conv: "len", opt: true, get: () => S.profile.neckCm, set: (v) => (S.profile.neckCm = v), min: 20, max: 70, msg: () => (imp() ? "Enter 8–27 in." : "Enter 20–70 cm.") },
   hip: { conv: "len", opt: true, get: () => S.profile.hipCm, set: (v) => (S.profile.hipCm = v), min: 50, max: 220, msg: () => (imp() ? "Enter 20–87 in." : "Enter 50–220 cm.") },
-  targetBf: { get: () => S.goal.targetBf, set: (v) => (S.goal.targetBf = v), min: 3, max: 65, msg: () => "Enter 3–65%." },
+  targetBf: { get: () => S.goal.targetBf, set: (v) => { S.goal.targetBf = v; if (v != null) Object.assign(S.goal, { exactBf: v, exactW: null, exactBy: "bf", exactLead: null, exactStretchAck: null }); }, min: 3, max: 65, msg: () => "Enter 3–65%." },
   gainTarget: { conv: "w", opt: true, get: () => S.goal.gainTargetKg, set: (v) => (S.goal.gainTargetKg = v), min: 36, max: 318, msg: () => (imp() ? "Enter 80–700 lb, or leave it blank." : "Enter 36–318 kg, or leave it blank.") },
   bfCeiling: { opt: true, get: () => S.goal.bfCeiling, set: (v) => (S.goal.bfCeiling = v), min: 5, max: 50, msg: () => "Enter 5–50%, or leave it blank." },
   exactW: { conv: "w", opt: true, get: () => S.goal.exactW, set: (v) => { S.goal.exactW = v; if (v != null) S.goal.exactBy = S.goal.exactBf > 0 ? "both" : "w"; else S.goal.exactBy = S.goal.exactBf > 0 ? "bf" : null; },   // v7.6.11: weight and body fat can both be set
     min: 36, max: 318, msg: () => (imp() ? "Enter 80–700 lb, or leave it blank." : "Enter 36–318 kg, or leave it blank.") },
   exactBf: { opt: true, get: () => S.goal.exactBf, set: (v) => { S.goal.exactBf = v; if (v != null) S.goal.exactBy = S.goal.exactW > 0 ? "both" : "bf"; else S.goal.exactBy = S.goal.exactW > 0 ? "w" : null; },
     min: 3, max: 65, msg: () => "Enter 3–65%, or leave it blank." },
-  targetWeight: { conv: "w", get: () => S.goal.targetWeightKg, set: (v) => (S.goal.targetWeightKg = v), min: 36, max: 318, msg: () => (imp() ? "Enter 80–700 lb." : "Enter 36–318 kg.") },
+  targetWeight: { conv: "w", get: () => S.goal.targetWeightKg, set: (v) => { S.goal.targetWeightKg = v; if (v != null) Object.assign(S.goal, { exactW: v, exactBf: null, exactBy: "w", exactLead: null, exactStretchAck: null }); }, min: 36, max: 318, msg: () => (imp() ? "Enter 80–700 lb." : "Enter 36–318 kg.") },
   deadline: { opt: true, get: () => S.goal.deadline, set: (v) => (S.goal.deadline = v), min: 1, max: 260, msg: () => "Enter 1–260 weeks, or leave blank." },
   window: { get: () => S.goal.window, set: (v) => (S.goal.window = v), min: 1, max: 260, msg: () => "Enter 1–260 weeks." },
   cardio: { get: () => S.move.cardioMin, set: (v) => (S.move.cardioMin = v), min: 0, max: 1500, msg: () => "Enter 0–1,500 minutes." },
@@ -6833,6 +6838,8 @@ function renderGoal() {
   const lean = p.weightKg * (1 - b.bf / 100);
   $("#h-tbf").textContent = g.type === "targetWeight" ? "Matches your goal weight at today's lean mass. Type here to aim for a body fat % instead." : g.targetBf > 0 && g.targetBf < 66 ? (g.targetBf > b.bf + 0.05 ? `≈ ${fW(lean / (1 - g.targetBf / 100))} at today's lean mass, a bit more once you add some muscle. A higher body fat than today is fine; this runs as a gain plan.` : `≈ ${fW(lean / (1 - g.targetBf / 100))} if you keep today's lean mass`) : "";
   $("#h-tw").textContent = g.type === "targetBf" ? "Matches your goal body fat at today's lean mass. Type here to aim for a weight instead." : g.targetWeightKg > lean ? `≈ ${fP(100 * (1 - lean / g.targetWeightKg))} body fat if you keep today's lean mass` : "";
+  { const typed = g.exactW > 0 || g.exactBf > 0, own = g.type === "targetWeight" ? "#h-tw" : g.type === "targetBf" ? "#h-tbf" : null, el = own && $(own);   // proposals-1125: say whether the card shows the user's one goal or just a starting suggestion
+    if (el) el.textContent = (typed ? "Your goal (the same one Exact goal uses). " : "A starting suggestion. Type your own goal. ") + el.textContent; }
   { const tw = $('[data-f="targetWeight"]'), tb = $('[data-f="targetBf"]');
     if (g.type === "targetBf" && tw && g.targetBf > 0 && g.targetBf < 66) tw.value = nW(lean / (1 - g.targetBf / 100));
     if (g.type === "targetWeight" && tb && g.targetWeightKg > lean) tb.value = +(100 * (1 - lean / g.targetWeightKg)).toFixed(1); }
@@ -9743,7 +9750,7 @@ function bind() {
       if (["2-3", "4+"].includes(m.preset)) m.lifts.forEach((e) => { delete e.groups; delete e.groupW; });
       m.preset = "custom"; liftSig = ""; fillInputs(); update(); const f = $("#lift-list select[data-lt]"); if (f) { f.focus(); f.closest(".lift-box").scrollIntoView({ block: "nearest" }); } return; }
     if (t.dataset && t.dataset.lead) { S.goal.exactLead = t.dataset.lead; update(); return; }
-    if (t.id === "g-exact-clear") { Object.assign(S.goal, { exactW: null, exactBf: null, exactBy: null, exactLead: null, exactStretchAck: null }); invalid.delete("exactW"); invalid.delete("exactBf"); fillInputs(); update(); return; }
+    if (t.id === "g-exact-clear") { Object.assign(S.goal, { targetWeightKg: null, targetBf: null, exactW: null, exactBf: null, exactBy: null, exactLead: null, exactStretchAck: null }); invalid.delete("exactW"); invalid.delete("exactBf"); fillInputs(); update(); return; }
     if (t.dataset.stretch) {
       const act = t.dataset.stretch;
       if (act === "timeline") {
