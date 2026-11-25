@@ -739,6 +739,8 @@ figure{position:relative}
 .f3-zhint{position:absolute;left:50%;top:45%;transform:translate(-50%,-50%);padding:.35rem .6rem;border-radius:var(--r-sm);background:rgba(5,8,13,.85);color:var(--fg);font-size:.75rem;white-space:nowrap;pointer-events:none;box-shadow:0 0 0 1px var(--border)}
 canvas.fig3d{touch-action:pan-y}
 /* v5 P8: example-day selectors */
+.meal-style-follow{display:flex;flex-wrap:wrap;align-items:baseline;gap:.35rem .7rem;margin:.15rem 0 .5rem}
+.meal-style-follow .ms-name{font-weight:600}
 .meal-pick{display:flex;flex-wrap:wrap;align-items:center;gap:.35rem .7rem;margin-top:.6rem}
 .meal-pick>.label{font-size:.78rem;font-weight:600;color:var(--muted);min-width:4.8rem}
 .meal-pick .chips{margin:0}
@@ -2329,10 +2331,17 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')set(false)})
               <div id="actual-cmp" aria-live="polite"></div>
             </div>
           </div>
-          <div class="card adv-only" id="adv-food">
-            <p class="eyebrow card-eyebrow">Advanced</p>
-            <div class="section-head"><h2>Your own macros</h2></div>
-            <button type="button" class="switch" id="mymac-toggle" role="switch" aria-checked="false"><span class="track"><span class="thumb"></span></span><span><b>Set my macros</b><small>As percentages of the target, or the grams you eat</small></span></button>
+          <div class="card" id="macro-style-card">
+            <p class="eyebrow card-eyebrow">Your plan</p>
+            <div class="section-head"><h2>Macro style</h2></div>
+            <p class="hint" style="margin-top:0">This sets the protein, carbs and fat in your plan and in the example days below, so they always match. Calories still decide fat loss; the style is about what's easier for you to stick to.</p>
+            <fieldset class="seg sm seg-wrap" id="macro-style" tabindex="-1"><legend class="sr-only">Macro style</legend>
+              <label><input type="radio" name="food.style" value="balanced"><span>Balanced</span></label>
+              <label><input type="radio" name="food.style" value="lowcarb"><span>Lower carb</span></label>
+              <label><input type="radio" name="food.style" value="highprotein"><span>Higher protein</span></label>
+              <label><input type="radio" name="food.style" value="lowfat"><span>Low fat</span></label>
+              <label><input type="radio" name="food.style" value="custom"><span>Custom grams</span></label>
+            </fieldset>
             <div id="mymac-body" hidden>
               <fieldset class="seg sm mt-s"><legend class="sr-only">Macro units</legend>
                 <label><input type="radio" name="food.yourMacros.unit" value="pct"><span>% of calories</span></label>
@@ -2345,10 +2354,6 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')set(false)})
               </div>
               <p class="hint" id="mymac-note" aria-live="polite"></p>
             </div>
-            <label class="field mt1"><span class="label">Refeeds and diet breaks</span>
-              <span class="control"><select data-sel="food.refeedDays">
-                <option value="0">No refeed days</option><option value="1">1 refeed day a week at maintenance</option><option value="2">2 refeed days a week at maintenance</option>
-              </select></span><span class="hint">Refeed days at maintenance during a diet may help training and adherence (Campbell 2020; Peos 2021). They slow weekly loss, and the timeline shows it.<span class="adv-only"> Longer diet breaks are under "Advanced: macro style, diet breaks" below.</span></span></label>
           </div>
           <div class="card" id="meals-card">
             <p class="eyebrow card-eyebrow">Meal ideas</p>
@@ -2358,18 +2363,20 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')set(false)})
           </div>
           <div class="card adv-only" id="food-adv-card">
             <details class="adv" style="margin-top:0;border-top:0;padding-top:0">
-              <summary>Advanced: macro style, diet breaks, BMR equation</summary>
+              <summary>Advanced: breaks from the diet, BMR equation</summary>
               <div class="adv-body stack">
-                <div><span class="label">Macro style</span>
-                  <fieldset class="seg sm"><legend class="sr-only">Macro style</legend>
-                    <label><input type="radio" name="food.style" value="balanced"><span>Balanced</span></label>
-                    <label><input type="radio" name="food.style" value="lowcarb"><span>Lower carb</span></label>
-                    <label><input type="radio" name="food.style" value="highprotein"><span>Higher protein</span></label>
-                  </fieldset><p class="hint">Calories decide fat loss. Macro style is about what's easier for you to stick to and how you train.</p></div>
-                <label class="field"><span class="label">Diet breaks</span>
-                  <span class="control"><select data-sel="food.dietBreakEvery">
-                    <option value="0">None</option><option value="6">1 week at maintenance every 6 weeks</option><option value="8">1 week at maintenance every 8 weeks</option><option value="12">1 week at maintenance every 12 weeks</option>
-                  </select></span><span class="hint">Planned weeks at maintenance can help adherence on long diets (Byrne et al., 2018). They add time, and the timeline shows it.</span></label>
+                <div>
+                  <span class="label">Breaks from the diet</span>
+                  <p class="hint" style="margin-top:.15rem;margin-bottom:.5rem">Optional pauses at maintenance during a fat-loss plan. They can help training and sticking with the plan, and they slow weekly loss; the timeline shows it.</p>
+                  <label class="field"><span class="label">Weekly refeed days</span>
+                    <span class="control"><select data-sel="food.refeedDays">
+                      <option value="0">No refeed days</option><option value="1">1 refeed day a week at maintenance</option><option value="2">2 refeed days a week at maintenance</option>
+                    </select></span><span class="hint">Refeed days at maintenance during a diet may help training and adherence (Campbell 2020; Peos 2021).</span></label>
+                  <label class="field mt1"><span class="label">Longer diet breaks</span>
+                    <span class="control"><select data-sel="food.dietBreakEvery">
+                      <option value="0">None</option><option value="6">1 week at maintenance every 6 weeks</option><option value="8">1 week at maintenance every 8 weeks</option><option value="12">1 week at maintenance every 12 weeks</option>
+                    </select></span><span class="hint">Planned weeks at maintenance can help adherence on long diets (Byrne et al., 2018).</span></label>
+                </div>
                 <label class="field"><span class="label">BMR equation</span>
                   <span class="control"><select data-sel="food.bmrEq">
                     <option value="mifflin">Mifflin-St Jeor (age, height, sex)</option><option value="katch">Katch-McArdle (uses your lean mass)</option>
@@ -2523,16 +2530,16 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')set(false)})
         <p><strong>Where you lose it first.</strong> Each depot follows a power law of the engine's total fat mass (after Hallgreen &amp; Hall 2008), so the before, week-N and goal figures all come from the same trajectory. Visceral fat falls about 1.2–1.3× faster than total fat early on (power-law exponent about 1.3 from Hallgreen &amp; Hall 2008), and the gap narrows with larger losses (Chaston &amp; Dixon 2008). In kilograms, most of the fat lost still comes from under the skin (Merlotti 2017). Hip and thigh fat is the most stubborn, especially in women (Karpe &amp; Pinnick 2015). Liver fat falls fastest (Lim 2011) and is only drawn, not reported as a number. All of these are population-average estimates, not measurements. DEXA or MRI can measure them.</p>
         <p><strong>Fat pattern: medical facts first (v5).</strong> The "where you carry it" score blends signals, with medical facts weighted more than self-report. Type 2 diabetes or an A1c of 6.5% or more pushes strongly toward fat around the organs (+0.8); prediabetes or an A1c of 5.7–6.4% moderately (+0.4); fatty liver +0.4. High body fat or BMI with a normal A1c and no diabetes points to mostly under-the-skin fat (−0.35, or −0.5 at BMI 35+ / body fat 35%+ men, 43%+ women). Waist-to-height ratio adds its own term, and 0.6 or more (a waist over 60% of your height) adds +0.25 toward organ fat (NICE NG246). Your own answers and a photo still count, at 0.6× when medical facts are present. The one-line "why" names the strongest reason.</p>
         <p><strong>Cardio types (v5).</strong> Burn = net MET × body weight (kg) × hours, where net MET is the 2011 Compendium value minus 1 (the resting part is already in your daily burn). Easy / moderate / hard: walking 2.8 / 3.5 / 5.0; incline walking 5.3 / 6.5 / 8.0 (moderate interpolated); cycling 4.8 / 6.8 / 8.8; running 8.3 / 9.8 / 11.0; rowing 4.8 / 7.0 / 8.5; swimming 5.8 / 8.3 / 9.8; HIIT 4.3 / 8.0 / 9.0; sports 4.0 / 6.0 / 8.0. In Advanced, cardio can be entered by average heart rate (Keytel 2005), by pace (ACSM walking and running equations) or as watch calories, which are used as given (watches often overestimate).</p>
-        <p><strong>Advanced mode (v5).</strong> Lifting style, hard sets per week (default 10) and how close sets go to failure scale the muscle-gain rate modestly (0.5–1.2×: more weekly sets build more muscle, with diminishing returns past about 10; Schoenfeld 2017; Pelland 2026. Training closer to failure helps a little; Refalo 2023; Robinson 2024) and the lifting burn. A measured resting burn or total burn calibrates day 0 (the model keeps its adaptation from there). DEXA body fat replaces the estimate. Manual macros as % split the day's target; as grams they become what you eat. Refeed days set intake to maintenance on the last 1–2 days of each week of a fat-loss plan, which slows it honestly (Byrne 2018).</p>
+        <p><strong>Advanced mode (v5).</strong> Lifting style, hard sets per week (default 10) and how close sets go to failure scale the muscle-gain rate modestly (0.5–1.2×: more weekly sets build more muscle, with diminishing returns past about 10; Schoenfeld 2017; Pelland 2026. Training closer to failure helps a little; Refalo 2023; Robinson 2024) and the lifting burn. A measured resting burn or total burn calibrates day 0 (the model keeps its adaptation from there). DEXA body fat replaces the estimate. Custom grams as % split the day's target; as grams they become what you eat. Breaks from the diet: refeed days set intake to maintenance on the last 1–2 days of each week of a fat-loss plan, and optional longer diet breaks add a week at maintenance every 6, 8 or 12 weeks, which slows it honestly (Campbell 2020; Peos 2021; Byrne 2018).</p>
         <p><strong>Anatomy views (v6).</strong> Under the figure, <em>Body</em> is the default; <em>Fat + muscle</em> peels the fat under the skin off one side to show the muscle; <em>Inside</em> opens a window into the abdomen showing fat around the organs (yellow lobules over the gut), the liver and the fat layer; <em>Muscle</em> hides the fat. Everything is driven by the same fat-pattern engine as the rest of the plan: visceral fat in kg, fat under the skin, and liver fat (%) for each body, now and at goal, so the visceral and liver fat visibly fall first (visceral about 1.2–1.3× faster than total fat early on; hips and thighs last; Merlotti 2017, Hallgreen &amp; Hall 2008). Liver fat is graded with MRI-PDFF bands (under 5% normal, 5–17.4% mild, 17.4–22.1% moderate, above 22.1% severe; Tang 2013); the liver turns patchy, mottled pale yellow-tan with fine fat droplets as it rises (steatosis), and fat around the organs is drawn as lobules with fine septa and vessels. When zoomed in (+, Close-up, pinch or Ctrl + scroll), dragging moves the view; <em>Move</em> switches drag between moving and rotating (Shift-drag does the other) and <em>Reset</em> recenters. Teal dots show glycogen (stored carbohydrate) in muscle and liver: fuller with more carbohydrate per kg of lean mass, lower in the liver during a deficit, and blunted by liver fat (insulin resistance; Shulman 1990). These are illustrations from your estimates, not a scan. Organs are generated in code (no scanned or Z-Anatomy meshes).</p>
-        <p><strong>Diabetes status (v7.6.56).</strong> Diabetes status is only what you select (no diabetes, prediabetes, type 2, type 1 or another type). An A1c you enter is never used to set or label it. It's shown on a bar of the American Diabetes Association reference ranges (below 5.7% normal, 5.7–6.4% prediabetes, 6.5% or higher diabetes) for reference only. The simulator doesn't forecast A1c.</p>
+        <p><strong>Diabetes status (v7.6.56).</strong> Diabetes status is only what you select (no diabetes, prediabetes, type 2, type 1 or another type). An A1c you enter is never used to set or label that answer. It's shown on a bar of the American Diabetes Association reference ranges (below 5.7% normal, 5.7–6.4% prediabetes, 6.5% or higher diabetes) for reference only. If an A1c is 6.5% or higher, the fat-threshold estimate treats it the same way as a fasting glucose of 126 or more (education only, not a diagnosis), including when you haven't said whether you have diabetes, or said you don't — matching how fasting glucose is handled. The simulator doesn't forecast A1c.</p>
         <p><strong>Lifting (v6).</strong> Quick choices: None, <em>Minimalist</em>, 2–3 or 4+ a week. Minimalist is the minimum effective dose: twice a week, one rest-pause set to failure each of a push, a pull and a leg movement (about 10–20 minutes). It keeps muscle in a deficit about as well as 2–3 full sessions and builds it at roughly 55–75% of their rate (a model estimate, not a trial result), with little calorie burn. A single hard set can raise strength in trained men Androulakis-Korakakis 2020. Reviews of minimal doses suggest about 4 or more weekly sets per muscle for growth Iversen 2021, Fyfe 2022. Keeping muscle takes much less volume than building it Bickel 2011, and more sets tend to bring more growth Schoenfeld 2017. Advanced adds <em>Custom</em> rows like cardio: type (heavy strength, hypertrophy, circuit / CrossFit-style, bodyweight, machines, Minimalist), effort, minutes a session and days a week. Burn = days × minutes × (Compendium MET − 1) × kg (2011 Compendium 02020–02054; e.g. vigorous resistance training 6.0, moderate 3.5–5.0, circuit 8.0). Afterburn (EPOC) adds only about 5–15% of a session's burn, so it is left out. Each row adds a weekly training stimulus (sessions × type × effort × session length); about 2+ solid sessions a week per muscle reach the full gain rate for your level, fewer give less, and none gives no gain and more lean loss in a deficit. A separate retention score weights intensity, since keeping muscle needs much less volume than building it. With custom rows, the Advanced style / sets / reps-in-reserve settings are not applied (no double counting).</p>
         <p><strong>Smoother figure (v6).</strong> Fat growth is diffused across the mesh before use, so regions blend into each other instead of meeting at creases, and the belly grows round rather than pointed; the chest is kept smooth and neutral. A light volume-preserving smoothing pass runs on the shown surface, stronger at higher body fat. Volumes are re-measured after smoothing so the figure still matches your fat and lean mass.</p>
         <p><strong>Exact goals and your daily calorie target (v6.4).</strong> On Maximal or Steady fat loss you can enter an exact goal weight or goal body fat % in the <b>Exact goal</b> box right under the goal cards (it scrolls into view and lights up when you pick a goal). The plan then runs to that target at the goal's pace: Maximal uses your full fat ceiling, Steady about 60% of it. The Food step shows one number, <b>Your daily calorie target</b>: your daily burn minus the deficit (or plus the surplus). Tap <b>How we got this</b> for the breakdown. Once you enter foods or turn on <b>Simulate what I actually eat</b>, a line shows how many calories you're eating and how far over or under your target that is; with simulate on, the projection follows what you eat.</p>
         <p><strong>Softer, more realistic fat (v6.1).</strong> On heavier figures fat is shaped as smooth volume with wide, gradual falloffs, so there are no ledges or angled edges at the belly, flanks or back. A soft gravity fold forms under the lower belly as body fat rises (more with softer fat and after 50), with a gentle roll at the sides and back, and the hips fill out in step with the waist. Where fat is thick the surface is finer and smoothed (muscle definition on lean bodies is unchanged), and skin folds are softly shaded. The figure is an illustration from your estimates, not a scan.</p>
         <p><strong>Muscle definition and close-up (v5).</strong> Visible abdominal definition is drawn as a soft, procedural shading map (not anatomy scanned from a person), faded in by body fat: men full at about 10–12%, softer at 12–15%, none by about 17%; women full at about 17–18%, softer to about 20–23%, none by about 25%, scaled by muscularity. It's illustrative. Real definition varies with genetics, water and lighting. Pinch, Ctrl/⌘ + scroll, double-click or the Close-up button zoom the torso.</p>
         <p><strong>Build muscle (max).</strong> Two things differ from Lean muscle gain. The surplus is larger, about 250–350 kcal a day by training age and sex: men about 350 / 300 / 250 kcal and women about 300 / 275 / 250 kcal for under 1 year / 1–3 years / 3+ years of lifting. It steps down as training age rises over the projection and never goes below 250. The muscle-gain rate is also higher: about 1½ times the monthly table, while Lean muscle gain uses about 70% of that table. The same weeks therefore add more muscle, and the figure grows with that lean mass. Food the higher rate cannot use is stored as fat, so body fat rises more than on the lean path. Both paths still slow down near a natural fat-free mass ceiling (about FFMI 25 for men and 21.5 for women). The size of the gap is this app's estimate. Reviews find that very large surpluses add more fat than muscle (Garthe 2013; Helms 2023; Iraki 2019), which is why the rate is capped rather than left open. Without lifting there's no surplus.</p>
-        <p><strong>Example days (v5).</strong> Four diet types × five styles (Everyday, Quick &amp; easy, Vegetarian, Plant-based, Gluten-free), built from rounded USDA FoodData Central values. Each type sets calorie shares: Balanced keeps protein at 15–35% and fat at 25–35%; Lower carb about 20% carbs; Higher protein at least 35% protein; Low fat about 18% fat. Your protein target is kept within each type's range. Portions are solved in usable steps to land within about 5% of the calories and on the macro targets. Allergens are listed from the foods used. The Gluten-free style uses only naturally gluten-free foods (oats only if labeled gluten-free), with a reminder that people with celiac disease or gluten sensitivity should check labels for cross-contamination.</p>
+        <p><strong>Example days (v5).</strong> The Macro style you pick for the plan (Balanced, Lower carb, Higher protein, Low fat, or Custom grams) also builds the example days, so the two never disagree. Five meal styles (Everyday, Quick &amp; easy, Vegetarian, Plant-based, Gluten-free) are built from rounded USDA FoodData Central values. Each style sets calorie shares: Balanced keeps protein at 15–35% and fat at 25–35%; Lower carb about 20% carbs; Higher protein at least 35% protein; Low fat about 18% fat. Custom grams uses the numbers you enter. Your protein target is kept within each type's range (or used as entered for Custom grams). Portions are solved in usable steps to land within about 5% of the calories and on the macro targets. Allergens are listed from the foods used. The Gluten-free style uses only naturally gluten-free foods (oats only if labeled gluten-free), with a reminder that people with celiac disease or gluten sensitivity should check labels for cross-contamination.</p>
         <p><strong>Saved days (v5).</strong> Saved days live only in this browser (localStorage). Export and Import move them as a .json file. Nothing is uploaded.</p>
         <p><strong>Before you set Move and Food.</strong> On the Goal step the projection assumes 2–3 lifting sessions a week and adequate protein, and says so. Once you reach the Move and Food steps, your own choices replace those assumptions everywhere, including the live summary.</p>
         <p><strong>Food search.</strong> Branded products come from Open Food Facts (searched from your browser; barcodes by number or camera where the browser supports it). Generic foods come from USDA FoodData Central. Values are per serving as listed by the source, or per 100 g. Your day log adds up calories and macros; once it reaches 500 kcal it becomes the intake used in the simulation, until you type a number yourself. Database values can be wrong or out of date, so check the label.</p>
@@ -2923,7 +2930,7 @@ function macros(kcal, proteinG, style, refKg) {
   const minFat = Math.round(0.5 * refKg);
   let fat, carbs;
   if (style === "lowcarb") { carbs = Math.max(0, Math.min(100, (kcal - p * 4 - minFat * 9) / 4)); fat = (kcal - p * 4 - carbs * 4) / 9; }
-  else { fat = kcal * (style === "highprotein" ? 0.25 : 0.30) / 9; carbs = (kcal - p * 4 - fat * 9) / 4; }
+  else { fat = kcal * (style === "highprotein" ? 0.25 : style === "lowfat" ? 0.18 : 0.30) / 9; carbs = (kcal - p * 4 - fat * 9) / 4; }
   let tight = false;
   if (carbs < 0) { fat = Math.max(minFat, (kcal - p * 4) / 9); carbs = Math.max(0, (kcal - p * 4 - fat * 9) / 4); tight = true; }
   if (p * 4 + fat * 9 > kcal + 5) tight = true;
@@ -4275,6 +4282,7 @@ function shapeTemplate(tp, pattern) {
 // Macro targets for a diet type from the day's calories and protein target (and, for Balanced, the recommendation's own split when it fits).
 function dietTargets(t, diet) { const d = DIETS[diet] || DIETS.balanced, k = t.kcal, cl = (v, a, b) => Math.max(a, Math.min(b, v));
   const p = t.protein > 0 ? Math.round(t.protein) : Math.round(cl(0.25 * k / 4, d.p[0] * k / 4, d.p[1] * k / 4));   // v7.6.33: a given protein target is never clamped to the diet type's share range; the diet type shapes carbs and fat only
+  if (t.exact && t.carbs > 0 && t.fat > 0) return { kcal: k, protein: p, carbs: Math.round(t.carbs), fat: Math.round(t.fat) };
   let f, c;
   if (diet === "lowcarb") { c = Math.round(d.c * k / 4); f = Math.max(Math.round(0.15 * k / 9), Math.round((k - 4 * p - 4 * c) / 9)); }
   else { f = diet === "balanced" && t.fat > 0 ? Math.round(cl(t.fat, d.f[0] * k / 9, d.f[1] * k / 9)) : Math.round(d.fat * k / 9); c = Math.max(0, Math.round((k - 4 * p - 9 * f) / 4)); }
@@ -4400,7 +4408,7 @@ function buildFavDay(target, diet, favs, baseStyle, pattern) {
 function buildDays(target, diet = "balanced", favs, baseStyle, pattern) {
   if (!DIETS[diet]) diet = "balanced";
   pattern = mealPatternOf(pattern);
-  const t = { kcal: +target.kcal || 0, protein: Math.max(0, +target.protein || 0), carbs: Math.max(0, +target.carbs || 0), fat: Math.max(0, +target.fat || 0), psmf: !!target.psmf };
+  const t = { kcal: +target.kcal || 0, protein: Math.max(0, +target.protein || 0), carbs: Math.max(0, +target.carbs || 0), fat: Math.max(0, +target.fat || 0), psmf: !!target.psmf, exact: !!target.exact };
   const message = guard(t);
   const days = message ? [] : TEMPLATES.filter((tp) => tp.diet === diet).map((tp) => buildDay(shapeTemplate(tp, pattern), t));
   let favNone = false; if (!message && favs && favs.length) { const fd = buildFavDay(t, diet, favs, baseStyle, pattern); if (fd && fd.empty) favNone = fd; else if (fd && !fd.message) days.push(fd); }
@@ -4901,11 +4909,13 @@ return { KEY, MEALS, MEAL_IDS, dateKey, addDays, isDate, mealFor, empty, normali
   function estimate(inp) {
     const a1c = num(inp.a1c), w = +inp.weightKg, cut = waistCut(inp.sex, inp.ancestry), waist = num(inp.waistCm);
     const L = labsDerived(inp.labs, inp.sex), fg = L.fg;
-    const dm = inp.diabetes === "t2" || (fg != null && fg >= 126), pre = !dm && (inp.diabetes === "prediabetes" || (fg != null && fg >= 100)), liver = inp.fattyLiver === "yes";
+    const a1cDm = a1c != null && a1c >= 6.5;
+    const dm = inp.diabetes === "t2" || (fg != null && fg >= 126) || a1cDm, pre = !dm && (inp.diabetes === "prediabetes" || (fg != null && fg >= 100)), liver = inp.fattyLiver === "yes";
     const t1 = inp.diabetes === "t1";
     const markers = [], need = [], why = [];
-    if (dm && !t1) { const extra = 0.02;   /* v7.6.56: the A1c no longer sizes this */ need.push([0.10 + extra, 0.15 + extra]); markers.push("a1c-dm");
-      why.push(`${inp.diabetes === "t2" ? "Type 2 diabetes (as you selected)" : "Fasting glucose of 126 or more"}: in DiRECT, remission was seen in 57% of people who lost 10–15 kg and 86% of those who lost 15 kg or more (about 10–15% of body weight or more).`); }
+    if (dm && !t1) { const extra = 0.02; need.push([0.10 + extra, 0.15 + extra]); markers.push("a1c-dm");
+      const whyDm = inp.diabetes === "t2" ? "Type 2 diabetes (as you selected)" : (fg != null && fg >= 126) ? "Fasting glucose of 126 or more" : "Your A1c is in the range usually counted as diabetes, so the estimate treats it that way";
+      why.push(`${whyDm}: in DiRECT, remission was seen in 57% of people who lost 10–15 kg and 86% of those who lost 15 kg or more (about 10–15% of body weight or more).`); }
     else if (pre) { need.push([0.05, 0.08]); markers.push("a1c-pre"); why.push(`${inp.diabetes === "prediabetes" ? "Prediabetes (as you selected)" : "Fasting glucose of 100–125"}: in the DPP, losing about 5–7% cut the chance of diabetes by more than half (DPP).`); }
     if (liver) { need.push([0.07, 0.10]); markers.push("liver"); why.push("Fatty liver: in a 1-year study, losing 7–10% resolved liver inflammation in about two-thirds (Vilar-Gomez 2015)."); }
     if (!liver && inp.fattyLiver !== "no" && L.altHigh) { need.push([0.05, 0.10]); markers.push("alt"); why.push(`ALT ${L.alt} U/L is above the healthy range (ACG 2017). Fatty liver is the most common cause, but not the only one; ask your clinician.`); }
@@ -4949,6 +4959,7 @@ return { KEY, MEALS, MEAL_IDS, dateKey, addDays, isDate, mealFor, empty, normali
   function cvFactors(inp) {
     const L = labsDerived(inp.labs, inp.sex), a1c = num(inp.a1c), f = [];
     if (inp.diabetes === "t2") f.push("Type 2 diabetes (as you selected)"); else if (L.fgCat === "dm") f.push("Fasting glucose of 126 or more");
+    else if (a1c != null && a1c >= 6.5) f.push("Your A1c is in the range usually counted as diabetes, so the estimate treats it that way");
     else if (inp.diabetes === "prediabetes") f.push("Prediabetes (as you selected)"); else if (L.fgCat === "pre") f.push("Fasting glucose of 100–125");
     if (inp.fattyLiver === "yes") f.push("Fatty liver");
     if (L.ldlVeryHigh) f.push("LDL cholesterol 190 or higher"); else if (L.ldlHigh) f.push("LDL cholesterol 130 or higher");
@@ -4986,6 +4997,7 @@ return { KEY, MEALS, MEAL_IDS, dateKey, addDays, isDate, mealFor, empty, normali
   function cvFactors(inp) {
     const L = labsDerived(inp.labs, inp.sex), a1c = num(inp.a1c), f = [];
     if (inp.diabetes === "t2") f.push("Type 2 diabetes (as you selected)"); else if (L.fgCat === "dm") f.push("Fasting glucose of 126 or more");
+    else if (a1c != null && a1c >= 6.5) f.push("Your A1c is in the range usually counted as diabetes, so the estimate treats it that way");
     else if (inp.diabetes === "prediabetes") f.push("Prediabetes (as you selected)"); else if (L.fgCat === "pre") f.push("Fasting glucose of 100–125");
     if (inp.fattyLiver === "yes") f.push("Fatty liver");
     if (L.ldlVeryHigh) f.push("LDL cholesterol 190 or higher"); else if (L.ldlHigh) f.push("LDL cholesterol 130 or higher");
@@ -5665,18 +5677,34 @@ const defaults = () => ({
     rmr: null, tdeeKnown: null, refeedDays: 0, yourMacros: { on: false, unit: "pct", p: 30, c: 40, f: 30 } },
   // foodlog-dash-1123: listed here so they survive a reload. merge() only keeps keys that exist in defaults, so weekly weigh-ins, the lab log,
   // an applied re-fit and the cancer-mode notes were saved but dropped the next time the page opened.
-  weighIns: [], labLog: [], a1cLog: [], refit: null,   // proposals-1125: a1cLog = the one dated A1c log ({ id, date, added, v, week? }); see a1cSync() caPlanned: null, caQuestions: [],
+  weighIns: [], labLog: [], a1cLog: [], refit: null, caPlanned: null, caQuestions: [],   // proposals-1125: a1cLog = the one dated A1c log ({ id, date, added, v, week? }); see a1cSync()
   refitMode: "adaptive",   // fixes-1123: weekly weigh-in card choice ("adaptive" | "fixed"); listed so it survives a reload
 });
 function merge(base, extra) { if (!extra || typeof extra !== "object") return base; for (const k of Object.keys(base)) { if (!(k in extra)) continue;
   if (base[k] && typeof base[k] === "object" && !Array.isArray(base[k])) merge(base[k], extra[k]); else base[k] = extra[k]; } return base; }
 let S = defaults(), HAD_SAVED = false;   // HAD_SAVED (v7.6.11): the person already used the simulator, so a hand-off from the calculator must not overwrite their numbers
+const STYLE_DIETS = ["balanced", "lowcarb", "highprotein", "lowfat"];
+function mealDietOf(style, fallback) { return STYLE_DIETS.includes(style) ? style : (STYLE_DIETS.includes(fallback) ? fallback : "balanced"); }
+function syncMacroStyle(style) {
+  const f = S.food;
+  if (style === "custom") { f.style = "custom"; f.yourMacros = f.yourMacros || { on: true, unit: "pct", p: 30, c: 40, f: 30 }; f.yourMacros.on = true; if (!STYLE_DIETS.includes(f.mealDiet)) f.mealDiet = "balanced"; }
+  else { f.style = mealDietOf(style, "balanced"); f.mealDiet = f.style; f.yourMacros.on = false; }
+}
+function migrateMacroStyle(saved) {
+  const f = S.food, sf = saved && saved.food; if (!f) return;
+  if ((sf && sf.yourMacros && sf.yourMacros.on) || f.style === "custom" || (f.yourMacros && f.yourMacros.on)) { f.style = "custom"; f.yourMacros.on = true; if (!STYLE_DIETS.includes(f.mealDiet)) f.mealDiet = "balanced"; return; }
+  if (sf && STYLE_DIETS.includes(sf.style) && sf.style !== "balanced") { f.style = sf.style; f.mealDiet = sf.style; return; }
+  if (sf && STYLE_DIETS.includes(sf.mealDiet) && sf.mealDiet !== "balanced") { f.style = sf.mealDiet; f.mealDiet = sf.mealDiet; return; }
+  if (!STYLE_DIETS.includes(f.style) && f.style !== "custom") f.style = "balanced";
+  if (STYLE_DIETS.includes(f.style)) f.mealDiet = f.style;
+}
 function migrateNone(saved) { try { syncLiftRir(); } catch (e) { /* */ }   // proposals-1125: one effort scale; the Advanced reps-left value follows the lifting rows
   { const p = S.profile;   // proposals-1125: the separate DEXA box is gone; an old DEXA % becomes "I know my %" tagged DEXA (it was already the number in use)
     if (p.dexaBf > 0) { Object.assign(p, { bfMode: "known", bf: p.dexaBf, bfBy: "dexa" }); } p.dexaBf = null; }
   if (S.profile.fat.menopause === "peri") S.profile.fat.menopause = "perimenopause";   // proposals-1125: "Going through it" merged into Perimenopause
   { const h = saved && saved.profile && saved.profile.health; if (h && (!h.meds || h.meds === "unknown") && h.glucoseMeds) S.profile.health.meds = "yes"; }  // v7.6.18: the old yes/no glucose-medication flag becomes the required medication answer
-  const m = saved && saved.move; if (m && m.preset === "none" && !m.noLift && (saved.maxStep || 0) >= 3 && !m.plannerOn) { S.move.noLift = true; } }
+  const m = saved && saved.move; if (m && m.preset === "none" && !m.noLift && (saved.maxStep || 0) >= 3 && !m.plannerOn) { S.move.noLift = true; } 
+  migrateMacroStyle(saved); }
 try { const saved = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEY) || "null"); if (saved && saved.v === 1) { S = merge(defaults(), saved); migrateNone(saved); HAD_SAVED = !!((saved.maxStep || 0) > 1 || (saved.goal && saved.goal.touched) || (saved.profile && saved.profile.weightKg && saved.step > 0)); } } catch (e) { /* storage unavailable */ }
 try { a1cMigrate(); } catch (e) { /* keep going without the old A1c entries */ }
 S.step = 0;
@@ -5885,7 +5913,7 @@ function onNumInput(el) {
   else { const v = f.conv === "w" ? wFromDisp(n) : f.conv === "len" ? lenFromDisp(n) : f.conv === "pace" ? (imp() ? n : n * 1.60934) : n;
     if (v < f.min - 1e-6 || v > f.max + 1e-6) setErr(field, k, f.msg()); else { f.set(v); setErr(field, k, ""); } }
   if (/^m[PCF]$/.test(k)) applyMacroGrams();
-  if (/^actual[PCF]$/.test(k)) { S.food.mealUsed = null; S.food.logUsed = false; S.food.yourMacros.on = false; S.food.macroNoteOff = null;
+  if (/^actual[PCF]$/.test(k)) { S.food.mealUsed = null; S.food.logUsed = false; S.food.yourMacros.on = false; if (S.food.style === "custom") S.food.style = mealDietOf(S.food.mealDiet, "balanced"); S.food.macroNoteOff = null;
     if (k === "actualP") { S.food.actualProteinEst = false; const g = S.food.actualProteinG; if (g != null && R && R.ref) S.food.actualProtein = proteinLevelFor(g, R.ref.kg); } }
   if (k === "waist") { const o = $('[data-f="waist2"]'); if (o !== el) o.value = el.value; } if (k === "waist2") { const o = $('[data-f="waist"]'); if (o !== el) o.value = el.value; }
   update(); if (/^(waist2?|hft|hin|hcm|bf|dexaBf)$/.test(k)) waistNote();
@@ -5999,16 +6027,22 @@ function syncDiabetes() { const h = S.profile.health, st = E.diabetesStatus(h);
   for (const sel of $$('select[data-sel="profile.health.diabetes"]')) if (sel.value !== h.diabetes) sel.value = h.diabetes;
   const n = $("#dm-note"); if (n) { n.textContent = st.note; n.hidden = !st.note; n.className = "hint dm-note " + (st.mismatch ? "dm-mismatch" : "dm-auto"); } }
 function update() { syncDiabetes(); compute(); try { if (window.LiftLog) window.LiftLog.note(); } catch (e) { /* */ } renderSummary(); renderStep(); renderAdv(); renderFit(); try { renderSnapshot(); } catch (e) { /* v7.6.55 */ } try { if (S.step >= 1) f3dMount(); } catch (e) { /* 3D figure falls back to 2D */ } save(); }
+function renderMacroStyle() {
+  const m = S.food.yourMacros || { on: false, unit: "pct", p: 30, c: 40, f: 30 }, custom = S.food.style === "custom" || !!m.on;
+  const body = $("#mymac-body"); if (body) body.hidden = !custom;
+  $$("[data-mu]").forEach((u) => (u.textContent = m.unit === "pct" ? "%" : "g"));
+  const note = $("#mymac-note");
+  if (note && custom) { const tot = (+m.p || 0) + (+m.c || 0) + (+m.f || 0);
+    if (m.unit === "pct") { const mm = R && !R.blocked ? R.macros : null;
+      note.innerHTML = Math.abs(tot - 100) > 0.5 ? `These add up to <strong>${+tot.toFixed(1)}%</strong>. They're scaled to 100%.` : mm ? `At ${fK(R.rec.rows[0].intake)} kcal: <strong>${mm.protein} g protein · ${mm.carbs} g carbs · ${mm.fat} g fat</strong>.${R.autoMacros && mm.protein < R.autoMacros.protein - 10 ? ` That's less protein than the ${R.autoMacros.protein} g suggested for keeping muscle.` : ""}` : ""; }
+    else { const mm = E.macrosFromInput(0, m); note.innerHTML = mm.kcal >= 500 ? `That's about <strong>${fK(mm.kcal)} kcal</strong> a day, now used as what you eat.` : "Enter at least 500 kcal worth of food to use it."; } }
+  else if (note) note.innerHTML = "";
+}
 function renderAdv() {
   applyUiMode(); if (!isAdv()) return;
   const lf = E.liftFactors(S.move), n = $("#lift-adv-note");
   if (n) n.innerHTML = E.weeklyTraining(effMove()).liftSessions > 0 ? `Muscle-gain rate <strong>×${lf.gain.toFixed(2)}</strong> and lifting burn <strong>×${(lf.burn * lf.net / 3).toFixed(2)}</strong> compared with a typical program (10 hard sets, 2–3 reps left). Effects are kept modest: volume and effort matter, with diminishing returns (Schoenfeld 2017; Pelland 2026; Robinson 2024).` : "Pick 2–3 or 4+ lifting sessions above for these to count.";
-  const m = S.food.yourMacros; setSwitch($("#mymac-toggle"), m.on); $("#mymac-body").hidden = !m.on; $$("[data-mu]").forEach((u) => (u.textContent = m.unit === "pct" ? "%" : "g"));
-  const note = $("#mymac-note");
-  if (note && m.on) { const tot = (+m.p || 0) + (+m.c || 0) + (+m.f || 0);
-    if (m.unit === "pct") { const mm = R && !R.blocked ? R.macros : null;
-      note.innerHTML = Math.abs(tot - 100) > 0.5 ? `These add up to <strong>${+tot.toFixed(1)}%</strong>. They're scaled to 100%.` : mm ? `At ${fK(R.rec.rows[0].intake)} kcal: <strong>${mm.protein} g protein · ${mm.carbs} g carbs · ${mm.fat} g fat</strong>.${R.autoMacros && mm.protein < R.autoMacros.protein - 10 ? ` That's less protein than the ${R.autoMacros.protein} g suggested for keeping muscle.` : ""}` : ""; }
-    else { const mm = E.macrosFromInput(0, m); note.innerHTML = mm.kcal >= 500 ? `That's about <strong>${fK(mm.kcal)} kcal</strong> a day, now used as what you eat.` : "Enter at least 500 kcal worth of food to use it."; } }
+  renderMacroStyle();
   const b = bfInfo(), est = $("#bf-estimate"); if (b.dexa && est) { const p0 = S.profile, scl = p0.scaleFatKg > 0 || (p0.subqFatKg > 0 && p0.viscFatKg > 0);
     est.hidden = false; est.innerHTML = `<b>${fP(b.bf)}</b><span>body fat · from your DEXA scan${p0.bfMode === "known" && p0.bf > 0 && Math.abs(p0.bf - b.bf) >= 0.1 ? `, used instead of the ${fP(p0.bf)} typed above${scl ? " and your smart-scale numbers" : ""}` : scl ? ", used instead of your smart-scale numbers" : ""}</span>`; }
 }
@@ -6229,7 +6263,7 @@ function pftRangeTxt(e) { return `${fW(e.weightKg.lo)}–${fW(e.weightKg.hi)}`; 
 function renderPftGoal() {
   const box = $("#pft-goal"); if (!box) return; const on = S.goal.type === "pft"; box.hidden = !on; if (!on) return; const e = pftEst();
   box.innerHTML = e.over ? `<p class="pft-h"><b>Your estimated fat threshold: about ${pftRangeTxt(e)}</b> (${Math.round(e.lossPct.lo)}–${Math.round(e.lossPct.hi)}% below today). The plan aims for ${fW(e.weightKg.mid)}${e.waistLossCm ? ` and a waist under ${lenToDisp(e.waistTarget)} ${imp() ? "in" : "cm"}` : ""}.</p><ul class="pft-why">${e.why.map((w) => `<li>${esc(imp() && /^Waist \d+ cm is above the \d+ cm cut-off/.test(w) && S.profile.waistCm > 0 ? `Waist ${lenToDisp(S.profile.waistCm)} in is above the ${lenToDisp(e.waistTarget)} in cut-off; about 1 in comes off per 5–6 lb lost.` : w)}</li>`).join("")}</ul><p class="hint">An estimate from published trials, not a diagnosis. Confidence: ${e.confidence}. Work with your clinician, especially if you take diabetes or blood-pressure medicines (doses often need lowering as you lose weight).</p>`
-    : `<p class="pft-h"><b>${e.known ? "You're likely already under your fat threshold." : "We need a marker to estimate your threshold."}</b></p><p class="hint">${esc(e.why[0])} ${e.known ? "This goal runs as steady fat loss." : `${+S.profile.health.a1c > 0 ? "Your A1c shapes the figure and health snapshot, but this estimate doesn't use it. " : ""}You can add them in Step 1. Until then, this goal runs as steady fat loss.`}</p>`;
+    : `<p class="pft-h"><b>${e.known ? "You're likely already under your fat threshold." : "We need a marker to estimate your threshold."}</b></p><p class="hint">${esc(e.why[0])} ${e.known ? "This goal runs as steady fat loss." : `${+S.profile.health.a1c >= 6.5 ? "" : +S.profile.health.a1c > 0 ? "An A1c of 6.5% or higher is used for this estimate; a lower A1c still shapes the figure and health snapshot. " : ""}You can add them in Step 1. Until then, this goal runs as steady fat loss.`}</p>`;
 }
 /* v7.1 (revised): measurable milestone ladder. No unmeasured internal values are predicted; lab steps show study results at a % loss
    (population ranges with citations) and when YOUR PLAN reaches that % loss. A step is ticked only by a real lab or check-in entry. */
@@ -6547,12 +6581,12 @@ function pftInsidePlace() {
 }
 /* v5 P5: manual macros. "% of calories" re-splits the recommended target; "grams I eat" becomes your intake. */
 function manualMacros() {
-  const m = S.food.yourMacros; if (!R || R.blocked || !isAdv() || !m.on || m.unit !== "pct") return;
+  const m = S.food.yourMacros; if (!R || R.blocked || !m || !m.on || m.unit !== "pct") return;
   const mm = E.macrosFromInput(R.rec.rows[0].intake, m); if (!mm) return;
   R.autoMacros = R.macros; R.macros = { protein: mm.protein, carbs: mm.carbs, fat: mm.fat, tight: false, manual: true };
 }
 function applyMacroGrams() {
-  const m = S.food.yourMacros; if (!isAdv() || !m.on || m.unit !== "g") return;
+  const m = S.food.yourMacros; if (!m || !m.on || m.unit !== "g") return;
   const mm = E.macrosFromInput(0, m); if (!mm || mm.kcal < 500) return;
   S.food.actualOn = true; S.food.psmf = false; S.food.logUsed = false; S.food.mealUsed = null; S.food.actualKcal = Math.round(mm.kcal / 10) * 10;
   if (R && R.ref) S.food.actualProtein = proteinLevelFor(mm.protein, R.ref.kg);
@@ -6599,7 +6633,7 @@ function yourMacros() {
   if (!fixedOn()) return null;
   if (S.food.logUsed && S.food.log.length) { const t = FC.totals(S.food.log); return { kcal: fixedKcal(), protein: Math.round(t.protein), carbs: Math.round(t.carbs), fat: Math.round(t.fat), src: "your food log" }; }
   if (S.food.mealUsed && S.food.mealMacros && S.food.mealMacros.id === S.food.mealUsed) { const m = S.food.mealMacros; return { kcal: fixedKcal(), protein: m.protein, carbs: m.carbs, fat: m.fat, src: "example day" }; }
-  if (isAdv() && S.food.yourMacros.on) { const m = E.macrosFromInput(fixedKcal(), S.food.yourMacros); if (m) return { kcal: fixedKcal(), protein: m.protein, carbs: m.carbs, fat: m.fat, src: "your macros" }; }
+  if (S.food.yourMacros && S.food.yourMacros.on) { const m = E.macrosFromInput(fixedKcal(), S.food.yourMacros); if (m) return { kcal: fixedKcal(), protein: m.protein, carbs: m.carbs, fat: m.fat, src: "your macros" }; }
   { const f = S.food, P = f.actualProteinG != null ? f.actualProteinG : Math.round(PROT_GKG[f.actualProtein] * R.ref.kg), fl = typeof macroFill === "function" ? macroFill(fixedKcal(), P, f.actualCarbsG, f.actualFatG) : { C: null, F: null };
     return { kcal: fixedKcal(), protein: Math.round(P), carbs: f.actualCarbsG != null ? Math.round(f.actualCarbsG) : fl.C, fat: f.actualFatG != null ? Math.round(f.actualFatG) : fl.F, src: "what you eat", approx: !!f.actualProteinEst, cApprox: f.actualCarbsG == null, fApprox: f.actualFatG == null }; }
 }
@@ -7257,9 +7291,14 @@ function proteinLevelFor(g, refKg) { const k = g / refKg; return k >= 1.55 ? "hi
 let mealsCache = { key: "", built: null }, mealStatus = "";
 function mealsTarget() {
   const useFixed = fixedOn() && S.food.mealSrc === "used";
+  const custom = !!(S.food.yourMacros && S.food.yourMacros.on) || S.food.style === "custom";
   if (useFixed && S.food.psmf) return { kcal: fixedKcal(), psmf: true, label: "PSMF" };
-  if (useFixed) return { kcal: fixedKcal(), protein: Math.round(S.food.actualProteinG != null ? S.food.actualProteinG : PROT_GKG[S.food.actualProtein] * R.ref.kg), label: "What you eat" };
-  return { kcal: R.rec.rows[0].intake, protein: R.macros.protein, carbs: R.macros.carbs, fat: R.macros.fat, label: "Your target" };
+  if (useFixed) { const y = typeof yourMacros === "function" ? yourMacros() : null;
+    return { kcal: fixedKcal(), protein: Math.round(y && y.protein != null ? y.protein : S.food.actualProteinG != null ? S.food.actualProteinG : PROT_GKG[S.food.actualProtein] * R.ref.kg), carbs: y && y.carbs, fat: y && y.fat, exact: !!(y && y.carbs != null && y.fat != null), label: "What you eat" }; }
+  if (custom) { const y = typeof yourMacros === "function" ? yourMacros() : null;
+    if (y && y.protein != null && y.carbs != null && y.fat != null)
+      return { kcal: y.kcal || R.rec.rows[0].intake, protein: y.protein, carbs: y.carbs, fat: y.fat, exact: true, label: y.src === "your macros" ? "Your custom grams" : "Your target" }; }
+  return { kcal: R.rec.rows[0].intake, protein: R.macros.protein, carbs: R.macros.carbs, fat: R.macros.fat, exact: !!(R.macros && R.macros.carbs != null && R.macros.fat != null), label: "Your target" };
 }
 function habWay(hb) {   // v7.6.55: habits path, two ways to enter food + running tally
   const w = $("#hab-way"), t = $("#hab-tally"), f = S.food, way = f.habWay === "foods" ? "foods" : "macros"; if (!w) return; w.hidden = t.hidden = !hb;
@@ -7274,7 +7313,7 @@ function renderMeals() {
     if (hb) { box.innerHTML = ""; mealsCache = { key: "", built: null }; return; } }
   favBuild();
   if (!R || R.blocked || !window.SampleDays) { box.innerHTML = ""; return; }
-  const t = mealsTarget(), diet = window.SampleDays.DIETS[S.food.mealDiet] ? S.food.mealDiet : "balanced", favs = favList(), base = S.food.favBase || "everyday", pattern = window.SampleDays.mealPatternOf(S.food.mealPattern), key = JSON.stringify(t) + diet + JSON.stringify(favs) + base + pattern;
+  const t = mealsTarget(), diet = mealDietOf(S.food.style === "custom" ? S.food.mealDiet : S.food.style, S.food.mealDiet), favs = favList(), base = S.food.favBase || "everyday", pattern = window.SampleDays.mealPatternOf(S.food.mealPattern), key = JSON.stringify(t) + diet + JSON.stringify(favs) + base + pattern;
   if (key !== mealsCache.key) { mealsCache = { key, built: window.SampleDays.buildDays(t, diet, favs, base, pattern) }; }
   const built = mealsCache.built;
   const src = fixedOn() ? `<div class="chips" role="group" aria-label="Calories for meal ideas"><button type="button" class="chip" data-meal-src="rec" aria-pressed="${S.food.mealSrc !== "used"}">My target calories</button><button type="button" class="chip" data-meal-src="used" aria-pressed="${S.food.mealSrc === "used"}">${S.food.psmf ? "PSMF" : "What I eat"}</button></div>` : "";
@@ -7285,9 +7324,9 @@ function renderMeals() {
   const inUse = S.food.actualOn && !S.food.psmf && S.food.mealUsed === day.key && Math.abs(S.food.actualKcal - Math.round(day.totals.kcal / 10) * 10) < 1;
   box.innerHTML = `${src}${head}
   <div class="meal-pick"><span class="label">How you eat</span><div class="chips" role="group" aria-label="Which meals you eat">${Object.entries(window.SampleDays.MEAL_PATTERNS).map(([k, d]) => `<button type="button" class="chip" data-meal-pattern="${k}" aria-pressed="${k === pattern}">${esc(d.label)}</button>`).join("")}</div><p class="hint">${esc(window.SampleDays.MEAL_PATTERNS[pattern].note)} The day's calories stay the same. These are meal ideas, not a nutrition prescription.</p></div>
-  <div class="meal-pick"><span class="label">Diet type</span><div class="chips" role="group" aria-label="Diet type">${Object.entries(window.SampleDays.DIETS).map(([k, d]) => `<button type="button" class="chip" data-meal-diet="${k}" aria-pressed="${k === diet}">${esc(d.name)}</button>`).join("")}</div></div>
+  <div class="meal-pick meal-style-follow"><span class="label">Macro style</span><span class="ms-name">${esc(S.food.style === "custom" ? "Custom grams" : (window.SampleDays.DIETS[diet] && window.SampleDays.DIETS[diet].name) || "Balanced")}</span><button type="button" class="link-btn" data-goto-macro="1">Change</button></div>
   <div class="meal-pick"><span class="label">Style</span><div class="chips" role="group" aria-label="Style">${built.days.map((d) => `<button type="button" class="chip" data-meal="${d.id}" aria-pressed="${d.id === day.id}">${esc(d.name)} <small class="muted">· ${esc(d.tag)}</small></button>`).join("")}</div></div>
-  <p class="hint meal-diet-note">${esc(window.SampleDays.DIETS[diet].note)} Targets for this day: P ${fK(day.target.protein)} g · C ${fK(day.target.carbs)} g · F ${fK(day.target.fat)} g.</p>
+  <p class="hint meal-diet-note">${esc(S.food.style === "custom" ? "These meals are built to your custom grams." : window.SampleDays.DIETS[diet].note)} Targets for this day: P ${fK(day.target.protein)} g · C ${fK(day.target.carbs)} g · F ${fK(day.target.fat)} g.</p>
   <div class="meal-grid">${day.meals.filter((m) => m.foods && m.foods.length).map((m) => `<article class="meal"><header><span class="eyebrow">${m.name}</span><small>${fK(m.totals.kcal)} kcal · ${fK(m.totals.protein)} g protein</small><small class="pe-row">${peBadge(window.SampleDays.peOfFoods(m.foods), "Carbs or fat are not listed for a food in this meal, so P:E isn't rated. Nothing is guessed.")}</small></header><h3>${esc(m.title)}</h3><ul>${m.foods.map((f) => `<li><span>${esc(f.name)}${f.tag ? ` <span class="ftag ${f.src === "hack" ? (/verified/.test(f.tag) ? "ok" : "ap") : f.src === "user" ? "us" : "db"}">${esc(f.tag)}</span>` : ""}</span><b>${esc(f.portion)}</b></li>`).join("")}</ul><button type="button" class="link-btn sm-save" data-meal-save="${day.meals.indexOf(m)}">Save this meal</button></article>`).join("")}</div>
   <div id="saved-meals"></div>
   <table class="tbl meal-vs" id="meal-vs" aria-label="This day's totals vs your targets"><caption>This day vs your targets</caption><thead><tr><th></th><th>This day</th><th>Target</th><th>Difference</th></tr></thead><tbody>
@@ -7305,6 +7344,7 @@ function renderMeals() {
   smRender();
 }
 function renderFood() {
+  renderMacroStyle();
   if (typeof renderSpecial === "function") renderSpecial();
   $("#food-lead").textContent = S.mode === "habits" ? "Just tell us what you eat on a normal day. Pick one way below." : "One daily target, built for your goal. It adjusts as your numbers change.";
   $("#actual-fields").hidden = !S.food.actualOn;
@@ -9529,7 +9569,7 @@ document.addEventListener("click", (e) => { const t = e.target.closest("[data-pc
 function dataExportObj() { return { app: "theosis-simulator-backup", v: 1, exported: new Date().toISOString(), state: S, foodlog: FL.load(), glucose: GLU.load(), checkins: CI.list, photo: photo || null }; }
 async function dataImport(file) {
   try { const j = JSON.parse(await file.text()); if (!j || j.app !== "theosis-simulator-backup" || j.v !== 1 || !j.state || j.state.v !== 1) throw new Error("That isn't a Theosis simulator export file.");
-    S = merge(defaults(), j.state); HAD_SAVED = true; try { localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(S)); } catch (e) { /* ignore */ }
+    S = merge(defaults(), j.state); migrateNone(j.state); HAD_SAVED = true; try { localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(S)); } catch (e) { /* ignore */ }
     FL.save(FL.normalize(j.foodlog)); FLS = FL.load(); GLS = GLU.clean(j.glucose); GLU.save(GLS);
     if (Array.isArray(j.checkins)) { await ciClearAll(); let n = 0; for (const c of j.checkins) { if (c && c.week >= 1 && typeof c.img === "string" && /^data:image\/(jpeg|png|webp);base64,/.test(c.img)) { await ciPut({ id: String(c.id || `ci-${Date.now()}-${n}`).slice(0, 40), week: Math.round(c.week), img: c.img, weightKg: c.weightKg > 0 ? +c.weightKg : null, bf: c.bf > 0 ? +c.bf : null, waistCm: c.waistCm > 0 ? +c.waistCm : null, added: +c.added || Date.now() }); n++; } } }
     photo = typeof j.photo === "string" && /^data:image\/(jpeg|png|webp);base64,/.test(j.photo) ? j.photo : null; aiState.result = null; aiState.day = null;
@@ -9734,6 +9774,7 @@ function bind() {
       let v = el.value; if (el.name === "goal.pace") { v = +v; delete S.goal.calcPace; delete S.goal.calcLabel; }
       setPath(el.name, v); if (el.name === "goal.gainMode") S.goal.gainSet = true;
       if (el.name === "goal.type") { S.goal.touched = true; ensureTargets(); fillInputs(); setTimeout(revealExact, 60); }
+      if (el.name === "food.style") { syncMacroStyle(el.value); mealStatus = ""; fillInputs(); applyMacroGrams(); }
       if (el.name === "food.yourMacros.unit") { const m = S.food.yourMacros, src = R && R.macros && !R.blocked ? (R.autoMacros || R.macros) : null;
         if (m.unit === "g" && src) Object.assign(m, { p: src.protein, c: src.carbs, f: src.fat }); else if (m.unit === "pct") Object.assign(m, { p: 30, c: 40, f: 30 });
         fillInputs(); applyMacroGrams(); }
@@ -9774,7 +9815,8 @@ function bind() {
     if (t.dataset.habWay) { S.food.habWay = t.dataset.habWay; save(); update(); if (t.dataset.habWay === "foods") { const q = $("#fs-q, .fs-q input"); q && q.focus({ preventScroll: true }); } return; }
     if (t.dataset.plannerOff != null) { S.move.plannerOn = false; setSwitch($("#planner-toggle"), false); update(); return; }
     if (t.dataset.mealSrc) { S.food.mealSrc = t.dataset.mealSrc; mealStatus = ""; renderMeals(); save(); return; }
-    if (t.dataset.mealDiet) { S.food.mealDiet = t.dataset.mealDiet; mealStatus = ""; renderMeals(); save(); return; }
+    if (t.dataset.gotoMacro) { const c = $("#macro-style-card"); if (c) { c.scrollIntoView({ block: "start", behavior: "smooth" }); const f = $("#macro-style"); f && f.focus && f.focus({ preventScroll: true }); } return; }
+    if (t.dataset.mealDiet) { syncMacroStyle(t.dataset.mealDiet); mealStatus = ""; fillInputs(); update(); return; }
     if (t.dataset.mealPattern && window.SampleDays.MEAL_PATTERNS[t.dataset.mealPattern]) { S.food.mealPattern = t.dataset.mealPattern; mealStatus = ""; renderMeals(); save(); return; }
     if (t.dataset.meal) { S.food.mealDay = t.dataset.meal; if (t.dataset.meal !== "favorites") S.food.favBase = t.dataset.meal; mealStatus = ""; renderMeals(); save(); return; }
     if (t.dataset.fsKind) { fs.kind = t.dataset.fsKind; $$("[data-fs-kind]").forEach((c) => c.setAttribute("aria-pressed", String(c === t))); fsSearch(true); return; }
