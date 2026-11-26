@@ -1635,6 +1635,7 @@ html.pc-clean #week-card .week-chips{margin:.6rem 0}
 .pc-rows>.pc-r>.card,.pc-rows>.pc-r>section.card,.pc-rows>.pc-r .card{border:0!important;background:none!important;box-shadow:none!important;padding:0 0 .9rem!important;margin:0!important}
 .pc-rows>.pc-r>.card>.card-eyebrow,.pc-rows>.pc-r>.card>.eyebrow:first-child{display:none}
 .pc-rows>.pc-r>.card>.section-head:first-of-type h2,.pc-rows>.pc-r>.card>h2:first-of-type{font-size:1.05rem}
+.pc-rows>#pc-r-hs[hidden]{display:none}
 .pc-sub{margin:.4rem 0 .6rem}.pc-sub>summary{cursor:pointer;padding:.4rem 0;font-weight:600;min-height:44px;display:flex;align-items:center}
 @media(min-width:64rem){
   html.nofig .wiz-layout{grid-template-columns:minmax(0,1fr) 18rem}
@@ -1650,7 +1651,7 @@ html.nofig:not(.pc-clean) #fig-card{margin-top:1rem}
 <body>
 <!-- v7.6.69: charcoal/slate app background (grain texture removed) + simulation-trend hero -->
 <!-- v7.6.68 perf: consent runs first so the terms screen shows while the rest of the page streams in -->
-<script src="assets/liftlog.js?v=7763"></script>
+<script src="assets/liftlog.js?v=7764"></script>
 <script>
 /* v7.2 Required consent (clickwrap). Wording is versioned (see VERSION).
    v7.6.2: one scrollable screen of grouped terms + a single "I've read and agree" checkbox + Accept; optional opt-ins for photos (with written biometric consent, Illinois BIPA)
@@ -5674,8 +5675,8 @@ return { KEY, MEALS, MEAL_IDS, dateKey, addDays, isDate, mealFor, empty, normali
 (function () {
 "use strict";
 const E = window.BodyEngine, FIG = window.BodyFigure, LB = E.LB;
-/* projection-cleanup-1126 MOCKUP (test copy only): ?clean=1 folds the Projection page into a short, calm layout; ?nofig=1 takes the 3D figure off steps 1-4 and offers it only as an optional "See it in a body" card on Projection. Without the flags nothing changes. Nothing is deleted, only moved or folded. */
-const PCLEAN = /[?&]clean=1(?:&|$)/.test(location.search), NOFIG = /[?&]nofig=1(?:&|$)/.test(location.search);
+/* projection-cleanup-1126 (shipped, Nick approved): the Projection page is a short, calm layout (plan hero + one note, Next steps, Week by week open; everything else in one tap-to-open "More about your plan" list), and the 3D figure is off steps 1-4 and offered only as an optional "See it in a body" card on Projection (loads on tap). On by default. Opt-outs for comparing: ?clean=0 and ?nofig=0. Nothing is deleted, only moved or folded. */
+const PCLEAN = !/[?&]clean=0(?:&|$)/.test(location.search), NOFIG = !/[?&]nofig=0(?:&|$)/.test(location.search);
 document.documentElement.classList.toggle("pc-clean", PCLEAN); document.documentElement.classList.toggle("nofig", NOFIG);
 const CONFIG = {
   CONSULT_URL: "https://theosishealth.com/contact/",   // contact page on theosishealth.com
@@ -8664,6 +8665,10 @@ function pcRegionalLine() { const s = R.main.rows[0], e = endRow(); if (!e) retu
 function pcRow(id, node, title, line) { let d = document.getElementById(id);
   if (!d) { d = document.createElement("details"); d.id = id; d.className = "pc-row"; d.innerHTML = `<summary><b></b><small></small></summary>`; d.appendChild(node); }
   d.querySelector("summary b").textContent = title; d.querySelector("summary small").textContent = line; d.hidden = !!node.hidden || !node.innerHTML.trim(); return d; }
+/* Health snapshot row: shown only once the card can score (it has a .hs-score); a new user with little data never sees an empty "tell us more" row. */
+function pcHsSync() { const row = document.getElementById("pc-r-hs"), hs = document.getElementById("hs-card"); if (!row || !hs) return;
+  const ring = hs.querySelector(".hs-ring"), on = !!hs.querySelector(".hs-score"); row.hidden = !on;
+  const sm = row.querySelector("summary small"); if (sm && on) { const m = ring && /Learning score (\d+) out of 100: (.+)$/.exec(ring.getAttribute("aria-label") || ""); sm.textContent = m ? `Learning score ${m[1]} out of 100 (${m[2]})` : "A learning score from what you've told us"; } }
 function projClean() {
   const st = $('section.step[data-step="5"]'); if (!st || !R || R.blocked) return;
   const e = endRow(), wk = e ? fWk(e.day) : "", fc = $("#fig-card");
@@ -8681,12 +8686,12 @@ function projClean() {
   if (hero && nx && hero.nextElementSibling !== nx) hero.after(nx);
   if (nx && wkc && nx.nextElementSibling !== wkc) nx.after(wkc);
   let more = $("#pc-more"); if (!more) { more = document.createElement("div"); more.id = "pc-more"; more.className = "card pc-more"; more.innerHTML = `<h2>More about your plan</h2><p class="hint">Tap a row to open it. Nothing here changes your plan.</p><div class="pc-rows" id="pc-rows"></div>`; wkc.after(more); }
-  const rows = $("#pc-rows"), hs = $("#hs-card"), hsT = hs ? (hs.querySelector(".hs-score,.hs-big,h2,h3") || {}).textContent || "" : "";
+  const rows = $("#pc-rows"), hs = $("#hs-card");
   const list = [
     pcRow("pc-r-weekly", $("#weekly-card"), "Weekly check-in", "Log your weight once a week so your calories can adjust to you"),
     pcRow("pc-r-regional", $("#regional"), "Where the fat comes off", pcRegionalLine()),
     pcRow("pc-r-bulk", $("#bulk-cmp"), "Lean gain vs a bigger bulk", "Same weeks of training, how much more fat a bigger surplus adds"),
-    pcRow("pc-r-hs", hs, "Health snapshot", (hsT.trim() || "A simple score from what you've told us").replace(/\s+/g, " ").slice(0, 90)),
+    pcRow("pc-r-hs", hs, "Health snapshot", "A learning score from what you've told us"),
     $("#proj-more-health"), $("#proj-more-tips"),
     pcRow("pc-r-photo", $("#ai-card"), "See it on your photo", "Optional: an AI picture of you at a week you pick"),
     NOFIG ? fc : null, $("#expert-card")];
@@ -8697,6 +8702,8 @@ function projClean() {
   if (slot && sc && sc.parentNode !== slot) slot.appendChild(sc);
   /* 3. recap: the answer list folds, the Print / Edit / Clear buttons stay visible */
   const rc = $("#recap-card"), dl = $("#recap"); if (rc && dl && !dl.closest("#pc-recap")) { const d = document.createElement("details"); d.id = "pc-recap"; d.className = "pc-sub"; d.innerHTML = "<summary>See all your answers in one list</summary>"; dl.before(d); d.appendChild(dl); }
+  pcHsSync();
+  if (hs && !hs.dataset.pcObs && window.MutationObserver) { hs.dataset.pcObs = "1"; new MutationObserver(pcHsSync).observe(hs, { childList: true }); }   /* the snapshot card loads and re-renders after this runs */
   if (!projClean.t) projClean.t = setTimeout(() => { projClean.t = 0; if (S.step === 5) projClean(); }, 600);   /* the snapshot card loads a moment later */
 }
 function renderHealthCtx() {
@@ -9118,11 +9125,11 @@ const LAZY = {};
 window.__BP = { muscleRegions: (m, x) => (E.muscleRegions ? E.muscleRegions(m, x) : null), get S() { return S; }, get R() { return R; }, get V() { return V; }, $, esc, fK, fW, fP, fWk, E, effMove, pftInsideStage, rampColor, renderViews: () => renderViews(), fDate, pftCtSkin, pftInsideOpen: () => pftInsideOpen(), save: () => save(), a1cItems: () => a1cSorted().map((x) => ({ ...x })), a1cPut: (v, d) => { a1cPut(v, d); fillInputs(); update(); }, a1cDel: (id) => { a1cDel(id); fillInputs(); update(); }, a1cToday, renderSummary: () => renderSummary(), go: (n) => go(n) };
 function lazyLoad(src) { if (LAZY[src]) return LAZY[src]; LAZY[src] = new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); }); return LAZY[src]; }
 (function () { const l = document.createElement("link"); l.rel = "stylesheet"; l.href = "assets/v7655.css?v=7696"; document.head.appendChild(l); })();
-function renderSnapshot() { if (typeof window.renderSnapshotNow === "function") return window.renderSnapshotNow(); const b = $("#hs-card"); if (b && R && !R.blocked) lazyLoad("assets/health-snapshot.js?v=7763").then(() => window.renderSnapshotNow(), () => {}); }
-function a1cCardHtml() { if (typeof window.a1cCardHtmlNow === "function") return window.a1cCardHtmlNow(); lazyLoad("assets/a1c-log.js?v=7763").then(() => { if (V.open && V.view === "home") renderViews(); }, () => {}); return `<div class="v-card a1-card" id="a1-card"><h2>A1c log</h2><p class="hint">Loading…</p></div>`; }
+function renderSnapshot() { if (typeof window.renderSnapshotNow === "function") return window.renderSnapshotNow(); const b = $("#hs-card"); if (b && R && !R.blocked) lazyLoad("assets/health-snapshot.js?v=7764").then(() => window.renderSnapshotNow(), () => {}); }
+function a1cCardHtml() { if (typeof window.a1cCardHtmlNow === "function") return window.a1cCardHtmlNow(); lazyLoad("assets/a1c-log.js?v=7764").then(() => { if (V.open && V.view === "home") renderViews(); }, () => {}); return `<div class="v-card a1-card" id="a1-card"><h2>A1c log</h2><p class="hint">Loading…</p></div>`; }
 window.BodyPlanFig3D = window.BodyPlanFig3D || { state: { on: false, failed: false, where: null } };
 function f3dMount() { if (window.__NO_PFT_FIG) return; if (NOFIG && !(S.step === 5 && $("#fig-card") && $("#fig-card").open)) return; if (typeof window.f3dMountNow === "function") return window.f3dMountNow(); if (!R || R.blocked) return;
-  lazyLoad("assets/fig3d-pft.js?v=7763").then(() => window.f3dMountNow(), () => { window.BodyPlanFig3D.state.failed = true; const h = document.getElementById("sum-pft"); if (h && !h.innerHTML) { h.hidden = false; h.innerHTML = `<figure class="f3d-fbfig"><img src="assets/f3d-ct-fallback.webp" alt="Example cross-section through the middle of the model" width="720" height="560"><figcaption>Example cross-section. The 3D model can't load on this device.</figcaption></figure>`; } }); }
+  lazyLoad("assets/fig3d-pft.js?v=7764").then(() => window.f3dMountNow(), () => { window.BodyPlanFig3D.state.failed = true; const h = document.getElementById("sum-pft"); if (h && !h.innerHTML) { h.hidden = false; h.innerHTML = `<figure class="f3d-fbfig"><img src="assets/f3d-ct-fallback.webp" alt="Example cross-section through the middle of the model" width="720" height="560"><figcaption>Example cross-section. The 3D model can't load on this device.</figcaption></figure>`; } }); }
 function printRegional(s, e) { const k = changeKind(s, e), c = FD.change(depotsAt(s.fatKg), depotsAt(e.fatKg)), m = muscleSplit(S.profile.sex, e.leanKg - s.leanKg);
   const fat = `around the organs ${fWd(c.vat.kg)} (${fPct(c.vat.pct)}), under the skin ${fWd(c.sub.kg)} (${fPct(c.sub.pct)})`, mus = `upper body ${fWd(m.up)}, legs &amp; glutes ${fWd(m.lo)}`;
   return `<p class="small"><b>${{ loss: "Where fat comes off first", gain: "Where muscle builds, and where fat would add", recomp: "Where you lose fat and gain muscle", hold: "Where things shift" }[k]} (estimate):</b> ${k === "gain" ? `lean (mostly muscle): ${mus}; fat: ${fat}.` : k === "recomp" ? `fat: ${fat}; lean (mostly muscle): ${mus}.` : `fat ${fat}.`}</p>`; }
