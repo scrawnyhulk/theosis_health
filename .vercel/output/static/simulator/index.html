@@ -1608,7 +1608,40 @@ body{background-color:var(--bg);background-image:var(--app-bg-image);background-
    header row, beside "Step N of 5", and scrolls away with the page (each step opens at the top, so it's always the first thing you see). */
 @media(max-width:40rem){.startover-bar{position:relative;top:auto;height:0;margin:0;z-index:5}.startover-bar .startover-btn{position:absolute;right:0;top:2px;min-height:40px;padding:0 14px;font-size:15px;box-shadow:none}#prog-mobile{padding:11px 150px 11px 0;min-height:44px;box-sizing:border-box}
 /* the chat bubble sits in the live-summary bar, left of its arrow, instead of floating over the Projection cards */
-body.fab-docked .ask-fab{z-index:36;min-height:44px;min-width:44px;width:44px;height:44px;padding:0;justify-content:center;box-shadow:none}body.fab-docked .mbar-head .chev{margin-left:calc(44px + .75rem)}}</style>
+body.fab-docked .ask-fab{z-index:36;min-height:44px;min-width:44px;width:44px;height:44px;padding:0;justify-content:center;box-shadow:none}body.fab-docked .mbar-head .chev{margin-left:calc(44px + .75rem)}}
+/* projection-cleanup-1126 MOCKUP CSS: only applies with ?clean=1 / ?nofig=1 */
+html.pc-clean .takeaways .take{background:none;border:0;box-shadow:none;padding:.15rem 0;color:var(--ink-muted,#c9d4e2)}
+html.pc-clean .takeaways{margin:.6rem 0 0}
+html.pc-clean #why-more{box-shadow:none;border-radius:0;margin-top:.2rem}
+html.pc-clean #why-more>summary{padding:.3rem 0;font-size:1rem;color:var(--accent,#7fb2ff)}
+html.pc-clean #why-more[open]>summary{margin-bottom:.4rem}
+html.pc-clean .pc-why-n{font-weight:400;opacity:.75;margin-left:.35em;color:var(--muted)}
+html.pc-clean .pc-line{margin:.35rem 0 .2rem;color:var(--ink-muted,#c9d4e2)}
+html.pc-clean #week-card .week-chips{margin:.6rem 0}
+.pc-more h2{margin:0 0 .2rem}
+.pc-rows{margin-top:.6rem;border-top:1px solid var(--hairline,rgba(231,237,245,.1))}
+.pc-rows>.pc-r{margin:0!important;border:0!important;border-bottom:1px solid var(--hairline,rgba(231,237,245,.1))!important;border-radius:0!important;background:none!important;box-shadow:none!important;padding:0!important}
+.pc-rows>.pc-r>summary{display:block;cursor:pointer;padding:.85rem 2rem .85rem 0;position:relative;list-style:none;min-height:44px}
+.pc-rows>.pc-r>summary::-webkit-details-marker{display:none}
+.pc-rows>.pc-r>summary::after{content:"";position:absolute;right:.4rem;top:1.15rem;width:.55rem;height:.55rem;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);opacity:.6;transition:transform .15s}
+.pc-rows>.pc-r[open]>summary::after{transform:rotate(225deg);top:1.4rem}
+.pc-rows>.pc-r>summary b{display:block;font-weight:600;color:var(--fg)}
+.pc-rows>.pc-r>summary small{display:block;color:var(--muted);font-size:.86rem;line-height:1.4;margin-top:.15rem}
+.pc-rows>.pc-r>summary>b::after{content:none!important}
+.pc-rows>.pc-r>.card,.pc-rows>.pc-r>section.card,.pc-rows>.pc-r .card{border:0!important;background:none!important;box-shadow:none!important;padding:0 0 .9rem!important;margin:0!important}
+.pc-rows>.pc-r>.card>.card-eyebrow,.pc-rows>.pc-r>.card>.eyebrow:first-child{display:none}
+.pc-rows>.pc-r>.card>.section-head:first-of-type h2,.pc-rows>.pc-r>.card>h2:first-of-type{font-size:1.05rem}
+.pc-sub{margin:.4rem 0 .6rem}.pc-sub>summary{cursor:pointer;padding:.4rem 0;font-weight:600;min-height:44px;display:flex;align-items:center}
+@media(min-width:64rem){
+  html.nofig .wiz-layout{grid-template-columns:minmax(0,1fr) 18rem}
+  html.pc-clean.pc-s5 .wiz-layout{grid-template-columns:minmax(0,1fr)}
+  html.pc-clean.pc-s5 #sum-aside{display:none!important}
+  html.pc-clean.pc-s5 .wiz-main{max-width:58rem;width:100%;margin:0 auto}
+}
+html.nofig #fig-card-body #sum-pft{border:0;margin:0 auto;padding:0;max-width:30rem}
+html.nofig #fig-card-body #f3d-phone{border:0;background:none;padding:0;margin:0}
+html.nofig:not(.pc-clean) #fig-card{margin-top:1rem}
+</style>
 </head>
 <body>
 <!-- v7.6.69: charcoal/slate app background (grain texture removed) + simulation-trend hero -->
@@ -2400,7 +2433,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')set(false)})
           <div class="card mt1 adv-only" id="ll-proj-note" role="status" hidden></div>
           <div class="card mt1 f3d" id="f3d-phone" hidden></div>
           <div class="card mt1" id="hs-card"></div>
-          <div class="card mt1">
+          <div class="card mt1" id="week-card">
             <p class="eyebrow card-eyebrow">Over time</p>
             <div class="section-head" style="margin-bottom:0"><h2>Week by week</h2><span class="eyebrow" id="tl-note"></span></div>
             <div class="week-chips" id="proj-chips" aria-label="Projection at a glance"></div>
@@ -2413,7 +2446,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')set(false)})
           <div class="card weekly-card" id="weekly-card"></div>
           <div class="card" id="regional" aria-live="polite"></div>
           <div class="card bulk-cmp" id="bulk-cmp" hidden></div>
-          <div class="card">
+          <div class="card" id="next-card">
             <p class="eyebrow card-eyebrow">What to do next</p>
             <h2>Your next steps</h2>
             <ol class="steps-list" id="next-steps"></ol>
@@ -2442,7 +2475,8 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')set(false)})
             <div id="ai-stages"></div>
           </div>
           <details class="card expert-card adv-only" id="expert-card"><summary><b>Expert mode</b>: raw numbers and model settings</summary><div id="expert-body"></div></details>
-          <div class="card">
+          <details class="card proj-more" id="fig-card" hidden><summary><b>See it in a body</b><small>Optional 3D illustration of where the fat goes over your plan</small></summary><div id="fig-card-body"></div></details>
+          <div class="card" id="recap-card">
             <p class="eyebrow card-eyebrow">Summary</p>
             <h2>Recap</h2>
             <dl class="recap" id="recap"></dl>
@@ -5625,6 +5659,9 @@ return { KEY, MEALS, MEAL_IDS, dateKey, addDays, isDate, mealFor, empty, normali
 (function () {
 "use strict";
 const E = window.BodyEngine, FIG = window.BodyFigure, LB = E.LB;
+/* projection-cleanup-1126 MOCKUP (test copy only): ?clean=1 folds the Projection page into a short, calm layout; ?nofig=1 takes the 3D figure off steps 1-4 and offers it only as an optional "See it in a body" card on Projection. Without the flags nothing changes. Nothing is deleted, only moved or folded. */
+const PCLEAN = /[?&]clean=1(?:&|$)/.test(location.search), NOFIG = /[?&]nofig=1(?:&|$)/.test(location.search);
+document.documentElement.classList.toggle("pc-clean", PCLEAN); document.documentElement.classList.toggle("nofig", NOFIG);
 const CONFIG = {
   CONSULT_URL: "https://theosishealth.com/contact/",   // contact page on theosishealth.com
   CONSULT_PHONE: "765.487.0777",
@@ -6050,7 +6087,7 @@ function renderAdv() {
   const b = bfInfo(), est = $("#bf-estimate"); if (b.dexa && est) { const p0 = S.profile, scl = p0.scaleFatKg > 0 || (p0.subqFatKg > 0 && p0.viscFatKg > 0);
     est.hidden = false; est.innerHTML = `<b>${fP(b.bf)}</b><span>body fat · from your DEXA scan${p0.bfMode === "known" && p0.bf > 0 && Math.abs(p0.bf - b.bf) >= 0.1 ? `, used instead of the ${fP(p0.bf)} typed above${scl ? " and your smart-scale numbers" : ""}` : scl ? ", used instead of your smart-scale numbers" : ""}</span>`; }
 }
-function renderStep() { const s = S.step; if (s === 1) { renderYou(); renderHealth(); renderPheno(); } else if (s === 2) renderGoal(); else if (s === 3) renderMove(); else if (s === 4) renderFood(); else if (s === 5) renderProjection(); renderNav(); renderHabitsAll(); }
+function renderStep() { const s = S.step; document.documentElement.classList.toggle("pc-s5", s === 5); if (s === 1) { renderYou(); renderHealth(); renderPheno(); } else if (s === 2) renderGoal(); else if (s === 3) renderMove(); else if (s === 4) renderFood(); else if (s === 5) renderProjection(); renderNav(); renderHabitsAll(); }
 
 (function betaBar() { const init = () => { const b = document.getElementById("beta-bar"); if (!b) return; const k = "theosis-beta-notice-v1";
   let seen = false; try { seen = localStorage.getItem(k) === "1"; } catch (e) { /* storage off: keep showing */ } b.hidden = seen;
@@ -8544,11 +8581,11 @@ function takeShort(w) {
 }
 function takeawaysHtml(bandTxt) {
   const pri = (w) => (w.t === "danger" ? 0 : w.kind === "meds" || w.kind === "meds-ack" ? 0.5 : w.t === "warn" ? 1 : 2);
-  const ws = R.warnings.map((w, i) => ({ w, i })).sort((x, y) => (pri(x.w) - pri(y.w)) || (x.i - y.i)).slice(0, 3).map((x) => x.w);
+  const ws = R.warnings.map((w, i) => ({ w, i })).sort((x, y) => (pri(x.w) - pri(y.w)) || (x.i - y.i)).slice(0, PCLEAN ? 1 : 3).map((x) => x.w);
   const ico = { danger: ICON.warn, warn: ICON.warn, info: ICON.info };
   const top = ws.length ? `<ul class="takeaways" aria-label="Most important points">${ws.map((w) => `<li class="take ${w.t}">${ico[w.t]}<span>${esc(takeShort(w))}</span></li>`).join("")}</ul>` : "";
   const full = R.warnings.length ? `<ul class="alerts">${R.warnings.map(alertHtml).join("")}</ul>` : "";
-  return `${top}<details class="why-more" id="why-more"><summary>Why? Learn more</summary><div class="why-body">${planSummaryHtml()}${bandTxt}${full}</div></details>`;
+  return `${top}<details class="why-more" id="why-more"><summary>Why? Learn more${PCLEAN && R.warnings.length > 1 ? `<small class="pc-why-n">(${R.warnings.length} notes)</small>` : ""}</summary><div class="why-body">${planSummaryHtml()}${bandTxt}${full}</div></details>`;
 }
 function heroHtml() {
   const s = R.main.rows[0], e = endRow(), st = startPerson(), b = bfInfo();
@@ -8595,6 +8632,48 @@ function renderProjection() {
   $("#next-steps").innerHTML = R.nextSteps.map((n) => `<li><div><b>${esc(n.title)}</b><span>${esc(n.body)}</span></div></li>`).join("");
   $("#recap").innerHTML = recapPairs().map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("");
   renderAi();
+  if (PCLEAN || NOFIG) projClean();
+}
+
+/* projection-cleanup-1126 MOCKUP: reorder and fold the Projection page (?clean=1) and host the optional 3D card (?nofig=1). Moves nodes only; every render function still finds its section by id. */
+function pcRegionalLine() { const s = R.main.rows[0], e = endRow(); if (!e) return ""; const k = changeKind(s, e), c = FD.change(depotsAt(s.fatKg), depotsAt(e.fatKg)), m = muscleSplit(S.profile.sex, e.leanKg - s.leanKg), wk = fWk(e.day);
+  if (k === "gain") return `By week ${wk}: muscle mostly upper body ${fWd(m.up)}, legs and glutes ${fWd(m.lo)}; fat ${fWd(e.fatKg - s.fatKg)} (estimate)`;
+  if (k === "hold") return `By week ${wk}: little change in where fat sits (estimate)`;
+  return `By week ${wk}: about ${fWd(c.vat.kg)} from around the organs and ${fWd(c.sub.kg)} from under the skin (estimate)`; }
+function pcRow(id, node, title, line) { let d = document.getElementById(id);
+  if (!d) { d = document.createElement("details"); d.id = id; d.className = "pc-row"; d.innerHTML = `<summary><b></b><small></small></summary>`; d.appendChild(node); }
+  d.querySelector("summary b").textContent = title; d.querySelector("summary small").textContent = line; d.hidden = !!node.hidden || !node.innerHTML.trim(); return d; }
+function projClean() {
+  const st = $('section.step[data-step="5"]'); if (!st || !R || R.blocked) return;
+  const e = endRow(), wk = e ? fWk(e.day) : "", fc = $("#fig-card");
+  if (NOFIG && fc) { fc.hidden = false; const b = $("#fig-card-body"); ["#sum-pft", "#f3d-phone"].forEach((q) => { const h = $(q); if (h && h.parentNode !== b) b.appendChild(h); });
+    if (!fc.dataset.pc) { fc.dataset.pc = "1"; fc.addEventListener("toggle", () => { if (fc.open) f3dMount(); }); } }
+  if (!PCLEAN) return;
+  /* 1. calmer week-by-week: one plain line, the 5 number chips move into the table fold */
+  const wkc = $("#week-card"), tm = $("#tbl-more"), ch = $("#proj-chips");
+  if (wkc && tm && ch && ch.parentNode !== tm) { tm.insertBefore(ch, tm.querySelector(".table-wrap")); tm.querySelector("summary").textContent = "Show the numbers week by week"; }
+  if (wkc) { let l = $("#pc-wk-line"); if (!l) { l = document.createElement("p"); l.id = "pc-wk-line"; l.className = "pc-line"; wkc.querySelector(".section-head").after(l); }
+    const s0 = R.main.rows[0], pw = e ? (e.weightKg - s0.weightKg) / Math.max(1, e.day / 7) : 0;
+    l.textContent = e ? `About ${fWd(pw)} a week on average, from ${fW(s0.weightKg)} to ${fW(e.weightKg)} over ${wk} weeks.` : ""; }
+  /* 2. order: strength scoreboard (Get stronger only), hero, next steps, week by week, then one quiet list of tap-to-open rows, then recap */
+  const hero = $("#proj-hero"), nx = $("#next-card");
+  if (hero && nx && hero.nextElementSibling !== nx) hero.after(nx);
+  if (nx && wkc && nx.nextElementSibling !== wkc) nx.after(wkc);
+  let more = $("#pc-more"); if (!more) { more = document.createElement("div"); more.id = "pc-more"; more.className = "card pc-more"; more.innerHTML = `<h2>More about your plan</h2><p class="hint">Tap a row to open it. Nothing here changes your plan.</p><div class="pc-rows" id="pc-rows"></div>`; wkc.after(more); }
+  const rows = $("#pc-rows"), hs = $("#hs-card"), hsT = hs ? (hs.querySelector(".hs-score,.hs-big,h2,h3") || {}).textContent || "" : "";
+  const list = [
+    pcRow("pc-r-weekly", $("#weekly-card"), "Weekly check-in", "Log your weight once a week so your calories can adjust to you"),
+    pcRow("pc-r-regional", $("#regional"), "Where the fat comes off", pcRegionalLine()),
+    pcRow("pc-r-bulk", $("#bulk-cmp"), "Lean gain vs a bigger bulk", "Same weeks of training, how much more fat a bigger surplus adds"),
+    pcRow("pc-r-hs", hs, "Health snapshot", (hsT.trim() || "A simple score from what you've told us").replace(/\s+/g, " ").slice(0, 90)),
+    $("#proj-more-health"), $("#proj-more-story"), $("#proj-more-tips"),
+    pcRow("pc-r-photo", $("#ai-card"), "See it on your photo", "Optional: an AI picture of you at a week you pick"),
+    NOFIG ? fc : null, $("#expert-card")];
+  list.forEach((n) => { if (n && n.parentNode !== rows) rows.appendChild(n); if (n) n.classList.add("pc-r"); });
+  const tips = $("#proj-more-tips"); if (tips && !tips.querySelector("summary small")) tips.querySelector("summary").insertAdjacentHTML("beforeend", "<small>Plateaus, water swings, and getting help</small>");
+  /* 3. recap: the answer list folds, the Print / Edit / Clear buttons stay visible */
+  const rc = $("#recap-card"), dl = $("#recap"); if (rc && dl && !dl.closest("#pc-recap")) { const d = document.createElement("details"); d.id = "pc-recap"; d.className = "pc-sub"; d.innerHTML = "<summary>See all your answers in one list</summary>"; dl.before(d); d.appendChild(dl); }
+  if (!projClean.t) projClean.t = setTimeout(() => { projClean.t = 0; if (S.step === 5) projClean(); }, 600);   /* the snapshot card loads a moment later */
 }
 function renderHealthCtx() {
   const box = $("#health-ctx"), hs = R.health;
@@ -9018,7 +9097,7 @@ function lazyLoad(src) { if (LAZY[src]) return LAZY[src]; LAZY[src] = new Promis
 function renderSnapshot() { if (typeof window.renderSnapshotNow === "function") return window.renderSnapshotNow(); const b = $("#hs-card"); if (b && R && !R.blocked) lazyLoad("assets/health-snapshot.js?v=7763").then(() => window.renderSnapshotNow(), () => {}); }
 function a1cCardHtml() { if (typeof window.a1cCardHtmlNow === "function") return window.a1cCardHtmlNow(); lazyLoad("assets/a1c-log.js?v=7763").then(() => { if (V.open && V.view === "home") renderViews(); }, () => {}); return `<div class="v-card a1-card" id="a1-card"><h2>A1c log</h2><p class="hint">Loading…</p></div>`; }
 window.BodyPlanFig3D = window.BodyPlanFig3D || { state: { on: false, failed: false, where: null } };
-function f3dMount() { if (window.__NO_PFT_FIG) return; if (typeof window.f3dMountNow === "function") return window.f3dMountNow(); if (!R || R.blocked) return;
+function f3dMount() { if (window.__NO_PFT_FIG) return; if (NOFIG && !(S.step === 5 && $("#fig-card") && $("#fig-card").open)) return; if (typeof window.f3dMountNow === "function") return window.f3dMountNow(); if (!R || R.blocked) return;
   lazyLoad("assets/fig3d-pft.js?v=7763").then(() => window.f3dMountNow(), () => { window.BodyPlanFig3D.state.failed = true; const h = document.getElementById("sum-pft"); if (h && !h.innerHTML) { h.hidden = false; h.innerHTML = `<figure class="f3d-fbfig"><img src="assets/f3d-ct-fallback.webp" alt="Example cross-section through the middle of the model" width="720" height="560"><figcaption>Example cross-section. The 3D model can't load on this device.</figcaption></figure>`; } }); }
 function printRegional(s, e) { const k = changeKind(s, e), c = FD.change(depotsAt(s.fatKg), depotsAt(e.fatKg)), m = muscleSplit(S.profile.sex, e.leanKg - s.leanKg);
   const fat = `around the organs ${fWd(c.vat.kg)} (${fPct(c.vat.pct)}), under the skin ${fWd(c.sub.kg)} (${fPct(c.sub.pct)})`, mus = `upper body ${fWd(m.up)}, legs &amp; glutes ${fWd(m.lo)}`;
