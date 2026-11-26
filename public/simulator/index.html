@@ -1617,6 +1617,10 @@ html.pc-clean #why-more>summary{padding:.3rem 0;font-size:1rem;color:var(--accen
 html.pc-clean #why-more[open]>summary{margin-bottom:.4rem}
 html.pc-clean .pc-why-n{font-weight:400;opacity:.75;margin-left:.35em;color:var(--muted)}
 html.pc-clean .pc-line{margin:.35rem 0 .2rem;color:var(--ink-muted,#c9d4e2)}
+html.pc-clean .why-story{margin-top:1.15rem;padding-top:1rem;border-top:1px solid var(--hairline,rgba(231,237,245,.12))}
+html.pc-clean .why-story>h3{margin:0 0 .25rem;font-size:1.15rem}
+html.pc-clean .why-story #story-card{border:0;background:none;box-shadow:none;padding:0;margin:.5rem 0 0}
+html.pc-clean .why-story #story-card>.card-eyebrow,html.pc-clean .why-story #story-card>h2{display:none}
 html.pc-clean #week-card .week-chips{margin:.6rem 0}
 .pc-more h2{margin:0 0 .2rem}
 .pc-rows{margin-top:.6rem;border-top:1px solid var(--hairline,rgba(231,237,245,.1))}
@@ -4948,13 +4952,17 @@ return { KEY, MEALS, MEAL_IDS, dateKey, addDays, isDate, mealFor, empty, normali
     const a1c = num(inp.a1c), w = +inp.weightKg, cut = waistCut(inp.sex, inp.ancestry), waist = num(inp.waistCm);
     const L = labsDerived(inp.labs, inp.sex), fg = L.fg;
     const a1cDm = a1c != null && a1c >= 6.5;
-    const dm = inp.diabetes === "t2" || (fg != null && fg >= 126) || a1cDm, pre = !dm && (inp.diabetes === "prediabetes" || (fg != null && fg >= 100)), liver = inp.fattyLiver === "yes";
+    /* A1c 5.7–6.4% counts as prediabetes the same way fasting glucose 100–125 does, unless status is t2/t1. A1c ≥6.5 with unknown status still counts as diabetes. */
+    const a1cPre = a1c != null && a1c >= 5.7 && a1c < 6.5 && inp.diabetes !== "t2" && inp.diabetes !== "t1";
+    const dm = inp.diabetes === "t2" || (fg != null && fg >= 126) || a1cDm, pre = !dm && (inp.diabetes === "prediabetes" || (fg != null && fg >= 100) || a1cPre), liver = inp.fattyLiver === "yes";
     const t1 = inp.diabetes === "t1";
     const markers = [], need = [], why = [];
-    if (dm && !t1) { const extra = 0.02; need.push([0.10 + extra, 0.15 + extra]); markers.push("a1c-dm");
+    if (dm && !t1) { need.push([0.10, 0.15]); markers.push("a1c-dm");   /* DiRECT 10–15% of body weight; no unsourced extra */
       const whyDm = inp.diabetes === "t2" ? "Type 2 diabetes (as you selected)" : (fg != null && fg >= 126) ? "Fasting glucose of 126 or more" : "Your A1c is in the range usually counted as diabetes, so the estimate treats it that way";
       why.push(`${whyDm}: in DiRECT, remission was seen in 57% of people who lost 10–15 kg and 86% of those who lost 15 kg or more (about 10–15% of body weight or more).`); }
-    else if (pre) { need.push([0.05, 0.08]); markers.push("a1c-pre"); why.push(`${inp.diabetes === "prediabetes" ? "Prediabetes (as you selected)" : "Fasting glucose of 100–125"}: in the DPP, losing about 5–7% cut the chance of diabetes by more than half (DPP).`); }
+    else if (pre) { need.push([0.05, 0.08]); markers.push("a1c-pre");
+      const whyPre = inp.diabetes === "prediabetes" ? "Prediabetes (as you selected)" : (fg != null && fg >= 100 && fg < 126) ? "Fasting glucose of 100–125" : "Your A1c is in the range usually counted as prediabetes, so the estimate treats it that way";
+      why.push(`${whyPre}: in the DPP, losing about 5–7% cut the chance of diabetes by more than half (DPP).`); }
     if (liver) { need.push([0.07, 0.10]); markers.push("liver"); why.push("Fatty liver: in a 1-year study, losing 7–10% resolved liver inflammation in about two-thirds (Vilar-Gomez 2015)."); }
     if (!liver && inp.fattyLiver !== "no" && L.altHigh) { need.push([0.05, 0.10]); markers.push("alt"); why.push(`ALT ${L.alt} U/L is above the healthy range (ACG 2017). Fatty liver is the most common cause, but not the only one; ask your clinician.`); }
     if (L.tgHdl != null && L.tgHdl >= 3) { need.push([0.05, 0.07]); markers.push("tghdl"); why.push(`Triglyceride/HDL ratio ${L.tgHdl.toFixed(1)} (3 or more is a common sign of insulin resistance; McLaughlin 2003). Losing 5–7% usually improves it (DPP).`); }
@@ -4999,6 +5007,7 @@ return { KEY, MEALS, MEAL_IDS, dateKey, addDays, isDate, mealFor, empty, normali
     if (inp.diabetes === "t2") f.push("Type 2 diabetes (as you selected)"); else if (L.fgCat === "dm") f.push("Fasting glucose of 126 or more");
     else if (a1c != null && a1c >= 6.5) f.push("Your A1c is in the range usually counted as diabetes, so the estimate treats it that way");
     else if (inp.diabetes === "prediabetes") f.push("Prediabetes (as you selected)"); else if (L.fgCat === "pre") f.push("Fasting glucose of 100–125");
+    else if (a1c != null && a1c >= 5.7 && a1c < 6.5 && inp.diabetes !== "t1") f.push("Your A1c is in the range usually counted as prediabetes, so the estimate treats it that way");
     if (inp.fattyLiver === "yes") f.push("Fatty liver");
     if (L.ldlVeryHigh) f.push("LDL cholesterol 190 or higher"); else if (L.ldlHigh) f.push("LDL cholesterol 130 or higher");
     if (L.tgHigh) f.push("Triglycerides 150 or higher"); if (L.hdlLow) f.push("Low HDL cholesterol");
@@ -5037,6 +5046,7 @@ return { KEY, MEALS, MEAL_IDS, dateKey, addDays, isDate, mealFor, empty, normali
     if (inp.diabetes === "t2") f.push("Type 2 diabetes (as you selected)"); else if (L.fgCat === "dm") f.push("Fasting glucose of 126 or more");
     else if (a1c != null && a1c >= 6.5) f.push("Your A1c is in the range usually counted as diabetes, so the estimate treats it that way");
     else if (inp.diabetes === "prediabetes") f.push("Prediabetes (as you selected)"); else if (L.fgCat === "pre") f.push("Fasting glucose of 100–125");
+    else if (a1c != null && a1c >= 5.7 && a1c < 6.5 && inp.diabetes !== "t1") f.push("Your A1c is in the range usually counted as prediabetes, so the estimate treats it that way");
     if (inp.fattyLiver === "yes") f.push("Fatty liver");
     if (L.ldlVeryHigh) f.push("LDL cholesterol 190 or higher"); else if (L.ldlHigh) f.push("LDL cholesterol 130 or higher");
     if (L.tgHigh) f.push("Triglycerides 150 or higher"); if (L.hdlLow) f.push("Low HDL cholesterol");
@@ -5171,7 +5181,12 @@ return { KEY, MEALS, MEAL_IDS, dateKey, addDays, isDate, mealFor, empty, normali
   /** ctx: {sex, bf, pheno: {label, s}, est, labs (PFT.labsDerived), a1c, dm ('t2'|'prediabetes'|...), fattyLiver, 
       reachWeek, stages[], cv[], goalDir, lifting, fW(kg)->text} -> [{id, title, html}] */
   function build(c) {
-    const out = [], L = c.labs || {}, fW = c.fW || ((k) => `${k.toFixed(1)} kg`), dm = c.dm === "t2", pre = c.dm === "prediabetes";
+    const out = [], L = c.labs || {}, fW = c.fW || ((k) => `${k.toFixed(1)} kg`);
+    const a1cN = c.a1c == null || c.a1c === "" || !isFinite(+c.a1c) ? null : +c.a1c, fgN = L.fg;
+    const a1cDm = a1cN != null && a1cN >= 6.5, a1cPre = a1cN != null && a1cN >= 5.7 && a1cN < 6.5 && c.dm !== "t2" && c.dm !== "t1";
+    const dm = c.dm === "t2" || (fgN != null && fgN >= 126) || a1cDm, pre = !dm && (c.dm === "prediabetes" || (fgN != null && fgN >= 100) || a1cPre);
+    const dmLead = c.dm === "t2" ? "You selected type 2 diabetes." : (fgN != null && fgN >= 126) ? "Your fasting glucose is in the range usually counted as diabetes, so this section treats it that way." : "Your A1c is in the range usually counted as diabetes, so this section treats it that way.";
+    const preLead = c.dm === "prediabetes" ? "You selected prediabetes." : (fgN != null && fgN >= 100 && fgN < 126) ? "Your fasting glucose is in the range usually counted as prediabetes, so this section treats it that way." : "Your A1c is in the range usually counted as prediabetes, so this section treats it that way.";
     const vis = c.pheno && c.pheno.label === "visceral", sub = c.pheno && c.pheno.label === "subcutaneous";
     const me = c.me || null, like = "People with values like these often";
     // 0. v7.6.3: the story in your numbers (education wording; every line is built from the user's inputs)
@@ -5198,7 +5213,7 @@ return { KEY, MEALS, MEAL_IDS, dateKey, addDays, isDate, mealFor, empty, normali
       ${L.tgHdl != null ? `<p>Your triglyceride-to-HDL ratio is <b>${L.tgHdl.toFixed(1)}</b>. A ratio of 3 or more is a common sign of insulin resistance.${cite("mclaughlin2003")} ${L.tgHdl >= 3 ? "Yours is in that range. It usually improves within weeks of steady fat loss." : "Yours is below that, which is reassuring."}</p>` : ""}` });
     // 3. pancreas + insulin
     out.push({ id: "pancreas", title: "Your pancreas and insulin", html: `<p>When the liver sends out extra fat, some of it settles in the pancreas. Over years, that fat weakens the cells that release insulin, especially the quick burst right after a meal. A liver that ignores insulin plus a pancreas that makes less of it is the "twin cycle" that drives blood sugar up into the type 2 diabetes range.${cite("taylor2008")}</p>
-      ${dm ? `<p>You selected type 2 diabetes. In small MRI studies (Counterpoint, DiRECT), people who lost about 15 kg (33 lb) saw liver fat fall first, then pancreas fat. The quick insulin response came back within weeks to months in many of them.${cite("lim2011", "taylor2018")}</p>` : pre ? `<p>You selected prediabetes. In people with prediabetes, glucose can often return to the normal range. Losing 5–7% cut the chance of developing diabetes by more than half.${cite("dpp2002")}</p>` : `<p>${c.a1c != null || L.fg != null ? "Your blood sugar is in the normal range today." : "Add an A1c or fasting glucose to see where you are."} Staying under your threshold keeps the cycle from starting.</p>`}
+      ${dm ? `<p>${dmLead} In small MRI studies (Counterpoint, DiRECT), people who lost about 15 kg (33 lb) saw liver fat fall first, then pancreas fat. The quick insulin response came back within weeks to months in many of them.${cite("lim2011", "taylor2018")}</p>` : pre ? `<p>${preLead} In people with prediabetes, glucose can often return to the normal range. Losing 5–7% cut the chance of developing diabetes by more than half.${cite("dpp2002")}</p>` : `<p>${c.a1c != null || L.fg != null ? "Your blood sugar is in the normal range today." : "Add an A1c or fasting glucose to see where you are."} Staying under your threshold keeps the cycle from starting.</p>`}
       ${L.fg != null ? `<p>Your fasting glucose is <b>${L.fg} mg/dL</b> (${L.fgCat === "dm" ? "126 or higher is in the diabetes range" : L.fgCat === "pre" ? "100–125 is in the prediabetes range" : "under 100 is normal"}).</p>` : ""}` });
     // 4. what can put it into remission (consensus wording: remission = A1c < 6.5% for 3+ months off glucose-lowering medicine)
     const st = (c.stages || []).filter((s) => s.key !== "unknown");
@@ -6304,7 +6319,7 @@ function pftRangeTxt(e) { return `${fW(e.weightKg.lo)}–${fW(e.weightKg.hi)}`; 
 function renderPftGoal() {
   const box = $("#pft-goal"); if (!box) return; const on = S.goal.type === "pft"; box.hidden = !on; if (!on) return; const e = pftEst();
   box.innerHTML = e.over ? `<p class="pft-h"><b>Your estimated fat threshold: about ${pftRangeTxt(e)}</b> (${Math.round(e.lossPct.lo)}–${Math.round(e.lossPct.hi)}% below today). The plan aims for ${fW(e.weightKg.mid)}${e.waistLossCm ? ` and a waist under ${lenToDisp(e.waistTarget)} ${imp() ? "in" : "cm"}` : ""}.</p><ul class="pft-why">${e.why.map((w) => `<li>${esc(imp() && /^Waist \d+ cm is above the \d+ cm cut-off/.test(w) && S.profile.waistCm > 0 ? `Waist ${lenToDisp(S.profile.waistCm)} in is above the ${lenToDisp(e.waistTarget)} in cut-off; about 1 in comes off per 5–6 lb lost.` : w)}</li>`).join("")}</ul><p class="hint">An estimate from published trials, not a diagnosis. Confidence: ${e.confidence}. Work with your clinician, especially if you take diabetes or blood-pressure medicines (doses often need lowering as you lose weight).</p>`
-    : `<p class="pft-h"><b>${e.known ? "You're likely already under your fat threshold." : "We need a marker to estimate your threshold."}</b></p><p class="hint">${esc(e.why[0])} ${e.known ? "This goal runs as steady fat loss." : `${+S.profile.health.a1c >= 6.5 ? "" : +S.profile.health.a1c > 0 ? "An A1c of 6.5% or higher is used for this estimate; a lower A1c still shapes the figure and health snapshot. " : ""}You can add them in Step 1. Until then, this goal runs as steady fat loss.`}</p>`;
+    : `<p class="pft-h"><b>${e.known ? "You're likely already under your fat threshold." : "We need a marker to estimate your threshold."}</b></p><p class="hint">${esc(e.why[0])} ${e.known ? "This goal runs as steady fat loss." : `${+S.profile.health.a1c >= 6.5 ? "" : +S.profile.health.a1c > 0 ? "An A1c of 5.7–6.4% is used as prediabetes for this estimate, and 6.5% or higher as diabetes. A lower A1c still shapes the figure and health snapshot. " : ""}You can add them in Step 1. Until then, this goal runs as steady fat loss.`}</p>`;
 }
 /* v7.1 (revised): measurable milestone ladder. No unmeasured internal values are predicted; lab steps show study results at a % loss
    (population ranges with citations) and when YOUR PLAN reaches that % loss. A step is ticked only by a real lab or check-in entry. */
@@ -8585,7 +8600,8 @@ function takeawaysHtml(bandTxt) {
   const ico = { danger: ICON.warn, warn: ICON.warn, info: ICON.info };
   const top = ws.length ? `<ul class="takeaways" aria-label="Most important points">${ws.map((w) => `<li class="take ${w.t}">${ico[w.t]}<span>${esc(takeShort(w))}</span></li>`).join("")}</ul>` : "";
   const full = R.warnings.length ? `<ul class="alerts">${R.warnings.map(alertHtml).join("")}</ul>` : "";
-  return `${top}<details class="why-more" id="why-more"><summary>Why? Learn more${PCLEAN && R.warnings.length > 1 ? `<small class="pc-why-n">(${R.warnings.length} notes)</small>` : ""}</summary><div class="why-body">${planSummaryHtml()}${bandTxt}${full}</div></details>`;
+  const storySlot = PCLEAN ? `<section class="why-story" id="why-story-slot"><h3>The story in your numbers</h3><p class="hint">What these changes mean, step by step, including the twin-cycle idea and the papers behind it.</p></section>` : "";
+  return `${top}<details class="why-more" id="why-more"><summary>Why? Learn more${PCLEAN && R.warnings.length > 1 ? `<small class="pc-why-n">(${R.warnings.length} notes)</small>` : ""}</summary><div class="why-body">${planSummaryHtml()}${bandTxt}${full}${storySlot}</div></details>`;
 }
 function heroHtml() {
   const s = R.main.rows[0], e = endRow(), st = startPerson(), b = bfInfo();
@@ -8614,7 +8630,12 @@ function heroHtml() {
   ${CONFIG.FIG3D && webgl() ? anatReadHtml(s, e) : ""}
   ${takeawaysHtml(bandTxt)}`;
 }
+function rescueStoryCard() {
+  const sc = document.getElementById("story-card"), hold = document.getElementById("proj-more-story");
+  if (sc && hold && !hold.contains(sc)) hold.appendChild(sc);
+}
 function renderHero() {
+  rescueStoryCard();
   $("#proj-hero").innerHTML = heroHtml();
 }
 function renderProjection() {
@@ -8666,11 +8687,14 @@ function projClean() {
     pcRow("pc-r-regional", $("#regional"), "Where the fat comes off", pcRegionalLine()),
     pcRow("pc-r-bulk", $("#bulk-cmp"), "Lean gain vs a bigger bulk", "Same weeks of training, how much more fat a bigger surplus adds"),
     pcRow("pc-r-hs", hs, "Health snapshot", (hsT.trim() || "A simple score from what you've told us").replace(/\s+/g, " ").slice(0, 90)),
-    $("#proj-more-health"), $("#proj-more-story"), $("#proj-more-tips"),
+    $("#proj-more-health"), $("#proj-more-tips"),
     pcRow("pc-r-photo", $("#ai-card"), "See it on your photo", "Optional: an AI picture of you at a week you pick"),
     NOFIG ? fc : null, $("#expert-card")];
   list.forEach((n) => { if (n && n.parentNode !== rows) rows.appendChild(n); if (n) n.classList.add("pc-r"); });
   const tips = $("#proj-more-tips"); if (tips && !tips.querySelector("summary small")) tips.querySelector("summary").insertAdjacentHTML("beforeend", "<small>Plateaus, water swings, and getting help</small>");
+  const storyRow = $("#proj-more-story"), slot = $("#why-story-slot"), sc = $("#story-card");
+  if (storyRow) storyRow.hidden = true;   /* merged into Why? Learn more; content is kept, not cut */
+  if (slot && sc && sc.parentNode !== slot) slot.appendChild(sc);
   /* 3. recap: the answer list folds, the Print / Edit / Clear buttons stay visible */
   const rc = $("#recap-card"), dl = $("#recap"); if (rc && dl && !dl.closest("#pc-recap")) { const d = document.createElement("details"); d.id = "pc-recap"; d.className = "pc-sub"; d.innerHTML = "<summary>See all your answers in one list</summary>"; dl.before(d); d.appendChild(dl); }
   if (!projClean.t) projClean.t = setTimeout(() => { projClean.t = 0; if (S.step === 5) projClean(); }, 600);   /* the snapshot card loads a moment later */
